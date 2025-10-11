@@ -179,7 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     const SizedBox(height: 32),
 
-                    // Social sign-in buttons (disabled for now)
+                    // Social sign-in buttons
                     Text(
                       'Or sign in with',
                       style: theme.textTheme.bodySmall,
@@ -190,13 +190,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         OutlinedButton.icon(
-                          onPressed: null, // Disabled for mock phase
+                          onPressed: authState is AuthLoading
+                              ? null
+                              : () => ref
+                                  .read(authNotifierProvider.notifier)
+                                  .signInWithGoogle(),
                           icon: const Icon(Icons.g_mobiledata),
                           label: const Text('Google'),
                         ),
                         const SizedBox(width: 16),
                         OutlinedButton.icon(
-                          onPressed: null, // Disabled for mock phase
+                          onPressed: null, // Apple sign-in not implemented yet
                           icon: const Icon(Icons.apple),
                           label: const Text('Apple'),
                         ),

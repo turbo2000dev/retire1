@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/features/auth/data/auth_repository.dart';
 import 'package:retire1/features/auth/data/auth_repository_mock.dart';
 import 'package:retire1/features/auth/domain/user.dart';
 
@@ -29,19 +31,49 @@ class AuthError extends AuthState {
   const AuthError(this.message);
 }
 
-/// Auth repository provider
-final authRepositoryProvider = Provider<AuthRepositoryMock>((ref) {
+/// Auth repository provider (Firebase)
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepository();
+});
+
+/// Mock auth repository provider (for testing)
+final authRepositoryMockProvider = Provider<AuthRepositoryMock>((ref) {
   return AuthRepositoryMock();
 });
 
-/// Auth state notifier
+/// Stream provider for auth state changes
+final authStateStreamProvider = StreamProvider<User?>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return repository.authStateChanges;
+});
+
+/// Auth state notifier with Firebase auth state listener
 class AuthNotifier extends Notifier<AuthState> {
   @override
   AuthState build() {
-    // Check if user is already logged in
     final repository = ref.read(authRepositoryProvider);
-    if (repository.isLoggedIn && repository.currentUser != null) {
-      return Authenticated(repository.currentUser!);
+
+    // Listen to auth state changes stream
+    ref.listen(authStateStreamProvider, (previous, next) {
+      next.whenData((user) {
+        if (user != null) {
+          // Only update if not loading or showing error message
+          if (state is! AuthLoading && state is! AuthError) {
+            state = Authenticated(user);
+          }
+        } else {
+          // Only set to unauthenticated if not loading or showing error
+          if (state is! AuthLoading && state is! AuthError) {
+            state = const Unauthenticated();
+          }
+        }
+      });
+    });
+
+    // Set initial state based on current user
+    final currentUser = repository.currentUser;
+    if (currentUser != null) {
+      return Authenticated(currentUser);
     }
     return const Unauthenticated();
   }
@@ -72,6 +104,25 @@ class AuthNotifier extends Notifier<AuthState> {
     try {
       final repository = ref.read(authRepositoryProvider);
       final user = await repository.register(email, password, displayName);
+      state = Authenticated(user);
+    } catch (e) {
+      state = AuthError(e.toString().replaceAll('Exception: ', ''));
+      // Reset to unauthenticated after showing error
+      Future.delayed(const Duration(seconds: 3), () {
+        if (state is AuthError) {
+          state = const Unauthenticated();
+        }
+      });
+    }
+  }
+
+  /// Sign in with Google
+  Future<void> signInWithGoogle() async {
+    state = const AuthLoading();
+
+    try {
+      final repository = ref.read(authRepositoryProvider);
+      final user = await repository.signInWithGoogle();
       state = Authenticated(user);
     } catch (e) {
       state = AuthError(e.toString().replaceAll('Exception: ', ''));

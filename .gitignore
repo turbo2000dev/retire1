@@ -50,6 +50,12 @@ app.*.map.json
 firebase.json
 .firebaserc
 
+# Backup files
+*.old
+*.old.*
+*.bak
+*.backup
+
 # CocoaPods
 **/Podfile.lock
 **/Pods/
