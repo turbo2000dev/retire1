@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Provider to manage theme mode state (default to light)
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 
 /// Application theme configuration
 /// Uses Material 3 design with light and dark themes

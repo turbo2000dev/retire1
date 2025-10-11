@@ -13,12 +13,6 @@ Future<void> main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-// Simple provider to manage locale state
-final localeProvider = StateProvider<Locale>((ref) => const Locale('en'));
-
-// Provider to manage theme mode state (default to light)
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
-
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 

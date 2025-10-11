@@ -8,7 +8,7 @@ import 'package:retire1/core/ui/responsive/responsive_collapsible_section.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/ui/responsive/responsive_dialog.dart';
 import 'package:retire1/core/ui/responsive/responsive_text_field.dart';
-import 'package:retire1/main.dart';
+import 'package:retire1/core/config/theme/app_theme.dart';
 
 /// Demo screen showcasing all responsive components
 class ComponentsDemoScreen extends ConsumerStatefulWidget {

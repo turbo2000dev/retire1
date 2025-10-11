@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/core/config/i18n/app_localizations_en.dart';
 import 'package:retire1/core/config/i18n/app_localizations_fr.dart';
+
+/// Provider to manage locale state (default to English)
+final localeProvider = StateProvider<Locale>((ref) => const Locale('en'));
 
 /// Base class for app localizations
 /// Provides localized strings for the application in English and French

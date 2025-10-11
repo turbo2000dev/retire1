@@ -134,3 +134,73 @@ structured into separate subdirectories following the **DDD
 - Prefer small composable widgets over large ones
 - Prefer using flex values over hardcoded sizes when creating widgets inside rows/columns, ensuring the UI adapts to various screen sizes
 - Use `log` from `dart.developer` rather than `print` or `debugPrint` for logging
+
+# Riverpod 3.0 Best Practices (Flutter Mobile & Web)
+
+## Project Setup
+- Use `flutter_riverpod`, `riverpod_annotation`, `riverpod_generator`, `riverpod_lint`, `build_runner`.
+- Always wrap app root in `ProviderScope`.
+- Enable `riverpod_lint` in `analysis_options.yaml`.
+
+## Provider Definitions
+- Use `@riverpod` for all providers; prefer code generation.
+- Use `Notifier` / `AsyncNotifier` (not `StateNotifier`).
+- Use class-based providers for mutable or side-effect logic.
+- Use function-based providers for derived or read-only state.
+- Declare all providers as top-level `final` variables.
+- Avoid initializing providers inside widgets.
+- Default: providers are `autoDispose`; use `@Riverpod(keepAlive: true)` for persistent state.
+- Keep providers pure; no direct side-effect calls or imperative UI actions.
+- Avoid using providers for ephemeral, widget-local state.
+
+## State Management Patterns
+- Use `Notifier` for synchronous state logic.
+- Use `AsyncNotifier` for async operations.
+- Use `StateProvider` for simple primitives.
+- Use `FutureProvider` / `StreamProvider` for derived async reads.
+- Use `ref.mounted` before updating async state.
+- Use `ref.invalidate()` to refresh or reset state.
+- Use `ref.keepAlive()` manually when managing resource lifecycles.
+
+## UI Integration
+- Use `ConsumerWidget` or `ConsumerStatefulWidget` for access to `ref`.
+- Use `ref.watch()` for reactive rebuilds.
+- Use `ref.read()` for one-off access (e.g., in callbacks).
+- Handle async data with `AsyncValue.when()` (loading/error/data).
+- Call provider methods via `.notifier` (e.g., `ref.read(counterProvider.notifier).increment()`).
+- Keep navigation, dialogs, and snackbars in UI, not in providers.
+- Use widget-local `State` or hooks for ephemeral UI-only state.
+
+## Architecture
+- Separate business logic (providers) from presentation (widgets).
+- Organize by feature/domain, not by type.
+- Inject dependencies via providers (`RepositoryProvider`, `ServiceProvider`, etc.).
+- Override providers for testing or platform differences.
+- Compose providers declaratively (providers depending on other providers).
+- Keep features loosely coupled; avoid circular dependencies.
+- Keep the providers in the related module's source files
+
+## Performance
+- Use `ref.watch(provider.select(...))` to minimize rebuilds.
+- Split large state objects into smaller providers.
+- Use immutable state models with proper equality.
+- Limit rebuild scope with `Consumer` or granular widgets.
+- Use `AsyncNotifier` caching or memoization when beneficial.
+
+## Testing
+- Use `ProviderContainer` for unit testing providers.
+- Override dependencies in tests.
+- Test providers’ logic independently of UI.
+- Use fake or mock repositories for isolation.
+
+## Error Handling & Reliability
+- Catch and represent errors in `AsyncValue`.
+- Use `AsyncValue.guard` for safe async operations.
+- Customize or disable provider retry strategies as needed.
+- Expose user-facing errors via state, not logs or exceptions.
+
+## Code Style & Naming
+- Name providers descriptively (e.g., `userListProvider`, `authNotifierProvider`).
+- Keep method names action-oriented (e.g., `fetchUsers()`, `toggleTheme()`).
+- Group provider files by feature: `/features/auth/providers/auth_provider.dart`.
+- Maintain immutability in state models (`copyWith`, `equatable` or `freezed`).

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/core/ui/responsive/layout_breakpoints.dart';
 import 'package:retire1/core/ui/responsive/screen_size.dart';
-import 'package:retire1/main.dart';
+import 'package:retire1/core/config/theme/app_theme.dart';
 
 /// Demo screen to visualize responsive behavior
 class ResponsiveDemoScreen extends ConsumerWidget {

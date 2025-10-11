@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/ui/responsive/screen_size.dart';
-import 'package:retire1/main.dart';
+import 'package:retire1/core/config/theme/app_theme.dart';
 
 /// Provider for current navigation index
 final currentIndexProvider = StateProvider<int>((ref) => 0);
