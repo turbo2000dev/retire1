@@ -20,6 +20,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
       title: 'Retirement Planner',
@@ -34,7 +35,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      routerConfig: appRouter,
+      routerConfig: router,
     );
   }
 }
