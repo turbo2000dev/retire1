@@ -10,63 +10,62 @@
 
 ### Tasks:
 1. **Add required packages to `pubspec.yaml`:**
-   - `flutter_riverpod` - State management
-   - `freezed` + `freezed_annotation` - Immutable models
-   - `build_runner` - Code generation
-   - `json_annotation` + `json_serializable` - JSON serialization
-   - `go_router` - Routing and navigation
-   - `firebase_core` - Firebase foundation
-   - `firebase_auth` - Authentication
-   - `cloud_firestore` - Database
-   - `firebase_storage` - File storage
-   - `google_sign_in` - Google authentication
-   - `sign_in_with_apple` - Apple authentication
-   - `intl` - Internationalization
+   - [x] Add `flutter_riverpod` - State management
+   - [x] Add `freezed` + `freezed_annotation` - Immutable models
+   - [x] Add `build_runner` - Code generation
+   - [x] Add `json_annotation` + `json_serializable` - JSON serialization
+   - [x] Add `go_router` - Routing and navigation
+   - [x] Add `firebase_core` - Firebase foundation
+   - [x] Add `firebase_auth` - Authentication
+   - [x] Add `cloud_firestore` - Database
+   - [x] Add `firebase_storage` - File storage
+   - [x] Add `google_sign_in` - Google authentication
+   - [x] Add `sign_in_with_apple` - Apple authentication
+   - [x] Add `intl` - Internationalization
 
 2. **Configure iOS project:**
-   - Open `ios/Runner.xcworkspace` in Xcode
-   - Set minimum deployment target to iOS 15.0 in project settings
-   - Update `ios/Podfile`: set `platform :ios, '15.0'`
-   - Add required iOS permissions to `ios/Runner/Info.plist`
+   - [x] Open `ios/Runner.xcworkspace` in Xcode
+   - [x] Set minimum deployment target to iOS 15.0 in project settings
+   - [x] Update `ios/Podfile`: set `platform :ios, '15.0'`
+   - [ ] Add required iOS permissions to `ios/Runner/Info.plist`
 
 3. **Test CocoaPods installation:**
-   - Run `cd ios && pod install`
-   - Verify all pods install without errors
-   - Check for version conflicts
-   - Document any specific pod versions if needed
+   - [x] Run `cd ios && pod install`
+   - [x] Verify all pods install without errors
+   - [x] Check for version conflicts
+   - [x] Document any specific pod versions if needed
 
 4. **Verify iOS build:**
-   - Run `flutter build ios --debug`
-   - Fix any build errors
-   - Ensure no linker errors
+   - [x] Run `flutter build ios --debug`
+   - [x] Fix any build errors
+   - [x] Ensure no linker errors
 
 5. **Test on iOS simulator:**
-   - Run `flutter run -d "iPhone 15 Pro"` (or available simulator)
-   - Verify app launches without crashes
-   - Test hot reload functionality
-   - Check console for any runtime warnings
+   - [x] Run `flutter run -d "iPhone 15 Pro"` (or available simulator)
+   - [x] Verify app launches without crashes
+   - [x] Test hot reload functionality
+   - [x] Check console for any runtime warnings
 
 6. **Configure Firebase using FlutterFire CLI:**
-   - Install FlutterFire CLI: `dart pub global activate flutterfire_cli`
-   - Run FlutterFire configure with project ID: `flutterfire configure --project=retire1-1a558`
-   - Select platforms: iOS, Android, macOS, Web
-   - FlutterFire will automatically:
-     - Download platform config files (GoogleService-Info.plist for iOS, google-services.json for Android)
-     - Generate `lib/firebase_options.dart` with configuration
-     - Add files to appropriate locations
+   - [x] Install FlutterFire CLI: `dart pub global activate flutterfire_cli`
+   - [x] Run FlutterFire configure with project ID: `flutterfire configure --project=retire1-1a558`
+   - [x] Select platforms: iOS, Android, macOS, Web
+   - [x] FlutterFire automatically downloaded platform config files
+   - [x] FlutterFire generated `lib/firebase_options.dart` with configuration
+   - [x] FlutterFire added files to appropriate locations
 
 7. **Initialize Firebase in main.dart:**
-   - Import `firebase_core` and generated `firebase_options.dart`
-   - Add `WidgetsFlutterBinding.ensureInitialized()`
-   - Call `await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)`
-   - Wrap main() with async
-   - Test app launch with Firebase initialized
-   - Verify no Firebase-related crashes
+   - [x] Import `firebase_core` and generated `firebase_options.dart`
+   - [x] Add `WidgetsFlutterBinding.ensureInitialized()`
+   - [x] Call `await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)`
+   - [x] Wrap main() with async
+   - [x] Test app launch with Firebase initialized
+   - [x] Verify no Firebase-related crashes
 
 8. **Test on physical iOS device (if available):**
-   - Connect physical device
-   - Run on device
-   - Verify no device-specific issues
+   - [ ] Connect physical device
+   - [ ] Run on device
+   - [ ] Verify no device-specific issues
 
 **Manual Test Checklist:**
 - ✓ App runs on iOS simulator without errors
@@ -108,32 +107,32 @@
 
 ### Tasks:
 1. **Create theme configuration:**
-   - Create `lib/core/config/theme/app_theme.dart`
-   - Define Material 3 dark color scheme
-   - Configure typography (readable font sizes)
-   - Set component themes (buttons, cards, text fields, etc.)
-   - Ensure no hardcoded colors (all via theme)
+   - [ ] Create `lib/core/config/theme/app_theme.dart`
+   - [ ] Define Material 3 dark color scheme
+   - [ ] Configure typography (readable font sizes)
+   - [ ] Set component themes (buttons, cards, text fields, etc.)
+   - [ ] Ensure no hardcoded colors (all via theme)
 
 2. **Set up internationalization:**
-   - Create `lib/core/config/i18n/app_localizations.dart`
-   - Create `lib/core/config/i18n/app_localizations_en.dart` (English strings)
-   - Create `lib/core/config/i18n/app_localizations_fr.dart` (French strings)
-   - Add common strings: app title, navigation items, buttons, etc.
+   - [ ] Create `lib/core/config/i18n/app_localizations.dart`
+   - [ ] Create `lib/core/config/i18n/app_localizations_en.dart` (English strings)
+   - [ ] Create `lib/core/config/i18n/app_localizations_fr.dart` (French strings)
+   - [ ] Add common strings: app title, navigation items, buttons, etc.
 
 3. **Update MaterialApp:**
-   - Apply theme in `main.dart`
-   - Add localization delegates
-   - Set supported locales (en, fr)
-   - Set default locale based on device settings
+   - [ ] Apply theme in `main.dart`
+   - [ ] Add localization delegates
+   - [ ] Set supported locales (en, fr)
+   - [ ] Set default locale based on device settings
 
 4. **Create temporary language switcher:**
-   - Add a simple button to toggle language (for testing)
-   - Can be removed later when settings screen is built
+   - [ ] Add a simple button to toggle language (for testing)
+   - [ ] Can be removed later when settings screen is built
 
 5. **Test theme:**
-   - Verify dark theme throughout app
-   - Check contrast ratios for accessibility
-   - Test on different screen sizes
+   - [ ] Verify dark theme throughout app
+   - [ ] Check contrast ratios for accessibility
+   - [ ] Test on different screen sizes
 
 **Manual Test Checklist:**
 - ✓ App displays with dark theme
