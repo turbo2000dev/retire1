@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app_localizations_en.dart';
-import 'app_localizations_fr.dart';
+import 'package:retire1/core/config/i18n/app_localizations_en.dart';
+import 'package:retire1/core/config/i18n/app_localizations_fr.dart';
 
 /// Base class for app localizations
 /// Provides localized strings for the application in English and French
@@ -99,18 +99,13 @@ abstract class AppLocalizations {
   }
 
   // Delegate for localizations
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   // Supported locales
-  static const List<Locale> supportedLocales = [
-    Locale('en', ''),
-    Locale('fr', ''),
-  ];
+  static const List<Locale> supportedLocales = [Locale('en', ''), Locale('fr', '')];
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override

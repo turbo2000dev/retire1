@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
+import 'package:retire1/core/config/theme/app_theme.dart';
+import 'package:retire1/core/router/app_router.dart';
 import 'firebase_options.dart';
-import 'core/config/theme/app_theme.dart';
-import 'core/config/i18n/app_localizations.dart';
-import 'core/router/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const ProviderScope(child: MyApp()));
 }
 

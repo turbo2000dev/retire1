@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screen_size.dart';
+import 'package:retire1/core/ui/responsive/screen_size.dart';
 
 /// A multi-pane layout that adapts based on screen size
 ///
@@ -52,10 +52,7 @@ class ResponsiveMultiPaneLayout extends StatelessWidget {
       if (startPane != null) {
         return Row(
           children: [
-            SizedBox(
-              width: startPaneWidth,
-              child: startPane,
-            ),
+            SizedBox(width: startPaneWidth, child: startPane),
             const VerticalDivider(width: 1),
             Expanded(child: centerPane),
           ],
@@ -76,13 +73,7 @@ class ResponsiveMultiPaneLayout extends StatelessWidget {
             const VerticalDivider(width: 1),
           ],
           Expanded(child: centerPane),
-          if (endPane != null) ...[
-            const VerticalDivider(width: 1),
-            SizedBox(
-              width: endPaneWidth,
-              child: endPane,
-            ),
-          ],
+          if (endPane != null) ...[const VerticalDivider(width: 1), SizedBox(width: endPaneWidth, child: endPane)],
         ],
       );
     }
@@ -126,10 +117,7 @@ class _CollapsiblePaneState extends State<_CollapsiblePane> {
   @override
   Widget build(BuildContext context) {
     if (!widget.collapsible) {
-      return SizedBox(
-        width: widget.width,
-        child: widget.child,
-      );
+      return SizedBox(width: widget.width, child: widget.child);
     }
 
     return AnimatedContainer(
@@ -144,9 +132,7 @@ class _CollapsiblePaneState extends State<_CollapsiblePane> {
             bottom: 0,
             child: Center(
               child: IconButton(
-                icon: Icon(
-                  _isCollapsed ? Icons.chevron_right : Icons.chevron_left,
-                ),
+                icon: Icon(_isCollapsed ? Icons.chevron_right : Icons.chevron_left),
                 onPressed: _toggleCollapsed,
               ),
             ),

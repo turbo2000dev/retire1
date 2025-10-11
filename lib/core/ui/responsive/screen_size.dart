@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'layout_breakpoints.dart';
+import 'package:retire1/core/ui/responsive/layout_breakpoints.dart';
 
 /// Utility class for determining screen size categories
 class ScreenSize {
@@ -17,8 +17,7 @@ class ScreenSize {
   bool get isPhone => width < LayoutBreakpoints.phoneMax;
 
   /// Check if the current screen is a tablet (600 <= width < 1024)
-  bool get isTablet =>
-      width >= LayoutBreakpoints.phoneMax && width < LayoutBreakpoints.tabletMax;
+  bool get isTablet => width >= LayoutBreakpoints.phoneMax && width < LayoutBreakpoints.tabletMax;
 
   /// Check if the current screen is a desktop (width >= 1024)
   bool get isDesktop => width >= LayoutBreakpoints.desktopMin;

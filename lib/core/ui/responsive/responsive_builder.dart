@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screen_size.dart';
+import 'package:retire1/core/ui/responsive/screen_size.dart';
 
 /// A widget that builds different layouts based on screen size
 ///
@@ -18,16 +18,11 @@ class ResponsiveBuilder extends StatelessWidget {
   /// Optional builder specifically for desktop layouts
   final Widget Function(BuildContext, ScreenSize)? desktop;
 
-  const ResponsiveBuilder({
-    super.key,
-    this.builder,
-    this.phone,
-    this.tablet,
-    this.desktop,
-  }) : assert(
-          builder != null || phone != null || tablet != null || desktop != null,
-          'At least one builder must be provided',
-        );
+  const ResponsiveBuilder({super.key, this.builder, this.phone, this.tablet, this.desktop})
+    : assert(
+        builder != null || phone != null || tablet != null || desktop != null,
+        'At least one builder must be provided',
+      );
 
   @override
   Widget build(BuildContext context) {

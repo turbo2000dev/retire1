@@ -1,4 +1,4 @@
-import 'app_localizations.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 
 /// English localizations
 class AppLocalizationsEn extends AppLocalizations {

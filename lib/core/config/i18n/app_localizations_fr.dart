@@ -1,4 +1,4 @@
-import 'app_localizations.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 
 /// French localizations
 class AppLocalizationsFr extends AppLocalizations {

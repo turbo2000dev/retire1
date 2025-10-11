@@ -1,11 +1,11 @@
 import 'package:go_router/go_router.dart';
-import '../ui/layout/app_shell.dart';
-import '../../features/dashboard/presentation/dashboard_screen.dart';
-import '../../features/project/presentation/base_parameters_screen.dart';
-import '../../features/assets/presentation/assets_events_screen.dart';
-import '../../features/scenarios/presentation/scenarios_screen.dart';
-import '../../features/projection/presentation/projection_screen.dart';
-import '../../features/settings/presentation/settings_screen.dart';
+import 'package:retire1/core/ui/layout/app_shell.dart';
+import 'package:retire1/features/assets/presentation/assets_events_screen.dart';
+import 'package:retire1/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:retire1/features/project/presentation/base_parameters_screen.dart';
+import 'package:retire1/features/projection/presentation/projection_screen.dart';
+import 'package:retire1/features/scenarios/presentation/scenarios_screen.dart';
+import 'package:retire1/features/settings/presentation/settings_screen.dart';
 
 /// Route names as constants
 class AppRoutes {

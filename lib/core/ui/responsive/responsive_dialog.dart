@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screen_size.dart';
+import 'package:retire1/core/ui/responsive/screen_size.dart';
 
 /// Shows a responsive dialog that adapts to screen size
 Future<T?> showResponsiveDialog<T>({
@@ -10,9 +10,7 @@ Future<T?> showResponsiveDialog<T>({
   return showDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
-    builder: (context) => ResponsiveDialog(
-      child: builder(context),
-    ),
+    builder: (context) => ResponsiveDialog(child: builder(context)),
   );
 }
 
@@ -21,10 +19,7 @@ class ResponsiveDialog extends StatelessWidget {
   /// The content of the dialog
   final Widget child;
 
-  const ResponsiveDialog({
-    super.key,
-    required this.child,
-  });
+  const ResponsiveDialog({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +39,7 @@ class ResponsiveDialog extends StatelessWidget {
 
     return Dialog(
       child: Container(
-        constraints: BoxConstraints(
-          maxWidth: dialogWidth,
-          maxHeight: screenSize.height * 0.9,
-        ),
+        constraints: BoxConstraints(maxWidth: dialogWidth, maxHeight: screenSize.height * 0.9),
         child: child,
       ),
     );
@@ -89,30 +81,15 @@ class ResponsiveDialogContent extends StatelessWidget {
           padding: const EdgeInsets.all(24.0),
           child: Row(
             children: [
-              if (icon != null) ...[
-                Icon(
-                  icon,
-                  color: theme.colorScheme.primary,
-                  size: 28,
-                ),
-                const SizedBox(width: 16),
-              ],
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.headlineSmall,
-                ),
-              ),
+              if (icon != null) ...[Icon(icon, color: theme.colorScheme.primary, size: 28), const SizedBox(width: 16)],
+              Expanded(child: Text(title, style: theme.textTheme.headlineSmall)),
             ],
           ),
         ),
 
         // Content section (scrollable)
         Flexible(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: content,
-          ),
+          child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24.0), child: content),
         ),
 
         // Actions section
@@ -122,10 +99,7 @@ class ResponsiveDialogContent extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                for (int i = 0; i < actions.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 8),
-                  actions[i],
-                ],
+                for (int i = 0; i < actions.length; i++) ...[if (i > 0) const SizedBox(width: 8), actions[i]],
               ],
             ),
           ),

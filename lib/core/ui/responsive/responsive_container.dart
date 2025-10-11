@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'layout_breakpoints.dart';
-import 'screen_size.dart';
+import 'package:retire1/core/ui/responsive/layout_breakpoints.dart';
+import 'package:retire1/core/ui/responsive/screen_size.dart';
 
 /// A container that adapts its width and padding based on screen size
 class ResponsiveContainer extends StatelessWidget {
@@ -45,9 +45,7 @@ class ResponsiveContainer extends StatelessWidget {
     return Align(
       alignment: alignment,
       child: Container(
-        constraints: BoxConstraints(
-          maxWidth: maxWidth ?? LayoutBreakpoints.maxContentWidth,
-        ),
+        constraints: BoxConstraints(maxWidth: maxWidth ?? LayoutBreakpoints.maxContentWidth),
         padding: effectivePadding,
         child: child,
       ),
