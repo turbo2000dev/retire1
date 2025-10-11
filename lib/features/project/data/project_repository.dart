@@ -59,8 +59,9 @@ class ProjectRepository {
           .map((snapshot) {
         return snapshot.docs.map((doc) {
           try {
+            final data = _convertTimestampsToDateTimes(doc.data());
             return Project.fromJson({
-              ...doc.data(),
+              ...data,
               'id': doc.id,
             });
           } catch (e, stack) {
@@ -95,6 +96,55 @@ class ProjectRepository {
     }
   }
 
+  /// Update project with full project data (includes nested fields like individuals)
+  Future<void> updateProjectData(Project project) async {
+    try {
+      final updatedProject = project.copyWith(updatedAt: DateTime.now());
+      final json = updatedProject.toJson();
+
+      // Convert DateTime objects to Timestamps for Firestore
+      final firestoreData = _convertDateTimesToTimestamps(json);
+
+      await _projectsCollection.doc(project.id).set(firestoreData);
+
+      log('Project data updated in Firestore: ${project.id}');
+    } catch (e, stack) {
+      log('Failed to update project data in Firestore', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// Convert DateTime objects to Firestore Timestamps recursively
+  Map<String, dynamic> _convertDateTimesToTimestamps(Map<String, dynamic> data) {
+    final result = <String, dynamic>{};
+
+    for (final entry in data.entries) {
+      final value = entry.value;
+
+      if (value is DateTime) {
+        result[entry.key] = Timestamp.fromDate(value);
+      } else if (value is Map<String, dynamic>) {
+        result[entry.key] = _convertDateTimesToTimestamps(value);
+      } else if (value is List) {
+        result[entry.key] = value.map((item) {
+          if (item is DateTime) {
+            return Timestamp.fromDate(item);
+          } else if (item is Map<String, dynamic>) {
+            return _convertDateTimesToTimestamps(item);
+          } else {
+            // Handle any other objects by converting them to dynamic
+            // This will trigger their toJson() if they have one
+            return item;
+          }
+        }).toList();
+      } else {
+        result[entry.key] = value;
+      }
+    }
+
+    return result;
+  }
+
   /// Delete a project
   Future<void> deleteProject(String projectId) async {
     try {
@@ -115,14 +165,66 @@ class ProjectRepository {
         return null;
       }
 
+      final data = _convertTimestampsToDateTimes(doc.data()!);
       return Project.fromJson({
-        ...doc.data()!,
+        ...data,
         'id': doc.id,
       });
     } catch (e, stack) {
       log('Failed to get project from Firestore', error: e, stackTrace: stack);
       rethrow;
     }
+  }
+
+  /// Get a stream of a single project by ID
+  Stream<Project?> getProjectStream(String projectId) {
+    try {
+      return _projectsCollection.doc(projectId).snapshots().map((snapshot) {
+        if (!snapshot.exists) {
+          return null;
+        }
+
+        try {
+          final data = _convertTimestampsToDateTimes(snapshot.data()!);
+          return Project.fromJson({
+            ...data,
+            'id': snapshot.id,
+          });
+        } catch (e, stack) {
+          log('Failed to parse project ${snapshot.id}', error: e, stackTrace: stack);
+          rethrow;
+        }
+      });
+    } catch (e, stack) {
+      log('Failed to get project stream', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// Convert Firestore Timestamps to DateTime objects recursively
+  Map<String, dynamic> _convertTimestampsToDateTimes(Map<String, dynamic> data) {
+    final result = <String, dynamic>{};
+
+    for (final entry in data.entries) {
+      if (entry.value is Timestamp) {
+        result[entry.key] = (entry.value as Timestamp).toDate();
+      } else if (entry.value is Map<String, dynamic>) {
+        result[entry.key] = _convertTimestampsToDateTimes(entry.value);
+      } else if (entry.value is List) {
+        result[entry.key] = (entry.value as List).map((item) {
+          if (item is Timestamp) {
+            return item.toDate();
+          } else if (item is Map<String, dynamic>) {
+            return _convertTimestampsToDateTimes(item);
+          }
+          return item;
+        }).toList();
+      } else {
+        result[entry.key] = entry.value;
+      }
+    }
+
+    return result;
   }
 }
 

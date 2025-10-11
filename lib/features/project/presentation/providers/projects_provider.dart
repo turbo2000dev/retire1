@@ -98,6 +98,24 @@ class ProjectsNotifier extends AsyncNotifier<List<Project>> {
     }
   }
 
+  /// Update project with full project data
+  /// Useful for updating nested fields like individuals list
+  Future<void> updateProjectData(Project project) async {
+    if (_repository == null) {
+      log('Cannot update project: user not authenticated');
+      return;
+    }
+
+    try {
+      await _repository!.updateProjectData(project);
+      // Stream will automatically update with changes
+      log('Project data updated successfully');
+    } catch (e, stack) {
+      log('Failed to update project data', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
   /// Delete a project
   Future<void> deleteProject(String projectId) async {
     if (_repository == null) {

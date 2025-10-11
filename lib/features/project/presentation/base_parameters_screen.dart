@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
+import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/project/presentation/providers/projects_provider.dart';
+import 'package:retire1/features/project/presentation/widgets/individual_card.dart';
+import 'package:retire1/features/project/presentation/widgets/individual_dialog.dart';
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
 
 /// Base Parameters screen - manages projects and project-wide parameters
@@ -119,6 +122,79 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   void _loadProjectData(Project project) {
     _nameController.text = project.name;
     _descriptionController.text = project.description ?? '';
+  }
+
+  Future<void> _addIndividual(Project project) async {
+    final result = await IndividualDialog.showCreate(context);
+    if (result != null && mounted) {
+      final updatedIndividuals = [...project.individuals, result];
+      await _updateProjectIndividuals(project, updatedIndividuals);
+    }
+  }
+
+  Future<void> _editIndividual(Project project, Individual individual) async {
+    final result = await IndividualDialog.showEdit(context, individual);
+    if (result != null && mounted) {
+      final updatedIndividuals = project.individuals
+          .map((i) => i.id == individual.id ? result : i)
+          .toList();
+      await _updateProjectIndividuals(project, updatedIndividuals);
+    }
+  }
+
+  Future<void> _deleteIndividual(Project project, Individual individual) async {
+    final theme = Theme.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Individual'),
+        content: Text(
+          'Are you sure you want to delete "${individual.name}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      final updatedIndividuals = project.individuals
+          .where((i) => i.id != individual.id)
+          .toList();
+      await _updateProjectIndividuals(project, updatedIndividuals);
+    }
+  }
+
+  Future<void> _updateProjectIndividuals(
+    Project project,
+    List<Individual> individuals,
+  ) async {
+    try {
+      final updatedProject = project.copyWith(individuals: individuals);
+      await ref.read(projectsProvider.notifier).updateProjectData(updatedProject);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Individuals updated')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update individuals: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -377,6 +453,76 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                       ],
                     ],
                   ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Individuals section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Individuals',
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        FilledButton.icon(
+                          onPressed: () => _addIndividual(selectedProject),
+                          icon: const Icon(Icons.person_add),
+                          label: const Text('Add Individual'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (selectedProject.individuals.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.people_outline,
+                              size: 48,
+                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No individuals yet',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Add the people involved in this retirement plan',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      ...selectedProject.individuals.map((individual) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: IndividualCard(
+                            individual: individual,
+                            onEdit: () => _editIndividual(selectedProject, individual),
+                            onDelete: () => _deleteIndividual(selectedProject, individual),
+                          ),
+                        );
+                      }),
+                  ],
                 ),
               ),
             ),

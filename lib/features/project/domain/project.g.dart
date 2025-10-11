@@ -14,6 +14,11 @@ _$ProjectImpl _$$ProjectImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      individuals:
+          (json['individuals'] as List<dynamic>?)
+              ?.map((e) => Individual.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$ProjectImplToJson(_$ProjectImpl instance) =>
@@ -24,4 +29,5 @@ Map<String, dynamic> _$$ProjectImplToJson(_$ProjectImpl instance) =>
       'description': instance.description,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
+      'individuals': instance.individuals.map((e) => e.toJson()).toList(),
     };

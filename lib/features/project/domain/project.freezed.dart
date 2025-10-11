@@ -27,6 +27,7 @@ mixin _$Project {
   String? get description => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
+  List<Individual> get individuals => throw _privateConstructorUsedError;
 
   /// Serializes this Project to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,6 +50,7 @@ abstract class $ProjectCopyWith<$Res> {
     String? description,
     DateTime createdAt,
     DateTime updatedAt,
+    List<Individual> individuals,
   });
 }
 
@@ -73,6 +75,7 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
     Object? description = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? individuals = null,
   }) {
     return _then(
       _value.copyWith(
@@ -100,6 +103,10 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            individuals: null == individuals
+                ? _value.individuals
+                : individuals // ignore: cast_nullable_to_non_nullable
+                      as List<Individual>,
           )
           as $Val,
     );
@@ -121,6 +128,7 @@ abstract class _$$ProjectImplCopyWith<$Res> implements $ProjectCopyWith<$Res> {
     String? description,
     DateTime createdAt,
     DateTime updatedAt,
+    List<Individual> individuals,
   });
 }
 
@@ -144,6 +152,7 @@ class __$$ProjectImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? individuals = null,
   }) {
     return _then(
       _$ProjectImpl(
@@ -171,13 +180,18 @@ class __$$ProjectImplCopyWithImpl<$Res>
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        individuals: null == individuals
+            ? _value._individuals
+            : individuals // ignore: cast_nullable_to_non_nullable
+                  as List<Individual>,
       ),
     );
   }
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(explicitToJson: true)
 class _$ProjectImpl implements _Project {
   const _$ProjectImpl({
     required this.id,
@@ -186,7 +200,8 @@ class _$ProjectImpl implements _Project {
     this.description,
     required this.createdAt,
     required this.updatedAt,
-  });
+    final List<Individual> individuals = const [],
+  }) : _individuals = individuals;
 
   factory _$ProjectImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProjectImplFromJson(json);
@@ -203,10 +218,18 @@ class _$ProjectImpl implements _Project {
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
+  final List<Individual> _individuals;
+  @override
+  @JsonKey()
+  List<Individual> get individuals {
+    if (_individuals is EqualUnmodifiableListView) return _individuals;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_individuals);
+  }
 
   @override
   String toString() {
-    return 'Project(id: $id, name: $name, ownerId: $ownerId, description: $description, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Project(id: $id, name: $name, ownerId: $ownerId, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, individuals: $individuals)';
   }
 
   @override
@@ -222,7 +245,11 @@ class _$ProjectImpl implements _Project {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            const DeepCollectionEquality().equals(
+              other._individuals,
+              _individuals,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -235,6 +262,7 @@ class _$ProjectImpl implements _Project {
     description,
     createdAt,
     updatedAt,
+    const DeepCollectionEquality().hash(_individuals),
   );
 
   /// Create a copy of Project
@@ -259,6 +287,7 @@ abstract class _Project implements Project {
     final String? description,
     required final DateTime createdAt,
     required final DateTime updatedAt,
+    final List<Individual> individuals,
   }) = _$ProjectImpl;
 
   factory _Project.fromJson(Map<String, dynamic> json) = _$ProjectImpl.fromJson;
@@ -275,6 +304,8 @@ abstract class _Project implements Project {
   DateTime get createdAt;
   @override
   DateTime get updatedAt;
+  @override
+  List<Individual> get individuals;
 
   /// Create a copy of Project
   /// with the given fields replaced by the non-null parameter values.

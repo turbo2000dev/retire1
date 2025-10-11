@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:retire1/features/project/domain/individual.dart';
 
 part 'project.freezed.dart';
 part 'project.g.dart';
@@ -14,6 +15,7 @@ class Project with _$Project {
     String? description,
     required DateTime createdAt,
     required DateTime updatedAt,
+    @Default([]) List<Individual> individuals,
   }) = _Project;
 
   factory Project.fromJson(Map<String, dynamic> json) =>

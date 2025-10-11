@@ -30,6 +30,7 @@ class CurrentProjectNotifier extends StateNotifier<CurrentProjectState> {
   final ProjectRepository? _projectRepository;
   final Ref _ref;
   StreamSubscription<String?>? _settingsSubscription;
+  StreamSubscription<Project?>? _projectSubscription;
 
   CurrentProjectNotifier(
     this._ref,
@@ -48,6 +49,10 @@ class CurrentProjectNotifier extends StateNotifier<CurrentProjectState> {
     // Listen to current project ID changes
     _settingsSubscription = _settingsRepository.getCurrentProjectIdStream().listen(
       (projectId) async {
+        // Cancel previous project subscription
+        await _projectSubscription?.cancel();
+        _projectSubscription = null;
+
         if (projectId == null) {
           state = NoProjectSelected();
           return;
@@ -55,21 +60,30 @@ class CurrentProjectNotifier extends StateNotifier<CurrentProjectState> {
 
         try {
           state = ProjectLoading();
-          final project = await _projectRepository.getProject(projectId);
-          if (project != null) {
-            state = ProjectSelected(project);
-          } else {
-            // Project was deleted, clear selection
-            await _settingsRepository.setCurrentProjectId(null);
-            state = NoProjectSelected();
-          }
+
+          // Listen to project data changes
+          _projectSubscription = _projectRepository.getProjectStream(projectId).listen(
+            (project) {
+              if (project != null) {
+                state = ProjectSelected(project);
+              } else {
+                // Project was deleted, clear selection
+                _settingsRepository.setCurrentProjectId(null);
+                state = NoProjectSelected();
+              }
+            },
+            onError: (error, stackTrace) {
+              log('Error in project stream', error: error, stackTrace: stackTrace);
+              state = ProjectError('Failed to load project');
+            },
+          );
         } catch (e, stack) {
-          log('Failed to load current project', error: e, stackTrace: stack);
+          log('Failed to setup project stream', error: e, stackTrace: stack);
           state = ProjectError('Failed to load project');
         }
       },
       onError: (error, stackTrace) {
-        log('Error in current project stream', error: error, stackTrace: stackTrace);
+        log('Error in current project ID stream', error: error, stackTrace: stackTrace);
         state = ProjectError('Failed to load project');
       },
     );
@@ -123,6 +137,7 @@ class CurrentProjectNotifier extends StateNotifier<CurrentProjectState> {
   @override
   void dispose() {
     _settingsSubscription?.cancel();
+    _projectSubscription?.cancel();
     super.dispose();
   }
 }

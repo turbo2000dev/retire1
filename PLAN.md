@@ -1073,47 +1073,47 @@
 
 ### Tasks:
 1. **Create individual domain model:**
-   - [ ] Create `lib/features/project/domain/individual.dart`
-   - [ ] Fields: id, name, birthdate
-   - [ ] Use Freezed
-   - [ ] Add helper: `int get age` (calculate from birthdate)
+   - [x] Create `lib/features/project/domain/individual.dart`
+   - [x] Fields: id, name, birthdate
+   - [x] Use Freezed
+   - [x] Add helper: `int get age` (calculate from birthdate)
 
 2. **Update project model:**
-   - [ ] Add `List<Individual> individuals` to Project
-   - [ ] Add other base parameters as needed (future)
+   - [x] Add `List<Individual> individuals` to Project
+   - [x] Add other base parameters as needed (future)
 
 3. **Update base parameters screen:**
-   - [ ] Add "Individuals" section below project info
-   - [ ] List of individuals with add/edit/delete
-   - [ ] Show name, birthdate, calculated age
-   - [ ] Empty state for individuals
-   - [ ] Responsive layout
+   - [x] Add "Individuals" section below project info
+   - [x] List of individuals with add/edit/delete
+   - [x] Show name, birthdate, calculated age
+   - [x] Empty state for individuals
+   - [x] Responsive layout
 
 4. **Create individual card/list item:**
-   - [ ] Create `lib/features/project/presentation/widgets/individual_card.dart`
-   - [ ] Show name, birthdate, calculated age
-   - [ ] Edit and delete buttons
-   - [ ] Compact on phone, detailed on desktop
+   - [x] Create `lib/features/project/presentation/widgets/individual_card.dart`
+   - [x] Show name, birthdate, calculated age
+   - [x] Edit and delete buttons
+   - [x] Compact on phone, detailed on desktop
 
 5. **Create individual dialog:**
-   - [ ] Create `lib/features/project/presentation/widgets/individual_dialog.dart`
-   - [ ] Name field (required)
-   - [ ] Birthdate picker
-   - [ ] Save/Cancel buttons
-   - [ ] Form validation
-   - [ ] Use for both add and edit
+   - [x] Create `lib/features/project/presentation/widgets/individual_dialog.dart`
+   - [x] Name field (required)
+   - [x] Birthdate picker
+   - [x] Save/Cancel buttons
+   - [x] Form validation
+   - [x] Use for both add and edit
 
 6. **Update project repository:**
-   - [ ] Save individuals with project
-   - [ ] Load individuals when loading project
-   - [ ] Handle date serialization (Firestore Timestamp)
+   - [x] Save individuals with project
+   - [x] Load individuals when loading project
+   - [x] Handle date serialization (Firestore Timestamp)
 
 7. **Test interactions:**
-   - [ ] Add individual, appears in list with calculated age
-   - [ ] Edit individual, updates in list
-   - [ ] Delete individual, removed with confirmation
-   - [ ] Age updates correctly
-   - [ ] Changes save to Firestore automatically
+   - [x] Add individual, appears in list with calculated age
+   - [x] Edit individual, updates in list
+   - [x] Delete individual, removed with confirmation
+   - [x] Age updates correctly
+   - [x] Changes save to Firestore automatically
 
 **Manual Test Checklist:**
 - ✓ Can add individuals with names and birthdates
@@ -1127,6 +1127,67 @@
 - ✓ Responsive layout on all sizes
 
 **Deliverable:** Working base parameters screen with project info and individuals management, all persisted to Firestore
+
+---
+
+## ✅ PHASE 12 COMPLETED
+
+**What was accomplished:**
+- Created Individual domain model with Freezed:
+  - Fields: id, name, birthdate
+  - Calculated age property that computes current age from birthdate
+- Updated Project model to include List<Individual> with @Default([])
+- Ran build_runner to regenerate Freezed code with proper JSON serialization
+- Created IndividualCard widget component:
+  - Displays avatar with first initial
+  - Shows name, formatted birthdate, and calculated age
+  - Edit and delete action buttons
+  - Material 3 design with proper theming
+- Created IndividualDialog for add/edit operations:
+  - Name text field with validation
+  - Date picker for birthdate selection
+  - Static factory methods for create/edit modes
+  - Form validation and responsive layout
+- Updated Base Parameters screen:
+  - Added "Individuals" section below project details
+  - Empty state with helpful message
+  - List of IndividualCard widgets
+  - Add/edit/delete functionality with confirmation dialogs
+  - Handler methods for all CRUD operations
+- Updated ProjectRepository with comprehensive Timestamp handling:
+  - Added `getProjectStream()` method for real-time project updates
+  - Added `updateProjectData()` method for full project updates
+  - Added `_convertTimestampsToDateTimes()` for Firestore → DateTime conversion
+  - Added `_convertDateTimesToTimestamps()` for DateTime → Firestore conversion
+  - Recursive conversion handles nested objects and arrays
+- Updated ProjectsNotifier:
+  - Added `updateProjectData()` method
+- Updated CurrentProjectProvider for real-time updates:
+  - Now subscribes to project data stream instead of one-time fetch
+  - Added `_projectSubscription` to track project changes
+  - Automatically updates UI when project data changes in Firestore
+  - Proper cleanup of both subscriptions on dispose
+- Fixed JSON serialization for nested objects:
+  - Re-ran build_runner which generated correct `toJson()` calls for individuals
+  - Project now properly serializes with `individuals.map((e) => e.toJson()).toList()`
+- Real-time synchronization:
+  - Changes to individuals immediately appear in UI without page refresh
+  - Firestore snapshots trigger automatic UI updates
+  - Stream-based architecture for live data sync
+- App successfully running on Chrome with all features working
+
+**Key files created:**
+- lib/features/project/domain/individual.dart - Individual domain model
+- lib/features/project/domain/individual.freezed.dart - Generated Freezed code
+- lib/features/project/domain/individual.g.dart - Generated JSON serialization
+- lib/features/project/presentation/widgets/individual_card.dart - Individual display component
+- lib/features/project/presentation/widgets/individual_dialog.dart - Add/edit dialog
+- Updated lib/features/project/domain/project.dart - Added individuals list
+- Updated lib/features/project/domain/project.g.dart - Regenerated with explicitToJson
+- Updated lib/features/project/data/project_repository.dart - Real-time streams and Timestamp conversion
+- Updated lib/features/project/presentation/providers/projects_provider.dart - Added updateProjectData
+- Updated lib/features/project/presentation/providers/current_project_provider.dart - Real-time project updates
+- Updated lib/features/project/presentation/base_parameters_screen.dart - Individuals section UI
 
 ---
 
