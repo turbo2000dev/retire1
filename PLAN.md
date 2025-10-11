@@ -1197,54 +1197,54 @@
 
 ### Tasks:
 1. **Create asset domain models:**
-   - [ ] Create `lib/features/assets/domain/asset.dart`
-   - [ ] Use Freezed unions for 4 asset types:
+   - [x] Create `lib/features/assets/domain/asset.dart`
+   - [x] Use Freezed unions for 4 asset types:
      - `RealEstateAsset(id, type, value, setAtStart)`
      - `RRSPAccount(id, individualId, value)`
      - `CELIAccount(id, individualId, value)`
      - `CashAccount(id, individualId, value)`
-   - [ ] Add helper methods as needed
+   - [x] Add helper methods as needed
 
 2. **Create assets screen:**
-   - [ ] Create `lib/features/assets/presentation/assets_screen.dart`
-   - [ ] App bar with project name
-   - [ ] Assets grouped by type
-   - [ ] "Add Asset" FAB with type selector
-   - [ ] Empty state for each type
-   - [ ] Responsive card layout
+   - [x] Create `lib/features/assets/presentation/assets_screen.dart`
+   - [x] App bar with project name
+   - [x] Assets grouped by type
+   - [x] "Add Asset" FAB with type selector
+   - [x] Empty state for each type
+   - [x] Responsive card layout
 
 3. **Create asset cards:**
-   - [ ] Create `lib/features/assets/presentation/widgets/asset_card.dart`
-   - [ ] Display differently based on asset type
-   - [ ] Show key information (value, type, individual)
-   - [ ] Edit and delete buttons
+   - [x] Create `lib/features/assets/presentation/widgets/asset_card.dart`
+   - [x] Display differently based on asset type
+   - [x] Show key information (value, type, individual)
+   - [x] Edit and delete buttons
 
 4. **Create add asset dialog:**
-   - [ ] Create `lib/features/assets/presentation/widgets/add_asset_dialog.dart`
-   - [ ] First step: Select asset type (4 buttons/tiles)
-   - [ ] Second step: Type-specific form
-   - [ ] Cancel/Save buttons
+   - [x] Create `lib/features/assets/presentation/widgets/add_asset_dialog.dart`
+   - [x] First step: Select asset type (4 buttons/tiles)
+   - [x] Second step: Type-specific form
+   - [x] Cancel/Save buttons
 
 5. **Create asset type forms:**
-   - [ ] Create `lib/features/assets/presentation/widgets/real_estate_form.dart`
+   - [x] Create `lib/features/assets/presentation/widgets/real_estate_form.dart`
      - Type dropdown (house, condo, cottage, etc.)
      - Value field (currency)
      - "Set at start" checkbox
-   - [ ] Create `lib/features/assets/presentation/widgets/account_form.dart` (reusable)
+   - [x] Create `lib/features/assets/presentation/widgets/account_form.dart` (reusable)
      - Individual selector (dropdown)
      - Value field (currency)
      - Account type shown as title
 
 6. **Create mock assets provider:**
-   - [ ] Riverpod provider with mock assets
-   - [ ] Support CRUD operations (in memory)
-   - [ ] Link to individuals from base parameters
+   - [x] Riverpod provider with mock assets
+   - [x] Support CRUD operations (in memory)
+   - [x] Link to individuals from base parameters
 
 7. **Test interactions:**
-   - [ ] Add each asset type
-   - [ ] Edit assets
-   - [ ] Delete with confirmation
-   - [ ] Verify correct forms shown for each type
+   - [x] Add each asset type
+   - [x] Edit assets
+   - [x] Delete with confirmation
+   - [x] Verify correct forms shown for each type
 
 **Manual Test Checklist:**
 - ✓ Can add all 4 asset types
@@ -1258,6 +1258,61 @@
 - ✓ All data in mock state
 
 **Deliverable:** Complete asset management UI with mock data
+
+---
+
+## ✅ PHASE 13 COMPLETED
+
+**What was accomplished:**
+- Created Asset domain model with Freezed unions for 4 asset types:
+  - RealEstateAsset with type enum (house, condo, cottage, land, commercial, other), value, and setAtStart flag
+  - RRSPAccount with individual ID and value
+  - CELIAccount with individual ID and value
+  - CashAccount with individual ID and value
+- Built mock assets provider with in-memory CRUD operations:
+  - AssetsNotifier with add/edit/delete functionality
+  - Pre-loaded with 5 mock assets for testing
+  - assetsByTypeProvider for grouping assets by type
+- Created AssetCard component:
+  - Type-specific icons and color-coded avatars
+  - Displays value/balance with currency formatting
+  - Shows "Set at start" indicator for real estate
+  - Edit and delete action buttons
+- Built RealEstateForm for property assets:
+  - Property type dropdown with 6 types
+  - Value field with validation
+  - "Set at start" checkbox for planning period
+- Created AccountForm (reusable for RRSP, CELI, Cash):
+  - Individual selector populated from current project
+  - Value field with validation
+  - Warning when no individuals exist
+  - Works for all 3 account types
+- Implemented AddAssetDialog with two-step flow:
+  - Step 1: Type selector with 4 card tiles (Real Estate, RRSP, CELI, Cash)
+  - Step 2: Type-specific form
+  - Back navigation between steps
+  - Responsive layout
+- Completely rewrote Assets & Events screen:
+  - Grouped layout by asset type (Real Estate, RRSP, CELI, Cash)
+  - Section headers with asset count badges
+  - Empty state for each asset type
+  - Full CRUD functionality with FAB and card buttons
+  - Delete confirmation dialogs
+  - Success/error feedback with SnackBars
+  - Responsive design with ResponsiveContainer
+- All asset interactions working smoothly with mock data
+- App running successfully on Chrome at localhost:8080
+
+**Key files created:**
+- lib/features/assets/domain/asset.dart - Asset domain model with Freezed unions
+- lib/features/assets/domain/asset.freezed.dart - Generated Freezed code
+- lib/features/assets/domain/asset.g.dart - Generated JSON serialization
+- lib/features/assets/presentation/providers/assets_provider.dart - Mock assets state management
+- lib/features/assets/presentation/widgets/asset_card.dart - Asset display component
+- lib/features/assets/presentation/widgets/real_estate_form.dart - Real estate form
+- lib/features/assets/presentation/widgets/account_form.dart - Reusable account form
+- lib/features/assets/presentation/widgets/add_asset_dialog.dart - Two-step asset creation dialog
+- Updated lib/features/assets/presentation/assets_events_screen.dart - Complete assets UI
 
 ---
 
