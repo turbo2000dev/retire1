@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/ui/responsive/screen_size.dart';
 import '../core/ui/responsive/layout_breakpoints.dart';
+import '../main.dart';
 
 /// Demo screen to visualize responsive behavior
-class ResponsiveDemoScreen extends StatelessWidget {
+class ResponsiveDemoScreen extends ConsumerWidget {
   const ResponsiveDemoScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final screenSize = ScreenSize(context);
     final theme = Theme.of(context);
+    final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Responsive Layout Demo'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode,
+            ),
+            onPressed: () {
+              ref.read(themeModeProvider.notifier).state =
+                  themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+            },
+            tooltip: themeMode == ThemeMode.light ? 'Switch to Dark Mode' : 'Switch to Light Mode',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(screenSize.spacing),

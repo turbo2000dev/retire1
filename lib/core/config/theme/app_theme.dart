@@ -1,10 +1,42 @@
 import 'package:flutter/material.dart';
 
 /// Application theme configuration
-/// Uses Material 3 design with dark mode only
+/// Uses Material 3 design with light and dark themes
 class AppTheme {
   // Private constructor to prevent instantiation
   AppTheme._();
+
+  /// Light color scheme using Material 3
+  static const ColorScheme _lightColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: Color(0xFF0062A1), // Blue
+    onPrimary: Color(0xFFFFFFFF),
+    primaryContainer: Color(0xFFCCE5FF),
+    onPrimaryContainer: Color(0xFF001D35),
+    secondary: Color(0xFF6750A4), // Purple
+    onSecondary: Color(0xFFFFFFFF),
+    secondaryContainer: Color(0xFFE8DDFF),
+    onSecondaryContainer: Color(0xFF22005D),
+    tertiary: Color(0xFF006E26), // Green
+    onTertiary: Color(0xFFFFFFFF),
+    tertiaryContainer: Color(0xFF96F899),
+    onTertiaryContainer: Color(0xFF002107),
+    error: Color(0xFFBA1A1A),
+    onError: Color(0xFFFFFFFF),
+    errorContainer: Color(0xFFFFDAD6),
+    onErrorContainer: Color(0xFF410002),
+    surface: Color(0xFFFFFBFE),
+    onSurface: Color(0xFF1C1B1F),
+    surfaceContainerHighest: Color(0xFFE7E0EC),
+    onSurfaceVariant: Color(0xFF49454F),
+    outline: Color(0xFF79747E),
+    outlineVariant: Color(0xFFCAC4D0),
+    shadow: Color(0xFF000000),
+    scrim: Color(0xFF000000),
+    inverseSurface: Color(0xFF313033),
+    onInverseSurface: Color(0xFFF4EFF4),
+    inversePrimary: Color(0xFF90CAF9),
+  );
 
   /// Dark color scheme using Material 3
   static const ColorScheme _darkColorScheme = ColorScheme(
@@ -234,6 +266,192 @@ class AppTheme {
         selectedColor: _darkColorScheme.primaryContainer,
         labelStyle: _textTheme.labelLarge?.copyWith(
           color: _darkColorScheme.onSurface,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  /// Main light theme for the application
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: _lightColorScheme,
+      textTheme: _textTheme,
+
+      // AppBar theme
+      appBarTheme: AppBarTheme(
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: _lightColorScheme.surface,
+        foregroundColor: _lightColorScheme.onSurface,
+        titleTextStyle: _textTheme.titleLarge?.copyWith(
+          color: _lightColorScheme.onSurface,
+        ),
+      ),
+
+      // Card theme
+      cardTheme: CardThemeData(
+        elevation: 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        color: _lightColorScheme.surfaceContainerHighest,
+      ),
+
+      // Elevated button theme
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 2,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          textStyle: _textTheme.labelLarge,
+        ),
+      ),
+
+      // Text button theme
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          textStyle: _textTheme.labelLarge,
+        ),
+      ),
+
+      // Outlined button theme
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          textStyle: _textTheme.labelLarge,
+          side: BorderSide(color: _lightColorScheme.outline),
+        ),
+      ),
+
+      // Input decoration theme
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: _lightColorScheme.surfaceContainerHighest,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: _lightColorScheme.outline),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: _lightColorScheme.outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: _lightColorScheme.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: _lightColorScheme.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: _lightColorScheme.error, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        labelStyle: _textTheme.bodyLarge,
+        hintStyle: _textTheme.bodyLarge?.copyWith(
+          color: _lightColorScheme.onSurfaceVariant,
+        ),
+      ),
+
+      // Dialog theme
+      dialogTheme: DialogThemeData(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        backgroundColor: _lightColorScheme.surface,
+        titleTextStyle: _textTheme.headlineSmall?.copyWith(
+          color: _lightColorScheme.onSurface,
+        ),
+        contentTextStyle: _textTheme.bodyMedium?.copyWith(
+          color: _lightColorScheme.onSurface,
+        ),
+      ),
+
+      // Bottom sheet theme
+      bottomSheetTheme: BottomSheetThemeData(
+        elevation: 3,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        backgroundColor: _lightColorScheme.surface,
+      ),
+
+      // Navigation bar theme (for bottom navigation)
+      navigationBarTheme: NavigationBarThemeData(
+        elevation: 3,
+        backgroundColor: _lightColorScheme.surface,
+        indicatorColor: _lightColorScheme.primaryContainer,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return _textTheme.labelMedium?.copyWith(
+              color: _lightColorScheme.onSurface,
+            );
+          }
+          return _textTheme.labelMedium?.copyWith(
+            color: _lightColorScheme.onSurfaceVariant,
+          );
+        }),
+      ),
+
+      // Navigation rail theme (for tablet/desktop)
+      navigationRailTheme: NavigationRailThemeData(
+        elevation: 0,
+        backgroundColor: _lightColorScheme.surface,
+        indicatorColor: _lightColorScheme.primaryContainer,
+        selectedIconTheme: IconThemeData(
+          color: _lightColorScheme.onPrimaryContainer,
+        ),
+        unselectedIconTheme: IconThemeData(
+          color: _lightColorScheme.onSurfaceVariant,
+        ),
+        selectedLabelTextStyle: _textTheme.labelMedium?.copyWith(
+          color: _lightColorScheme.onSurface,
+        ),
+        unselectedLabelTextStyle: _textTheme.labelMedium?.copyWith(
+          color: _lightColorScheme.onSurfaceVariant,
+        ),
+      ),
+
+      // Floating action button theme
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        elevation: 3,
+        backgroundColor: _lightColorScheme.primaryContainer,
+        foregroundColor: _lightColorScheme.onPrimaryContainer,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+
+      // Divider theme
+      dividerTheme: DividerThemeData(
+        color: _lightColorScheme.outlineVariant,
+        thickness: 1,
+        space: 1,
+      ),
+
+      // Chip theme
+      chipTheme: ChipThemeData(
+        backgroundColor: _lightColorScheme.surfaceContainerHighest,
+        selectedColor: _lightColorScheme.primaryContainer,
+        labelStyle: _textTheme.labelLarge?.copyWith(
+          color: _lightColorScheme.onSurface,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(
