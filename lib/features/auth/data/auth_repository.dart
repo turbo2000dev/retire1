@@ -1,16 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:retire1/features/auth/data/user_profile_repository.dart';
 import 'package:retire1/features/auth/domain/user.dart';
 
 /// Repository for Firebase authentication operations
 class AuthRepository {
   final firebase_auth.FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final UserProfileRepository _profileRepository;
 
   AuthRepository({
     firebase_auth.FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
+    UserProfileRepository? profileRepository,
   })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
         _googleSignIn = googleSignIn ??
             GoogleSignIn(
@@ -19,7 +22,8 @@ class AuthRepository {
               serverClientId: kIsWeb
                   ? null
                   : '455240536437-8lntsoblomq64cf0hgl94kgdvjp26b9k.apps.googleusercontent.com',
-            );
+            ),
+        _profileRepository = profileRepository ?? UserProfileRepository();
 
   /// Stream of auth state changes
   Stream<User?> get authStateChanges {
@@ -82,6 +86,9 @@ class AuthRepository {
         throw AuthException('Failed to get updated user');
       }
 
+      // Sync to Firestore
+      await _profileRepository.syncAuthUserToFirestore(updatedUser);
+
       return _convertFirebaseUser(updatedUser);
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthException(e);
@@ -126,6 +133,9 @@ class AuthRepository {
       if (userCredential.user == null) {
         throw AuthException('Google sign-in failed: no user returned');
       }
+
+      // Sync social sign-in data to Firestore with smart sync logic
+      await _profileRepository.syncAuthUserToFirestore(userCredential.user!);
 
       return _convertFirebaseUser(userCredential.user!);
     } on firebase_auth.FirebaseAuthException catch (e) {

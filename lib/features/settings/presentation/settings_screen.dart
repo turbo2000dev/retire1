@@ -4,6 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:retire1/features/auth/presentation/providers/user_profile_provider.dart';
+import 'package:retire1/features/auth/presentation/widgets/edit_display_name_dialog.dart';
+import 'package:retire1/features/auth/presentation/widgets/profile_picture.dart';
+import 'package:retire1/features/settings/domain/app_settings.dart';
+import 'package:retire1/features/settings/presentation/providers/settings_provider.dart';
 
 /// Settings screen - app settings and user preferences
 class SettingsScreen extends ConsumerWidget {
@@ -36,11 +41,18 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _showEditDisplayNameDialog(BuildContext context, String currentName) async {
+    await showDialog(
+      context: context,
+      builder: (context) => EditDisplayNameDialog(currentDisplayName: currentName),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final authState = ref.watch(authNotifierProvider);
-    final user = authState is Authenticated ? authState.user : null;
+    final user = ref.watch(currentUserProvider);
+    final currentLanguage = ref.watch(currentLanguageProvider);
 
     return Scaffold(
       body: Center(
@@ -71,7 +83,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 48),
 
-                // User account section
+                // User profile section
                 if (user != null) ...[
                   Card(
                     child: Padding(
@@ -80,16 +92,35 @@ class SettingsScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Account',
+                            'Profile',
                             style: theme.textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
+                          // Profile picture
+                          Center(
+                            child: ProfilePicture(
+                              photoUrl: user.photoUrl,
+                              displayName: user.displayName,
+                              size: 120,
+                              editable: true,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Display name
                           ListTile(
                             leading: const Icon(Icons.person),
                             title: Text(user.displayName ?? 'No name'),
                             subtitle: const Text('Display Name'),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => _showEditDisplayNameDialog(
+                                context,
+                                user.displayName ?? '',
+                              ),
+                            ),
                             contentPadding: EdgeInsets.zero,
                           ),
+                          // Email
                           ListTile(
                             leading: const Icon(Icons.email),
                             title: Text(user.email),
@@ -102,6 +133,45 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
                 ],
+
+                // Language settings
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Language',
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        SegmentedButton<AppLanguage>(
+                          segments: const [
+                            ButtonSegment<AppLanguage>(
+                              value: AppLanguage.english,
+                              label: Text('English'),
+                              icon: Icon(Icons.language),
+                            ),
+                            ButtonSegment<AppLanguage>(
+                              value: AppLanguage.french,
+                              label: Text('Français'),
+                              icon: Icon(Icons.language),
+                            ),
+                          ],
+                          selected: {AppLanguage.fromCode(currentLanguage)},
+                          onSelectionChanged: (Set<AppLanguage> selected) {
+                            final language = selected.first;
+                            ref
+                                .read(settingsProvider.notifier)
+                                .updateLanguage(language.code);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
 
                 // Logout button
                 FilledButton.icon(

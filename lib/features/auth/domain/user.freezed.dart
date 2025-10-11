@@ -24,7 +24,10 @@ mixin _$User {
   String get id => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
-  String? get photoUrl => throw _privateConstructorUsedError;
+  String? get photoUrl =>
+      throw _privateConstructorUsedError; // Track if user manually edited these fields (to prevent social sign-in from overwriting)
+  bool get displayNameManuallyEdited => throw _privateConstructorUsedError;
+  bool get photoUrlManuallyEdited => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +43,14 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call({String id, String email, String? displayName, String? photoUrl});
+  $Res call({
+    String id,
+    String email,
+    String? displayName,
+    String? photoUrl,
+    bool displayNameManuallyEdited,
+    bool photoUrlManuallyEdited,
+  });
 }
 
 /// @nodoc
@@ -62,6 +72,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? email = null,
     Object? displayName = freezed,
     Object? photoUrl = freezed,
+    Object? displayNameManuallyEdited = null,
+    Object? photoUrlManuallyEdited = null,
   }) {
     return _then(
       _value.copyWith(
@@ -81,6 +93,14 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.photoUrl
                 : photoUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
+            displayNameManuallyEdited: null == displayNameManuallyEdited
+                ? _value.displayNameManuallyEdited
+                : displayNameManuallyEdited // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            photoUrlManuallyEdited: null == photoUrlManuallyEdited
+                ? _value.photoUrlManuallyEdited
+                : photoUrlManuallyEdited // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -95,7 +115,14 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   ) = __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String email, String? displayName, String? photoUrl});
+  $Res call({
+    String id,
+    String email,
+    String? displayName,
+    String? photoUrl,
+    bool displayNameManuallyEdited,
+    bool photoUrlManuallyEdited,
+  });
 }
 
 /// @nodoc
@@ -114,6 +141,8 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? email = null,
     Object? displayName = freezed,
     Object? photoUrl = freezed,
+    Object? displayNameManuallyEdited = null,
+    Object? photoUrlManuallyEdited = null,
   }) {
     return _then(
       _$UserImpl(
@@ -133,6 +162,14 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value.photoUrl
             : photoUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
+        displayNameManuallyEdited: null == displayNameManuallyEdited
+            ? _value.displayNameManuallyEdited
+            : displayNameManuallyEdited // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        photoUrlManuallyEdited: null == photoUrlManuallyEdited
+            ? _value.photoUrlManuallyEdited
+            : photoUrlManuallyEdited // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -146,6 +183,8 @@ class _$UserImpl implements _User {
     required this.email,
     this.displayName,
     this.photoUrl,
+    this.displayNameManuallyEdited = false,
+    this.photoUrlManuallyEdited = false,
   });
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
@@ -159,10 +198,17 @@ class _$UserImpl implements _User {
   final String? displayName;
   @override
   final String? photoUrl;
+  // Track if user manually edited these fields (to prevent social sign-in from overwriting)
+  @override
+  @JsonKey()
+  final bool displayNameManuallyEdited;
+  @override
+  @JsonKey()
+  final bool photoUrlManuallyEdited;
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, displayName: $displayName, photoUrl: $photoUrl)';
+    return 'User(id: $id, email: $email, displayName: $displayName, photoUrl: $photoUrl, displayNameManuallyEdited: $displayNameManuallyEdited, photoUrlManuallyEdited: $photoUrlManuallyEdited)';
   }
 
   @override
@@ -175,13 +221,27 @@ class _$UserImpl implements _User {
             (identical(other.displayName, displayName) ||
                 other.displayName == displayName) &&
             (identical(other.photoUrl, photoUrl) ||
-                other.photoUrl == photoUrl));
+                other.photoUrl == photoUrl) &&
+            (identical(
+                  other.displayNameManuallyEdited,
+                  displayNameManuallyEdited,
+                ) ||
+                other.displayNameManuallyEdited == displayNameManuallyEdited) &&
+            (identical(other.photoUrlManuallyEdited, photoUrlManuallyEdited) ||
+                other.photoUrlManuallyEdited == photoUrlManuallyEdited));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, email, displayName, photoUrl);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    email,
+    displayName,
+    photoUrl,
+    displayNameManuallyEdited,
+    photoUrlManuallyEdited,
+  );
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -203,6 +263,8 @@ abstract class _User implements User {
     required final String email,
     final String? displayName,
     final String? photoUrl,
+    final bool displayNameManuallyEdited,
+    final bool photoUrlManuallyEdited,
   }) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
@@ -214,7 +276,11 @@ abstract class _User implements User {
   @override
   String? get displayName;
   @override
-  String? get photoUrl;
+  String? get photoUrl; // Track if user manually edited these fields (to prevent social sign-in from overwriting)
+  @override
+  bool get displayNameManuallyEdited;
+  @override
+  bool get photoUrlManuallyEdited;
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.

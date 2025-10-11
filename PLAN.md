@@ -656,38 +656,46 @@
 
 ### Tasks:
 1. **Create settings domain models:**
-   - [ ] Create `lib/features/settings/domain/app_settings.dart`
-   - [ ] Define settings: language, userId
-   - [ ] Use Freezed for immutability
+   - [x] Create `lib/features/settings/domain/app_settings.dart`
+   - [x] Define settings: language, userId
+   - [x] Use Freezed for immutability
 
 2. **Create settings screen UI:**
-   - [ ] Create `lib/features/settings/presentation/settings_screen.dart`
-   - [ ] User account information section (email, display name)
-   - [ ] Language selector (dropdown or segmented control)
-   - [ ] Logout button (with confirmation dialog)
-   - [ ] Responsive layout
+   - [x] Create `lib/features/settings/presentation/settings_screen.dart`
+   - [x] User account information section (email, display name)
+   - [x] Language selector (dropdown or segmented control)
+   - [x] Logout button (with confirmation dialog)
+   - [x] Responsive layout
 
 3. **Create settings repository:**
-   - [ ] Create `lib/features/settings/data/settings_repository.dart`
-   - [ ] Store settings in Firestore (per user)
-   - [ ] Load settings on login
-   - [ ] Update settings in real-time
+   - [x] Create `lib/features/settings/data/settings_repository.dart`
+   - [x] Store settings in Firestore (per user)
+   - [x] Load settings on login
+   - [x] Update settings in real-time
 
 4. **Create settings provider:**
-   - [ ] Create Riverpod provider for settings
-   - [ ] Load settings on app start
-   - [ ] Apply language changes immediately
-   - [ ] Persist to Firestore
+   - [x] Create Riverpod provider for settings
+   - [x] Load settings on app start
+   - [x] Apply language changes immediately
+   - [x] Persist to Firestore
 
 5. **Integrate language switching:**
-   - [ ] Update MaterialApp locale based on settings
-   - [ ] Rebuild app when language changes
-   - [ ] Test all strings in both languages
+   - [x] Update MaterialApp locale based on settings
+   - [x] Rebuild app when language changes
+   - [x] Test all strings in both languages
 
 6. **Add logout confirmation:**
-   - [ ] Show dialog before logout
-   - [ ] "Are you sure?" message
-   - [ ] Cancel/Logout buttons
+   - [x] Show dialog before logout
+   - [x] "Are you sure?" message
+   - [x] Cancel/Logout buttons
+
+7. **Profile management features:**
+   - [x] Add editable display name with dialog
+   - [x] Add profile picture upload/display
+   - [x] Retrieve profile data from social sign-in
+   - [x] Smart sync: only update from social if not manually edited
+   - [x] Track manual edits with flags
+   - [x] Persist profile to Firestore
 
 **Manual Test Checklist:**
 - ✓ Can access settings from any screen
@@ -700,6 +708,70 @@
 - ✓ Settings UI responsive on all sizes
 
 **Deliverable:** Working settings screen with persistence
+
+---
+
+## ✅ PHASE 8 COMPLETED
+
+**What was accomplished:**
+- Created settings domain models with Freezed:
+  - AppSettings model with userId, languageCode, lastUpdated
+  - AppLanguage enum for English/French selection
+- Built complete settings repository with Firestore integration:
+  - Save/load settings from users/{userId}/settings/preferences
+  - Update language with optimistic updates
+  - Stream-based real-time settings sync
+- Created settings provider with Riverpod:
+  - SettingsNotifier for state management
+  - Mounted checks to prevent disposed state errors
+  - currentLanguageProvider for app-wide language access
+- Updated settings screen UI:
+  - Large profile picture (120px) with upload functionality
+  - Editable display name with dialog
+  - Email display (read-only)
+  - Language selector with SegmentedButton (English/Français)
+  - Logout button with confirmation dialog
+  - Responsive layout with ResponsiveContainer
+- Integrated language switching with MaterialApp:
+  - Updated localeProvider to watch currentLanguageProvider
+  - Automatic app rebuild when language changes
+  - Seamless integration with existing i18n infrastructure
+- **Profile management features:**
+  - Created User model with edit tracking flags (displayNameManuallyEdited, photoUrlManuallyEdited)
+  - Built UserProfileRepository with smart sync logic:
+    - First-time sign-in: saves all social sign-in data
+    - Returning users: only updates if not manually edited
+    - Manual edits: sets flags to prevent social sign-in from overwriting
+  - Created UserProfileNotifier with Riverpod
+  - Built EditDisplayNameDialog for name editing
+  - Built ProfilePicture widget with upload support:
+    - Displays photo from URL or initials
+    - Camera icon overlay for editing
+    - Image picker integration (gallery)
+    - Upload to Firebase Storage at users/{userId}/profile.jpg
+  - Integrated sync in AuthRepository:
+    - Syncs after Google Sign-In
+    - Syncs after registration
+    - Smart sync prevents overwriting user edits
+- Added image_picker package for profile picture upload
+- Fixed SettingsNotifier disposed state error with mounted checks
+- Tested successfully on iOS simulator
+
+**Key files created/modified:**
+- lib/features/settings/domain/app_settings.dart - Settings domain model
+- lib/features/settings/domain/app_settings.freezed.dart - Generated Freezed code
+- lib/features/settings/domain/app_settings.g.dart - Generated JSON serialization
+- lib/features/settings/data/settings_repository.dart - Firestore repository
+- lib/features/settings/presentation/providers/settings_provider.dart - State management
+- lib/features/settings/presentation/settings_screen.dart - Settings UI with profile
+- lib/core/config/i18n/app_localizations.dart - Updated locale provider integration
+- lib/features/auth/domain/user.dart - Added manual edit tracking flags
+- lib/features/auth/data/user_profile_repository.dart - Profile persistence with smart sync
+- lib/features/auth/data/auth_repository.dart - Added profile sync integration
+- lib/features/auth/presentation/providers/user_profile_provider.dart - Profile state management
+- lib/features/auth/presentation/widgets/edit_display_name_dialog.dart - Name editing dialog
+- lib/features/auth/presentation/widgets/profile_picture.dart - Profile picture widget
+- Updated pubspec.yaml - Added image_picker package
 
 ---
 
