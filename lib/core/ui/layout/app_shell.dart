@@ -11,19 +11,25 @@ final currentIndexProvider = StateProvider<int>((ref) => 0);
 /// Navigation item data
 class NavItem {
   final String label;
+  final String shortLabel; // Shorter label for bottom navigation
   final IconData icon;
   final String route;
 
-  const NavItem({required this.label, required this.icon, required this.route});
+  const NavItem({
+    required this.label,
+    required this.shortLabel,
+    required this.icon,
+    required this.route,
+  });
 }
 
 /// Navigation items for the app
 const navigationItems = [
-  NavItem(label: 'Dashboard', icon: Icons.dashboard, route: AppRoutes.dashboard),
-  NavItem(label: 'Parameters', icon: Icons.settings_applications, route: AppRoutes.baseParameters),
-  NavItem(label: 'Assets & Events', icon: Icons.account_balance_wallet, route: AppRoutes.assetsEvents),
-  NavItem(label: 'Scenarios', icon: Icons.compare_arrows, route: AppRoutes.scenarios),
-  NavItem(label: 'Projection', icon: Icons.show_chart, route: AppRoutes.projection),
+  NavItem(label: 'Dashboard', shortLabel: 'Dashboard', icon: Icons.dashboard, route: AppRoutes.dashboard),
+  NavItem(label: 'Parameters', shortLabel: 'Parameters', icon: Icons.settings_applications, route: AppRoutes.baseParameters),
+  NavItem(label: 'Assets & Events', shortLabel: 'Assets', icon: Icons.account_balance_wallet, route: AppRoutes.assetsEvents),
+  NavItem(label: 'Scenarios', shortLabel: 'Scenarios', icon: Icons.compare_arrows, route: AppRoutes.scenarios),
+  NavItem(label: 'Projection', shortLabel: 'Projection', icon: Icons.show_chart, route: AppRoutes.projection),
 ];
 
 /// App shell with responsive navigation
@@ -88,7 +94,7 @@ class AppShell extends ConsumerWidget {
                 _onItemTapped(context, ref, index);
               },
               destinations: navigationItems
-                  .map((item) => NavigationDestination(icon: Icon(item.icon), label: item.label))
+                  .map((item) => NavigationDestination(icon: Icon(item.icon), label: item.shortLabel))
                   .toList(),
             )
           : null,
