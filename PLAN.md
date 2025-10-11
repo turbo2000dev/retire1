@@ -965,9 +965,111 @@
 
 ---
 
-## PHASE 11: Base Parameters Screen (UI Only)
+## PHASE 11: Current Project Selection & Dashboard Summary
 
-**Goal:** Manage project-wide parameters and individuals (mock data)
+**Goal:** Track currently selected project and display executive summary on dashboard
+
+### Tasks:
+1. **Create current project provider:**
+   - [x] Create Riverpod provider for currently selected project ID
+   - [x] Persist selection to Firestore: `users/{userId}/settings/currentProject`
+   - [x] Load on app start
+   - [x] Update when project is selected
+
+2. **Update dashboard screen:**
+   - [x] Convert from project list to executive summary view
+   - [x] Show currently selected project name at top
+   - [x] Display key metrics/summary (placeholder for now)
+   - [x] Empty state: "No project selected - Create one to get started"
+   - [x] "Create New Project" button in empty state
+   - [x] Responsive layout
+
+3. **Update base parameters screen:**
+   - [x] Add project selector dropdown (list of all projects)
+   - [x] Add "New Project" button
+   - [x] Add "Delete Project" button (with confirmation)
+   - [x] Show currently selected project data
+   - [x] Form for editing project name and description
+   - [x] Auto-save changes to Firestore
+   - [x] Responsive layout (form constrained on desktop)
+
+4. **Update navigation:**
+   - [x] On login, if user has projects, select the last-used one
+   - [x] On login, if no projects exist, stay on dashboard showing empty state
+   - [x] After creating first project, navigate to base parameters screen
+   - [x] Update router guards to handle project selection
+
+5. **Remove old dashboard UI:**
+   - [x] Remove project card grid/list from dashboard
+   - [x] Remove project dialog from dashboard widgets
+   - [x] Keep dashboard as summary view only
+
+**Manual Test Checklist:**
+- ✓ Dashboard shows empty state when no projects exist
+- ✓ Can create first project from dashboard
+- ✓ After creating project, redirected to base parameters screen
+- ✓ Can select different projects from dropdown in base parameters
+- ✓ Selected project persists across sessions
+- ✓ Can edit project name/description in base parameters
+- ✓ Can delete project with confirmation
+- ✓ Dashboard shows summary of currently selected project
+- ✓ All screens show data for currently selected project
+
+**Deliverable:** Working project selection with dashboard summary and base parameters editor
+
+---
+
+## ✅ PHASE 11 COMPLETED
+
+**What was accomplished:**
+- Created SettingsRepository for persisting current project ID:
+  - Stores selection at `users/{userId}/settings/currentProject` in Firestore
+  - Methods to get/set/stream current project ID
+  - Automatic cleanup when set to null
+- Created CurrentProjectProvider with sealed class states:
+  - NoProjectSelected, ProjectLoading, ProjectSelected, ProjectError
+  - Listens to Firestore settings stream for real-time updates
+  - Automatically loads corresponding project when selection changes
+  - Methods to select/clear project and select first available
+  - Stream subscription cleanup on dispose
+- Updated Dashboard screen to executive summary view:
+  - Shows currently selected project name and description
+  - Executive summary card with placeholder for future metrics
+  - Empty state: "No project selected - Create one to get started" with button
+  - "Edit Project Details" button navigates to Base Parameters
+  - Removed old project grid/list UI
+- Completely rewrote Base Parameters screen:
+  - Project selector dropdown showing all projects
+  - "New Project" and "Delete Project" buttons with confirmation
+  - Project details form with name and description fields
+  - Edit mode with save/cancel buttons
+  - Form validation and auto-save to Firestore
+  - Auto-selects first project if none is selected
+  - Empty state for users with no projects
+  - Responsive layout with ResponsiveContainer
+- Navigation improvements:
+  - Dashboard shows selected project or empty state on login
+  - Base Parameters auto-selects first project if needed
+  - Create button navigates to Base Parameters and selects new project
+  - Selection persists across sessions via Firestore
+- File organization:
+  - Moved project_dialog.dart from dashboard/widgets to project/widgets
+  - Removed unused project_card.dart widget
+  - Cleaned up empty dashboard/widgets directory
+- App running successfully on Chrome at localhost:8080
+
+**Key files created:**
+- lib/core/data/settings_repository.dart - Firestore persistence for current project ID
+- lib/features/project/presentation/providers/current_project_provider.dart - Current project state management
+- lib/features/project/presentation/widgets/project_dialog.dart - Moved from dashboard
+- Updated lib/features/dashboard/presentation/dashboard_screen.dart - Executive summary view
+- Updated lib/features/project/presentation/base_parameters_screen.dart - Complete rewrite with project management
+
+---
+
+## PHASE 12: Base Parameters - Individuals (UI Only)
+
+**Goal:** Manage individuals within the currently selected project (mock data within project)
 
 ### Tasks:
 1. **Create individual domain model:**
@@ -978,40 +1080,40 @@
 
 2. **Update project model:**
    - [ ] Add `List<Individual> individuals` to Project
-   - [ ] Add other base parameters as needed
+   - [ ] Add other base parameters as needed (future)
 
-3. **Create base parameters screen:**
-   - [ ] Create `lib/features/project/presentation/base_parameters_screen.dart`
-   - [ ] App bar with project name
-   - [ ] Form for project-wide parameters
-   - [ ] "Individuals" section
+3. **Update base parameters screen:**
+   - [ ] Add "Individuals" section below project info
    - [ ] List of individuals with add/edit/delete
-   - [ ] Responsive layout (form constrained on desktop)
+   - [ ] Show name, birthdate, calculated age
+   - [ ] Empty state for individuals
+   - [ ] Responsive layout
 
-4. **Create individual card:**
+4. **Create individual card/list item:**
+   - [ ] Create `lib/features/project/presentation/widgets/individual_card.dart`
    - [ ] Show name, birthdate, calculated age
    - [ ] Edit and delete buttons
    - [ ] Compact on phone, detailed on desktop
 
-5. **Create individual dialogs:**
+5. **Create individual dialog:**
    - [ ] Create `lib/features/project/presentation/widgets/individual_dialog.dart`
    - [ ] Name field (required)
    - [ ] Birthdate picker
    - [ ] Save/Cancel buttons
-   - [ ] Validation
+   - [ ] Form validation
    - [ ] Use for both add and edit
 
-6. **Create parameters provider:**
-   - [ ] Riverpod provider for current project parameters
-   - [ ] Mock data for testing
-   - [ ] Support add/edit/delete individuals
-   - [ ] Calculate ages automatically
+6. **Update project repository:**
+   - [ ] Save individuals with project
+   - [ ] Load individuals when loading project
+   - [ ] Handle date serialization (Firestore Timestamp)
 
 7. **Test interactions:**
    - [ ] Add individual, appears in list with calculated age
    - [ ] Edit individual, updates in list
    - [ ] Delete individual, removed with confirmation
    - [ ] Age updates correctly
+   - [ ] Changes save to Firestore automatically
 
 **Manual Test Checklist:**
 - ✓ Can add individuals with names and birthdates
@@ -1020,45 +1122,11 @@
 - ✓ Can delete individuals with confirmation
 - ✓ Form validation works (required fields)
 - ✓ Date picker works on all platforms
+- ✓ Individuals saved to Firestore with project
+- ✓ Close and reopen app, individuals persist
 - ✓ Responsive layout on all sizes
-- ✓ All data in mock state (not persisted yet)
 
-**Deliverable:** Working base parameters screen with mock data
-
----
-
-## PHASE 12: Base Parameters - Firebase Integration
-
-**Goal:** Parameters and individuals saved to Firestore
-
-### Tasks:
-1. **Update project DTO:**
-   - [ ] Add individuals to DTO
-   - [ ] Add other base parameters
-   - [ ] Handle date serialization (Firestore Timestamp)
-
-2. **Update project repository:**
-   - [ ] Save individuals with project
-   - [ ] Load individuals when loading project
-
-3. **Update parameters provider:**
-   - [ ] Load from Firestore when opening project
-   - [ ] Save changes to Firestore immediately (or on save button)
-   - [ ] Handle real-time updates
-
-4. **Test persistence:**
-   - [ ] Add individuals, close app, reopen, verify data persists
-   - [ ] Edit on one device, see update on another
-   - [ ] Check Firestore console for data structure
-
-**Manual Test Checklist:**
-- ✓ Add individuals, data saved to Firestore
-- ✓ Close and reopen app, individuals still there
-- ✓ Edit individual, changes persist
-- ✓ Delete individual, removed from Firestore
-- ✓ Correct data structure in Firestore console
-
-**Deliverable:** Base parameters fully integrated with Firestore
+**Deliverable:** Working base parameters screen with project info and individuals management, all persisted to Firestore
 
 ---
 
