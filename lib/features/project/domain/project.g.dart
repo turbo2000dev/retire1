@@ -29,5 +29,5 @@ Map<String, dynamic> _$$ProjectImplToJson(_$ProjectImpl instance) =>
       'description': instance.description,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
-      'individuals': instance.individuals,
+      'individuals': instance.individuals.map((e) => e.toJson()).toList(),
     };

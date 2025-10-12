@@ -20,7 +20,7 @@ Map<String, dynamic> _$$RetirementEventImplToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'individualId': instance.individualId,
-  'timing': instance.timing,
+  'timing': instance.timing.toJson(),
   'runtimeType': instance.$type,
 };
 
@@ -36,7 +36,7 @@ Map<String, dynamic> _$$DeathEventImplToJson(_$DeathEventImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'individualId': instance.individualId,
-      'timing': instance.timing,
+      'timing': instance.timing.toJson(),
       'runtimeType': instance.$type,
     };
 
@@ -56,7 +56,7 @@ Map<String, dynamic> _$$RealEstateTransactionEventImplToJson(
   _$RealEstateTransactionEventImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'timing': instance.timing,
+  'timing': instance.timing.toJson(),
   'assetSoldId': instance.assetSoldId,
   'assetPurchasedId': instance.assetPurchasedId,
   'withdrawAccountId': instance.withdrawAccountId,

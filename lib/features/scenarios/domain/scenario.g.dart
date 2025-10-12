@@ -27,7 +27,7 @@ Map<String, dynamic> _$$ScenarioImplToJson(_$ScenarioImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'isBase': instance.isBase,
-      'overrides': instance.overrides,
+      'overrides': instance.overrides.map((e) => e.toJson()).toList(),
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };
