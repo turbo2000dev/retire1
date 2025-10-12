@@ -150,11 +150,19 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
     );
 
     if (result != null && context.mounted) {
-      ref.read(eventsProvider.notifier).addEvent(result);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event added successfully')),
-        );
+      try {
+        await ref.read(eventsProvider.notifier).addEvent(result);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Event added successfully')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to add event: $e')),
+          );
+        }
       }
     }
   }
@@ -183,11 +191,19 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
     );
 
     if (result != null && context.mounted) {
-      ref.read(eventsProvider.notifier).updateEvent(result);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event updated successfully')),
-        );
+      try {
+        await ref.read(eventsProvider.notifier).updateEvent(result);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Event updated successfully')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update event: $e')),
+          );
+        }
       }
     }
   }
@@ -232,11 +248,19 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
     );
 
     if (confirmed == true && context.mounted) {
-      ref.read(eventsProvider.notifier).deleteEvent(eventId);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event deleted successfully')),
-        );
+      try {
+        await ref.read(eventsProvider.notifier).deleteEvent(eventId);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Event deleted successfully')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete event: $e')),
+          );
+        }
       }
     }
   }
@@ -246,7 +270,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
     final theme = Theme.of(context);
     final assetsAsync = ref.watch(assetsProvider);
     final assetsByType = ref.watch(assetsByTypeProvider);
-    final events = ref.watch(sortedEventsProvider);
+    final eventsAsync = ref.watch(sortedEventsProvider);
     final projectState = ref.watch(currentProjectProvider);
     final individuals = switch (projectState) {
       ProjectSelected(project: final project) => project.individuals,
@@ -397,95 +421,132 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
             ),
           ),
           // Events tab
-          CustomScrollView(
-            slivers: [
-              // Events timeline
-              SliverToBoxAdapter(
-                child: ResponsiveContainer(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Timeline',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Events sorted chronologically',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+          eventsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Failed to load events',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        error.toString(),
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      FilledButton.icon(
+                        onPressed: () => ref.invalidate(eventsProvider),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Retry'),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              if (events.isEmpty)
+            ),
+            data: (events) => CustomScrollView(
+              slivers: [
+                // Events timeline
                 SliverToBoxAdapter(
                   child: ResponsiveContainer(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(48),
-                          child: Center(
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.event_busy,
-                                  size: 64,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'No events yet',
-                                  style: theme.textTheme.titleMedium?.copyWith(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Timeline',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Events sorted chronologically',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                if (events.isEmpty)
+                  SliverToBoxAdapter(
+                    child: ResponsiveContainer(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(48),
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.event_busy,
+                                    size: 64,
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Add your first event to get started',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No events yet',
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Add your first event to get started',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              else
-                ...events.map((event) {
-                  return SliverToBoxAdapter(
-                    child: ResponsiveContainer(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 4),
-                        child: EventCard(
-                          event: event,
-                          individuals: individuals,
-                          onEdit: () => _editEvent(context, ref, event),
-                          onDelete: () => _deleteEvent(context, ref, event),
+                  )
+                else
+                  ...events.map((event) {
+                    return SliverToBoxAdapter(
+                      child: ResponsiveContainer(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 4),
+                          child: EventCard(
+                            event: event,
+                            individuals: individuals,
+                            onEdit: () => _editEvent(context, ref, event),
+                            onDelete: () => _deleteEvent(context, ref, event),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }),
-              // Bottom padding
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 80),
-              ),
-            ],
+                    );
+                  }),
+                // Bottom padding
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 80),
+                ),
+              ],
+            ),
           ),
         ],
       ),
