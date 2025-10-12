@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
+import 'package:retire1/features/project/presentation/providers/projects_provider.dart';
+import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
 
 /// Dashboard screen - shows executive summary of current project
 class DashboardScreen extends ConsumerWidget {
@@ -11,6 +13,35 @@ class DashboardScreen extends ConsumerWidget {
 
   void _navigateToBaseParameters(BuildContext context) {
     context.go(AppRoutes.baseParameters);
+  }
+
+  Future<void> _createNewProject(BuildContext context, WidgetRef ref) async {
+    final result = await ProjectDialog.showCreate(context);
+    if (result == null || !context.mounted) return;
+
+    await ref.read(projectsProvider.notifier).createProject(
+          result['name']!,
+          result['description'],
+        );
+
+    if (!context.mounted) return;
+
+    // Get the newly created project and select it
+    final projectsAsync = ref.read(projectsProvider);
+    projectsAsync.whenData((projects) {
+      if (projects.isNotEmpty) {
+        ref.read(currentProjectProvider.notifier).selectProject(projects.first.id);
+      }
+    });
+
+    // Navigate to Base Parameters to configure the project
+    if (!context.mounted) return;
+    context.go(AppRoutes.baseParameters);
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Project created')),
+    );
   }
 
   @override
@@ -21,7 +52,7 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       body: ResponsiveContainer(
         child: switch (currentProjectState) {
-          NoProjectSelected() => _buildEmptyState(context),
+          NoProjectSelected() => _buildEmptyState(context, ref),
           ProjectLoading() => const Center(child: CircularProgressIndicator()),
           ProjectError(:final message) => _buildErrorState(context, message),
           ProjectSelected(:final project) => _buildSummary(context, theme, project),
@@ -30,7 +61,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     return Center(
       child: Column(
@@ -55,7 +86,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed: () => _navigateToBaseParameters(context),
+            onPressed: () => _createNewProject(context, ref),
             icon: const Icon(Icons.add),
             label: const Text('Create New Project'),
           ),

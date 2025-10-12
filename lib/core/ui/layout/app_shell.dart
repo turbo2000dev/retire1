@@ -5,9 +5,6 @@ import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/ui/responsive/screen_size.dart';
 import 'package:retire1/core/config/theme/app_theme.dart';
 
-/// Provider for current navigation index
-final currentIndexProvider = StateProvider<int>((ref) => 0);
-
 /// Navigation item data
 class NavItem {
   final String label;
@@ -38,10 +35,25 @@ class AppShell extends ConsumerWidget {
 
   const AppShell({super.key, required this.child});
 
+  /// Get the current navigation index based on the current route location
+  int _getCurrentIndex(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+
+    // Find the matching navigation item
+    for (var i = 0; i < navigationItems.length; i++) {
+      if (location == navigationItems[i].route) {
+        return i;
+      }
+    }
+
+    // Default to dashboard if no match found
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screenSize = ScreenSize(context);
-    final currentIndex = ref.watch(currentIndexProvider);
+    final currentIndex = _getCurrentIndex(context);
     final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
@@ -109,7 +121,6 @@ class AppShell extends ConsumerWidget {
   }
 
   void _onItemTapped(BuildContext context, WidgetRef ref, int index) {
-    ref.read(currentIndexProvider.notifier).state = index;
     context.go(navigationItems[index].route);
   }
 }
