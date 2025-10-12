@@ -125,10 +125,36 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   }
 
   Future<void> _addIndividual(Project project) async {
-    final result = await IndividualDialog.showCreate(context);
-    if (result != null && mounted) {
-      final updatedIndividuals = [...project.individuals, result];
-      await _updateProjectIndividuals(project, updatedIndividuals);
+    bool createAnother = true;
+    Project currentProject = project;
+
+    while (createAnother) {
+      if (!mounted) break;
+
+      final result = await IndividualDialog.showCreate(context);
+
+      if (result == null) {
+        // User cancelled
+        break;
+      }
+
+      if (!mounted) break;
+
+      final updatedIndividuals = [...currentProject.individuals, result.individual];
+      await _updateProjectIndividuals(currentProject, updatedIndividuals);
+
+      // Check if user wants to create another
+      createAnother = result.createAnother;
+
+      // Get fresh project state for next iteration
+      if (createAnother && mounted) {
+        final projectState = ref.read(currentProjectProvider);
+        if (projectState is ProjectSelected) {
+          currentProject = projectState.project;
+        } else {
+          break;
+        }
+      }
     }
   }
 
@@ -136,7 +162,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     final result = await IndividualDialog.showEdit(context, individual);
     if (result != null && mounted) {
       final updatedIndividuals = project.individuals
-          .map((i) => i.id == individual.id ? result : i)
+          .map((i) => i.id == individual.id ? result.individual : i)
           .toList();
       await _updateProjectIndividuals(project, updatedIndividuals);
     }

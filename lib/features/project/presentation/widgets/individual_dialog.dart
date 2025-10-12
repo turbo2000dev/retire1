@@ -2,6 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 
+/// Result from individual dialog including individual and whether to create another
+class IndividualDialogResult {
+  final Individual individual;
+  final bool createAnother;
+
+  const IndividualDialogResult({
+    required this.individual,
+    required this.createAnother,
+  });
+}
+
 /// Dialog for creating or editing an individual
 class IndividualDialog extends StatefulWidget {
   final Individual? individual;
@@ -12,19 +23,19 @@ class IndividualDialog extends StatefulWidget {
   });
 
   /// Show dialog to create a new individual
-  static Future<Individual?> showCreate(BuildContext context) {
-    return showDialog<Individual>(
+  static Future<IndividualDialogResult?> showCreate(BuildContext context) {
+    return showDialog<IndividualDialogResult>(
       context: context,
       builder: (context) => const IndividualDialog(),
     );
   }
 
   /// Show dialog to edit an existing individual
-  static Future<Individual?> showEdit(
+  static Future<IndividualDialogResult?> showEdit(
     BuildContext context,
     Individual individual,
   ) {
-    return showDialog<Individual>(
+    return showDialog<IndividualDialogResult>(
       context: context,
       builder: (context) => IndividualDialog(individual: individual),
     );
@@ -68,7 +79,7 @@ class _IndividualDialogState extends State<IndividualDialog> {
     }
   }
 
-  void _submit() {
+  void _submit({bool createAnother = false}) {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -79,7 +90,12 @@ class _IndividualDialogState extends State<IndividualDialog> {
       birthdate: _selectedDate,
     );
 
-    Navigator.of(context).pop(individual);
+    Navigator.of(context).pop(
+      IndividualDialogResult(
+        individual: individual,
+        createAnother: createAnother,
+      ),
+    );
   }
 
   @override
@@ -144,9 +160,17 @@ class _IndividualDialogState extends State<IndividualDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
+        // Show "Save and create another" only when creating new individual
+        if (!isEditing) ...[
+          FilledButton.tonal(
+            onPressed: () => _submit(createAnother: true),
+            child: const Text('Save and create another'),
+          ),
+          const SizedBox(width: 8),
+        ],
         FilledButton(
           onPressed: _submit,
-          child: Text(isEditing ? 'Save' : 'Add'),
+          child: const Text('Save'),
         ),
       ],
     );
