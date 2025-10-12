@@ -108,36 +108,73 @@ class AssetsEventsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final assetsAsync = ref.watch(assetsProvider);
     final assetsByType = ref.watch(assetsByTypeProvider);
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: ResponsiveContainer(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Assets',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Manage your financial assets',
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                  ],
-                ),
+      body: assetsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: ResponsiveContainer(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: theme.colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Failed to load assets',
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    style: theme.textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: () => ref.invalidate(assetsProvider),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
               ),
             ),
           ),
-          // Assets grouped by type
-          ...assetsByType.entries.map((entry) {
+        ),
+        data: (assets) => CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Assets',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Manage your financial assets',
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Assets grouped by type
+            ...assetsByType.entries.map((entry) {
             final typeName = entry.key;
             final assets = entry.value;
 
@@ -212,11 +249,12 @@ class AssetsEventsScreen extends ConsumerWidget {
               ),
             );
           }),
-          // Bottom padding
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 80),
-          ),
-        ],
+            // Bottom padding
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 80),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addAsset(context, ref),
