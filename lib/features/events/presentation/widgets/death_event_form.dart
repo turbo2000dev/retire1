@@ -32,6 +32,9 @@ class _DeathEventFormState extends State<DeathEventForm> {
     if (widget.initialEvent != null) {
       _selectedIndividualId = widget.initialEvent!.individualId;
       _timing = widget.initialEvent!.timing;
+    } else if (widget.individuals.isNotEmpty) {
+      // Auto-select first individual when creating new event
+      _selectedIndividualId = widget.individuals.first.id;
     }
   }
 
