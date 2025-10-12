@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
+import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 import 'package:retire1/features/scenarios/presentation/widgets/scenario_card.dart';
 import 'package:retire1/features/scenarios/presentation/widgets/create_scenario_dialog.dart';
@@ -13,8 +14,60 @@ class ScenariosScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final baseScenario = ref.watch(baseScenarioProvider);
-    final variationScenarios = ref.watch(variationScenariosProvider);
+    final scenariosAsync = ref.watch(scenariosProvider);
+
+    return scenariosAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
+        body: Center(
+          child: ResponsiveContainer(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: theme.colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Failed to load scenarios',
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    style: theme.textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: () => ref.invalidate(scenariosProvider),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      data: (scenarios) => _buildContent(context, ref, theme, scenarios),
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeData theme,
+    List<Scenario> scenarios,
+  ) {
+    final baseScenario = scenarios.where((s) => s.isBase).firstOrNull;
+    final variationScenarios = scenarios.where((s) => !s.isBase).toList();
 
     return Scaffold(
       body: CustomScrollView(
@@ -229,7 +282,7 @@ class ScenariosScreen extends ConsumerWidget {
   Future<void> _deleteScenario(
     BuildContext context,
     WidgetRef ref,
-    scenario,
+    Scenario scenario,
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,

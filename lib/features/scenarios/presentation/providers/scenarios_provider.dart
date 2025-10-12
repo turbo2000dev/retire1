@@ -1,158 +1,231 @@
+import 'dart:async';
+import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/features/scenarios/data/scenario_repository.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/domain/parameter_override.dart';
+import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:uuid/uuid.dart';
 
 const _uuid = Uuid();
 
-/// Provider for scenarios state management (mock data)
+/// Provider for scenario repository
+final scenarioRepositoryProvider = Provider<ScenarioRepository?>((ref) {
+  final projectState = ref.watch(currentProjectProvider);
+
+  return switch (projectState) {
+    ProjectSelected(project: final project) => ScenarioRepository(projectId: project.id),
+    _ => null,
+  };
+});
+
+/// Provider for scenarios with Firestore integration
 final scenariosProvider =
-    StateNotifierProvider<ScenariosNotifier, List<Scenario>>((ref) {
+    AsyncNotifierProvider<ScenariosNotifier, List<Scenario>>(() {
   return ScenariosNotifier();
 });
 
-/// Notifier for managing scenarios with mock data
-class ScenariosNotifier extends StateNotifier<List<Scenario>> {
-  ScenariosNotifier() : super([]) {
-    _initializeBaseScenario();
-  }
+/// Notifier for managing scenarios with Firestore
+class ScenariosNotifier extends AsyncNotifier<List<Scenario>> {
+  StreamSubscription<List<Scenario>>? _subscription;
 
-  /// Initialize with base scenario
-  void _initializeBaseScenario() {
-    final now = DateTime.now();
-    final baseScenario = Scenario(
-      id: 'base',
-      name: 'Base Scenario',
-      isBase: true,
-      overrides: const [],
-      createdAt: now,
-      updatedAt: now,
+  @override
+  Future<List<Scenario>> build() async {
+    final repository = ref.watch(scenarioRepositoryProvider);
+
+    if (repository == null) {
+      developer.log('No repository available, returning empty scenarios');
+      return [];
+    }
+
+    // Ensure base scenario exists
+    await repository.ensureBaseScenario();
+
+    // Listen to Firestore stream
+    _subscription?.cancel();
+    _subscription = repository.getScenariosStream().listen(
+      (scenarios) {
+        state = AsyncData(scenarios);
+      },
+      onError: (error, stackTrace) {
+        state = AsyncError(error, stackTrace);
+      },
     );
-    state = [baseScenario];
+
+    // Clean up subscription when provider is disposed
+    ref.onDispose(() {
+      _subscription?.cancel();
+    });
+
+    // Return initial empty list, stream will update it
+    return [];
   }
 
   /// Create a new variation scenario
   Future<void> createScenario(String name) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 300));
+    final repository = ref.read(scenarioRepositoryProvider);
+    if (repository == null) {
+      throw Exception('No repository available');
+    }
 
-    final now = DateTime.now();
-    final newScenario = Scenario(
-      id: _uuid.v4(),
-      name: name,
-      isBase: false,
-      overrides: const [],
-      createdAt: now,
-      updatedAt: now,
-    );
+    try {
+      final now = DateTime.now();
+      final newScenario = Scenario(
+        id: _uuid.v4(),
+        name: name,
+        isBase: false,
+        overrides: const [],
+        createdAt: now,
+        updatedAt: now,
+      );
 
-    state = [...state, newScenario];
+      await repository.createScenario(newScenario);
+    } catch (e) {
+      developer.log('Error creating scenario: $e');
+      rethrow;
+    }
   }
 
   /// Update a scenario (name and/or overrides)
   Future<void> updateScenario(Scenario scenario) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 300));
+    final repository = ref.read(scenarioRepositoryProvider);
+    if (repository == null) {
+      throw Exception('No repository available');
+    }
 
-    final updatedScenario = scenario.copyWith(
-      updatedAt: DateTime.now(),
-    );
+    try {
+      final updatedScenario = scenario.copyWith(
+        updatedAt: DateTime.now(),
+      );
 
-    state = [
-      for (final s in state)
-        if (s.id == scenario.id) updatedScenario else s,
-    ];
+      await repository.updateScenario(updatedScenario);
+    } catch (e) {
+      developer.log('Error updating scenario: $e');
+      rethrow;
+    }
   }
 
   /// Delete a variation scenario (cannot delete base scenario)
   Future<void> deleteScenario(String scenarioId) async {
-    final scenario = state.firstWhere((s) => s.id == scenarioId);
-    if (scenario.isBase) {
-      throw Exception('Cannot delete base scenario');
+    final repository = ref.read(scenarioRepositoryProvider);
+    if (repository == null) {
+      throw Exception('No repository available');
     }
 
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 300));
+    try {
+      final scenarios = state.value ?? [];
+      final scenario = scenarios.firstWhere((s) => s.id == scenarioId);
 
-    state = state.where((s) => s.id != scenarioId).toList();
+      if (scenario.isBase) {
+        throw Exception('Cannot delete base scenario');
+      }
+
+      await repository.deleteScenario(scenarioId);
+    } catch (e) {
+      developer.log('Error deleting scenario: $e');
+      rethrow;
+    }
   }
 
   /// Add or update an override in a scenario
   Future<void> addOverride(
       String scenarioId, ParameterOverride override) async {
-    final scenario = state.firstWhere((s) => s.id == scenarioId);
+    final repository = ref.read(scenarioRepositoryProvider);
+    if (repository == null) {
+      throw Exception('No repository available');
+    }
 
-    // Remove existing override for the same parameter
-    final filteredOverrides = scenario.overrides.where((o) {
-      return o.when(
-        assetValue: (assetId, value) {
-          return !override.maybeWhen(
-            assetValue: (id, _) => id == assetId,
-            orElse: () => false,
-          );
-        },
-        eventTiming: (eventId, years) {
-          return !override.maybeWhen(
-            eventTiming: (id, _) => id == eventId,
-            orElse: () => false,
-          );
-        },
+    try {
+      final scenarios = state.value ?? [];
+      final scenario = scenarios.firstWhere((s) => s.id == scenarioId);
+
+      // Remove existing override for the same parameter
+      final filteredOverrides = scenario.overrides.where((o) {
+        return o.when(
+          assetValue: (assetId, value) {
+            return !override.maybeWhen(
+              assetValue: (id, _) => id == assetId,
+              orElse: () => false,
+            );
+          },
+          eventTiming: (eventId, years) {
+            return !override.maybeWhen(
+              eventTiming: (id, _) => id == eventId,
+              orElse: () => false,
+            );
+          },
+        );
+      }).toList();
+
+      final updatedScenario = scenario.copyWith(
+        overrides: [...filteredOverrides, override],
+        updatedAt: DateTime.now(),
       );
-    }).toList();
 
-    final updatedScenario = scenario.copyWith(
-      overrides: [...filteredOverrides, override],
-      updatedAt: DateTime.now(),
-    );
-
-    state = [
-      for (final s in state)
-        if (s.id == scenarioId) updatedScenario else s,
-    ];
+      await repository.updateScenario(updatedScenario);
+    } catch (e) {
+      developer.log('Error adding override: $e');
+      rethrow;
+    }
   }
 
   /// Remove an override from a scenario
   Future<void> removeOverride(
       String scenarioId, ParameterOverride override) async {
-    final scenario = state.firstWhere((s) => s.id == scenarioId);
+    final repository = ref.read(scenarioRepositoryProvider);
+    if (repository == null) {
+      throw Exception('No repository available');
+    }
 
-    final filteredOverrides = scenario.overrides.where((o) {
-      return o.when(
-        assetValue: (assetId, value) {
-          return !override.maybeWhen(
-            assetValue: (id, _) => id == assetId,
-            orElse: () => false,
-          );
-        },
-        eventTiming: (eventId, years) {
-          return !override.maybeWhen(
-            eventTiming: (id, _) => id == eventId,
-            orElse: () => false,
-          );
-        },
+    try {
+      final scenarios = state.value ?? [];
+      final scenario = scenarios.firstWhere((s) => s.id == scenarioId);
+
+      final filteredOverrides = scenario.overrides.where((o) {
+        return o.when(
+          assetValue: (assetId, value) {
+            return !override.maybeWhen(
+              assetValue: (id, _) => id == assetId,
+              orElse: () => false,
+            );
+          },
+          eventTiming: (eventId, years) {
+            return !override.maybeWhen(
+              eventTiming: (id, _) => id == eventId,
+              orElse: () => false,
+            );
+          },
+        );
+      }).toList();
+
+      final updatedScenario = scenario.copyWith(
+        overrides: filteredOverrides,
+        updatedAt: DateTime.now(),
       );
-    }).toList();
 
-    final updatedScenario = scenario.copyWith(
-      overrides: filteredOverrides,
-      updatedAt: DateTime.now(),
-    );
-
-    state = [
-      for (final s in state)
-        if (s.id == scenarioId) updatedScenario else s,
-    ];
+      await repository.updateScenario(updatedScenario);
+    } catch (e) {
+      developer.log('Error removing override: $e');
+      rethrow;
+    }
   }
 }
 
 /// Provider for the base scenario
 final baseScenarioProvider = Provider<Scenario?>((ref) {
-  final scenarios = ref.watch(scenariosProvider);
-  return scenarios.where((s) => s.isBase).firstOrNull;
+  final scenariosAsync = ref.watch(scenariosProvider);
+  return scenariosAsync.maybeWhen(
+    data: (scenarios) => scenarios.where((s) => s.isBase).firstOrNull,
+    orElse: () => null,
+  );
 });
 
 /// Provider for variation scenarios (non-base)
 final variationScenariosProvider = Provider<List<Scenario>>((ref) {
-  final scenarios = ref.watch(scenariosProvider);
-  return scenarios.where((s) => !s.isBase).toList();
+  final scenariosAsync = ref.watch(scenariosProvider);
+  return scenariosAsync.maybeWhen(
+    data: (scenarios) => scenarios.where((s) => !s.isBase).toList(),
+    orElse: () => [],
+  );
 });
