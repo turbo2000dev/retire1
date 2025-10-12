@@ -1401,47 +1401,47 @@
 
 ### Tasks:
 1. **Create event domain models:**
-   - [ ] Create `lib/features/events/domain/event_timing.dart`
-   - [ ] Use Freezed unions:
+   - [x] Create `lib/features/events/domain/event_timing.dart`
+   - [x] Use Freezed unions:
      - `RelativeTiming(yearsFromStart)`
      - `AbsoluteTiming(calendarYear)`
      - `AgeTiming(individualId, age)`
-   - [ ] Create `lib/features/events/domain/event.dart`
-   - [ ] Use Freezed unions:
+   - [x] Create `lib/features/events/domain/event.dart`
+   - [x] Use Freezed unions:
      - `RetirementEvent(id, individualId, timing)`
      - `DeathEvent(id, individualId, timing)`
      - `RealEstateTransactionEvent(id, timing, assetSoldId, assetPurchasedId, withdrawAccountId, depositAccountId)`
 
 2. **Create events screen:**
-   - [ ] Create `lib/features/events/presentation/events_screen.dart`
-   - [ ] App bar with project name
-   - [ ] Timeline view (vertical on phone, could be horizontal on desktop)
-   - [ ] Events sorted by timing
-   - [ ] "Add Event" FAB with type selector
-   - [ ] Empty state
+   - [x] Updated existing `lib/features/assets/presentation/assets_events_screen.dart`
+   - [x] Added tabbed interface (Assets & Events tabs)
+   - [x] Timeline view with chronological event display
+   - [x] Events sorted by timing
+   - [x] "Add Event" FAB with type selector
+   - [x] Empty state
 
 3. **Create event cards:**
-   - [ ] Create `lib/features/events/presentation/widgets/event_card.dart`
-   - [ ] Different display for each event type
-   - [ ] Show timing in human-readable format
-   - [ ] Edit and delete buttons
-   - [ ] Position on timeline
+   - [x] Create `lib/features/events/presentation/widgets/event_card.dart`
+   - [x] Different display for each event type
+   - [x] Show timing in human-readable format
+   - [x] Edit and delete buttons
+   - [x] Position on timeline
 
 4. **Create timing selector component:**
-   - [ ] Create `lib/features/events/presentation/widgets/timing_selector.dart`
-   - [ ] Radio buttons for timing type (Relative/Absolute/Age)
-   - [ ] Conditional fields based on selection
-   - [ ] Individual selector for Age timing
-   - [ ] Validation
+   - [x] Create `lib/features/events/presentation/widgets/timing_selector.dart`
+   - [x] Radio buttons for timing type (Relative/Absolute/Age)
+   - [x] Conditional fields based on selection
+   - [x] Individual selector for Age timing
+   - [x] Validation
 
 5. **Create event type forms:**
-   - [ ] Create `lib/features/events/presentation/widgets/retirement_event_form.dart`
+   - [x] Create `lib/features/events/presentation/widgets/retirement_event_form.dart`
      - Individual selector
      - Timing selector
-   - [ ] Create `lib/features/events/presentation/widgets/death_event_form.dart`
+   - [x] Create `lib/features/events/presentation/widgets/death_event_form.dart`
      - Individual selector
      - Timing selector
-   - [ ] Create `lib/features/events/presentation/widgets/real_estate_transaction_form.dart`
+   - [x] Create `lib/features/events/presentation/widgets/real_estate_transaction_form.dart`
      - Timing selector
      - Asset sold selector (optional, can be null)
      - Asset purchased selector (optional, can be null)
@@ -1449,20 +1449,20 @@
      - Deposit to account selector
 
 6. **Create add event dialog:**
-   - [ ] First: Select event type
-   - [ ] Second: Show appropriate form
-   - [ ] Validation
-   - [ ] Cancel/Save buttons
+   - [x] First: Select event type
+   - [x] Second: Show appropriate form
+   - [x] Validation
+   - [x] Cancel/Save buttons
 
 7. **Create mock events provider:**
-   - [ ] Riverpod provider with mock events
-   - [ ] Support CRUD operations
-   - [ ] Sort events by calculated timing
+   - [x] Riverpod provider with mock events
+   - [x] Support CRUD operations
+   - [x] Sort events by calculated timing
 
 8. **Implement event sorting logic:**
-   - [ ] Convert all timing types to comparable values
-   - [ ] Sort events chronologically
-   - [ ] Handle edge cases (same timing)
+   - [x] Convert all timing types to comparable values
+   - [x] Sort events chronologically
+   - [x] Handle edge cases (same timing)
 
 **Manual Test Checklist:**
 - ✓ Can add all 3 event types
@@ -1477,6 +1477,71 @@
 - ✓ All data in mock state
 
 **Deliverable:** Complete event management UI with timeline
+
+---
+
+## ✅ PHASE 15 COMPLETED
+
+**What was accomplished:**
+- Created EventTiming domain model with Freezed unions for 3 timing types:
+  - RelativeTiming (years from start of projection)
+  - AbsoluteTiming (specific calendar year)
+  - AgeTiming (when individual reaches age)
+- Created Event domain model with Freezed unions for 3 event types:
+  - RetirementEvent (individual ID, timing)
+  - DeathEvent (individual ID, timing)
+  - RealEstateTransactionEvent (timing, asset sold/purchased IDs, withdraw/deposit account IDs)
+- Built TimingSelector reusable component (260+ lines):
+  - Radio buttons for timing type selection
+  - Conditional fields based on selected type (years/year/age + individual selector)
+  - Form validation for all timing types
+  - Warning when no individuals exist for age-based timing
+- Created event type forms:
+  - RetirementEventForm with individual selector and timing selector
+  - DeathEventForm with individual selector and timing selector
+  - RealEstateTransactionForm with asset/account selectors and timing selector
+  - All forms filter assets appropriately (real estate, cash accounts)
+- Built AddEventDialog with two-step flow:
+  - Step 1: Event type selector (retirement, death, real estate transaction)
+  - Step 2: Type-specific form
+  - Validation and responsive layout
+- Created EventCard component:
+  - Type-specific icons and colors
+  - Human-readable timing display
+  - Edit and delete action buttons
+  - Displays relevant details for each event type
+- Built EventsNotifier with mock events provider:
+  - Full CRUD operations (add, update, delete)
+  - Empty initial state (no mock data)
+  - sortedEventsProvider with chronological sorting logic
+- Updated Assets & Events screen with tabbed interface:
+  - Assets tab (existing functionality)
+  - Events tab (new timeline view)
+  - Context-aware FAB (adds asset or event based on active tab)
+  - Empty state for events
+  - Delete confirmation dialogs
+- Fixed all DropdownButtonFormField deprecation warnings (changed `value` to `initialValue`)
+- Added uuid package for event ID generation
+- Ran build_runner to generate Freezed code
+- App successfully built and runs on macOS
+- Remaining informational-level warnings about RadioListTile (deprecated API not yet stable)
+
+**Key files created:**
+- lib/features/events/domain/event_timing.dart - EventTiming domain model
+- lib/features/events/domain/event_timing.freezed.dart - Generated Freezed code
+- lib/features/events/domain/event_timing.g.dart - Generated JSON serialization
+- lib/features/events/domain/event.dart - Event domain model
+- lib/features/events/domain/event.freezed.dart - Generated Freezed code
+- lib/features/events/domain/event.g.dart - Generated JSON serialization
+- lib/features/events/presentation/widgets/timing_selector.dart - Timing selector component
+- lib/features/events/presentation/widgets/retirement_event_form.dart - Retirement event form
+- lib/features/events/presentation/widgets/death_event_form.dart - Death event form
+- lib/features/events/presentation/widgets/real_estate_transaction_form.dart - Real estate transaction form
+- lib/features/events/presentation/widgets/add_event_dialog.dart - Two-step event creation dialog
+- lib/features/events/presentation/widgets/event_card.dart - Event display component
+- lib/features/events/presentation/providers/events_provider.dart - Mock events state management
+- Updated lib/features/assets/presentation/assets_events_screen.dart - Added Events tab
+- Updated pubspec.yaml - Added uuid package
 
 ---
 

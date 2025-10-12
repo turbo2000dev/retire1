@@ -5,11 +5,37 @@ import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
 import 'package:retire1/features/assets/presentation/widgets/add_asset_dialog.dart';
 import 'package:retire1/features/assets/presentation/widgets/asset_card.dart';
+import 'package:retire1/features/events/domain/event.dart';
+import 'package:retire1/features/events/presentation/providers/events_provider.dart';
+import 'package:retire1/features/events/presentation/widgets/add_event_dialog.dart';
+import 'package:retire1/features/events/presentation/widgets/event_card.dart';
+import 'package:retire1/features/project/domain/individual.dart';
+import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 
 /// Assets & Events screen - manages assets and life events
-/// Phase 13: Assets UI only (events will be added in Phase 15)
-class AssetsEventsScreen extends ConsumerWidget {
+/// Phase 13-15: Assets and Events UI with mock/Firebase data
+class AssetsEventsScreen extends ConsumerStatefulWidget {
   const AssetsEventsScreen({super.key});
+
+  @override
+  ConsumerState<AssetsEventsScreen> createState() => _AssetsEventsScreenState();
+}
+
+class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   Future<void> _addAsset(BuildContext context, WidgetRef ref) async {
     final result = await AddAssetDialog.show(context);
@@ -105,161 +131,374 @@ class AssetsEventsScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _addEvent(BuildContext context, WidgetRef ref) async {
+    final projectState = ref.read(currentProjectProvider);
+    final individuals = switch (projectState) {
+      ProjectSelected(project: final project) => project.individuals,
+      _ => <Individual>[],
+    };
+    final assetsAsync = ref.read(assetsProvider);
+    final assets = assetsAsync.maybeWhen(
+      data: (assets) => assets,
+      orElse: () => <Asset>[],
+    );
+
+    final result = await AddEventDialog.show(
+      context,
+      individuals: individuals,
+      assets: assets,
+    );
+
+    if (result != null && context.mounted) {
+      ref.read(eventsProvider.notifier).addEvent(result);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event added successfully')),
+        );
+      }
+    }
+  }
+
+  Future<void> _editEvent(
+    BuildContext context,
+    WidgetRef ref,
+    Event event,
+  ) async {
+    final projectState = ref.read(currentProjectProvider);
+    final individuals = switch (projectState) {
+      ProjectSelected(project: final project) => project.individuals,
+      _ => <Individual>[],
+    };
+    final assetsAsync = ref.read(assetsProvider);
+    final assets = assetsAsync.maybeWhen(
+      data: (assets) => assets,
+      orElse: () => <Asset>[],
+    );
+
+    final result = await AddEventDialog.show(
+      context,
+      event: event,
+      individuals: individuals,
+      assets: assets,
+    );
+
+    if (result != null && context.mounted) {
+      ref.read(eventsProvider.notifier).updateEvent(result);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event updated successfully')),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteEvent(
+    BuildContext context,
+    WidgetRef ref,
+    Event event,
+  ) async {
+    final eventId = event.when(
+      retirement: (id, _, __) => id,
+      death: (id, _, __) => id,
+      realEstateTransaction: (id, _, __, ___, ____, _____) => id,
+    );
+
+    final eventName = event.when(
+      retirement: (_, __, ___) => 'this retirement event',
+      death: (_, __, ___) => 'this death event',
+      realEstateTransaction: (_, __, ___, ____, _____, ______) =>
+          'this real estate transaction',
+    );
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Event'),
+        content: Text('Are you sure you want to delete $eventName?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      ref.read(eventsProvider.notifier).deleteEvent(eventId);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event deleted successfully')),
+        );
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final assetsAsync = ref.watch(assetsProvider);
     final assetsByType = ref.watch(assetsByTypeProvider);
+    final events = ref.watch(sortedEventsProvider);
+    final projectState = ref.watch(currentProjectProvider);
+    final individuals = switch (projectState) {
+      ProjectSelected(project: final project) => project.individuals,
+      _ => <Individual>[],
+    };
 
     return Scaffold(
-      body: assetsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: ResponsiveContainer(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: theme.colorScheme.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Failed to load assets',
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    error.toString(),
-                    style: theme.textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: () => ref.invalidate(assetsProvider),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-          ),
+      appBar: AppBar(
+        title: const Text('Assets & Events'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Assets', icon: Icon(Icons.account_balance_wallet)),
+            Tab(text: 'Events', icon: Icon(Icons.event)),
+          ],
         ),
-        data: (assets) => CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Assets tab
+          assetsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(
               child: ResponsiveContainer(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
+                      ),
+                      const SizedBox(height: 16),
                       Text(
-                        'Assets',
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'Failed to load assets',
+                        style: theme.textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Manage your financial assets',
-                        style: theme.textTheme.bodyLarge,
+                        error.toString(),
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      FilledButton.icon(
+                        onPressed: () => ref.invalidate(assetsProvider),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Retry'),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            // Assets grouped by type
-            ...assetsByType.entries.map((entry) {
-            final typeName = entry.key;
-            final assets = entry.value;
+            data: (assets) => CustomScrollView(
+              slivers: [
+                // Assets grouped by type
+                ...assetsByType.entries.map((entry) {
+                  final typeName = entry.key;
+                  final assets = entry.value;
 
-            return SliverToBoxAdapter(
-              child: ResponsiveContainer(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Section header
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Row(
+                  return SliverToBoxAdapter(
+                    child: ResponsiveContainer(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              typeName,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
+                            // Section header
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    typeName,
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primaryContainer,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      '${assets.length}',
+                                      style:
+                                          theme.textTheme.labelMedium?.copyWith(
+                                        color: theme
+                                            .colorScheme.onPrimaryContainer,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                '${assets.length}',
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.bold,
+                            // Asset cards
+                            if (assets.isEmpty)
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(32),
+                                  child: Center(
+                                    child: Text(
+                                      'No ${typeName.toLowerCase()} assets yet',
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
+                              )
+                            else
+                              ...assets.map((asset) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: AssetCard(
+                                    asset: asset,
+                                    onEdit: () =>
+                                        _editAsset(context, ref, asset),
+                                    onDelete: () =>
+                                        _deleteAsset(context, ref, asset),
+                                  ),
+                                );
+                              }),
                           ],
                         ),
                       ),
-                      // Asset cards
-                      if (assets.isEmpty)
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(32),
-                            child: Center(
-                              child: Text(
-                                'No ${typeName.toLowerCase()} assets yet',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
+                    ),
+                  );
+                }),
+                // Bottom padding
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 80),
+                ),
+              ],
+            ),
+          ),
+          // Events tab
+          CustomScrollView(
+            slivers: [
+              // Events timeline
+              SliverToBoxAdapter(
+                child: ResponsiveContainer(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Timeline',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                        )
-                      else
-                        ...assets.map((asset) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: AssetCard(
-                              asset: asset,
-                              onEdit: () => _editAsset(context, ref, asset),
-                              onDelete: () => _deleteAsset(context, ref, asset),
-                            ),
-                          );
-                        }),
-                    ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Events sorted chronologically',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            );
-          }),
-            // Bottom padding
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 80),
-            ),
-          ],
-        ),
+              if (events.isEmpty)
+                SliverToBoxAdapter(
+                  child: ResponsiveContainer(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(48),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.event_busy,
+                                  size: 64,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No events yet',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Add your first event to get started',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              else
+                ...events.map((event) {
+                  return SliverToBoxAdapter(
+                    child: ResponsiveContainer(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 4),
+                        child: EventCard(
+                          event: event,
+                          individuals: individuals,
+                          onEdit: () => _editEvent(context, ref, event),
+                          onDelete: () => _deleteEvent(context, ref, event),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              // Bottom padding
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 80),
+              ),
+            ],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _addAsset(context, ref),
+        onPressed: () {
+          if (_tabController.index == 0) {
+            _addAsset(context, ref);
+          } else {
+            _addEvent(context, ref);
+          }
+        },
         icon: const Icon(Icons.add),
-        label: const Text('Add Asset'),
+        label: Text(_tabController.index == 0 ? 'Add Asset' : 'Add Event'),
       ),
     );
   }
