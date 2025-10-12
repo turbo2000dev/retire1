@@ -12,7 +12,7 @@ enum AccountType { rrsp, celi, cash }
 class AccountForm extends ConsumerStatefulWidget {
   final AccountType accountType;
   final Asset? asset;
-  final void Function(Asset) onSave;
+  final void Function(Asset, {bool createAnother}) onSave;
   final VoidCallback? onCancel;
 
   const AccountForm({
@@ -57,7 +57,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
     super.dispose();
   }
 
-  void _submit() {
+  void _submit({bool createAnother = false}) {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedIndividualId == null) {
@@ -101,7 +101,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
         break;
     }
 
-    widget.onSave(asset);
+    widget.onSave(asset, createAnother: createAnother);
   }
 
   @override
@@ -201,9 +201,17 @@ class _AccountFormState extends ConsumerState<AccountForm> {
                   child: const Text('Cancel'),
                 ),
               if (widget.onCancel != null) const SizedBox(width: 8),
+              // Show "Save and create another" only when creating new asset
+              if (widget.asset == null) ...[
+                FilledButton.tonal(
+                  onPressed: individuals.isEmpty ? null : () => _submit(createAnother: true),
+                  child: const Text('Save and create another'),
+                ),
+                const SizedBox(width: 8),
+              ],
               FilledButton(
                 onPressed: individuals.isEmpty ? null : _submit,
-                child: Text(widget.asset == null ? 'Add' : 'Save'),
+                child: const Text('Save'),
               ),
             ],
           ),

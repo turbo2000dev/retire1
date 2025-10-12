@@ -38,21 +38,38 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
   }
 
   Future<void> _addAsset(BuildContext context, WidgetRef ref) async {
-    final result = await AddAssetDialog.show(context);
-    if (result != null && context.mounted) {
+    bool createAnother = true;
+
+    while (createAnother) {
+      if (!context.mounted) break;
+
+      final result = await AddAssetDialog.show(context);
+
+      if (result == null) {
+        // User cancelled
+        break;
+      }
+
+      if (!context.mounted) break;
+
       try {
-        await ref.read(assetsProvider.notifier).addAsset(result);
+        await ref.read(assetsProvider.notifier).addAsset(result.asset);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Asset added successfully')),
           );
         }
+
+        // Check if user wants to create another
+        createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to add asset: $e')),
           );
         }
+        // Break on error
+        break;
       }
     }
   }
@@ -61,7 +78,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
     final result = await AddAssetDialog.show(context, asset: asset);
     if (result != null && context.mounted) {
       try {
-        await ref.read(assetsProvider.notifier).updateAsset(result);
+        await ref.read(assetsProvider.notifier).updateAsset(result.asset);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Asset updated successfully')),

@@ -5,7 +5,7 @@ import 'package:retire1/features/assets/domain/asset.dart';
 /// Form for creating or editing a real estate asset
 class RealEstateForm extends StatefulWidget {
   final RealEstateAsset? asset;
-  final void Function(RealEstateAsset) onSave;
+  final void Function(RealEstateAsset, {bool createAnother}) onSave;
   final VoidCallback? onCancel;
 
   const RealEstateForm({
@@ -41,7 +41,7 @@ class _RealEstateFormState extends State<RealEstateForm> {
     super.dispose();
   }
 
-  void _submit() {
+  void _submit({bool createAnother = false}) {
     if (!_formKey.currentState!.validate()) return;
 
     final asset = Asset.realEstate(
@@ -51,7 +51,7 @@ class _RealEstateFormState extends State<RealEstateForm> {
       setAtStart: _setAtStart,
     ) as RealEstateAsset;
 
-    widget.onSave(asset);
+    widget.onSave(asset, createAnother: createAnother);
   }
 
   @override
@@ -133,9 +133,17 @@ class _RealEstateFormState extends State<RealEstateForm> {
                   child: const Text('Cancel'),
                 ),
               if (widget.onCancel != null) const SizedBox(width: 8),
+              // Show "Save and create another" only when creating new asset
+              if (widget.asset == null) ...[
+                FilledButton.tonal(
+                  onPressed: () => _submit(createAnother: true),
+                  child: const Text('Save and create another'),
+                ),
+                const SizedBox(width: 8),
+              ],
               FilledButton(
                 onPressed: _submit,
-                child: Text(widget.asset == null ? 'Add' : 'Save'),
+                child: const Text('Save'),
               ),
             ],
           ),

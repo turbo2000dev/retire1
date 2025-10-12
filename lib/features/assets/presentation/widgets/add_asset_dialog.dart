@@ -4,6 +4,17 @@ import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/assets/presentation/widgets/account_form.dart';
 import 'package:retire1/features/assets/presentation/widgets/real_estate_form.dart';
 
+/// Result from asset dialog including asset and whether to create another
+class AssetDialogResult {
+  final Asset asset;
+  final bool createAnother;
+
+  const AssetDialogResult({
+    required this.asset,
+    required this.createAnother,
+  });
+}
+
 /// Asset type selection for the dialog
 enum AssetTypeSelection {
   realEstate,
@@ -21,8 +32,8 @@ class AddAssetDialog extends StatefulWidget {
     this.asset,
   });
 
-  static Future<Asset?> show(BuildContext context, {Asset? asset}) {
-    return showDialog<Asset>(
+  static Future<AssetDialogResult?> show(BuildContext context, {Asset? asset}) {
+    return showDialog<AssetDialogResult>(
       context: context,
       builder: (context) => AddAssetDialog(asset: asset),
     );
@@ -58,8 +69,13 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
     });
   }
 
-  void _handleSave(Asset asset) {
-    Navigator.of(context).pop(asset);
+  void _handleSave(Asset asset, {bool createAnother = false}) {
+    Navigator.of(context).pop(
+      AssetDialogResult(
+        asset: asset,
+        createAnother: createAnother,
+      ),
+    );
   }
 
   void _handleCancel() {
