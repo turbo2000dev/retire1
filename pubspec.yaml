@@ -68,6 +68,9 @@ dependencies:
   # UUID generation
   uuid: ^4.5.1
 
+  # Charts and visualization
+  fl_chart: ^0.70.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

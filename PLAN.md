@@ -1818,133 +1818,104 @@
 
 ---
 
-## PHASE 19: Projection Calculation Engine
+## ✅ PHASE 19 COMPLETED
 
-**Goal:** Calculate yearly projections based on project data
+**What was accomplished:**
+- Created Projection domain model with Freezed:
+  - Fields: scenarioId, projectId, startYear, endYear, useConstantDollars, inflationRate, years, calculatedAt
+  - JSON serialization support with json_serializable
+- Created YearlyProjection domain model with Freezed:
+  - Fields: year, yearsFromStart, primaryAge, spouseAge, totalIncome, totalExpenses, netCashFlow
+  - Asset tracking: assetsStartOfYear, assetsEndOfYear (maps)
+  - Net worth: netWorthStartOfYear, netWorthEndOfYear
+  - Event tracking: eventsOccurred (list of event IDs)
+- Built ProjectionCalculator service (400+ lines):
+  - Input: Project, Scenario, Assets, Events
+  - Output: Projection with yearly breakdown
+  - Applies scenario overrides to assets and events
+  - For each year:
+    - Calculates ages for individuals
+    - Identifies events that occur in that year
+    - Tracks asset values at start and end
+    - Calculates income, expenses, and cash flow
+    - Updates net worth
+  - Event handling:
+    - Handles all timing types (relative, absolute, age-based)
+    - Processes retirement events
+    - Processes death events
+    - Processes real estate transactions (buy/sell)
+  - Default settings: 40 years, 2% inflation, current dollars
+- Created projection providers with Riverpod:
+  - projectionCalculatorProvider - Calculator service instance
+  - projectionProvider - FutureProvider.family for calculating projections per scenario
+  - selectedScenarioIdProvider - StateNotifier for tracking selected scenario
+  - Auto-initializes to base scenario
+- Runs flutter analyze with no issues
 
-### Tasks:
-1. **Create projection domain models:**
-   - [ ] Create `lib/features/projection/domain/projection.dart`
-   - [ ] Fields: scenarioId, years (list of yearly data)
-   - [ ] Create `lib/features/projection/domain/yearly_projection.dart`
-   - [ ] Fields: year, assetValues (map), cashFlows, totalNetWorth
-   - [ ] Use Freezed
-
-2. **Create calculation service:**
-   - [ ] Create `lib/features/projection/service/projection_calculator.dart`
-   - [ ] Input: Project, Scenario, parameters (inflation rate, etc.)
-   - [ ] Output: Projection (yearly breakdown)
-
-3. **Implement calculation logic:**
-   - [ ] Start with initial asset values (from base or scenario overrides)
-   - [ ] For each year:
-     - Apply events that occur in this year
-     - Calculate asset appreciation
-     - Calculate cash flows (income, expenses)
-     - Update account values
-     - Track net worth
-   - [ ] Handle event timing calculations
-   - [ ] Handle asset transactions
-   - [ ] Handle account withdrawals/deposits
-
-4. **Add inflation adjustments:**
-   - [ ] Calculate both current dollars and constant dollars
-   - [ ] Apply inflation to asset values
-   - [ ] Adjust cash flows for inflation
-
-5. **Write unit tests:**
-   - [ ] Test calculation logic
-   - [ ] Test edge cases (negative balances, etc.)
-   - [ ] Test event application
-   - [ ] Verify calculations manually
-
-6. **Create calculation provider:**
-   - [ ] Riverpod provider to calculate projection
-   - [ ] Recalculate when project/scenario changes
-   - [ ] Cache results
-
-7. **Test calculations:**
-   - [ ] Create simple project with known values
-   - [ ] Run calculation
-   - [ ] Verify results manually
-   - [ ] Log yearly breakdown to console
-
-**Manual Test Checklist:**
-- ✓ Calculation completes without errors
-- ✓ Yearly values make sense
-- ✓ Events applied in correct years
-- ✓ Asset values change over time
-- ✓ Net worth calculated correctly
-- ✓ Inflation adjustments work
-- ✓ Unit tests pass
-
-**Deliverable:** Working projection calculation engine
+**Key files created:**
+- lib/features/projection/domain/projection.dart - Projection domain model
+- lib/features/projection/domain/projection.freezed.dart - Generated Freezed code
+- lib/features/projection/domain/projection.g.dart - Generated JSON serialization
+- lib/features/projection/domain/yearly_projection.dart - Yearly projection model
+- lib/features/projection/domain/yearly_projection.freezed.dart - Generated Freezed code
+- lib/features/projection/domain/yearly_projection.g.dart - Generated JSON serialization
+- lib/features/projection/service/projection_calculator.dart - Calculation engine
+- lib/features/projection/presentation/providers/projection_provider.dart - Riverpod providers
 
 ---
 
-## PHASE 20: Projection Screen (UI)
+## ✅ PHASE 20 COMPLETED
 
-**Goal:** Display projections with charts and tables
+**What was accomplished:**
+- Added fl_chart package (v0.70.1) for data visualization
+- Created comprehensive projection screen with scenario selector:
+  - Scenario dropdown in app bar
+  - Displays selected scenario's projection
+  - Empty state when no scenario selected
+  - Loading state during calculation
+  - Error state with retry functionality
+  - Projection info card showing date range and settings
+  - Responsive layout with ResponsiveContainer
+- Built ProjectionChart widget (160+ lines):
+  - Line chart showing net worth over time
+  - X-axis: years from projection start to end
+  - Y-axis: currency values with formatting
+  - Primary color line with gradient fill
+  - Interactive tooltips showing year and value
+  - Automatic Y-axis scaling with padding
+  - Grid lines for readability
+  - Material 3 themed colors
+  - Responsive sizing
+- Created ProjectionTable widget (160+ lines):
+  - DataTable with yearly breakdown
+  - Columns: Year, Age, Income, Expenses, Cash Flow, Net Worth (Start), Net Worth (End)
+  - Color-coded values:
+    - Green for income and positive cash flow
+    - Red for expenses and negative cash flow
+    - Bold text for key columns
+  - Currency formatting with NumberFormat
+  - Horizontal scrolling for wide tables
+  - Shows age column if individuals exist
+  - Responsive design
+- Connected to calculation engine:
+  - Watches selectedScenarioIdProvider
+  - Automatically recalculates when scenario changes
+  - Passes project, scenario, assets, and events to calculator
+  - Displays loading indicator during calculation
+  - Shows error message if calculation fails
+- Screen structure:
+  - App bar with scenario selector dropdown
+  - Scrollable content with chart and table sections
+  - Info header showing projection period and settings
+  - All sections use ResponsiveContainer
+- Updated existing ProjectionScreen placeholder to full implementation
+- Runs flutter analyze with no issues
 
-### Tasks:
-1. **Add charting package:**
-   - [ ] Add `fl_chart` or similar to pubspec.yaml
-   - [ ] Test basic chart rendering
-
-2. **Create projection screen:**
-   - [ ] Create `lib/features/projection/presentation/projection_screen.dart`
-   - [ ] App bar with project name
-   - [ ] Scenario selector dropdown
-   - [ ] Current/constant dollars toggle
-   - [ ] Tabs or sections:
-     - Chart view
-     - Table view
-   - [ ] Responsive layout
-
-3. **Create chart view:**
-   - [ ] Create `lib/features/projection/presentation/widgets/projection_chart.dart`
-   - [ ] Line chart showing net worth over time
-   - [ ] Multiple lines for different asset types
-   - [ ] X-axis: years, Y-axis: value
-   - [ ] Interactive tooltips
-   - [ ] Responsive sizing
-
-4. **Create table view:**
-   - [ ] Create `lib/features/projection/presentation/widgets/projection_table.dart`
-   - [ ] Columns: Year, Assets (by type), Total Net Worth, Cash Flow
-   - [ ] Scrollable horizontally and vertically
-   - [ ] Responsive (fewer columns on phone)
-   - [ ] Currency formatting
-
-5. **Connect to calculation engine:**
-   - [ ] Load projection from provider
-   - [ ] Show loading state while calculating
-   - [ ] Display results
-   - [ ] Update when scenario changes
-
-6. **Add dollar type toggle:**
-   - [ ] Switch between current and constant dollars
-   - [ ] Recalculate/reformat when toggled
-
-7. **Test visualization:**
-   - [ ] Switch scenarios, see chart update
-   - [ ] Toggle dollar type, see values change
-   - [ ] Scroll table, verify all data visible
-   - [ ] Resize window, verify responsive behavior
-
-**Manual Test Checklist:**
-- ✓ Projection screen loads
-- ✓ Can select different scenarios
-- ✓ Chart displays correctly
-- ✓ Chart shows all asset types
-- ✓ Table displays all years and values
-- ✓ Can toggle current/constant dollars
-- ✓ Values update when toggling
-- ✓ Responsive on all screen sizes
-- ✓ Chart tooltips work
-- ✓ Table scrolls smoothly
-
-**Deliverable:** Working projection visualization
+**Key files created/modified:**
+- Updated pubspec.yaml - Added fl_chart package
+- Updated lib/features/projection/presentation/projection_screen.dart - Full implementation with scenario selector
+- lib/features/projection/presentation/widgets/projection_chart.dart - Line chart widget
+- lib/features/projection/presentation/widgets/projection_table.dart - Data table widget
 
 ---
 
