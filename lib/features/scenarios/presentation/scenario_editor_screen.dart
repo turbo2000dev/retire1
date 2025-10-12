@@ -5,6 +5,7 @@ import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 import 'package:retire1/features/scenarios/presentation/widgets/asset_override_section.dart';
+import 'package:retire1/features/scenarios/presentation/widgets/event_override_section.dart';
 
 /// Screen for editing a scenario and its parameter overrides
 class ScenarioEditorScreen extends ConsumerStatefulWidget {
@@ -297,6 +298,7 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
           ),
           // Parameter Overrides Section
           if (!scenario.isBase) ...[
+            // Asset Overrides
             SliverToBoxAdapter(
               child: ResponsiveContainer(
                 child: Padding(
@@ -305,31 +307,13 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'PARAMETER OVERRIDES',
+                        'ASSET OVERRIDES',
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
                         ),
                       ),
-                      if (scenario.overrides.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${scenario.overrides.length}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ),
@@ -340,6 +324,35 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: AssetOverrideSection(scenario: scenario),
+                ),
+              ),
+            ),
+            // Event Overrides
+            SliverToBoxAdapter(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'EVENT OVERRIDES',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: EventOverrideSection(scenario: scenario),
                 ),
               ),
             ),
