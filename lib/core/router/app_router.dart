@@ -10,6 +10,7 @@ import 'package:retire1/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:retire1/features/project/presentation/base_parameters_screen.dart';
 import 'package:retire1/features/projection/presentation/projection_screen.dart';
 import 'package:retire1/features/scenarios/presentation/scenarios_screen.dart';
+import 'package:retire1/features/scenarios/presentation/scenario_editor_screen.dart';
 import 'package:retire1/features/settings/presentation/settings_screen.dart';
 
 /// Route names as constants
@@ -20,6 +21,7 @@ class AppRoutes {
   static const baseParameters = '/base-parameters';
   static const assetsEvents = '/assets-events';
   static const scenarios = '/scenarios';
+  static String scenarioEditor(String id) => '/scenarios/editor/$id';
   static const projection = '/projection';
   static const settings = '/settings';
 }
@@ -84,6 +86,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.scenarios,
             name: 'scenarios',
             pageBuilder: (context, state) => NoTransitionPage(key: state.pageKey, child: const ScenariosScreen()),
+          ),
+          GoRoute(
+            path: '/scenarios/editor/:id',
+            name: 'scenarioEditor',
+            pageBuilder: (context, state) {
+              final scenarioId = state.pathParameters['id']!;
+              return NoTransitionPage(key: state.pageKey, child: ScenarioEditorScreen(scenarioId: scenarioId));
+            },
           ),
           GoRoute(
             path: AppRoutes.projection,
