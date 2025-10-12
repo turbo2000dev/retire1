@@ -24,6 +24,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Retirement Planner',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
