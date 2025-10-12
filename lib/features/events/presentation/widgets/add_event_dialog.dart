@@ -6,6 +6,17 @@ import 'package:retire1/features/events/presentation/widgets/real_estate_transac
 import 'package:retire1/features/events/presentation/widgets/retirement_event_form.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 
+/// Result from event dialog including event and whether to create another
+class EventDialogResult {
+  final Event event;
+  final bool createAnother;
+
+  const EventDialogResult({
+    required this.event,
+    required this.createAnother,
+  });
+}
+
 enum EventType { retirement, death, realEstateTransaction }
 
 /// Dialog for adding or editing an event
@@ -17,13 +28,13 @@ class AddEventDialog extends StatefulWidget {
   const AddEventDialog({super.key, this.event, required this.individuals, required this.assets});
 
   /// Show the dialog and return the created/edited event
-  static Future<Event?> show(
+  static Future<EventDialogResult?> show(
     BuildContext context, {
     Event? event,
     required List<Individual> individuals,
     required List<Asset> assets,
   }) {
-    return showDialog<Event?>(
+    return showDialog<EventDialogResult?>(
       context: context,
       builder: (context) => AddEventDialog(event: event, individuals: individuals, assets: assets),
     );
@@ -53,13 +64,18 @@ class _AddEventDialogState extends State<AddEventDialog> {
     }
   }
 
-  void _submit() {
+  void _submit({bool createAnother = false}) {
     if (_currentEvent == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill in all required fields')));
       return;
     }
 
-    Navigator.of(context).pop(_currentEvent);
+    Navigator.of(context).pop(
+      EventDialogResult(
+        event: _currentEvent!,
+        createAnother: createAnother,
+      ),
+    );
   }
 
   @override
@@ -146,9 +162,17 @@ class _AddEventDialogState extends State<AddEventDialog> {
                 children: [
                   TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
                   const SizedBox(width: 8),
+                  // Show "Save and create another" only when creating new event
+                  if (widget.event == null) ...[
+                    FilledButton.tonal(
+                      onPressed: _currentEvent != null ? () => _submit(createAnother: true) : null,
+                      child: const Text('Save and create another'),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   FilledButton(
                     onPressed: _currentEvent != null ? _submit : null,
-                    child: Text(widget.event == null ? 'Add' : 'Save'),
+                    child: const Text('Save'),
                   ),
                 ],
               ),

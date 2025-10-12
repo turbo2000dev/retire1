@@ -29,6 +29,10 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Listen to tab changes to update FAB label
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -149,37 +153,53 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
   }
 
   Future<void> _addEvent(BuildContext context, WidgetRef ref) async {
-    final projectState = ref.read(currentProjectProvider);
-    final individuals = switch (projectState) {
-      ProjectSelected(project: final project) => project.individuals,
-      _ => <Individual>[],
-    };
-    final assetsAsync = ref.read(assetsProvider);
-    final assets = assetsAsync.maybeWhen(
-      data: (assets) => assets,
-      orElse: () => <Asset>[],
-    );
+    bool createAnother = true;
 
-    final result = await AddEventDialog.show(
-      context,
-      individuals: individuals,
-      assets: assets,
-    );
+    while (createAnother) {
+      if (!context.mounted) break;
 
-    if (result != null && context.mounted) {
+      final projectState = ref.read(currentProjectProvider);
+      final individuals = switch (projectState) {
+        ProjectSelected(project: final project) => project.individuals,
+        _ => <Individual>[],
+      };
+      final assetsAsync = ref.read(assetsProvider);
+      final assets = assetsAsync.maybeWhen(
+        data: (assets) => assets,
+        orElse: () => <Asset>[],
+      );
+
+      final result = await AddEventDialog.show(
+        context,
+        individuals: individuals,
+        assets: assets,
+      );
+
+      if (result == null) {
+        // User cancelled
+        break;
+      }
+
+      if (!context.mounted) break;
+
       try {
-        await ref.read(eventsProvider.notifier).addEvent(result);
+        await ref.read(eventsProvider.notifier).addEvent(result.event);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Event added successfully')),
           );
         }
+
+        // Check if user wants to create another
+        createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to add event: $e')),
           );
         }
+        // Break on error
+        break;
       }
     }
   }
@@ -209,7 +229,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
 
     if (result != null && context.mounted) {
       try {
-        await ref.read(eventsProvider.notifier).updateEvent(result);
+        await ref.read(eventsProvider.notifier).updateEvent(result.event);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Event updated successfully')),

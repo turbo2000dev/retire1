@@ -11,8 +11,15 @@ class TimingSelector extends StatefulWidget {
   final EventTiming? initialTiming;
   final List<Individual> individuals;
   final ValueChanged<EventTiming?>? onChanged;
+  final String? defaultIndividualId;
 
-  const TimingSelector({super.key, this.initialTiming, required this.individuals, this.onChanged});
+  const TimingSelector({
+    super.key,
+    this.initialTiming,
+    required this.individuals,
+    this.onChanged,
+    this.defaultIndividualId,
+  });
 
   @override
   State<TimingSelector> createState() => _TimingSelectorState();
@@ -113,6 +120,10 @@ class _TimingSelectorState extends State<TimingSelector> {
               if (value != null) {
                 setState(() {
                   _selectedType = value;
+                  // When switching to age timing, default to the provided individual if none is selected
+                  if (value == TimingType.age && _selectedIndividualId == null && widget.defaultIndividualId != null) {
+                    _selectedIndividualId = widget.defaultIndividualId;
+                  }
                 });
                 _notifyChange();
               }

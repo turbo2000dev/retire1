@@ -118,6 +118,7 @@ class _DeathEventFormState extends State<DeathEventForm> {
         TimingSelector(
           initialTiming: _timing,
           individuals: widget.individuals,
+          defaultIndividualId: _selectedIndividualId,
           onChanged: (timing) {
             setState(() {
               _timing = timing;
