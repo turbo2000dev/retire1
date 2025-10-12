@@ -5,7 +5,7 @@ import 'package:retire1/features/assets/domain/asset.dart';
 /// Form for creating or editing a real estate asset
 class RealEstateForm extends StatefulWidget {
   final RealEstateAsset? asset;
-  final void Function(RealEstateAsset, {bool createAnother}) onSave;
+  final void Function(Asset asset, {bool createAnother}) onSave;
   final VoidCallback? onCancel;
 
   const RealEstateForm({
