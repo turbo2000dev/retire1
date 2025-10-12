@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
+import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 import 'package:retire1/features/scenarios/presentation/widgets/asset_override_section.dart';
 
@@ -39,11 +40,19 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scenarios = ref.watch(scenariosProvider);
-    final scenario = scenarios.where((s) => s.id == widget.scenarioId).firstOrNull;
+    final scenariosAsync = ref.watch(scenariosProvider);
 
-    if (scenario == null) {
-      return Scaffold(
+    return scenariosAsync.when(
+      loading: () => Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/scenarios'),
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -61,8 +70,14 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Scenario not found',
+                'Error loading scenarios',
                 style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               FilledButton(
@@ -72,13 +87,53 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
             ],
           ),
         ),
-      );
-    }
+      ),
+      data: (scenarios) {
+        final scenario = scenarios.where((s) => s.id == widget.scenarioId).firstOrNull;
 
-    if (_nameController.text.isEmpty && !_isEditing) {
-      _nameController.text = scenario.name;
-    }
+        if (scenario == null) {
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go('/scenarios'),
+              ),
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: theme.colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Scenario not found',
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: () => context.go('/scenarios'),
+                    child: const Text('Back to Scenarios'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
 
+        if (_nameController.text.isEmpty && !_isEditing) {
+          _nameController.text = scenario.name;
+        }
+
+        return _buildEditor(context, theme, scenario);
+      },
+    );
+  }
+
+  Widget _buildEditor(BuildContext context, ThemeData theme, Scenario scenario) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -342,11 +397,13 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
     setState(() {
       _isEditing = false;
       // Reset name to original
-      final scenarios = ref.read(scenariosProvider);
-      final scenario = scenarios.where((s) => s.id == widget.scenarioId).firstOrNull;
-      if (scenario != null) {
-        _nameController.text = scenario.name;
-      }
+      final scenariosAsync = ref.read(scenariosProvider);
+      scenariosAsync.whenData((scenarios) {
+        final scenario = scenarios.where((s) => s.id == widget.scenarioId).firstOrNull;
+        if (scenario != null) {
+          _nameController.text = scenario.name;
+        }
+      });
     });
   }
 
@@ -355,8 +412,8 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
       return;
     }
 
-    final scenarios = ref.read(scenariosProvider);
-    final scenario = scenarios.where((s) => s.id == widget.scenarioId).firstOrNull;
+    final scenariosAsync = ref.read(scenariosProvider);
+    final scenario = scenariosAsync.value?.where((s) => s.id == widget.scenarioId).firstOrNull;
     if (scenario == null) return;
 
     try {
