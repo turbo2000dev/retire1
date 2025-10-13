@@ -185,6 +185,7 @@ class EventCard extends StatelessWidget {
         final boundaryText = t.boundary == EventBoundary.start ? 'start' : 'end';
         return 'At $boundaryText of event';
       },
+      projectionEnd: (t) => 'End of projection',
     );
   }
 

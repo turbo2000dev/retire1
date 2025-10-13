@@ -5,7 +5,7 @@ import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/domain/event_timing.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 
-enum TimingType { relative, absolute, age, eventRelative }
+enum TimingType { relative, absolute, age, eventRelative, projectionEnd }
 
 /// Widget for selecting event timing
 class TimingSelector extends StatefulWidget {
@@ -64,6 +64,9 @@ class _TimingSelectorState extends State<TimingSelector> {
           _selectedEventId = eventId;
           _selectedBoundary = boundary;
         },
+        projectionEnd: () {
+          _selectedType = TimingType.projectionEnd;
+        },
       );
     } else {
       _selectedType = TimingType.relative;
@@ -108,6 +111,9 @@ class _TimingSelectorState extends State<TimingSelector> {
               boundary: _selectedBoundary,
             );
           }
+          break;
+        case TimingType.projectionEnd:
+          timing = const EventTiming.projectionEnd();
           break;
       }
     } catch (e) {
@@ -343,6 +349,8 @@ class _TimingSelectorState extends State<TimingSelector> {
         return 'When individual reaches age';
       case TimingType.eventRelative:
         return 'Relative to an event';
+      case TimingType.projectionEnd:
+        return 'End of projection (when both deceased)';
     }
   }
 }

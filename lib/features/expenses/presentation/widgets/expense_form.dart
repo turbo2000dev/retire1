@@ -39,7 +39,6 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
 
   EventTiming? _startTiming;
   EventTiming? _endTiming;
-  bool _hasEndDate = false;
 
   @override
   void initState() {
@@ -55,13 +54,16 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
         health: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
         family: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
       );
+    } else {
+      // Default timings for new expenses
+      _startTiming = const EventTiming.relative(yearsFromStart: 0);
+      _endTiming = const EventTiming.projectionEnd();
     }
   }
 
-  void _initializeFields(EventTiming startTiming, EventTiming? endTiming, double annualAmount) {
+  void _initializeFields(EventTiming startTiming, EventTiming endTiming, double annualAmount) {
     _startTiming = startTiming;
     _endTiming = endTiming;
-    _hasEndDate = endTiming != null;
     _annualAmountController.text = annualAmount.toStringAsFixed(0);
   }
 
@@ -81,9 +83,9 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
       return;
     }
 
-    if (_hasEndDate && _endTiming == null) {
+    if (_endTiming == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please configure end timing or disable end date')),
+        const SnackBar(content: Text('Please configure end timing')),
       );
       return;
     }
@@ -107,37 +109,37 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
         housing: (_, __, ___, ____) => Expense.housing(
           id: id,
           startTiming: _startTiming!,
-          endTiming: _hasEndDate ? _endTiming : null,
+          endTiming: _endTiming!,
           annualAmount: annualAmount,
         ),
         transport: (_, __, ___, ____) => Expense.transport(
           id: id,
           startTiming: _startTiming!,
-          endTiming: _hasEndDate ? _endTiming : null,
+          endTiming: _endTiming!,
           annualAmount: annualAmount,
         ),
         dailyLiving: (_, __, ___, ____) => Expense.dailyLiving(
           id: id,
           startTiming: _startTiming!,
-          endTiming: _hasEndDate ? _endTiming : null,
+          endTiming: _endTiming!,
           annualAmount: annualAmount,
         ),
         recreation: (_, __, ___, ____) => Expense.recreation(
           id: id,
           startTiming: _startTiming!,
-          endTiming: _hasEndDate ? _endTiming : null,
+          endTiming: _endTiming!,
           annualAmount: annualAmount,
         ),
         health: (_, __, ___, ____) => Expense.health(
           id: id,
           startTiming: _startTiming!,
-          endTiming: _hasEndDate ? _endTiming : null,
+          endTiming: _endTiming!,
           annualAmount: annualAmount,
         ),
         family: (_, __, ___, ____) => Expense.family(
           id: id,
           startTiming: _startTiming!,
-          endTiming: _hasEndDate ? _endTiming : null,
+          endTiming: _endTiming!,
           annualAmount: annualAmount,
         ),
       );
@@ -148,7 +150,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
           expense = Expense.housing(
             id: id,
             startTiming: _startTiming!,
-            endTiming: _hasEndDate ? _endTiming : null,
+            endTiming: _endTiming!,
             annualAmount: annualAmount,
           );
           break;
@@ -156,7 +158,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
           expense = Expense.transport(
             id: id,
             startTiming: _startTiming!,
-            endTiming: _hasEndDate ? _endTiming : null,
+            endTiming: _endTiming!,
             annualAmount: annualAmount,
           );
           break;
@@ -164,7 +166,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
           expense = Expense.dailyLiving(
             id: id,
             startTiming: _startTiming!,
-            endTiming: _hasEndDate ? _endTiming : null,
+            endTiming: _endTiming!,
             annualAmount: annualAmount,
           );
           break;
@@ -172,7 +174,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
           expense = Expense.recreation(
             id: id,
             startTiming: _startTiming!,
-            endTiming: _hasEndDate ? _endTiming : null,
+            endTiming: _endTiming!,
             annualAmount: annualAmount,
           );
           break;
@@ -180,7 +182,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
           expense = Expense.health(
             id: id,
             startTiming: _startTiming!,
-            endTiming: _hasEndDate ? _endTiming : null,
+            endTiming: _endTiming!,
             annualAmount: annualAmount,
           );
           break;
@@ -188,7 +190,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
           expense = Expense.family(
             id: id,
             startTiming: _startTiming!,
-            endTiming: _hasEndDate ? _endTiming : null,
+            endTiming: _endTiming!,
             annualAmount: annualAmount,
           );
           break;
@@ -266,65 +268,31 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
             ),
             const SizedBox(height: 16),
 
-            // End timing (optional)
+            // End timing (required, defaults to projection end)
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'End',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          'Optional',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Switch(
-                          value: _hasEndDate,
-                          onChanged: (value) {
-                            setState(() {
-                              _hasEndDate = value;
-                              if (!value) {
-                                _endTiming = null;
-                              }
-                            });
-                          },
-                        ),
-                      ],
+                    Text(
+                      'End',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
-                    if (!_hasEndDate) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        'This expense will continue indefinitely',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ] else ...[
-                      const SizedBox(height: 8),
-                      TimingSelector(
-                        initialTiming: _endTiming,
-                        individuals: widget.individuals,
-                        events: widget.events,
-                        onChanged: (timing) {
-                          setState(() {
-                            _endTiming = timing;
-                          });
-                        },
-                      ),
-                    ],
+                    const SizedBox(height: 8),
+                    TimingSelector(
+                      initialTiming: _endTiming,
+                      individuals: widget.individuals,
+                      events: widget.events,
+                      onChanged: (timing) {
+                        setState(() {
+                          _endTiming = timing;
+                        });
+                      },
+                    ),
                   ],
                 ),
               ),

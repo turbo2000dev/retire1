@@ -12,9 +12,9 @@ _$HousingExpenseImpl _$$HousingExpenseImplFromJson(Map<String, dynamic> json) =>
       startTiming: EventTiming.fromJson(
         json['startTiming'] as Map<String, dynamic>,
       ),
-      endTiming: json['endTiming'] == null
-          ? null
-          : EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
+      endTiming: EventTiming.fromJson(
+        json['endTiming'] as Map<String, dynamic>,
+      ),
       annualAmount: (json['annualAmount'] as num).toDouble(),
       $type: json['runtimeType'] as String?,
     );
@@ -24,7 +24,7 @@ Map<String, dynamic> _$$HousingExpenseImplToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'startTiming': instance.startTiming.toJson(),
-  'endTiming': instance.endTiming?.toJson(),
+  'endTiming': instance.endTiming.toJson(),
   'annualAmount': instance.annualAmount,
   'runtimeType': instance.$type,
 };
@@ -36,9 +36,7 @@ _$TransportExpenseImpl _$$TransportExpenseImplFromJson(
   startTiming: EventTiming.fromJson(
     json['startTiming'] as Map<String, dynamic>,
   ),
-  endTiming: json['endTiming'] == null
-      ? null
-      : EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
+  endTiming: EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
   annualAmount: (json['annualAmount'] as num).toDouble(),
   $type: json['runtimeType'] as String?,
 );
@@ -48,7 +46,7 @@ Map<String, dynamic> _$$TransportExpenseImplToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'startTiming': instance.startTiming.toJson(),
-  'endTiming': instance.endTiming?.toJson(),
+  'endTiming': instance.endTiming.toJson(),
   'annualAmount': instance.annualAmount,
   'runtimeType': instance.$type,
 };
@@ -60,9 +58,7 @@ _$DailyLivingExpenseImpl _$$DailyLivingExpenseImplFromJson(
   startTiming: EventTiming.fromJson(
     json['startTiming'] as Map<String, dynamic>,
   ),
-  endTiming: json['endTiming'] == null
-      ? null
-      : EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
+  endTiming: EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
   annualAmount: (json['annualAmount'] as num).toDouble(),
   $type: json['runtimeType'] as String?,
 );
@@ -72,7 +68,7 @@ Map<String, dynamic> _$$DailyLivingExpenseImplToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'startTiming': instance.startTiming.toJson(),
-  'endTiming': instance.endTiming?.toJson(),
+  'endTiming': instance.endTiming.toJson(),
   'annualAmount': instance.annualAmount,
   'runtimeType': instance.$type,
 };
@@ -84,9 +80,7 @@ _$RecreationExpenseImpl _$$RecreationExpenseImplFromJson(
   startTiming: EventTiming.fromJson(
     json['startTiming'] as Map<String, dynamic>,
   ),
-  endTiming: json['endTiming'] == null
-      ? null
-      : EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
+  endTiming: EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
   annualAmount: (json['annualAmount'] as num).toDouble(),
   $type: json['runtimeType'] as String?,
 );
@@ -96,7 +90,7 @@ Map<String, dynamic> _$$RecreationExpenseImplToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'startTiming': instance.startTiming.toJson(),
-  'endTiming': instance.endTiming?.toJson(),
+  'endTiming': instance.endTiming.toJson(),
   'annualAmount': instance.annualAmount,
   'runtimeType': instance.$type,
 };
@@ -107,9 +101,9 @@ _$HealthExpenseImpl _$$HealthExpenseImplFromJson(Map<String, dynamic> json) =>
       startTiming: EventTiming.fromJson(
         json['startTiming'] as Map<String, dynamic>,
       ),
-      endTiming: json['endTiming'] == null
-          ? null
-          : EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
+      endTiming: EventTiming.fromJson(
+        json['endTiming'] as Map<String, dynamic>,
+      ),
       annualAmount: (json['annualAmount'] as num).toDouble(),
       $type: json['runtimeType'] as String?,
     );
@@ -118,7 +112,7 @@ Map<String, dynamic> _$$HealthExpenseImplToJson(_$HealthExpenseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'startTiming': instance.startTiming.toJson(),
-      'endTiming': instance.endTiming?.toJson(),
+      'endTiming': instance.endTiming.toJson(),
       'annualAmount': instance.annualAmount,
       'runtimeType': instance.$type,
     };
@@ -129,9 +123,9 @@ _$FamilyExpenseImpl _$$FamilyExpenseImplFromJson(Map<String, dynamic> json) =>
       startTiming: EventTiming.fromJson(
         json['startTiming'] as Map<String, dynamic>,
       ),
-      endTiming: json['endTiming'] == null
-          ? null
-          : EventTiming.fromJson(json['endTiming'] as Map<String, dynamic>),
+      endTiming: EventTiming.fromJson(
+        json['endTiming'] as Map<String, dynamic>,
+      ),
       annualAmount: (json['annualAmount'] as num).toDouble(),
       $type: json['runtimeType'] as String?,
     );
@@ -140,7 +134,7 @@ Map<String, dynamic> _$$FamilyExpenseImplToJson(_$FamilyExpenseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'startTiming': instance.startTiming.toJson(),
-      'endTiming': instance.endTiming?.toJson(),
+      'endTiming': instance.endTiming.toJson(),
       'annualAmount': instance.annualAmount,
       'runtimeType': instance.$type,
     };

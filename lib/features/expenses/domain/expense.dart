@@ -11,7 +11,7 @@ class Expense with _$Expense {
   const factory Expense.housing({
     required String id,
     required EventTiming startTiming,
-    EventTiming? endTiming, // null = no end date, continues forever
+    required EventTiming endTiming, // Required: default to projectionEnd()
     required double annualAmount,
   }) = HousingExpense;
 
@@ -19,7 +19,7 @@ class Expense with _$Expense {
   const factory Expense.transport({
     required String id,
     required EventTiming startTiming,
-    EventTiming? endTiming,
+    required EventTiming endTiming,
     required double annualAmount,
   }) = TransportExpense;
 
@@ -27,7 +27,7 @@ class Expense with _$Expense {
   const factory Expense.dailyLiving({
     required String id,
     required EventTiming startTiming,
-    EventTiming? endTiming,
+    required EventTiming endTiming,
     required double annualAmount,
   }) = DailyLivingExpense;
 
@@ -35,7 +35,7 @@ class Expense with _$Expense {
   const factory Expense.recreation({
     required String id,
     required EventTiming startTiming,
-    EventTiming? endTiming,
+    required EventTiming endTiming,
     required double annualAmount,
   }) = RecreationExpense;
 
@@ -43,7 +43,7 @@ class Expense with _$Expense {
   const factory Expense.health({
     required String id,
     required EventTiming startTiming,
-    EventTiming? endTiming,
+    required EventTiming endTiming,
     required double annualAmount,
   }) = HealthExpense;
 
@@ -51,7 +51,7 @@ class Expense with _$Expense {
   const factory Expense.family({
     required String id,
     required EventTiming startTiming,
-    EventTiming? endTiming,
+    required EventTiming endTiming,
     required double annualAmount,
   }) = FamilyExpense;
 

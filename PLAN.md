@@ -12,68 +12,85 @@
 
 ### Tasks:
 1. **Create new expense domain models:**
-   - [ ] Create `lib/features/expenses/domain/expense_category.dart`
-   - [ ] Use Freezed unions for 6 expense types:
+   - [x] Create `lib/features/expenses/domain/expense_category.dart`
+   - [x] Use Freezed unions for 6 expense types:
      - `HousingExpense(id, startTiming, endTiming, annualAmount)`
      - `TransportExpense(id, startTiming, endTiming, annualAmount)`
      - `DailyLivingExpense(id, startTiming, endTiming, annualAmount)`
      - `RecreationExpense(id, startTiming, endTiming, annualAmount)`
      - `HealthExpense(id, startTiming, endTiming, annualAmount)`
      - `FamilyExpense(id, startTiming, endTiming, annualAmount)`
-   - [ ] Each expense has start and end timing (both use EventTiming)
-   - [ ] Run build_runner
+   - [x] Each expense has start and end timing (both use EventTiming)
+   - [x] Run build_runner
 
 2. **Keep lifecycle events:**
-   - [ ] Retirement, Death, Real Estate Transaction remain unchanged
-   - [ ] These are kept in the existing Event model
+   - [x] Retirement, Death, Real Estate Transaction remain unchanged
+   - [x] These are kept in the existing Event model
 
 3. **Create expenses screen/tab:**
-   - [ ] Add new tab or section to Assets & Events screen
-   - [ ] Or create dedicated Expenses screen with navigation
-   - [ ] List all 6 expense categories
-   - [ ] Show start/end timing for each
-   - [ ] Show annual amount with currency formatting
+   - [x] Add new tab or section to Assets & Events screen
+   - [x] Or create dedicated Expenses screen with navigation
+   - [x] List all 6 expense categories
+   - [x] Show start/end timing for each
+   - [x] Show annual amount with currency formatting
 
 4. **Create expense forms:**
-   - [ ] Create `expense_form.dart` - reusable for all categories
-   - [ ] Category name (read-only/title)
-   - [ ] Start timing selector (reuse TimingSelector)
-   - [ ] End timing selector (reuse TimingSelector)
-   - [ ] Annual amount field (currency format)
-   - [ ] Form validation
+   - [x] Create `expense_form.dart` - reusable for all categories
+   - [x] Category name (read-only/title)
+   - [x] Start timing selector (reuse TimingSelector)
+   - [x] End timing selector (reuse TimingSelector)
+   - [x] Annual amount field (currency format)
+   - [x] Form validation
 
 5. **Create expense card component:**
-   - [ ] Category-specific icons and colors
-   - [ ] Display start and end timing
-   - [ ] Display annual amount
-   - [ ] Edit and delete buttons
+   - [x] Category-specific icons and colors
+   - [x] Display start and end timing
+   - [x] Display annual amount
+   - [x] Edit and delete buttons
 
 6. **Create expenses provider:**
-   - [ ] ExpensesNotifier with CRUD operations
-   - [ ] Load from Firestore
-   - [ ] Real-time updates
+   - [x] ExpensesNotifier with CRUD operations
+   - [x] Load from Firestore
+   - [x] Real-time updates
 
 7. **Create expense repository:**
-   - [ ] Store in `projects/{projectId}/expenses` collection
-   - [ ] Handle nested union serialization (timing within expense)
-   - [ ] CRUD operations
+   - [x] Store in `projects/{projectId}/expenses` collection
+   - [x] Handle nested union serialization (timing within expense)
+   - [x] CRUD operations
 
 8. **Update projection calculator:**
-   - [ ] Calculate total expenses for each year
-   - [ ] Check if expense is active based on start/end timing
-   - [ ] Sum all active expenses
-   - [ ] Apply inflation to expense amounts
+   - [x] Calculate total expenses for each year
+   - [x] Check if expense is active based on start/end timing
+   - [x] Sum all active expenses
+   - [x] Apply inflation to expense amounts
+
+9. **Add import/export functionality:**
+   - [x] Update ProjectExportService to export expenses (version 1.2)
+   - [x] Update ProjectImportService to import expenses with ID remapping
+   - [x] Update ImportPreviewDialog to show expense counts by category
+   - [x] Update BaseParametersScreen to load/save expenses during import/export
+   - [x] Handle timing reference remapping (individual and event IDs)
 
 **Manual Test Checklist:**
-- [ ] Can add/edit all 6 expense categories
-- [ ] Start and end timing work correctly
-- [ ] Timing types (relative, absolute, age) all work
-- [ ] Annual amounts save and load correctly
-- [ ] Expenses persist to Firestore
-- [ ] Nested timing serialization works
-- [ ] Projection calculator uses expenses
+- [x] Can add/edit all 6 expense categories
+- [x] Start and end timing work correctly
+- [x] Timing types (relative, absolute, age, eventRelative, projectionEnd) all work
+- [x] Annual amounts save and load correctly
+- [x] Expenses persist to Firestore
+- [x] Nested timing serialization works
+- [x] Projection calculator uses expenses
+- [x] Expenses export to JSON correctly
+- [x] Expenses import from JSON with ID remapping
+- [x] Inflation adjustment applies correctly in projections
 
-**Deliverable:** 6 expense categories with start/end timing, fully integrated with projection calculator
+**Deliverable:** 6 expense categories with start/end timing, fully integrated with projection calculator, import/export functionality, and inflation-adjusted projections
+
+**Completion Notes:**
+- Export version bumped to 1.2 to include expenses
+- Import handles ID remapping for individual and event references in timing
+- Projection engine validated with comprehensive test data
+- All 5 timing types working correctly: relative, absolute, age, eventRelative, projectionEnd
+- Inflation formula validated: `adjustedAmount = baseAmount × (1 + inflationRate)^yearsFromStart`
 
 ---
 

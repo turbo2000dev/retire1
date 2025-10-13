@@ -118,6 +118,36 @@ class ImportPreviewDialog extends StatelessWidget {
               ],
               const SizedBox(height: 16),
 
+              // Expenses
+              _buildSection(
+                theme,
+                'Expenses',
+                _getTotalExpenseCount().toString(),
+                Icons.payments_outlined,
+              ),
+              if (_getTotalExpenseCount() > 0) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: preview.expenseCountsByCategory.entries
+                        .where((e) => e.value > 0)
+                        .map((e) => Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                '${e.key}: ${e.value}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+
               // Scenarios
               _buildSection(
                 theme,
@@ -287,5 +317,9 @@ class ImportPreviewDialog extends StatelessWidget {
 
   int _getTotalEventCount() {
     return preview.eventCountsByType.values.fold(0, (sum, count) => sum + count);
+  }
+
+  int _getTotalExpenseCount() {
+    return preview.expenseCountsByCategory.values.fold(0, (sum, count) => sum + count);
   }
 }

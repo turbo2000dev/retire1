@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/domain/event_timing.dart';
+import 'package:retire1/features/expenses/domain/expense.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
@@ -17,6 +18,7 @@ class ProjectionCalculator {
   /// [scenario] The scenario with potential overrides
   /// [assets] List of assets to project
   /// [events] List of events to apply during projection
+  /// [expenses] List of expenses to include in projection
   /// [startYear] First year of projection (defaults to current year)
   /// [projectionYears] Number of years to project (defaults to 40)
   /// [inflationRate] Annual inflation rate as decimal (defaults to 0.02)
@@ -26,6 +28,7 @@ class ProjectionCalculator {
     required Scenario scenario,
     required List<Asset> assets,
     required List<Event> events,
+    required List<Expense> expenses,
     int? startYear,
     int projectionYears = 40,
     double inflationRate = 0.02,
@@ -78,8 +81,22 @@ class ProjectionCalculator {
         effectiveAssets,
       );
 
-      final totalIncome = eventResults['income'] ?? 0.0;
-      final totalExpenses = eventResults['expenses'] ?? 0.0;
+      final eventIncome = eventResults['income'] ?? 0.0;
+      final eventExpenses = eventResults['expenses'] ?? 0.0;
+
+      // Calculate expenses from Expense entities (adjusted for inflation)
+      final expenseAmount = _calculateExpensesForYear(
+        expenses,
+        year,
+        yearsFromStart,
+        project.individuals,
+        calculationStartYear,
+        events,
+        inflationRate,
+      );
+
+      final totalIncome = eventIncome;
+      final totalExpenses = eventExpenses + expenseAmount;
       final netCashFlow = totalIncome - totalExpenses;
 
       // Calculate asset growth (after events)
@@ -293,6 +310,7 @@ class ProjectionCalculator {
         // In future, events could have duration
         return resolvedYear == year;
       },
+      projectionEnd: () => false, // Projection end is never "in" a specific year
     );
   }
 
@@ -358,6 +376,7 @@ class ProjectionCalculator {
         // In future, events could have duration and end could be different from start
         return referencedYear;
       },
+      projectionEnd: () => null, // Projection end cannot be resolved to a specific year
     );
   }
 
@@ -523,5 +542,141 @@ class ProjectionCalculator {
         },
       );
     }
+  }
+
+  /// Calculate total expenses for a year from Expense entities
+  ///
+  /// Expenses are entered in "today's dollars" (constant dollars at year 0)
+  /// and are adjusted for inflation each year using the formula:
+  /// adjustedAmount = baseAmount * (1 + inflationRate)^yearsFromStart
+  double _calculateExpensesForYear(
+    List<Expense> expenses,
+    int year,
+    int yearsFromStart,
+    List<Individual> individuals,
+    int startYear,
+    List<Event> events,
+    double inflationRate,
+  ) {
+    double totalExpenses = 0.0;
+
+    for (final expense in expenses) {
+      // Extract timing information
+      final startTiming = expense.when(
+        housing: (_, startTiming, __, ___) => startTiming,
+        transport: (_, startTiming, __, ___) => startTiming,
+        dailyLiving: (_, startTiming, __, ___) => startTiming,
+        recreation: (_, startTiming, __, ___) => startTiming,
+        health: (_, startTiming, __, ___) => startTiming,
+        family: (_, startTiming, __, ___) => startTiming,
+      );
+
+      final endTiming = expense.when(
+        housing: (_, __, endTiming, ___) => endTiming,
+        transport: (_, __, endTiming, ___) => endTiming,
+        dailyLiving: (_, __, endTiming, ___) => endTiming,
+        recreation: (_, __, endTiming, ___) => endTiming,
+        health: (_, __, endTiming, ___) => endTiming,
+        family: (_, __, endTiming, ___) => endTiming,
+      );
+
+      // Check if expense is active this year
+      final hasStarted = _hasTimingOccurred(
+        startTiming,
+        year,
+        yearsFromStart,
+        individuals,
+        startYear,
+        events,
+      );
+
+      final hasEnded = _hasTimingOccurred(
+        endTiming,
+        year,
+        yearsFromStart,
+        individuals,
+        startYear,
+        events,
+      );
+
+      // Expense is active if it has started but not yet ended
+      // For projectionEnd timing, hasEnded will be false (never ends)
+      if (hasStarted && !hasEnded) {
+        final baseAmount = expense.when(
+          housing: (_, __, ___, annualAmount) => annualAmount,
+          transport: (_, __, ___, annualAmount) => annualAmount,
+          dailyLiving: (_, __, ___, annualAmount) => annualAmount,
+          recreation: (_, __, ___, annualAmount) => annualAmount,
+          health: (_, __, ___, annualAmount) => annualAmount,
+          family: (_, __, ___, annualAmount) => annualAmount,
+        );
+
+        // Apply inflation adjustment
+        // Base amount is in year 0 dollars, adjust for years from start
+        final inflationMultiplier = _calculateInflationMultiplier(inflationRate, yearsFromStart);
+        final adjustedAmount = baseAmount * inflationMultiplier;
+
+        totalExpenses += adjustedAmount;
+      }
+    }
+
+    return totalExpenses;
+  }
+
+  /// Calculate inflation multiplier for a given number of years
+  ///
+  /// Formula: (1 + inflationRate)^years
+  /// Example: 2% inflation over 5 years = 1.02^5 = 1.10408
+  double _calculateInflationMultiplier(double inflationRate, int years) {
+    if (years == 0) return 1.0;
+
+    double multiplier = 1.0;
+    for (int i = 0; i < years; i++) {
+      multiplier *= (1 + inflationRate);
+    }
+
+    return multiplier;
+  }
+
+  /// Check if a timing has occurred on or before a specific year
+  ///
+  /// For projectionEnd timing, this always returns false (event never occurs)
+  bool _hasTimingOccurred(
+    EventTiming timing,
+    int year,
+    int yearsFromStart,
+    List<Individual> individuals,
+    int startYear,
+    List<Event> events,
+  ) {
+    return timing.when(
+      relative: (years) => years <= yearsFromStart,
+      absolute: (calendarYear) => calendarYear <= year,
+      age: (individualId, targetAge) {
+        final individual = individuals.where((i) => i.id == individualId).firstOrNull;
+        if (individual == null) return false;
+        final currentAge = _calculateAge(individual.birthdate, year);
+        return currentAge >= targetAge;
+      },
+      eventRelative: (eventId, boundary) {
+        // Resolve when the referenced event occurs
+        final resolvedYear = _resolveEventYear(
+          eventId,
+          events,
+          individuals,
+          startYear,
+          {},
+        );
+
+        if (resolvedYear == null) {
+          log('Warning: Could not resolve event-relative timing for event $eventId');
+          return false;
+        }
+
+        // Event-relative timing has occurred if the event year has passed
+        return resolvedYear <= year;
+      },
+      projectionEnd: () => false, // Projection end never "occurs" - expenses continue until end
+    );
   }
 }

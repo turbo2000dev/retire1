@@ -209,6 +209,7 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
         final boundaryText = boundary == EventBoundary.start ? 'start' : 'end';
         return 'At $boundaryText of event';
       },
+      projectionEnd: () => 'End of projection',
     );
   }
 

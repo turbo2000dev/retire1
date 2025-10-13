@@ -238,6 +238,7 @@ class ExpenseCard extends StatelessWidget {
         final boundaryText = t.boundary == EventBoundary.start ? 'start' : 'end';
         return 'At $boundaryText of event';
       },
+      projectionEnd: (t) => 'Until end',
     );
   }
 

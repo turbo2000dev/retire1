@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/events/domain/event.dart';
+import 'package:retire1/features/expenses/domain/expense.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
@@ -13,6 +14,7 @@ class ImportPreview {
   final int individualCount;
   final Map<String, int> assetCountsByType;
   final Map<String, int> eventCountsByType;
+  final Map<String, int> expenseCountsByCategory;
   final int scenarioCount;
   final Map<String, dynamic> economicAssumptions;
 
@@ -21,6 +23,7 @@ class ImportPreview {
     required this.individualCount,
     required this.assetCountsByType,
     required this.eventCountsByType,
+    required this.expenseCountsByCategory,
     required this.scenarioCount,
     required this.economicAssumptions,
   });
@@ -31,12 +34,14 @@ class ImportedProjectData {
   final Project project;
   final List<Asset> assets;
   final List<Event> events;
+  final List<Expense> expenses;
   final List<Scenario> scenarios;
 
   ImportedProjectData({
     required this.project,
     required this.assets,
     required this.events,
+    required this.expenses,
     required this.scenarios,
   });
 }
@@ -56,7 +61,7 @@ class ProjectImportService {
       }
 
       final version = data['exportVersion'] as String;
-      if (version != '1.0' && version != '1.1') {
+      if (version != '1.0' && version != '1.1' && version != '1.2') {
         throw Exception('Unsupported export version: $version');
       }
 
@@ -143,6 +148,45 @@ class ProjectImportService {
         }
       }
 
+      // Count expenses by category
+      final expenses = (data['expenses'] as List<dynamic>?) ?? [];
+      final expenseCountsByCategory = <String, int>{
+        'Housing': 0,
+        'Transport': 0,
+        'Daily Living': 0,
+        'Recreation': 0,
+        'Health': 0,
+        'Family': 0,
+      };
+
+      for (final expenseJson in expenses) {
+        final expense = expenseJson as Map<String, dynamic>;
+        final runtimeType = expense['runtimeType'] as String?;
+
+        switch (runtimeType) {
+          case 'housing':
+            expenseCountsByCategory['Housing'] = expenseCountsByCategory['Housing']! + 1;
+            break;
+          case 'transport':
+            expenseCountsByCategory['Transport'] = expenseCountsByCategory['Transport']! + 1;
+            break;
+          case 'dailyLiving':
+            expenseCountsByCategory['Daily Living'] = expenseCountsByCategory['Daily Living']! + 1;
+            break;
+          case 'recreation':
+            expenseCountsByCategory['Recreation'] = expenseCountsByCategory['Recreation']! + 1;
+            break;
+          case 'health':
+            expenseCountsByCategory['Health'] = expenseCountsByCategory['Health']! + 1;
+            break;
+          case 'family':
+            expenseCountsByCategory['Family'] = expenseCountsByCategory['Family']! + 1;
+            break;
+          default:
+            throw Exception('Unknown expense category: $runtimeType');
+        }
+      }
+
       // Count scenarios
       final scenarios = (data['scenarios'] as List<dynamic>?) ?? [];
       final scenarioCount = scenarios.length;
@@ -161,6 +205,7 @@ class ProjectImportService {
         individualCount: individualCount,
         assetCountsByType: assetCountsByType,
         eventCountsByType: eventCountsByType,
+        expenseCountsByCategory: expenseCountsByCategory,
         scenarioCount: scenarioCount,
         economicAssumptions: economicAssumptions,
       );
@@ -342,6 +387,60 @@ class ProjectImportService {
       }).toList();
       log('Events imported successfully');
 
+      // Import expenses with remapped IDs and timing references
+      final expenses = (data['expenses'] as List<dynamic>?) ?? [];
+      log('Importing ${expenses.length} expenses');
+      final importedExpenses = expenses.map((json) {
+        try {
+          final expenseData = Map<String, dynamic>.from(json as Map<String, dynamic>);
+          final oldId = expenseData['id'] as String;
+          log('Processing expense: $oldId (type: ${expenseData['runtimeType']})');
+
+          // Generate new expense ID
+          final newId = _uuid.v4();
+          expenseData['id'] = newId;
+
+          // Helper function to remap timing references
+          void remapTiming(String timingKey) {
+            if (expenseData.containsKey(timingKey)) {
+              final timingData = expenseData[timingKey] as Map<String, dynamic>;
+
+              // Remap individual ID for age-based timing
+              if (timingData.containsKey('individualId') && timingData['individualId'] != null) {
+                final oldIndividualId = timingData['individualId'] as String;
+                if (individualIdMap.containsKey(oldIndividualId)) {
+                  timingData['individualId'] = individualIdMap[oldIndividualId]!;
+                } else {
+                  throw Exception('Expense timing references unknown individual ID: $oldIndividualId');
+                }
+              }
+
+              // Remap event ID for event-relative timing
+              if (timingData.containsKey('eventId') && timingData['eventId'] != null) {
+                final oldEventId = timingData['eventId'] as String;
+                if (eventIdMap.containsKey(oldEventId)) {
+                  timingData['eventId'] = eventIdMap[oldEventId]!;
+                } else {
+                  throw Exception('Expense timing references unknown event ID: $oldEventId');
+                }
+              }
+            }
+          }
+
+          // Remap both start and end timing references
+          remapTiming('startTiming');
+          remapTiming('endTiming');
+
+          log('Creating Expense from JSON for: $oldId');
+          return Expense.fromJson(expenseData);
+        } catch (e, stack) {
+          log('Error importing expense: $e', error: e, stackTrace: stack);
+          log('Expense JSON: $json');
+          rethrow;
+        }
+      }).toList();
+      log('Expenses imported successfully');
+
       // Import scenarios with remapped override references
       final scenarios = (data['scenarios'] as List<dynamic>?) ?? [];
       log('Importing ${scenarios.length} scenarios');
@@ -426,6 +525,7 @@ class ProjectImportService {
         project: project,
         assets: importedAssets,
         events: importedEvents,
+        expenses: importedExpenses,
         scenarios: importedScenarios,
       );
     } on FormatException catch (e) {

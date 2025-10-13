@@ -17,6 +17,9 @@ import 'package:retire1/features/auth/presentation/providers/auth_provider.dart'
 import 'package:retire1/features/events/data/event_repository.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/presentation/providers/events_provider.dart';
+import 'package:retire1/features/expenses/data/expense_repository.dart';
+import 'package:retire1/features/expenses/domain/expense.dart';
+import 'package:retire1/features/expenses/presentation/providers/expenses_provider.dart';
 import 'package:retire1/features/project/data/project_repository.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
@@ -386,6 +389,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     try {
       List<Asset>? assets;
       List<Event>? events;
+      List<Expense>? expenses;
       List<Scenario>? scenarios;
       final warnings = <String>[];
 
@@ -397,6 +401,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       // Refresh all providers to ensure fresh data
       ref.invalidate(assetsProvider);
       ref.invalidate(eventsProvider);
+      ref.invalidate(expensesProvider);
       ref.invalidate(scenariosProvider);
 
       // Wait for stream-based providers to emit data (with generous timeout)
@@ -416,6 +421,14 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         return null;
       });
 
+      expenses = await _waitForProviderData<List<Expense>>(
+        expensesProvider,
+        timeout: const Duration(seconds: 10),
+      ).catchError((e) {
+        warnings.add('Expenses could not be loaded and will not be included');
+        return null;
+      });
+
       scenarios = await _waitForProviderData<List<Scenario>>(
         scenariosProvider,
         timeout: const Duration(seconds: 10),
@@ -430,6 +443,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         project,
         assets: assets,
         events: events,
+        expenses: expenses,
         scenarios: scenarios,
       );
       final filename = exportService.generateFilename(project);
@@ -591,6 +605,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       // (Can't use providers because they depend on currentProjectProvider being set)
       final assetRepository = AssetRepository(projectId: importedData.project.id);
       final eventRepository = EventRepository(projectId: importedData.project.id);
+      final expenseRepository = ExpenseRepository(projectId: importedData.project.id);
       final scenarioRepository = ScenarioRepository(projectId: importedData.project.id);
 
       // Step 8: Save assets to Firestore
@@ -603,12 +618,17 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         await eventRepository.createEvent(event);
       }
 
-      // Step 10: Save scenarios to Firestore
+      // Step 10: Save expenses to Firestore
+      for (final expense in importedData.expenses) {
+        await expenseRepository.createExpense(expense);
+      }
+
+      // Step 11: Save scenarios to Firestore
       for (final scenario in importedData.scenarios) {
         await scenarioRepository.createScenario(scenario);
       }
 
-      // Step 11: Switch to the newly imported project
+      // Step 12: Switch to the newly imported project
       ref.read(currentProjectProvider.notifier).selectProject(importedData.project.id);
 
       if (mounted) {

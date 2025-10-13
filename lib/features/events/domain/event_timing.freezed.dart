@@ -25,6 +25,8 @@ EventTiming _$EventTimingFromJson(Map<String, dynamic> json) {
       return AgeTiming.fromJson(json);
     case 'eventRelative':
       return EventRelativeTiming.fromJson(json);
+    case 'projectionEnd':
+      return ProjectionEndTiming.fromJson(json);
 
     default:
       throw CheckedFromJsonException(
@@ -45,6 +47,7 @@ mixin _$EventTiming {
     required TResult Function(String individualId, int age) age,
     required TResult Function(String eventId, EventBoundary boundary)
     eventRelative,
+    required TResult Function() projectionEnd,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -52,6 +55,7 @@ mixin _$EventTiming {
     TResult? Function(int calendarYear)? absolute,
     TResult? Function(String individualId, int age)? age,
     TResult? Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult? Function()? projectionEnd,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -59,6 +63,7 @@ mixin _$EventTiming {
     TResult Function(int calendarYear)? absolute,
     TResult Function(String individualId, int age)? age,
     TResult Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult Function()? projectionEnd,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -67,6 +72,7 @@ mixin _$EventTiming {
     required TResult Function(AbsoluteTiming value) absolute,
     required TResult Function(AgeTiming value) age,
     required TResult Function(EventRelativeTiming value) eventRelative,
+    required TResult Function(ProjectionEndTiming value) projectionEnd,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -74,6 +80,7 @@ mixin _$EventTiming {
     TResult? Function(AbsoluteTiming value)? absolute,
     TResult? Function(AgeTiming value)? age,
     TResult? Function(EventRelativeTiming value)? eventRelative,
+    TResult? Function(ProjectionEndTiming value)? projectionEnd,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -81,6 +88,7 @@ mixin _$EventTiming {
     TResult Function(AbsoluteTiming value)? absolute,
     TResult Function(AgeTiming value)? age,
     TResult Function(EventRelativeTiming value)? eventRelative,
+    TResult Function(ProjectionEndTiming value)? projectionEnd,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 
@@ -199,6 +207,7 @@ class _$RelativeTimingImpl implements RelativeTiming {
     required TResult Function(String individualId, int age) age,
     required TResult Function(String eventId, EventBoundary boundary)
     eventRelative,
+    required TResult Function() projectionEnd,
   }) {
     return relative(yearsFromStart);
   }
@@ -210,6 +219,7 @@ class _$RelativeTimingImpl implements RelativeTiming {
     TResult? Function(int calendarYear)? absolute,
     TResult? Function(String individualId, int age)? age,
     TResult? Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult? Function()? projectionEnd,
   }) {
     return relative?.call(yearsFromStart);
   }
@@ -221,6 +231,7 @@ class _$RelativeTimingImpl implements RelativeTiming {
     TResult Function(int calendarYear)? absolute,
     TResult Function(String individualId, int age)? age,
     TResult Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult Function()? projectionEnd,
     required TResult orElse(),
   }) {
     if (relative != null) {
@@ -236,6 +247,7 @@ class _$RelativeTimingImpl implements RelativeTiming {
     required TResult Function(AbsoluteTiming value) absolute,
     required TResult Function(AgeTiming value) age,
     required TResult Function(EventRelativeTiming value) eventRelative,
+    required TResult Function(ProjectionEndTiming value) projectionEnd,
   }) {
     return relative(this);
   }
@@ -247,6 +259,7 @@ class _$RelativeTimingImpl implements RelativeTiming {
     TResult? Function(AbsoluteTiming value)? absolute,
     TResult? Function(AgeTiming value)? age,
     TResult? Function(EventRelativeTiming value)? eventRelative,
+    TResult? Function(ProjectionEndTiming value)? projectionEnd,
   }) {
     return relative?.call(this);
   }
@@ -258,6 +271,7 @@ class _$RelativeTimingImpl implements RelativeTiming {
     TResult Function(AbsoluteTiming value)? absolute,
     TResult Function(AgeTiming value)? age,
     TResult Function(EventRelativeTiming value)? eventRelative,
+    TResult Function(ProjectionEndTiming value)? projectionEnd,
     required TResult orElse(),
   }) {
     if (relative != null) {
@@ -375,6 +389,7 @@ class _$AbsoluteTimingImpl implements AbsoluteTiming {
     required TResult Function(String individualId, int age) age,
     required TResult Function(String eventId, EventBoundary boundary)
     eventRelative,
+    required TResult Function() projectionEnd,
   }) {
     return absolute(calendarYear);
   }
@@ -386,6 +401,7 @@ class _$AbsoluteTimingImpl implements AbsoluteTiming {
     TResult? Function(int calendarYear)? absolute,
     TResult? Function(String individualId, int age)? age,
     TResult? Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult? Function()? projectionEnd,
   }) {
     return absolute?.call(calendarYear);
   }
@@ -397,6 +413,7 @@ class _$AbsoluteTimingImpl implements AbsoluteTiming {
     TResult Function(int calendarYear)? absolute,
     TResult Function(String individualId, int age)? age,
     TResult Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult Function()? projectionEnd,
     required TResult orElse(),
   }) {
     if (absolute != null) {
@@ -412,6 +429,7 @@ class _$AbsoluteTimingImpl implements AbsoluteTiming {
     required TResult Function(AbsoluteTiming value) absolute,
     required TResult Function(AgeTiming value) age,
     required TResult Function(EventRelativeTiming value) eventRelative,
+    required TResult Function(ProjectionEndTiming value) projectionEnd,
   }) {
     return absolute(this);
   }
@@ -423,6 +441,7 @@ class _$AbsoluteTimingImpl implements AbsoluteTiming {
     TResult? Function(AbsoluteTiming value)? absolute,
     TResult? Function(AgeTiming value)? age,
     TResult? Function(EventRelativeTiming value)? eventRelative,
+    TResult? Function(ProjectionEndTiming value)? projectionEnd,
   }) {
     return absolute?.call(this);
   }
@@ -434,6 +453,7 @@ class _$AbsoluteTimingImpl implements AbsoluteTiming {
     TResult Function(AbsoluteTiming value)? absolute,
     TResult Function(AgeTiming value)? age,
     TResult Function(EventRelativeTiming value)? eventRelative,
+    TResult Function(ProjectionEndTiming value)? projectionEnd,
     required TResult orElse(),
   }) {
     if (absolute != null) {
@@ -558,6 +578,7 @@ class _$AgeTimingImpl implements AgeTiming {
     required TResult Function(String individualId, int age) age,
     required TResult Function(String eventId, EventBoundary boundary)
     eventRelative,
+    required TResult Function() projectionEnd,
   }) {
     return age(individualId, this.age);
   }
@@ -569,6 +590,7 @@ class _$AgeTimingImpl implements AgeTiming {
     TResult? Function(int calendarYear)? absolute,
     TResult? Function(String individualId, int age)? age,
     TResult? Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult? Function()? projectionEnd,
   }) {
     return age?.call(individualId, this.age);
   }
@@ -580,6 +602,7 @@ class _$AgeTimingImpl implements AgeTiming {
     TResult Function(int calendarYear)? absolute,
     TResult Function(String individualId, int age)? age,
     TResult Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult Function()? projectionEnd,
     required TResult orElse(),
   }) {
     if (age != null) {
@@ -595,6 +618,7 @@ class _$AgeTimingImpl implements AgeTiming {
     required TResult Function(AbsoluteTiming value) absolute,
     required TResult Function(AgeTiming value) age,
     required TResult Function(EventRelativeTiming value) eventRelative,
+    required TResult Function(ProjectionEndTiming value) projectionEnd,
   }) {
     return age(this);
   }
@@ -606,6 +630,7 @@ class _$AgeTimingImpl implements AgeTiming {
     TResult? Function(AbsoluteTiming value)? absolute,
     TResult? Function(AgeTiming value)? age,
     TResult? Function(EventRelativeTiming value)? eventRelative,
+    TResult? Function(ProjectionEndTiming value)? projectionEnd,
   }) {
     return age?.call(this);
   }
@@ -617,6 +642,7 @@ class _$AgeTimingImpl implements AgeTiming {
     TResult Function(AbsoluteTiming value)? absolute,
     TResult Function(AgeTiming value)? age,
     TResult Function(EventRelativeTiming value)? eventRelative,
+    TResult Function(ProjectionEndTiming value)? projectionEnd,
     required TResult orElse(),
   }) {
     if (age != null) {
@@ -747,6 +773,7 @@ class _$EventRelativeTimingImpl implements EventRelativeTiming {
     required TResult Function(String individualId, int age) age,
     required TResult Function(String eventId, EventBoundary boundary)
     eventRelative,
+    required TResult Function() projectionEnd,
   }) {
     return eventRelative(eventId, boundary);
   }
@@ -758,6 +785,7 @@ class _$EventRelativeTimingImpl implements EventRelativeTiming {
     TResult? Function(int calendarYear)? absolute,
     TResult? Function(String individualId, int age)? age,
     TResult? Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult? Function()? projectionEnd,
   }) {
     return eventRelative?.call(eventId, boundary);
   }
@@ -769,6 +797,7 @@ class _$EventRelativeTimingImpl implements EventRelativeTiming {
     TResult Function(int calendarYear)? absolute,
     TResult Function(String individualId, int age)? age,
     TResult Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult Function()? projectionEnd,
     required TResult orElse(),
   }) {
     if (eventRelative != null) {
@@ -784,6 +813,7 @@ class _$EventRelativeTimingImpl implements EventRelativeTiming {
     required TResult Function(AbsoluteTiming value) absolute,
     required TResult Function(AgeTiming value) age,
     required TResult Function(EventRelativeTiming value) eventRelative,
+    required TResult Function(ProjectionEndTiming value) projectionEnd,
   }) {
     return eventRelative(this);
   }
@@ -795,6 +825,7 @@ class _$EventRelativeTimingImpl implements EventRelativeTiming {
     TResult? Function(AbsoluteTiming value)? absolute,
     TResult? Function(AgeTiming value)? age,
     TResult? Function(EventRelativeTiming value)? eventRelative,
+    TResult? Function(ProjectionEndTiming value)? projectionEnd,
   }) {
     return eventRelative?.call(this);
   }
@@ -806,6 +837,7 @@ class _$EventRelativeTimingImpl implements EventRelativeTiming {
     TResult Function(AbsoluteTiming value)? absolute,
     TResult Function(AgeTiming value)? age,
     TResult Function(EventRelativeTiming value)? eventRelative,
+    TResult Function(ProjectionEndTiming value)? projectionEnd,
     required TResult orElse(),
   }) {
     if (eventRelative != null) {
@@ -837,4 +869,147 @@ abstract class EventRelativeTiming implements EventTiming {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EventRelativeTimingImplCopyWith<_$EventRelativeTimingImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ProjectionEndTimingImplCopyWith<$Res> {
+  factory _$$ProjectionEndTimingImplCopyWith(
+    _$ProjectionEndTimingImpl value,
+    $Res Function(_$ProjectionEndTimingImpl) then,
+  ) = __$$ProjectionEndTimingImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ProjectionEndTimingImplCopyWithImpl<$Res>
+    extends _$EventTimingCopyWithImpl<$Res, _$ProjectionEndTimingImpl>
+    implements _$$ProjectionEndTimingImplCopyWith<$Res> {
+  __$$ProjectionEndTimingImplCopyWithImpl(
+    _$ProjectionEndTimingImpl _value,
+    $Res Function(_$ProjectionEndTimingImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of EventTiming
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ProjectionEndTimingImpl implements ProjectionEndTiming {
+  const _$ProjectionEndTimingImpl({final String? $type})
+    : $type = $type ?? 'projectionEnd';
+
+  factory _$ProjectionEndTimingImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProjectionEndTimingImplFromJson(json);
+
+  @JsonKey(name: 'runtimeType')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'EventTiming.projectionEnd()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProjectionEndTimingImpl);
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int yearsFromStart) relative,
+    required TResult Function(int calendarYear) absolute,
+    required TResult Function(String individualId, int age) age,
+    required TResult Function(String eventId, EventBoundary boundary)
+    eventRelative,
+    required TResult Function() projectionEnd,
+  }) {
+    return projectionEnd();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int yearsFromStart)? relative,
+    TResult? Function(int calendarYear)? absolute,
+    TResult? Function(String individualId, int age)? age,
+    TResult? Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult? Function()? projectionEnd,
+  }) {
+    return projectionEnd?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int yearsFromStart)? relative,
+    TResult Function(int calendarYear)? absolute,
+    TResult Function(String individualId, int age)? age,
+    TResult Function(String eventId, EventBoundary boundary)? eventRelative,
+    TResult Function()? projectionEnd,
+    required TResult orElse(),
+  }) {
+    if (projectionEnd != null) {
+      return projectionEnd();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(RelativeTiming value) relative,
+    required TResult Function(AbsoluteTiming value) absolute,
+    required TResult Function(AgeTiming value) age,
+    required TResult Function(EventRelativeTiming value) eventRelative,
+    required TResult Function(ProjectionEndTiming value) projectionEnd,
+  }) {
+    return projectionEnd(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(RelativeTiming value)? relative,
+    TResult? Function(AbsoluteTiming value)? absolute,
+    TResult? Function(AgeTiming value)? age,
+    TResult? Function(EventRelativeTiming value)? eventRelative,
+    TResult? Function(ProjectionEndTiming value)? projectionEnd,
+  }) {
+    return projectionEnd?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(RelativeTiming value)? relative,
+    TResult Function(AbsoluteTiming value)? absolute,
+    TResult Function(AgeTiming value)? age,
+    TResult Function(EventRelativeTiming value)? eventRelative,
+    TResult Function(ProjectionEndTiming value)? projectionEnd,
+    required TResult orElse(),
+  }) {
+    if (projectionEnd != null) {
+      return projectionEnd(this);
+    }
+    return orElse();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProjectionEndTimingImplToJson(this);
+  }
+}
+
+abstract class ProjectionEndTiming implements EventTiming {
+  const factory ProjectionEndTiming() = _$ProjectionEndTimingImpl;
+
+  factory ProjectionEndTiming.fromJson(Map<String, dynamic> json) =
+      _$ProjectionEndTimingImpl.fromJson;
 }

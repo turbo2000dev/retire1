@@ -31,6 +31,10 @@ class EventTiming with _$EventTiming {
     required EventBoundary boundary, // start or end of the event
   }) = EventRelativeTiming;
 
+  /// Projection end timing - continues until the end of the projection period
+  /// (when both individuals are deceased)
+  const factory EventTiming.projectionEnd() = ProjectionEndTiming;
+
   factory EventTiming.fromJson(Map<String, dynamic> json) =>
       _$EventTimingFromJson(json);
 }

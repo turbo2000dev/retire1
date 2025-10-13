@@ -3,6 +3,8 @@ import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/presentation/providers/events_provider.dart';
+import 'package:retire1/features/expenses/domain/expense.dart';
+import 'package:retire1/features/expenses/presentation/providers/expenses_provider.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
 import 'package:retire1/features/projection/service/projection_calculator.dart';
@@ -20,6 +22,7 @@ final projectionProvider = FutureProvider.family<Projection?, String>((ref, scen
   final projectState = ref.watch(currentProjectProvider);
   final assetsAsync = ref.watch(assetsProvider);
   final eventsAsync = ref.watch(eventsProvider);
+  final expensesAsync = ref.watch(expensesProvider);
   final scenariosAsync = ref.watch(scenariosProvider);
 
   // Return null if project not selected
@@ -42,6 +45,12 @@ final projectionProvider = FutureProvider.family<Projection?, String>((ref, scen
     error: (_, __) => Future.value(<Event>[]),
   );
 
+  final expenses = await expensesAsync.when(
+    data: (data) => Future.value(data),
+    loading: () => Future.value(<Expense>[]),
+    error: (_, __) => Future.value(<Expense>[]),
+  );
+
   final scenarios = await scenariosAsync.when(
     data: (data) => Future.value(data),
     loading: () => Future.value(<Scenario>[]),
@@ -61,6 +70,7 @@ final projectionProvider = FutureProvider.family<Projection?, String>((ref, scen
     scenario: scenario,
     assets: assets,
     events: events,
+    expenses: expenses,
   );
 });
 

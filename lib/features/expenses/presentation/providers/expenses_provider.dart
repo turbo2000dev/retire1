@@ -1,75 +1,120 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retire1/features/expenses/domain/expense.dart';
+import 'dart:async';
+import 'dart:developer';
 
-/// Mock in-memory expenses provider for Checkpoint 2
-/// Will be replaced with Firestore integration in Checkpoint 3
-class ExpensesNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
-  ExpensesNotifier() : super(const AsyncValue.data([]));
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:retire1/features/expenses/data/expense_repository.dart';
+import 'package:retire1/features/expenses/domain/expense.dart';
+import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
+
+/// Repository provider that creates ExpenseRepository based on current project
+final expenseRepositoryProvider = Provider<ExpenseRepository?>((ref) {
+  final authState = ref.watch(authNotifierProvider);
+  final projectState = ref.watch(currentProjectProvider);
+
+  if (authState is! Authenticated) {
+    return null;
+  }
+
+  if (projectState is! ProjectSelected) {
+    return null;
+  }
+
+  return ExpenseRepository(projectId: projectState.project.id);
+});
+
+/// Provider for managing expenses with Firestore integration
+class ExpensesNotifier extends AsyncNotifier<List<Expense>> {
+  StreamSubscription<List<Expense>>? _subscription;
+
+  @override
+  Future<List<Expense>> build() async {
+    // Clean up subscription when provider is disposed
+    ref.onDispose(() {
+      _subscription?.cancel();
+    });
+
+    final repository = ref.watch(expenseRepositoryProvider);
+    if (repository == null) {
+      return [];
+    }
+
+    // Subscribe to Firestore stream
+    final completer = Completer<List<Expense>>();
+    _subscription = repository.getExpensesStream().listen(
+      (expenses) {
+        if (!completer.isCompleted) {
+          completer.complete(expenses);
+        }
+        state = AsyncValue.data(expenses);
+      },
+      onError: (error) {
+        if (!completer.isCompleted) {
+          completer.completeError(error);
+        }
+        state = AsyncValue.error(error, StackTrace.current);
+      },
+    );
+
+    return completer.future;
+  }
 
   /// Add a new expense
   Future<void> addExpense(Expense expense) async {
-    state.whenData((expenses) {
-      state = AsyncValue.data([...expenses, expense]);
-    });
+    final repository = ref.read(expenseRepositoryProvider);
+    if (repository == null) {
+      log('Cannot add expense: repository is null');
+      return;
+    }
+
+    try {
+      await repository.createExpense(expense);
+      log('Expense added successfully');
+    } catch (e) {
+      log('Error adding expense: $e');
+      rethrow;
+    }
   }
 
   /// Update an existing expense
   Future<void> updateExpense(Expense expense) async {
-    state.whenData((expenses) {
-      final index = expenses.indexWhere((e) {
-        final expenseId = expense.when(
-          housing: (id, _, __, ___) => id,
-          transport: (id, _, __, ___) => id,
-          dailyLiving: (id, _, __, ___) => id,
-          recreation: (id, _, __, ___) => id,
-          health: (id, _, __, ___) => id,
-          family: (id, _, __, ___) => id,
-        );
+    final repository = ref.read(expenseRepositoryProvider);
+    if (repository == null) {
+      log('Cannot update expense: repository is null');
+      return;
+    }
 
-        final currentId = e.when(
-          housing: (id, _, __, ___) => id,
-          transport: (id, _, __, ___) => id,
-          dailyLiving: (id, _, __, ___) => id,
-          recreation: (id, _, __, ___) => id,
-          health: (id, _, __, ___) => id,
-          family: (id, _, __, ___) => id,
-        );
-
-        return currentId == expenseId;
-      });
-
-      if (index != -1) {
-        final updatedExpenses = [...expenses];
-        updatedExpenses[index] = expense;
-        state = AsyncValue.data(updatedExpenses);
-      }
-    });
+    try {
+      await repository.updateExpense(expense);
+      log('Expense updated successfully');
+    } catch (e) {
+      log('Error updating expense: $e');
+      rethrow;
+    }
   }
 
   /// Delete an expense by ID
-  Future<void> deleteExpense(String id) async {
-    state.whenData((expenses) {
-      final filtered = expenses.where((e) {
-        final currentId = e.when(
-          housing: (id, _, __, ___) => id,
-          transport: (id, _, __, ___) => id,
-          dailyLiving: (id, _, __, ___) => id,
-          recreation: (id, _, __, ___) => id,
-          health: (id, _, __, ___) => id,
-          family: (id, _, __, ___) => id,
-        );
-        return currentId != id;
-      }).toList();
+  Future<void> deleteExpense(String expenseId) async {
+    final repository = ref.read(expenseRepositoryProvider);
+    if (repository == null) {
+      log('Cannot delete expense: repository is null');
+      return;
+    }
 
-      state = AsyncValue.data(filtered);
-    });
+    try {
+      await repository.deleteExpense(expenseId);
+      log('Expense deleted successfully');
+    } catch (e) {
+      log('Error deleting expense: $e');
+      rethrow;
+    }
   }
 }
 
-/// Provider for expenses
-final expensesProvider = StateNotifierProvider<ExpensesNotifier, AsyncValue<List<Expense>>>((ref) {
-  return ExpensesNotifier();
-});
+/// Main expenses provider
+final expensesProvider = AsyncNotifierProvider<ExpensesNotifier, List<Expense>>(
+  () => ExpensesNotifier(),
+);
 
 /// Provider for expenses grouped by category
 final expensesByCategoryProvider = Provider<Map<String, List<Expense>>>((ref) {

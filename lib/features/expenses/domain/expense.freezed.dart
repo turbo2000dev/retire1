@@ -44,50 +44,50 @@ Expense _$ExpenseFromJson(Map<String, dynamic> json) {
 mixin _$Expense {
   String get id => throw _privateConstructorUsedError;
   EventTiming get startTiming => throw _privateConstructorUsedError;
-  EventTiming? get endTiming =>
-      throw _privateConstructorUsedError; // null = no end date, continues forever
+  EventTiming get endTiming =>
+      throw _privateConstructorUsedError; // Required: default to projectionEnd()
   double get annualAmount => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     housing,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     transport,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     dailyLiving,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     recreation,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     health,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     family,
@@ -97,42 +97,42 @@ mixin _$Expense {
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -142,42 +142,42 @@ mixin _$Expense {
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -229,12 +229,12 @@ abstract class $ExpenseCopyWith<$Res> {
   $Res call({
     String id,
     EventTiming startTiming,
-    EventTiming? endTiming,
+    EventTiming endTiming,
     double annualAmount,
   });
 
   $EventTimingCopyWith<$Res> get startTiming;
-  $EventTimingCopyWith<$Res>? get endTiming;
+  $EventTimingCopyWith<$Res> get endTiming;
 }
 
 /// @nodoc
@@ -254,7 +254,7 @@ class _$ExpenseCopyWithImpl<$Res, $Val extends Expense>
   $Res call({
     Object? id = null,
     Object? startTiming = null,
-    Object? endTiming = freezed,
+    Object? endTiming = null,
     Object? annualAmount = null,
   }) {
     return _then(
@@ -267,10 +267,10 @@ class _$ExpenseCopyWithImpl<$Res, $Val extends Expense>
                 ? _value.startTiming
                 : startTiming // ignore: cast_nullable_to_non_nullable
                       as EventTiming,
-            endTiming: freezed == endTiming
+            endTiming: null == endTiming
                 ? _value.endTiming
                 : endTiming // ignore: cast_nullable_to_non_nullable
-                      as EventTiming?,
+                      as EventTiming,
             annualAmount: null == annualAmount
                 ? _value.annualAmount
                 : annualAmount // ignore: cast_nullable_to_non_nullable
@@ -294,12 +294,8 @@ class _$ExpenseCopyWithImpl<$Res, $Val extends Expense>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $EventTimingCopyWith<$Res>? get endTiming {
-    if (_value.endTiming == null) {
-      return null;
-    }
-
-    return $EventTimingCopyWith<$Res>(_value.endTiming!, (value) {
+  $EventTimingCopyWith<$Res> get endTiming {
+    return $EventTimingCopyWith<$Res>(_value.endTiming, (value) {
       return _then(_value.copyWith(endTiming: value) as $Val);
     });
   }
@@ -317,14 +313,14 @@ abstract class _$$HousingExpenseImplCopyWith<$Res>
   $Res call({
     String id,
     EventTiming startTiming,
-    EventTiming? endTiming,
+    EventTiming endTiming,
     double annualAmount,
   });
 
   @override
   $EventTimingCopyWith<$Res> get startTiming;
   @override
-  $EventTimingCopyWith<$Res>? get endTiming;
+  $EventTimingCopyWith<$Res> get endTiming;
 }
 
 /// @nodoc
@@ -343,7 +339,7 @@ class __$$HousingExpenseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? startTiming = null,
-    Object? endTiming = freezed,
+    Object? endTiming = null,
     Object? annualAmount = null,
   }) {
     return _then(
@@ -356,10 +352,10 @@ class __$$HousingExpenseImplCopyWithImpl<$Res>
             ? _value.startTiming
             : startTiming // ignore: cast_nullable_to_non_nullable
                   as EventTiming,
-        endTiming: freezed == endTiming
+        endTiming: null == endTiming
             ? _value.endTiming
             : endTiming // ignore: cast_nullable_to_non_nullable
-                  as EventTiming?,
+                  as EventTiming,
         annualAmount: null == annualAmount
             ? _value.annualAmount
             : annualAmount // ignore: cast_nullable_to_non_nullable
@@ -375,7 +371,7 @@ class _$HousingExpenseImpl implements HousingExpense {
   const _$HousingExpenseImpl({
     required this.id,
     required this.startTiming,
-    this.endTiming,
+    required this.endTiming,
     required this.annualAmount,
     final String? $type,
   }) : $type = $type ?? 'housing';
@@ -388,8 +384,8 @@ class _$HousingExpenseImpl implements HousingExpense {
   @override
   final EventTiming startTiming;
   @override
-  final EventTiming? endTiming;
-  // null = no end date, continues forever
+  final EventTiming endTiming;
+  // Required: default to projectionEnd()
   @override
   final double annualAmount;
 
@@ -437,42 +433,42 @@ class _$HousingExpenseImpl implements HousingExpense {
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     housing,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     transport,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     dailyLiving,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     recreation,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     health,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     family,
@@ -486,42 +482,42 @@ class _$HousingExpenseImpl implements HousingExpense {
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -535,42 +531,42 @@ class _$HousingExpenseImpl implements HousingExpense {
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -635,7 +631,7 @@ abstract class HousingExpense implements Expense {
   const factory HousingExpense({
     required final String id,
     required final EventTiming startTiming,
-    final EventTiming? endTiming,
+    required final EventTiming endTiming,
     required final double annualAmount,
   }) = _$HousingExpenseImpl;
 
@@ -647,7 +643,7 @@ abstract class HousingExpense implements Expense {
   @override
   EventTiming get startTiming;
   @override
-  EventTiming? get endTiming; // null = no end date, continues forever
+  EventTiming get endTiming; // Required: default to projectionEnd()
   @override
   double get annualAmount;
 
@@ -671,14 +667,14 @@ abstract class _$$TransportExpenseImplCopyWith<$Res>
   $Res call({
     String id,
     EventTiming startTiming,
-    EventTiming? endTiming,
+    EventTiming endTiming,
     double annualAmount,
   });
 
   @override
   $EventTimingCopyWith<$Res> get startTiming;
   @override
-  $EventTimingCopyWith<$Res>? get endTiming;
+  $EventTimingCopyWith<$Res> get endTiming;
 }
 
 /// @nodoc
@@ -697,7 +693,7 @@ class __$$TransportExpenseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? startTiming = null,
-    Object? endTiming = freezed,
+    Object? endTiming = null,
     Object? annualAmount = null,
   }) {
     return _then(
@@ -710,10 +706,10 @@ class __$$TransportExpenseImplCopyWithImpl<$Res>
             ? _value.startTiming
             : startTiming // ignore: cast_nullable_to_non_nullable
                   as EventTiming,
-        endTiming: freezed == endTiming
+        endTiming: null == endTiming
             ? _value.endTiming
             : endTiming // ignore: cast_nullable_to_non_nullable
-                  as EventTiming?,
+                  as EventTiming,
         annualAmount: null == annualAmount
             ? _value.annualAmount
             : annualAmount // ignore: cast_nullable_to_non_nullable
@@ -729,7 +725,7 @@ class _$TransportExpenseImpl implements TransportExpense {
   const _$TransportExpenseImpl({
     required this.id,
     required this.startTiming,
-    this.endTiming,
+    required this.endTiming,
     required this.annualAmount,
     final String? $type,
   }) : $type = $type ?? 'transport';
@@ -742,7 +738,7 @@ class _$TransportExpenseImpl implements TransportExpense {
   @override
   final EventTiming startTiming;
   @override
-  final EventTiming? endTiming;
+  final EventTiming endTiming;
   @override
   final double annualAmount;
 
@@ -790,42 +786,42 @@ class _$TransportExpenseImpl implements TransportExpense {
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     housing,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     transport,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     dailyLiving,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     recreation,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     health,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     family,
@@ -839,42 +835,42 @@ class _$TransportExpenseImpl implements TransportExpense {
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -888,42 +884,42 @@ class _$TransportExpenseImpl implements TransportExpense {
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -988,7 +984,7 @@ abstract class TransportExpense implements Expense {
   const factory TransportExpense({
     required final String id,
     required final EventTiming startTiming,
-    final EventTiming? endTiming,
+    required final EventTiming endTiming,
     required final double annualAmount,
   }) = _$TransportExpenseImpl;
 
@@ -1000,7 +996,7 @@ abstract class TransportExpense implements Expense {
   @override
   EventTiming get startTiming;
   @override
-  EventTiming? get endTiming;
+  EventTiming get endTiming;
   @override
   double get annualAmount;
 
@@ -1024,14 +1020,14 @@ abstract class _$$DailyLivingExpenseImplCopyWith<$Res>
   $Res call({
     String id,
     EventTiming startTiming,
-    EventTiming? endTiming,
+    EventTiming endTiming,
     double annualAmount,
   });
 
   @override
   $EventTimingCopyWith<$Res> get startTiming;
   @override
-  $EventTimingCopyWith<$Res>? get endTiming;
+  $EventTimingCopyWith<$Res> get endTiming;
 }
 
 /// @nodoc
@@ -1050,7 +1046,7 @@ class __$$DailyLivingExpenseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? startTiming = null,
-    Object? endTiming = freezed,
+    Object? endTiming = null,
     Object? annualAmount = null,
   }) {
     return _then(
@@ -1063,10 +1059,10 @@ class __$$DailyLivingExpenseImplCopyWithImpl<$Res>
             ? _value.startTiming
             : startTiming // ignore: cast_nullable_to_non_nullable
                   as EventTiming,
-        endTiming: freezed == endTiming
+        endTiming: null == endTiming
             ? _value.endTiming
             : endTiming // ignore: cast_nullable_to_non_nullable
-                  as EventTiming?,
+                  as EventTiming,
         annualAmount: null == annualAmount
             ? _value.annualAmount
             : annualAmount // ignore: cast_nullable_to_non_nullable
@@ -1082,7 +1078,7 @@ class _$DailyLivingExpenseImpl implements DailyLivingExpense {
   const _$DailyLivingExpenseImpl({
     required this.id,
     required this.startTiming,
-    this.endTiming,
+    required this.endTiming,
     required this.annualAmount,
     final String? $type,
   }) : $type = $type ?? 'dailyLiving';
@@ -1095,7 +1091,7 @@ class _$DailyLivingExpenseImpl implements DailyLivingExpense {
   @override
   final EventTiming startTiming;
   @override
-  final EventTiming? endTiming;
+  final EventTiming endTiming;
   @override
   final double annualAmount;
 
@@ -1143,42 +1139,42 @@ class _$DailyLivingExpenseImpl implements DailyLivingExpense {
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     housing,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     transport,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     dailyLiving,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     recreation,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     health,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     family,
@@ -1192,42 +1188,42 @@ class _$DailyLivingExpenseImpl implements DailyLivingExpense {
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -1241,42 +1237,42 @@ class _$DailyLivingExpenseImpl implements DailyLivingExpense {
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -1341,7 +1337,7 @@ abstract class DailyLivingExpense implements Expense {
   const factory DailyLivingExpense({
     required final String id,
     required final EventTiming startTiming,
-    final EventTiming? endTiming,
+    required final EventTiming endTiming,
     required final double annualAmount,
   }) = _$DailyLivingExpenseImpl;
 
@@ -1353,7 +1349,7 @@ abstract class DailyLivingExpense implements Expense {
   @override
   EventTiming get startTiming;
   @override
-  EventTiming? get endTiming;
+  EventTiming get endTiming;
   @override
   double get annualAmount;
 
@@ -1377,14 +1373,14 @@ abstract class _$$RecreationExpenseImplCopyWith<$Res>
   $Res call({
     String id,
     EventTiming startTiming,
-    EventTiming? endTiming,
+    EventTiming endTiming,
     double annualAmount,
   });
 
   @override
   $EventTimingCopyWith<$Res> get startTiming;
   @override
-  $EventTimingCopyWith<$Res>? get endTiming;
+  $EventTimingCopyWith<$Res> get endTiming;
 }
 
 /// @nodoc
@@ -1403,7 +1399,7 @@ class __$$RecreationExpenseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? startTiming = null,
-    Object? endTiming = freezed,
+    Object? endTiming = null,
     Object? annualAmount = null,
   }) {
     return _then(
@@ -1416,10 +1412,10 @@ class __$$RecreationExpenseImplCopyWithImpl<$Res>
             ? _value.startTiming
             : startTiming // ignore: cast_nullable_to_non_nullable
                   as EventTiming,
-        endTiming: freezed == endTiming
+        endTiming: null == endTiming
             ? _value.endTiming
             : endTiming // ignore: cast_nullable_to_non_nullable
-                  as EventTiming?,
+                  as EventTiming,
         annualAmount: null == annualAmount
             ? _value.annualAmount
             : annualAmount // ignore: cast_nullable_to_non_nullable
@@ -1435,7 +1431,7 @@ class _$RecreationExpenseImpl implements RecreationExpense {
   const _$RecreationExpenseImpl({
     required this.id,
     required this.startTiming,
-    this.endTiming,
+    required this.endTiming,
     required this.annualAmount,
     final String? $type,
   }) : $type = $type ?? 'recreation';
@@ -1448,7 +1444,7 @@ class _$RecreationExpenseImpl implements RecreationExpense {
   @override
   final EventTiming startTiming;
   @override
-  final EventTiming? endTiming;
+  final EventTiming endTiming;
   @override
   final double annualAmount;
 
@@ -1496,42 +1492,42 @@ class _$RecreationExpenseImpl implements RecreationExpense {
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     housing,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     transport,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     dailyLiving,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     recreation,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     health,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     family,
@@ -1545,42 +1541,42 @@ class _$RecreationExpenseImpl implements RecreationExpense {
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -1594,42 +1590,42 @@ class _$RecreationExpenseImpl implements RecreationExpense {
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -1694,7 +1690,7 @@ abstract class RecreationExpense implements Expense {
   const factory RecreationExpense({
     required final String id,
     required final EventTiming startTiming,
-    final EventTiming? endTiming,
+    required final EventTiming endTiming,
     required final double annualAmount,
   }) = _$RecreationExpenseImpl;
 
@@ -1706,7 +1702,7 @@ abstract class RecreationExpense implements Expense {
   @override
   EventTiming get startTiming;
   @override
-  EventTiming? get endTiming;
+  EventTiming get endTiming;
   @override
   double get annualAmount;
 
@@ -1730,14 +1726,14 @@ abstract class _$$HealthExpenseImplCopyWith<$Res>
   $Res call({
     String id,
     EventTiming startTiming,
-    EventTiming? endTiming,
+    EventTiming endTiming,
     double annualAmount,
   });
 
   @override
   $EventTimingCopyWith<$Res> get startTiming;
   @override
-  $EventTimingCopyWith<$Res>? get endTiming;
+  $EventTimingCopyWith<$Res> get endTiming;
 }
 
 /// @nodoc
@@ -1756,7 +1752,7 @@ class __$$HealthExpenseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? startTiming = null,
-    Object? endTiming = freezed,
+    Object? endTiming = null,
     Object? annualAmount = null,
   }) {
     return _then(
@@ -1769,10 +1765,10 @@ class __$$HealthExpenseImplCopyWithImpl<$Res>
             ? _value.startTiming
             : startTiming // ignore: cast_nullable_to_non_nullable
                   as EventTiming,
-        endTiming: freezed == endTiming
+        endTiming: null == endTiming
             ? _value.endTiming
             : endTiming // ignore: cast_nullable_to_non_nullable
-                  as EventTiming?,
+                  as EventTiming,
         annualAmount: null == annualAmount
             ? _value.annualAmount
             : annualAmount // ignore: cast_nullable_to_non_nullable
@@ -1788,7 +1784,7 @@ class _$HealthExpenseImpl implements HealthExpense {
   const _$HealthExpenseImpl({
     required this.id,
     required this.startTiming,
-    this.endTiming,
+    required this.endTiming,
     required this.annualAmount,
     final String? $type,
   }) : $type = $type ?? 'health';
@@ -1801,7 +1797,7 @@ class _$HealthExpenseImpl implements HealthExpense {
   @override
   final EventTiming startTiming;
   @override
-  final EventTiming? endTiming;
+  final EventTiming endTiming;
   @override
   final double annualAmount;
 
@@ -1846,42 +1842,42 @@ class _$HealthExpenseImpl implements HealthExpense {
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     housing,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     transport,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     dailyLiving,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     recreation,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     health,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     family,
@@ -1895,42 +1891,42 @@ class _$HealthExpenseImpl implements HealthExpense {
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -1944,42 +1940,42 @@ class _$HealthExpenseImpl implements HealthExpense {
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -2044,7 +2040,7 @@ abstract class HealthExpense implements Expense {
   const factory HealthExpense({
     required final String id,
     required final EventTiming startTiming,
-    final EventTiming? endTiming,
+    required final EventTiming endTiming,
     required final double annualAmount,
   }) = _$HealthExpenseImpl;
 
@@ -2056,7 +2052,7 @@ abstract class HealthExpense implements Expense {
   @override
   EventTiming get startTiming;
   @override
-  EventTiming? get endTiming;
+  EventTiming get endTiming;
   @override
   double get annualAmount;
 
@@ -2080,14 +2076,14 @@ abstract class _$$FamilyExpenseImplCopyWith<$Res>
   $Res call({
     String id,
     EventTiming startTiming,
-    EventTiming? endTiming,
+    EventTiming endTiming,
     double annualAmount,
   });
 
   @override
   $EventTimingCopyWith<$Res> get startTiming;
   @override
-  $EventTimingCopyWith<$Res>? get endTiming;
+  $EventTimingCopyWith<$Res> get endTiming;
 }
 
 /// @nodoc
@@ -2106,7 +2102,7 @@ class __$$FamilyExpenseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? startTiming = null,
-    Object? endTiming = freezed,
+    Object? endTiming = null,
     Object? annualAmount = null,
   }) {
     return _then(
@@ -2119,10 +2115,10 @@ class __$$FamilyExpenseImplCopyWithImpl<$Res>
             ? _value.startTiming
             : startTiming // ignore: cast_nullable_to_non_nullable
                   as EventTiming,
-        endTiming: freezed == endTiming
+        endTiming: null == endTiming
             ? _value.endTiming
             : endTiming // ignore: cast_nullable_to_non_nullable
-                  as EventTiming?,
+                  as EventTiming,
         annualAmount: null == annualAmount
             ? _value.annualAmount
             : annualAmount // ignore: cast_nullable_to_non_nullable
@@ -2138,7 +2134,7 @@ class _$FamilyExpenseImpl implements FamilyExpense {
   const _$FamilyExpenseImpl({
     required this.id,
     required this.startTiming,
-    this.endTiming,
+    required this.endTiming,
     required this.annualAmount,
     final String? $type,
   }) : $type = $type ?? 'family';
@@ -2151,7 +2147,7 @@ class _$FamilyExpenseImpl implements FamilyExpense {
   @override
   final EventTiming startTiming;
   @override
-  final EventTiming? endTiming;
+  final EventTiming endTiming;
   @override
   final double annualAmount;
 
@@ -2196,42 +2192,42 @@ class _$FamilyExpenseImpl implements FamilyExpense {
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     housing,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     transport,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     dailyLiving,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     recreation,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     health,
     required TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )
     family,
@@ -2245,42 +2241,42 @@ class _$FamilyExpenseImpl implements FamilyExpense {
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult? Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -2294,42 +2290,42 @@ class _$FamilyExpenseImpl implements FamilyExpense {
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     housing,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     transport,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     dailyLiving,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     recreation,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     health,
     TResult Function(
       String id,
       EventTiming startTiming,
-      EventTiming? endTiming,
+      EventTiming endTiming,
       double annualAmount,
     )?
     family,
@@ -2394,7 +2390,7 @@ abstract class FamilyExpense implements Expense {
   const factory FamilyExpense({
     required final String id,
     required final EventTiming startTiming,
-    final EventTiming? endTiming,
+    required final EventTiming endTiming,
     required final double annualAmount,
   }) = _$FamilyExpenseImpl;
 
@@ -2406,7 +2402,7 @@ abstract class FamilyExpense implements Expense {
   @override
   EventTiming get startTiming;
   @override
-  EventTiming? get endTiming;
+  EventTiming get endTiming;
   @override
   double get annualAmount;
 

@@ -66,3 +66,11 @@ const _$EventBoundaryEnumMap = {
   EventBoundary.start: 'start',
   EventBoundary.end: 'end',
 };
+
+_$ProjectionEndTimingImpl _$$ProjectionEndTimingImplFromJson(
+  Map<String, dynamic> json,
+) => _$ProjectionEndTimingImpl($type: json['runtimeType'] as String?);
+
+Map<String, dynamic> _$$ProjectionEndTimingImplToJson(
+  _$ProjectionEndTimingImpl instance,
+) => <String, dynamic>{'runtimeType': instance.$type};
