@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
+import 'package:retire1/core/utils/file_download_helper.dart';
+import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
 import 'package:retire1/features/projection/presentation/providers/projection_provider.dart';
+import 'package:retire1/features/projection/presentation/widgets/export_projection_dialog.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_table.dart';
+import 'package:retire1/features/projection/service/projection_export_service.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 
 /// Screen for displaying retirement projections
@@ -20,6 +24,15 @@ class ProjectionScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Projection'),
         actions: [
+          // Export button
+          IconButton(
+            icon: const Icon(Icons.download),
+            tooltip: 'Export Projection',
+            onPressed: selectedScenarioId == null
+                ? null
+                : () => _handleExport(context, ref, selectedScenarioId),
+          ),
+          const SizedBox(width: 8),
           // Scenario selector
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -94,6 +107,82 @@ class ProjectionScreen extends ConsumerWidget {
             )
           : _ProjectionContent(scenarioId: selectedScenarioId),
     );
+  }
+
+  /// Handle export button press
+  Future<void> _handleExport(
+    BuildContext context,
+    WidgetRef ref,
+    String scenarioId,
+  ) async {
+    try {
+      // Show format selection dialog
+      final format = await ExportProjectionDialog.show(context);
+      if (format == null || !context.mounted) return;
+
+      // Get projection data
+      final projectionAsync = ref.read(projectionProvider(scenarioId));
+      final projection = projectionAsync.value;
+
+      if (projection == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No projection data available to export'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Get scenario name
+      final scenariosAsync = ref.read(scenariosProvider);
+      final scenarios = scenariosAsync.value ?? [];
+      final scenario = scenarios.firstWhere(
+        (s) => s.id == scenarioId,
+        orElse: () => scenarios.first,
+      );
+
+      // Get assets for CSV export (needed to categorize by type)
+      final assetsAsync = ref.read(assetsProvider);
+      final assets = assetsAsync.value ?? [];
+
+      // Export using service
+      final exportService = ProjectionExportService();
+      String content;
+      String filename;
+
+      if (format == ExportFormat.json) {
+        content = exportService.exportToJson(projection, scenario.name);
+        filename = exportService.generateFilename(scenario.name, 'json');
+        FileDownloadHelper.downloadJson(content, filename);
+      } else {
+        content = exportService.exportToCsv(projection, assets);
+        filename = exportService.generateFilename(scenario.name, 'csv');
+        FileDownloadHelper.downloadCsv(content, filename);
+      }
+
+      // Show success message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Projection exported as $filename'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
 

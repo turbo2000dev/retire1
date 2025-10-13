@@ -2582,17 +2582,17 @@ Based on specs/projection_requirements.md, the following phases implement compre
 
 ---
 
-## PHASE 27: Projection Export (for Validation)
+## PHASE 27: Projection Export (for Validation) ✅
 
 **Goal:** Export projection results to validate calculation accuracy
 
 ### Tasks:
 1. **Create projection export:**
-   - [ ] Add "Export Projection" button to Projection screen (next to scenario selector)
-   - [ ] Format option: JSON or CSV (radio buttons or dropdown)
-   - [ ] JSON format: Complete yearly projection data with all fields
-   - [ ] CSV format: Rows=years, Columns=year,ages,income,expenses,cashFlow,netWorth,assets
-   - [ ] File names: `projection_[scenario]_[date].json` or `.csv`
+   - [x] Add "Export Projection" button to Projection screen (next to scenario selector)
+   - [x] Format option: JSON or CSV (segmented button in dialog)
+   - [x] JSON format: Complete yearly projection data with all fields
+   - [x] CSV format: Rows=years, Columns=year,ages,income,expenses,cashFlow,netWorth,assetTypeTotals
+   - [x] File names: `projection_[scenario]_[date].json` or `.csv`
 
 2. **JSON format structure:**
    ```json
@@ -2624,29 +2624,38 @@ Based on specs/projection_requirements.md, the following phases implement compre
    ```
 
 3. **CSV format:**
-   - Headers: Year, PrimaryAge, SpouseAge, Income, Expenses, CashFlow, NetWorthStart, NetWorthEnd, [AssetNames...]
+   - Headers: Year, YearsFromStart, PrimaryAge, SpouseAge, Income, Expenses, CashFlow, NetWorthStart, NetWorthEnd, RealEstateTotal, RRSPTotal, CELITotal, CRITotal, CashTotal
    - One row per year
-   - Asset columns show individual asset values
+   - Asset columns show totals by asset type (categorized using Freezed union inspection)
 
 4. **Test exports:**
-   - [ ] Export as JSON, examine structure
-   - [ ] Export as CSV, open in Excel/Google Sheets
-   - [ ] Manually verify calculations for 3 sample years
-   - [ ] Check asset growth rates
-   - [ ] Check annual contribution application
+   - [x] Export as JSON, examine structure
+   - [x] Export as CSV, open in Excel/Google Sheets
+   - [x] Manually verify calculations for 3 sample years
+   - [x] Check asset growth rates
+   - [x] Check annual contribution application
 
 **Manual Test Checklist:**
-- [ ] Export button visible on Projection screen
-- [ ] Can choose JSON or CSV format
-- [ ] JSON export downloads correctly
-- [ ] CSV export downloads correctly
-- [ ] JSON contains all yearly data
-- [ ] CSV opens in spreadsheet software
-- [ ] Can manually verify growth calculations
-- [ ] Can identify calculation errors from export
-- [ ] File names include scenario name and date
+- [x] Export button visible on Projection screen
+- [x] Can choose JSON or CSV format
+- [x] JSON export downloads correctly
+- [x] CSV export downloads correctly
+- [x] JSON contains all yearly data
+- [x] CSV opens in spreadsheet software
+- [x] Can manually verify growth calculations
+- [x] Can identify calculation errors from export
+- [x] File names include scenario name and date
 
 **Deliverable:** Can export projections for manual validation and debugging
+
+**Implementation Details:**
+- Created `ProjectionExportService` with `exportToJson()` and `exportToCsv()` methods
+- Created cross-platform `FileDownloadHelper` using conditional imports (web-specific Blob API)
+- Built `ExportProjectionDialog` with segmented button for format selection
+- Added download icon button to Projection screen app bar
+- CSV export uses Freezed union inspection to correctly categorize assets by type
+- Fixed asset totals calculation by passing actual Asset objects instead of pattern matching IDs
+- Both formats tested and validated with 40-year projection data
 
 ---
 
