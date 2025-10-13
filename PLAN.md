@@ -2459,95 +2459,126 @@ Based on specs/projection_requirements.md, the following phases implement compre
 
 ---
 
-## PHASE 25: Import Project Data
+## PHASE 25: Import Project Data ✅ COMPLETED
 
 **Goal:** Enable importing project data to recreate test cases for debugging and validation
 
+**Status:** ✅ Complete (including scenarios from Phase 26)
+
 ### Tasks:
 1. **Create import service:**
-   - [ ] Create `lib/core/services/project_import_service.dart`
-   - [ ] Parse JSON and validate structure
-   - [ ] Check required fields exist
-   - [ ] Validate data types
-   - [ ] Create new project from imported data
-   - [ ] Generate new IDs for project, assets, events, individuals
+   - ✅ Created `lib/core/services/project_import_service.dart`
+   - ✅ Parse JSON and validate structure
+   - ✅ Check required fields exist
+   - ✅ Validate data types
+   - ✅ Create new project from imported data
+   - ✅ Generate new IDs for project, assets, events, individuals, scenarios
 
 2. **Add Import button to Base Parameters screen:**
-   - [ ] Add "Import Project Data" button next to Export
-   - [ ] File picker for JSON file selection
-   - [ ] Web: `<input type="file">` with accept=".json"
-   - [ ] Show preview dialog before import (project name, # assets, # events)
-   - [ ] User confirms import
-   - [ ] Create project in Firestore
-   - [ ] Switch to newly imported project
+   - ✅ Add "Import Project Data" button next to Export
+   - ✅ File picker for JSON file selection
+   - ✅ Web: `<input type="file">` with accept=".json"
+   - ✅ Show preview dialog before import (project name, # assets, # events, # scenarios)
+   - ✅ User confirms import
+   - ✅ Create project in Firestore
+   - ✅ Switch to newly imported project
 
 3. **Error handling:**
-   - [ ] Handle malformed JSON gracefully
-   - [ ] Show clear error messages
-   - [ ] Validate against expected schema
-   - [ ] Don't crash on missing optional fields
+   - ✅ Handle malformed JSON gracefully
+   - ✅ Show clear error messages
+   - ✅ Validate against expected schema
+   - ✅ Don't crash on missing optional fields
 
 4. **Test round-trip:**
-   - [ ] Export a complex project
-   - [ ] Import the exported file
-   - [ ] Verify all data matches
-   - [ ] Check projection calculations match
+   - ✅ Export a complex project
+   - ✅ Import the exported file
+   - ✅ Verify all data matches
+   - ✅ Check projection calculations match
 
 **Manual Test Checklist:**
-- [ ] Import button visible in Base Parameters screen
-- [ ] Can select JSON file from file picker
-- [ ] Preview shows project summary before import
-- [ ] Can cancel import from preview
-- [ ] Import creates new project with all data
-- [ ] App switches to imported project
-- [ ] All individuals imported correctly
-- [ ] All assets imported correctly
-- [ ] All events imported correctly
-- [ ] Economic rates imported correctly
-- [ ] Malformed JSON shows error (not crash)
-- [ ] Round-trip: export then import results in identical project
+- ✅ Import button visible in Base Parameters screen
+- ✅ Can select JSON file from file picker
+- ✅ Preview shows project summary before import
+- ✅ Can cancel import from preview
+- ✅ Import creates new project with all data
+- ✅ App switches to imported project
+- ✅ All individuals imported correctly
+- ✅ All assets imported correctly
+- ✅ All events imported correctly
+- ✅ All scenarios imported correctly
+- ✅ Economic rates imported correctly
+- ✅ Malformed JSON shows error (not crash)
+- ✅ Round-trip: export then import results in identical project
 
 **Deliverable:** Round-trip import/export works flawlessly
 
+**Key Accomplishments:**
+- Cross-platform file picker abstraction using conditional imports (web-first approach)
+- Strict validation with support for export versions 1.0 and 1.1
+- Complete ID remapping with tracking maps for individuals, assets, events, and scenarios
+- Import preview dialog showing detailed entity counts before confirmation
+- Comprehensive logging throughout import process for debugging
+- **Critical fix**: Event ID remapping in scenario overrides (EventTimingOverride)
+- Full round-trip validation with test_import.json test data
+- All entity references correctly remapped (individualId, assetId, eventId in various contexts)
+- Scenario overrides (both AssetValueOverride and EventTimingOverride) work correctly
+- Combined with Phase 26 scenario import for complete functionality
+
+**Key files created:**
+- lib/core/services/project_import_service.dart - Complete import service with validation and ID remapping
+- lib/core/utils/file_picker_helper.dart - Cross-platform abstraction
+- lib/core/utils/file_picker_helper_web.dart - Web implementation using FileReader API
+- lib/core/utils/file_picker_helper_stub.dart - Stub for unsupported platforms
+- lib/core/ui/dialogs/import_preview_dialog.dart - Preview dialog with entity counts
+- test_import.json - Comprehensive test data for validation
+
+**Key files modified:**
+- lib/features/project/presentation/base_parameters_screen.dart - Added import button and flow
+- lib/core/services/project_export_service.dart - Added scenarios parameter to export
+
 ---
 
-## PHASE 26: Scenario Export
+## PHASE 26: Scenario Export ✅ COMPLETED
 
 **Goal:** Include scenarios in project export for complete reproduction of analysis
 
+**Status:** ✅ Complete (combined with Phase 25)
+
 ### Tasks:
 1. **Update export service:**
-   - [ ] Add scenarios to export structure
-   - [ ] Include base scenario
-   - [ ] Include all variation scenarios
-   - [ ] Export all overrides (asset values, event timing)
-   - [ ] Structure: `{ project, individuals, assets, events, scenarios }`
+   - ✅ Add scenarios to export structure
+   - ✅ Include base scenario
+   - ✅ Include all variation scenarios
+   - ✅ Export all overrides (asset values, event timing)
+   - ✅ Structure: `{ project, individuals, assets, events, scenarios }`
 
 2. **Update import service:**
-   - [ ] Import scenarios from JSON
-   - [ ] Recreate base scenario
-   - [ ] Recreate variation scenarios
-   - [ ] Apply overrides correctly
-   - [ ] Link overrides to imported asset/event IDs
+   - ✅ Import scenarios from JSON
+   - ✅ Recreate base scenario
+   - ✅ Recreate variation scenarios
+   - ✅ Apply overrides correctly
+   - ✅ Link overrides to imported asset/event IDs
 
 3. **Test with scenarios:**
-   - [ ] Export project with base + 2 variations
-   - [ ] Each variation has 3 asset overrides
-   - [ ] Each variation has 1 event timing override
-   - [ ] Import and verify scenarios identical
-   - [ ] Verify projections match
+   - ✅ Export project with base + 2 variations
+   - ✅ Each variation has 3 asset overrides
+   - ✅ Each variation has 1 event timing override
+   - ✅ Import and verify scenarios identical
+   - ✅ Verify projections match
 
 **Manual Test Checklist:**
-- [ ] Export includes all scenarios
-- [ ] Base scenario marked correctly
-- [ ] Variation scenarios exported with names
-- [ ] All overrides included in export
-- [ ] Import recreates all scenarios
-- [ ] Override references updated to new IDs
-- [ ] Projections calculated correctly for all scenarios
-- [ ] Scenario comparison works after import
+- ✅ Export includes all scenarios
+- ✅ Base scenario marked correctly
+- ✅ Variation scenarios exported with names
+- ✅ All overrides included in export
+- ✅ Import recreates all scenarios
+- ✅ Override references updated to new IDs
+- ✅ Projections calculated correctly for all scenarios
+- ✅ Scenario comparison works after import
 
 **Deliverable:** Full project export including scenarios and overrides
+
+**Note:** This phase was completed together with Phase 25 to provide complete import/export functionality in a single implementation. All scenario export/import features are fully functional and tested.
 
 ---
 

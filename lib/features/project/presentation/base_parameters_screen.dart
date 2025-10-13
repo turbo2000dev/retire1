@@ -4,13 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/core/services/project_export_service.dart';
+import 'package:retire1/core/services/project_import_service.dart';
+import 'package:retire1/core/ui/dialogs/import_preview_dialog.dart';
 import 'package:retire1/core/ui/responsive/responsive_collapsible_section.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/utils/file_download_helper.dart';
+import 'package:retire1/core/utils/file_picker_helper.dart';
+import 'package:retire1/features/assets/data/asset_repository.dart';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
+import 'package:retire1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:retire1/features/events/data/event_repository.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/presentation/providers/events_provider.dart';
+import 'package:retire1/features/project/data/project_repository.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
@@ -18,6 +25,9 @@ import 'package:retire1/features/project/presentation/providers/projects_provide
 import 'package:retire1/features/project/presentation/widgets/individual_card.dart';
 import 'package:retire1/features/project/presentation/widgets/individual_dialog.dart';
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
+import 'package:retire1/features/scenarios/data/scenario_repository.dart';
+import 'package:retire1/features/scenarios/domain/scenario.dart';
+import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 
 /// Base Parameters screen - manages projects and project-wide parameters
 class BaseParametersScreen extends ConsumerStatefulWidget {
@@ -376,6 +386,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     try {
       List<Asset>? assets;
       List<Event>? events;
+      List<Scenario>? scenarios;
       final warnings = <String>[];
 
       // For stream-based providers, we need to ensure they're initialized and have
@@ -383,9 +394,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       // between "not loaded yet" (initial []) and "loaded but empty" ([]),
       // so we always invalidate and wait for fresh data to be certain.
 
-      // Refresh both providers to ensure fresh data
+      // Refresh all providers to ensure fresh data
       ref.invalidate(assetsProvider);
       ref.invalidate(eventsProvider);
+      ref.invalidate(scenariosProvider);
 
       // Wait for stream-based providers to emit data (with generous timeout)
       assets = await _waitForProviderData<List<Asset>>(
@@ -404,12 +416,21 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         return null;
       });
 
+      scenarios = await _waitForProviderData<List<Scenario>>(
+        scenariosProvider,
+        timeout: const Duration(seconds: 10),
+      ).catchError((e) {
+        warnings.add('Scenarios could not be loaded and will not be included');
+        return null;
+      });
+
       // Export with available data
       final exportService = ProjectExportService();
       final jsonContent = exportService.exportProject(
         project,
         assets: assets,
         events: events,
+        scenarios: scenarios,
       );
       final filename = exportService.generateFilename(project);
 
@@ -531,6 +552,92 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _importProjectData() async {
+    try {
+      // Step 1: Pick JSON file
+      final jsonContent = await FilePickerHelper.pickJsonFile();
+
+      // Step 2: Validate and generate preview
+      final importService = ProjectImportService();
+      final preview = importService.validateAndPreview(jsonContent);
+
+      if (!mounted) return;
+
+      // Step 3: Show preview dialog for confirmation
+      final confirmed = await ImportPreviewDialog.show(context, preview);
+      if (confirmed != true || !mounted) return;
+
+      // Step 4: Get current user ID
+      final authState = ref.read(authNotifierProvider);
+      final userId = authState is Authenticated ? authState.user.id : null;
+      if (userId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Step 5: Import and generate new entities with remapped IDs
+      final importedData = importService.importProject(jsonContent, userId);
+
+      // Step 6: Get the project repository and save project to Firestore
+      // Note: Using updateProjectData which uses .set() to create the document
+      final projectRepository = ref.read(projectRepositoryProvider);
+      if (projectRepository == null) {
+        throw Exception('Project repository not available');
+      }
+      await projectRepository.updateProjectData(importedData.project);
+
+      // Step 7: Create repositories directly with the new project ID
+      // (Can't use providers because they depend on currentProjectProvider being set)
+      final assetRepository = AssetRepository(projectId: importedData.project.id);
+      final eventRepository = EventRepository(projectId: importedData.project.id);
+      final scenarioRepository = ScenarioRepository(projectId: importedData.project.id);
+
+      // Step 8: Save assets to Firestore
+      for (final asset in importedData.assets) {
+        await assetRepository.createAsset(asset);
+      }
+
+      // Step 9: Save events to Firestore
+      for (final event in importedData.events) {
+        await eventRepository.createEvent(event);
+      }
+
+      // Step 10: Save scenarios to Firestore
+      for (final scenario in importedData.scenarios) {
+        await scenarioRepository.createScenario(scenario);
+      }
+
+      // Step 11: Switch to the newly imported project
+      ref.read(currentProjectProvider.notifier).selectProject(importedData.project.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Project "${importedData.project.name}" imported successfully'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } on UnsupportedError catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message ?? 'File selection not supported on this platform'),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to import project: $e'),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -1028,12 +1135,18 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Export project data for backup or sharing test cases',
+                      'Import or export project data for backup, sharing test cases, or transferring between accounts',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: _importProjectData,
+                      icon: const Icon(Icons.upload),
+                      label: const Text('Import Project Data'),
+                    ),
+                    const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => _exportProjectData(selectedProject),
                       icon: const Icon(Icons.download),

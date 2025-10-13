@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/project/domain/project.dart';
+import 'package:retire1/features/scenarios/domain/scenario.dart';
 
 /// Service for exporting project data to JSON format
 class ProjectExportService {
@@ -13,17 +14,19 @@ class ProjectExportService {
   /// - Economic assumptions (inflation and return rates)
   /// - Assets (all 5 types with custom rates and contributions)
   /// - Events (all 3 types with timing information)
+  /// - Scenarios (base and variations with overrides)
   ///
   /// The exported JSON can be used for:
   /// - Sharing test cases
   /// - Debugging projection calculations
   /// - Backup and restore
   ///
-  /// [assets] and [events] are optional to handle cases where they fail to load
+  /// [assets], [events], and [scenarios] are optional to handle cases where they fail to load
   String exportProject(
     Project project, {
     List<Asset>? assets,
     List<Event>? events,
+    List<Scenario>? scenarios,
   }) {
     // Create export structure with metadata
     final exportData = {
@@ -32,6 +35,7 @@ class ProjectExportService {
       'project': project.toJson(),
       if (assets != null) 'assets': assets.map((a) => a.toJson()).toList(),
       if (events != null) 'events': events.map((e) => e.toJson()).toList(),
+      if (scenarios != null) 'scenarios': scenarios.map((s) => s.toJson()).toList(),
     };
 
     // Convert to pretty-printed JSON
