@@ -27,7 +27,13 @@ mixin _$Project {
   String? get description => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
-  List<Individual> get individuals => throw _privateConstructorUsedError;
+  List<Individual> get individuals =>
+      throw _privateConstructorUsedError; // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)
+  double get inflationRate => throw _privateConstructorUsedError;
+  double get reerReturnRate => throw _privateConstructorUsedError;
+  double get celiReturnRate => throw _privateConstructorUsedError;
+  double get criReturnRate => throw _privateConstructorUsedError;
+  double get cashReturnRate => throw _privateConstructorUsedError;
 
   /// Serializes this Project to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,6 +57,11 @@ abstract class $ProjectCopyWith<$Res> {
     DateTime createdAt,
     DateTime updatedAt,
     List<Individual> individuals,
+    double inflationRate,
+    double reerReturnRate,
+    double celiReturnRate,
+    double criReturnRate,
+    double cashReturnRate,
   });
 }
 
@@ -76,6 +87,11 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? individuals = null,
+    Object? inflationRate = null,
+    Object? reerReturnRate = null,
+    Object? celiReturnRate = null,
+    Object? criReturnRate = null,
+    Object? cashReturnRate = null,
   }) {
     return _then(
       _value.copyWith(
@@ -107,6 +123,26 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
                 ? _value.individuals
                 : individuals // ignore: cast_nullable_to_non_nullable
                       as List<Individual>,
+            inflationRate: null == inflationRate
+                ? _value.inflationRate
+                : inflationRate // ignore: cast_nullable_to_non_nullable
+                      as double,
+            reerReturnRate: null == reerReturnRate
+                ? _value.reerReturnRate
+                : reerReturnRate // ignore: cast_nullable_to_non_nullable
+                      as double,
+            celiReturnRate: null == celiReturnRate
+                ? _value.celiReturnRate
+                : celiReturnRate // ignore: cast_nullable_to_non_nullable
+                      as double,
+            criReturnRate: null == criReturnRate
+                ? _value.criReturnRate
+                : criReturnRate // ignore: cast_nullable_to_non_nullable
+                      as double,
+            cashReturnRate: null == cashReturnRate
+                ? _value.cashReturnRate
+                : cashReturnRate // ignore: cast_nullable_to_non_nullable
+                      as double,
           )
           as $Val,
     );
@@ -129,6 +165,11 @@ abstract class _$$ProjectImplCopyWith<$Res> implements $ProjectCopyWith<$Res> {
     DateTime createdAt,
     DateTime updatedAt,
     List<Individual> individuals,
+    double inflationRate,
+    double reerReturnRate,
+    double celiReturnRate,
+    double criReturnRate,
+    double cashReturnRate,
   });
 }
 
@@ -153,6 +194,11 @@ class __$$ProjectImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? individuals = null,
+    Object? inflationRate = null,
+    Object? reerReturnRate = null,
+    Object? celiReturnRate = null,
+    Object? criReturnRate = null,
+    Object? cashReturnRate = null,
   }) {
     return _then(
       _$ProjectImpl(
@@ -184,6 +230,26 @@ class __$$ProjectImplCopyWithImpl<$Res>
             ? _value._individuals
             : individuals // ignore: cast_nullable_to_non_nullable
                   as List<Individual>,
+        inflationRate: null == inflationRate
+            ? _value.inflationRate
+            : inflationRate // ignore: cast_nullable_to_non_nullable
+                  as double,
+        reerReturnRate: null == reerReturnRate
+            ? _value.reerReturnRate
+            : reerReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double,
+        celiReturnRate: null == celiReturnRate
+            ? _value.celiReturnRate
+            : celiReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double,
+        criReturnRate: null == criReturnRate
+            ? _value.criReturnRate
+            : criReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double,
+        cashReturnRate: null == cashReturnRate
+            ? _value.cashReturnRate
+            : cashReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double,
       ),
     );
   }
@@ -200,6 +266,11 @@ class _$ProjectImpl implements _Project {
     required this.createdAt,
     required this.updatedAt,
     final List<Individual> individuals = const [],
+    this.inflationRate = 0.02,
+    this.reerReturnRate = 0.05,
+    this.celiReturnRate = 0.05,
+    this.criReturnRate = 0.05,
+    this.cashReturnRate = 0.015,
   }) : _individuals = individuals;
 
   factory _$ProjectImpl.fromJson(Map<String, dynamic> json) =>
@@ -226,9 +297,26 @@ class _$ProjectImpl implements _Project {
     return EqualUnmodifiableListView(_individuals);
   }
 
+  // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)
+  @override
+  @JsonKey()
+  final double inflationRate;
+  @override
+  @JsonKey()
+  final double reerReturnRate;
+  @override
+  @JsonKey()
+  final double celiReturnRate;
+  @override
+  @JsonKey()
+  final double criReturnRate;
+  @override
+  @JsonKey()
+  final double cashReturnRate;
+
   @override
   String toString() {
-    return 'Project(id: $id, name: $name, ownerId: $ownerId, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, individuals: $individuals)';
+    return 'Project(id: $id, name: $name, ownerId: $ownerId, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, individuals: $individuals, inflationRate: $inflationRate, reerReturnRate: $reerReturnRate, celiReturnRate: $celiReturnRate, criReturnRate: $criReturnRate, cashReturnRate: $cashReturnRate)';
   }
 
   @override
@@ -248,7 +336,17 @@ class _$ProjectImpl implements _Project {
             const DeepCollectionEquality().equals(
               other._individuals,
               _individuals,
-            ));
+            ) &&
+            (identical(other.inflationRate, inflationRate) ||
+                other.inflationRate == inflationRate) &&
+            (identical(other.reerReturnRate, reerReturnRate) ||
+                other.reerReturnRate == reerReturnRate) &&
+            (identical(other.celiReturnRate, celiReturnRate) ||
+                other.celiReturnRate == celiReturnRate) &&
+            (identical(other.criReturnRate, criReturnRate) ||
+                other.criReturnRate == criReturnRate) &&
+            (identical(other.cashReturnRate, cashReturnRate) ||
+                other.cashReturnRate == cashReturnRate));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -262,6 +360,11 @@ class _$ProjectImpl implements _Project {
     createdAt,
     updatedAt,
     const DeepCollectionEquality().hash(_individuals),
+    inflationRate,
+    reerReturnRate,
+    celiReturnRate,
+    criReturnRate,
+    cashReturnRate,
   );
 
   /// Create a copy of Project
@@ -287,6 +390,11 @@ abstract class _Project implements Project {
     required final DateTime createdAt,
     required final DateTime updatedAt,
     final List<Individual> individuals,
+    final double inflationRate,
+    final double reerReturnRate,
+    final double celiReturnRate,
+    final double criReturnRate,
+    final double cashReturnRate,
   }) = _$ProjectImpl;
 
   factory _Project.fromJson(Map<String, dynamic> json) = _$ProjectImpl.fromJson;
@@ -304,7 +412,17 @@ abstract class _Project implements Project {
   @override
   DateTime get updatedAt;
   @override
-  List<Individual> get individuals;
+  List<Individual> get individuals; // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)
+  @override
+  double get inflationRate;
+  @override
+  double get reerReturnRate;
+  @override
+  double get celiReturnRate;
+  @override
+  double get criReturnRate;
+  @override
+  double get cashReturnRate;
 
   /// Create a copy of Project
   /// with the given fields replaced by the non-null parameter values.

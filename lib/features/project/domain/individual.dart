@@ -12,6 +12,9 @@ class Individual with _$Individual {
     required String id,
     required String name,
     required DateTime birthdate,
+    @Default(0.0) double employmentIncome, // Annual salary
+    @Default(65) int rrqStartAge, // RRQ start age (60-70)
+    @Default(65) int psvStartAge, // PSV start age (60-70)
   }) = _Individual;
 
   factory Individual.fromJson(Map<String, dynamic> json) =>

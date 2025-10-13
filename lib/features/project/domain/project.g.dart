@@ -19,6 +19,11 @@ _$ProjectImpl _$$ProjectImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => Individual.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      inflationRate: (json['inflationRate'] as num?)?.toDouble() ?? 0.02,
+      reerReturnRate: (json['reerReturnRate'] as num?)?.toDouble() ?? 0.05,
+      celiReturnRate: (json['celiReturnRate'] as num?)?.toDouble() ?? 0.05,
+      criReturnRate: (json['criReturnRate'] as num?)?.toDouble() ?? 0.05,
+      cashReturnRate: (json['cashReturnRate'] as num?)?.toDouble() ?? 0.015,
     );
 
 Map<String, dynamic> _$$ProjectImplToJson(_$ProjectImpl instance) =>
@@ -30,4 +35,9 @@ Map<String, dynamic> _$$ProjectImplToJson(_$ProjectImpl instance) =>
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
       'individuals': instance.individuals.map((e) => e.toJson()).toList(),
+      'inflationRate': instance.inflationRate,
+      'reerReturnRate': instance.reerReturnRate,
+      'celiReturnRate': instance.celiReturnRate,
+      'criReturnRate': instance.criReturnRate,
+      'cashReturnRate': instance.cashReturnRate,
     };

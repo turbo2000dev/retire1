@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/ui/responsive/responsive_collapsible_section.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
@@ -19,14 +21,26 @@ class BaseParametersScreen extends ConsumerStatefulWidget {
 
 class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _economicFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _inflationRateController = TextEditingController();
+  final _reerReturnRateController = TextEditingController();
+  final _celiReturnRateController = TextEditingController();
+  final _criReturnRateController = TextEditingController();
+  final _cashReturnRateController = TextEditingController();
   bool _isEditing = false;
+  bool _isEditingEconomic = false;
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _inflationRateController.dispose();
+    _reerReturnRateController.dispose();
+    _celiReturnRateController.dispose();
+    _criReturnRateController.dispose();
+    _cashReturnRateController.dispose();
     super.dispose();
   }
 
@@ -122,6 +136,11 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   void _loadProjectData(Project project) {
     _nameController.text = project.name;
     _descriptionController.text = project.description ?? '';
+    _inflationRateController.text = _formatPercentage(project.inflationRate);
+    _reerReturnRateController.text = _formatPercentage(project.reerReturnRate);
+    _celiReturnRateController.text = _formatPercentage(project.celiReturnRate);
+    _criReturnRateController.text = _formatPercentage(project.criReturnRate);
+    _cashReturnRateController.text = _formatPercentage(project.cashReturnRate);
   }
 
   Future<void> _addIndividual(Project project) async {
@@ -221,6 +240,75 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         );
       }
     }
+  }
+
+  /// Converts decimal rate to percentage string (e.g., 0.02 -> "2")
+  String _formatPercentage(double decimal) {
+    return (decimal * 100).toStringAsFixed(2).replaceAll(RegExp(r'\.?0+$'), '');
+  }
+
+  /// Converts percentage string to decimal (e.g., "2" -> 0.02)
+  double? _parsePercentage(String text) {
+    final value = double.tryParse(text);
+    if (value == null) return null;
+    return value / 100;
+  }
+
+  Future<void> _saveEconomicAssumptions(Project project) async {
+    if (!_economicFormKey.currentState!.validate()) {
+      return;
+    }
+
+    try {
+      final inflationRate = _parsePercentage(_inflationRateController.text);
+      final reerReturnRate = _parsePercentage(_reerReturnRateController.text);
+      final celiReturnRate = _parsePercentage(_celiReturnRateController.text);
+      final criReturnRate = _parsePercentage(_criReturnRateController.text);
+      final cashReturnRate = _parsePercentage(_cashReturnRateController.text);
+
+      if (inflationRate == null || reerReturnRate == null ||
+          celiReturnRate == null || criReturnRate == null ||
+          cashReturnRate == null) {
+        throw Exception('Invalid rate values');
+      }
+
+      final updatedProject = project.copyWith(
+        inflationRate: inflationRate,
+        reerReturnRate: reerReturnRate,
+        celiReturnRate: celiReturnRate,
+        criReturnRate: criReturnRate,
+        cashReturnRate: cashReturnRate,
+      );
+
+      await ref.read(projectsProvider.notifier).updateProjectData(updatedProject);
+
+      if (mounted) {
+        setState(() => _isEditingEconomic = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Economic assumptions updated')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update economic assumptions: $e')),
+        );
+      }
+    }
+  }
+
+  String? _validatePercentage(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Required';
+    }
+    final percentage = double.tryParse(value);
+    if (percentage == null) {
+      return 'Must be a number';
+    }
+    if (percentage < -10 || percentage > 20) {
+      return 'Must be between -10% and 20%';
+    }
+    return null;
   }
 
   @override
@@ -478,6 +566,153 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                         ),
                       ],
                     ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Economic Assumptions section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _economicFormKey,
+                  child: ResponsiveCollapsibleSection(
+                    title: 'Economic Assumptions',
+                    subtitle: 'Investment returns and inflation rates',
+                    icon: Icons.analytics_outlined,
+                    initiallyExpanded: false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _inflationRateController,
+                          decoration: const InputDecoration(
+                            labelText: 'Inflation Rate',
+                            border: OutlineInputBorder(),
+                            suffixText: '%',
+                            helperText: 'Expected annual inflation rate',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                          ],
+                          validator: _validatePercentage,
+                          onChanged: (_) {
+                            if (!_isEditingEconomic) {
+                              setState(() => _isEditingEconomic = true);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _reerReturnRateController,
+                          decoration: const InputDecoration(
+                            labelText: 'REER Return Rate',
+                            border: OutlineInputBorder(),
+                            suffixText: '%',
+                            helperText: 'Expected annual return for REER accounts',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                          ],
+                          validator: _validatePercentage,
+                          onChanged: (_) {
+                            if (!_isEditingEconomic) {
+                              setState(() => _isEditingEconomic = true);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _celiReturnRateController,
+                          decoration: const InputDecoration(
+                            labelText: 'CELI Return Rate',
+                            border: OutlineInputBorder(),
+                            suffixText: '%',
+                            helperText: 'Expected annual return for CELI accounts',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                          ],
+                          validator: _validatePercentage,
+                          onChanged: (_) {
+                            if (!_isEditingEconomic) {
+                              setState(() => _isEditingEconomic = true);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _criReturnRateController,
+                          decoration: const InputDecoration(
+                            labelText: 'CRI Return Rate',
+                            border: OutlineInputBorder(),
+                            suffixText: '%',
+                            helperText: 'Expected annual return for CRI accounts',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                          ],
+                          validator: _validatePercentage,
+                          onChanged: (_) {
+                            if (!_isEditingEconomic) {
+                              setState(() => _isEditingEconomic = true);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _cashReturnRateController,
+                          decoration: const InputDecoration(
+                            labelText: 'Cash Return Rate',
+                            border: OutlineInputBorder(),
+                            suffixText: '%',
+                            helperText: 'Expected annual return for cash accounts',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                          ],
+                          validator: _validatePercentage,
+                          onChanged: (_) {
+                            if (!_isEditingEconomic) {
+                              setState(() => _isEditingEconomic = true);
+                            }
+                          },
+                        ),
+                        if (_isEditingEconomic) ...[
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  setState(() => _isEditingEconomic = false);
+                                  _loadProjectData(selectedProject);
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                              const SizedBox(width: 8),
+                              FilledButton.icon(
+                                onPressed: () => _saveEconomicAssumptions(selectedProject),
+                                icon: const Icon(Icons.save),
+                                label: const Text('Save'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ),

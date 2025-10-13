@@ -11,6 +11,9 @@ _$IndividualImpl _$$IndividualImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       birthdate: DateTime.parse(json['birthdate'] as String),
+      employmentIncome: (json['employmentIncome'] as num?)?.toDouble() ?? 0.0,
+      rrqStartAge: (json['rrqStartAge'] as num?)?.toInt() ?? 65,
+      psvStartAge: (json['psvStartAge'] as num?)?.toInt() ?? 65,
     );
 
 Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
@@ -18,4 +21,7 @@ Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'birthdate': instance.birthdate.toIso8601String(),
+      'employmentIncome': instance.employmentIncome,
+      'rrqStartAge': instance.rrqStartAge,
+      'psvStartAge': instance.psvStartAge,
     };

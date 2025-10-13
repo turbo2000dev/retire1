@@ -58,6 +58,28 @@ class IndividualCard extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 16,
+                    runSpacing: 4,
+                    children: [
+                      _buildInfoChip(
+                        context,
+                        Icons.attach_money,
+                        'Income: ${NumberFormat.currency(symbol: '\$', decimalDigits: 0).format(individual.employmentIncome)}',
+                      ),
+                      _buildInfoChip(
+                        context,
+                        Icons.calendar_today,
+                        'RRQ: ${individual.rrqStartAge}',
+                      ),
+                      _buildInfoChip(
+                        context,
+                        Icons.calendar_today,
+                        'PSV: ${individual.psvStartAge}',
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -87,6 +109,27 @@ class IndividualCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoChip(BuildContext context, IconData icon, String label) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 14,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }

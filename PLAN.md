@@ -1919,44 +1919,95 @@
 
 ---
 
-## PHASE 21: Projection - Firebase Integration
+## PHASE 21: Expand Base Parameters - Economic Rates & Pension Parameters
 
-**Goal:** Cache calculated projections in Firestore for performance
+**Goal:** Add economic assumptions and pension parameters to project configuration
 
 ### Tasks:
-1. **Create projection DTO:**
-   - [ ] Create `lib/features/projection/data/projection_dto.dart`
-   - [ ] Map to/from Firestore
+1. **Update domain models:**
+   - [x] Add economic rates to Project model (inflationRate, reerReturnRate, celiReturnRate, criReturnRate, cashReturnRate)
+   - [x] Add pension parameters to Individual model (employmentIncome, rrqStartAge, psvStartAge)
+   - [x] Set appropriate default values
+   - [x] Run build_runner to regenerate Freezed code
 
-2. **Create projection repository:**
-   - [ ] Create `lib/features/projection/data/projection_repository.dart`
-   - [ ] Save calculated projections
-   - [ ] Store in `projects/{projectId}/projections` collection
-   - [ ] Load cached projections
+2. **Create Economic Assumptions UI:**
+   - [x] Add collapsible "Economic Assumptions" section to Base Parameters screen
+   - [x] Add 5 rate fields with percentage formatting (display as %, store as decimal)
+   - [x] Add validation (rates between -10% and 20%)
+   - [x] Implement edit/save/cancel workflow
+   - [x] Make fields editable without initial click
 
-3. **Implement caching logic:**
-   - [ ] Calculate projection if not in cache
-   - [ ] Save to Firestore after calculation
-   - [ ] Invalidate cache when project/scenario changes
-   - [ ] Load from cache when available
+3. **Expand Individual management:**
+   - [x] Add pension parameter fields to IndividualDialog
+   - [x] Employment income field with currency formatting
+   - [x] RRQ start age field with validation (60-70)
+   - [x] PSV start age field with validation (60-70)
+   - [x] Update IndividualCard to display pension info
 
-4. **Update projection provider:**
-   - [ ] Check cache first
-   - [ ] Calculate if needed
-   - [ ] Save to cache
-
-5. **Test caching:**
-   - [ ] Calculate projection, verify saved to Firestore
-   - [ ] Reload app, projection loads from cache
-   - [ ] Modify asset, projection recalculates
+4. **Test and verify:**
+   - [x] Run flutter analyze (no issues)
+   - [x] Build check successful
+   - Ready for testing: Economic rates save to Firestore
+   - Ready for testing: Pension parameters persist correctly
+   - Ready for testing: UI updates when values change
 
 **Manual Test Checklist:**
-- ✓ Projection calculated and cached
-- ✓ Subsequent loads faster (from cache)
-- ✓ Cache invalidated when data changes
-- ✓ Projections visible in Firestore console
+- Ready for testing: Can expand Economic Assumptions section
+- Ready for testing: Can edit all 5 economic rates
+- Ready for testing: Validation works (outside -10% to 20% shows error)
+- Ready for testing: Changes save to project in Firestore
+- Ready for testing: Can edit individual with pension parameters
+- Ready for testing: Employment income, RRQ age, PSV age save correctly
+- Ready for testing: Individual card shows new pension info
+- Ready for testing: All changes persist across sessions
 
-**Deliverable:** Optimized projection with caching
+**Deliverable:** Base Parameters screen with economic assumptions and pension parameters
+
+---
+
+## ✅ PHASE 21 COMPLETED
+
+**What was accomplished:**
+- Updated Individual domain model with pension parameters:
+  - employmentIncome (double, default: 0.0) - Annual salary
+  - rrqStartAge (int, default: 65) - RRQ pension start age (60-70)
+  - psvStartAge (int, default: 65) - PSV pension start age (60-70)
+- Updated Project domain model with economic rates:
+  - inflationRate (double, default: 0.02 = 2%)
+  - reerReturnRate (double, default: 0.05 = 5%)
+  - celiReturnRate (double, default: 0.05 = 5%)
+  - criReturnRate (double, default: 0.05 = 5%)
+  - cashReturnRate (double, default: 0.015 = 1.5%)
+- Created Economic Assumptions UI in Base Parameters screen:
+  - Collapsible section with ResponsiveCollapsibleSection
+  - 5 rate input fields with percentage formatting
+  - Validation: rates must be between -10% and 20%
+  - Edit/Cancel/Save workflow
+  - Fields always editable (no initial click required)
+  - Helper methods: _formatPercentage() and _parsePercentage()
+- Expanded Individual management:
+  - Added pension parameter fields to IndividualDialog
+  - Employment income with currency validation
+  - RRQ start age with 60-70 validation
+  - PSV start age with 60-70 validation
+  - All fields with proper input formatters and validation
+- Updated IndividualCard to display pension information:
+  - Employment income formatted as currency
+  - RRQ start age
+  - PSV start age
+  - Info displayed as compact chips with icons
+- Ran build_runner successfully (regenerated Freezed code)
+- Code passes flutter analyze with no issues
+- All changes backward-compatible with existing projects (default values)
+
+**Key files created/modified:**
+- Updated lib/features/project/domain/individual.dart - Added pension parameters
+- Updated lib/features/project/domain/project.dart - Added economic rates
+- Regenerated lib/features/project/domain/individual.freezed.dart - Freezed code
+- Regenerated lib/features/project/domain/project.freezed.dart - Freezed code
+- Updated lib/features/project/presentation/base_parameters_screen.dart - Economic Assumptions section
+- Updated lib/features/project/presentation/widgets/individual_card.dart - Display pension info
+- Updated lib/features/project/presentation/widgets/individual_dialog.dart - Pension parameter fields
 
 ---
 

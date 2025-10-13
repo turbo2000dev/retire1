@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 
@@ -48,18 +49,33 @@ class IndividualDialog extends StatefulWidget {
 class _IndividualDialogState extends State<IndividualDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
+  late final TextEditingController _employmentIncomeController;
+  late final TextEditingController _rrqStartAgeController;
+  late final TextEditingController _psvStartAgeController;
   late DateTime _selectedDate;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.individual?.name ?? '');
+    _employmentIncomeController = TextEditingController(
+      text: widget.individual?.employmentIncome.toStringAsFixed(0) ?? '0',
+    );
+    _rrqStartAgeController = TextEditingController(
+      text: widget.individual?.rrqStartAge.toString() ?? '65',
+    );
+    _psvStartAgeController = TextEditingController(
+      text: widget.individual?.psvStartAge.toString() ?? '65',
+    );
     _selectedDate = widget.individual?.birthdate ?? DateTime(1970, 1, 1);
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _employmentIncomeController.dispose();
+    _rrqStartAgeController.dispose();
+    _psvStartAgeController.dispose();
     super.dispose();
   }
 
@@ -84,10 +100,17 @@ class _IndividualDialogState extends State<IndividualDialog> {
       return;
     }
 
+    final employmentIncome = double.tryParse(_employmentIncomeController.text) ?? 0.0;
+    final rrqStartAge = int.tryParse(_rrqStartAgeController.text) ?? 65;
+    final psvStartAge = int.tryParse(_psvStartAgeController.text) ?? 65;
+
     final individual = Individual(
       id: widget.individual?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       name: _nameController.text.trim(),
       birthdate: _selectedDate,
+      employmentIncome: employmentIncome,
+      rrqStartAge: rrqStartAge,
+      psvStartAge: psvStartAge,
     );
 
     Navigator.of(context).pop(
@@ -150,6 +173,86 @@ class _IndividualDialogState extends State<IndividualDialog> {
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Pension Parameters',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _employmentIncomeController,
+                decoration: const InputDecoration(
+                  labelText: 'Annual Employment Income',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money),
+                  prefixText: '\$ ',
+                  helperText: 'Current annual salary or employment income',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Required';
+                  }
+                  final amount = double.tryParse(value);
+                  if (amount == null || amount < 0) {
+                    return 'Must be a valid amount';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _rrqStartAgeController,
+                decoration: const InputDecoration(
+                  labelText: 'RRQ Start Age',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.calendar_today),
+                  helperText: 'Age to start receiving Quebec Pension Plan (60-70)',
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Required';
+                  }
+                  final age = int.tryParse(value);
+                  if (age == null || age < 60 || age > 70) {
+                    return 'Must be between 60 and 70';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _psvStartAgeController,
+                decoration: const InputDecoration(
+                  labelText: 'PSV Start Age',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.calendar_today),
+                  helperText: 'Age to start receiving Old Age Security (60-70)',
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Required';
+                  }
+                  final age = int.tryParse(value);
+                  if (age == null || age < 60 || age > 70) {
+                    return 'Must be between 60 and 70';
+                  }
+                  return null;
+                },
               ),
             ],
           ),

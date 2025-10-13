@@ -24,6 +24,11 @@ mixin _$Individual {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   DateTime get birthdate => throw _privateConstructorUsedError;
+  double get employmentIncome =>
+      throw _privateConstructorUsedError; // Annual salary
+  int get rrqStartAge =>
+      throw _privateConstructorUsedError; // RRQ start age (60-70)
+  int get psvStartAge => throw _privateConstructorUsedError;
 
   /// Serializes this Individual to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,7 +47,14 @@ abstract class $IndividualCopyWith<$Res> {
     $Res Function(Individual) then,
   ) = _$IndividualCopyWithImpl<$Res, Individual>;
   @useResult
-  $Res call({String id, String name, DateTime birthdate});
+  $Res call({
+    String id,
+    String name,
+    DateTime birthdate,
+    double employmentIncome,
+    int rrqStartAge,
+    int psvStartAge,
+  });
 }
 
 /// @nodoc
@@ -63,6 +75,9 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
     Object? id = null,
     Object? name = null,
     Object? birthdate = null,
+    Object? employmentIncome = null,
+    Object? rrqStartAge = null,
+    Object? psvStartAge = null,
   }) {
     return _then(
       _value.copyWith(
@@ -78,6 +93,18 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
                 ? _value.birthdate
                 : birthdate // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            employmentIncome: null == employmentIncome
+                ? _value.employmentIncome
+                : employmentIncome // ignore: cast_nullable_to_non_nullable
+                      as double,
+            rrqStartAge: null == rrqStartAge
+                ? _value.rrqStartAge
+                : rrqStartAge // ignore: cast_nullable_to_non_nullable
+                      as int,
+            psvStartAge: null == psvStartAge
+                ? _value.psvStartAge
+                : psvStartAge // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -93,7 +120,14 @@ abstract class _$$IndividualImplCopyWith<$Res>
   ) = __$$IndividualImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, DateTime birthdate});
+  $Res call({
+    String id,
+    String name,
+    DateTime birthdate,
+    double employmentIncome,
+    int rrqStartAge,
+    int psvStartAge,
+  });
 }
 
 /// @nodoc
@@ -113,6 +147,9 @@ class __$$IndividualImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? birthdate = null,
+    Object? employmentIncome = null,
+    Object? rrqStartAge = null,
+    Object? psvStartAge = null,
   }) {
     return _then(
       _$IndividualImpl(
@@ -128,6 +165,18 @@ class __$$IndividualImplCopyWithImpl<$Res>
             ? _value.birthdate
             : birthdate // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        employmentIncome: null == employmentIncome
+            ? _value.employmentIncome
+            : employmentIncome // ignore: cast_nullable_to_non_nullable
+                  as double,
+        rrqStartAge: null == rrqStartAge
+            ? _value.rrqStartAge
+            : rrqStartAge // ignore: cast_nullable_to_non_nullable
+                  as int,
+        psvStartAge: null == psvStartAge
+            ? _value.psvStartAge
+            : psvStartAge // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -140,6 +189,9 @@ class _$IndividualImpl extends _Individual {
     required this.id,
     required this.name,
     required this.birthdate,
+    this.employmentIncome = 0.0,
+    this.rrqStartAge = 65,
+    this.psvStartAge = 65,
   }) : super._();
 
   factory _$IndividualImpl.fromJson(Map<String, dynamic> json) =>
@@ -151,10 +203,21 @@ class _$IndividualImpl extends _Individual {
   final String name;
   @override
   final DateTime birthdate;
+  @override
+  @JsonKey()
+  final double employmentIncome;
+  // Annual salary
+  @override
+  @JsonKey()
+  final int rrqStartAge;
+  // RRQ start age (60-70)
+  @override
+  @JsonKey()
+  final int psvStartAge;
 
   @override
   String toString() {
-    return 'Individual(id: $id, name: $name, birthdate: $birthdate)';
+    return 'Individual(id: $id, name: $name, birthdate: $birthdate, employmentIncome: $employmentIncome, rrqStartAge: $rrqStartAge, psvStartAge: $psvStartAge)';
   }
 
   @override
@@ -165,12 +228,26 @@ class _$IndividualImpl extends _Individual {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.birthdate, birthdate) ||
-                other.birthdate == birthdate));
+                other.birthdate == birthdate) &&
+            (identical(other.employmentIncome, employmentIncome) ||
+                other.employmentIncome == employmentIncome) &&
+            (identical(other.rrqStartAge, rrqStartAge) ||
+                other.rrqStartAge == rrqStartAge) &&
+            (identical(other.psvStartAge, psvStartAge) ||
+                other.psvStartAge == psvStartAge));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, birthdate);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    name,
+    birthdate,
+    employmentIncome,
+    rrqStartAge,
+    psvStartAge,
+  );
 
   /// Create a copy of Individual
   /// with the given fields replaced by the non-null parameter values.
@@ -191,6 +268,9 @@ abstract class _Individual extends Individual {
     required final String id,
     required final String name,
     required final DateTime birthdate,
+    final double employmentIncome,
+    final int rrqStartAge,
+    final int psvStartAge,
   }) = _$IndividualImpl;
   const _Individual._() : super._();
 
@@ -203,6 +283,12 @@ abstract class _Individual extends Individual {
   String get name;
   @override
   DateTime get birthdate;
+  @override
+  double get employmentIncome; // Annual salary
+  @override
+  int get rrqStartAge; // RRQ start age (60-70)
+  @override
+  int get psvStartAge;
 
   /// Create a copy of Individual
   /// with the given fields replaced by the non-null parameter values.

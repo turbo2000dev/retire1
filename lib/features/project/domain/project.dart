@@ -16,6 +16,12 @@ class Project with _$Project {
     required DateTime createdAt,
     required DateTime updatedAt,
     @Default([]) List<Individual> individuals,
+    // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)
+    @Default(0.02) double inflationRate,
+    @Default(0.05) double reerReturnRate,
+    @Default(0.05) double celiReturnRate,
+    @Default(0.05) double criReturnRate,
+    @Default(0.015) double cashReturnRate,
   }) = _Project;
 
   factory Project.fromJson(Map<String, dynamic> json) =>
