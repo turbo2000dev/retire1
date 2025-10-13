@@ -20,6 +20,22 @@ class ProjectionScreen extends ConsumerWidget {
     final scenariosAsync = ref.watch(scenariosProvider);
     final selectedScenarioId = ref.watch(selectedScenarioIdProvider);
 
+    // Auto-select base scenario if none selected
+    scenariosAsync.whenData((scenarios) {
+      if (selectedScenarioId == null && scenarios.isNotEmpty) {
+        // Find base scenario, or use first scenario if no base found
+        final baseScenario = scenarios.firstWhere(
+          (s) => s.isBase,
+          orElse: () => scenarios.first,
+        );
+
+        // Schedule selection after build completes
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(selectedScenarioIdProvider.notifier).selectScenario(baseScenario.id);
+        });
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Projection'),
