@@ -40,6 +40,8 @@ _$RRSPAccountImpl _$$RRSPAccountImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       individualId: json['individualId'] as String,
       value: (json['value'] as num).toDouble(),
+      customReturnRate: (json['customReturnRate'] as num?)?.toDouble(),
+      annualContribution: (json['annualContribution'] as num?)?.toDouble(),
       $type: json['runtimeType'] as String?,
     );
 
@@ -48,6 +50,8 @@ Map<String, dynamic> _$$RRSPAccountImplToJson(_$RRSPAccountImpl instance) =>
       'id': instance.id,
       'individualId': instance.individualId,
       'value': instance.value,
+      'customReturnRate': instance.customReturnRate,
+      'annualContribution': instance.annualContribution,
       'runtimeType': instance.$type,
     };
 
@@ -56,6 +60,8 @@ _$CELIAccountImpl _$$CELIAccountImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       individualId: json['individualId'] as String,
       value: (json['value'] as num).toDouble(),
+      customReturnRate: (json['customReturnRate'] as num?)?.toDouble(),
+      annualContribution: (json['annualContribution'] as num?)?.toDouble(),
       $type: json['runtimeType'] as String?,
     );
 
@@ -64,6 +70,30 @@ Map<String, dynamic> _$$CELIAccountImplToJson(_$CELIAccountImpl instance) =>
       'id': instance.id,
       'individualId': instance.individualId,
       'value': instance.value,
+      'customReturnRate': instance.customReturnRate,
+      'annualContribution': instance.annualContribution,
+      'runtimeType': instance.$type,
+    };
+
+_$CRIAccountImpl _$$CRIAccountImplFromJson(Map<String, dynamic> json) =>
+    _$CRIAccountImpl(
+      id: json['id'] as String,
+      individualId: json['individualId'] as String,
+      value: (json['value'] as num).toDouble(),
+      contributionRoom: (json['contributionRoom'] as num?)?.toDouble(),
+      customReturnRate: (json['customReturnRate'] as num?)?.toDouble(),
+      annualContribution: (json['annualContribution'] as num?)?.toDouble(),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$CRIAccountImplToJson(_$CRIAccountImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'individualId': instance.individualId,
+      'value': instance.value,
+      'contributionRoom': instance.contributionRoom,
+      'customReturnRate': instance.customReturnRate,
+      'annualContribution': instance.annualContribution,
       'runtimeType': instance.$type,
     };
 
@@ -72,6 +102,8 @@ _$CashAccountImpl _$$CashAccountImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       individualId: json['individualId'] as String,
       value: (json['value'] as num).toDouble(),
+      customReturnRate: (json['customReturnRate'] as num?)?.toDouble(),
+      annualContribution: (json['annualContribution'] as num?)?.toDouble(),
       $type: json['runtimeType'] as String?,
     );
 
@@ -80,5 +112,7 @@ Map<String, dynamic> _$$CashAccountImplToJson(_$CashAccountImpl instance) =>
       'id': instance.id,
       'individualId': instance.individualId,
       'value': instance.value,
+      'customReturnRate': instance.customReturnRate,
+      'annualContribution': instance.annualContribution,
       'runtimeType': instance.$type,
     };

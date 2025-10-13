@@ -29,6 +29,8 @@ class Asset with _$Asset {
     required String id,
     required String individualId,
     required double value,
+    double? customReturnRate,
+    double? annualContribution,
   }) = RRSPAccount;
 
   /// CELI (Tax-Free Savings Account / TFSA) account
@@ -36,13 +38,27 @@ class Asset with _$Asset {
     required String id,
     required String individualId,
     required double value,
+    double? customReturnRate,
+    double? annualContribution,
   }) = CELIAccount;
+
+  /// CRI/FRV (Compte de Retraite Immobilisé / Fonds de Revenu Viager) account
+  const factory Asset.cri({
+    required String id,
+    required String individualId,
+    required double value,
+    double? contributionRoom,
+    double? customReturnRate,
+    double? annualContribution,
+  }) = CRIAccount;
 
   /// Cash/savings account
   const factory Asset.cash({
     required String id,
     required String individualId,
     required double value,
+    double? customReturnRate,
+    double? annualContribution,
   }) = CashAccount;
 
   factory Asset.fromJson(Map<String, dynamic> json) => _$AssetFromJson(json);

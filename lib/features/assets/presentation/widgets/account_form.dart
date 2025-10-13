@@ -6,7 +6,7 @@ import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 
 /// Account type for account form
-enum AccountType { rrsp, celi, cash }
+enum AccountType { rrsp, celi, cri, cash }
 
 /// Reusable form for creating or editing account assets (RRSP, CELI, Cash)
 class AccountForm extends ConsumerStatefulWidget {
@@ -30,6 +30,9 @@ class AccountForm extends ConsumerStatefulWidget {
 class _AccountFormState extends ConsumerState<AccountForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
+  late final TextEditingController _customReturnRateController;
+  late final TextEditingController _annualContributionController;
+  late final TextEditingController _contributionRoomController;
   String? _selectedIndividualId;
 
   @override
@@ -40,13 +43,42 @@ class _AccountFormState extends ConsumerState<AccountForm> {
         realEstate: (_) => '',
         rrsp: (a) => a.value.toStringAsFixed(0),
         celi: (a) => a.value.toStringAsFixed(0),
+        cri: (a) => a.value.toStringAsFixed(0),
         cash: (a) => a.value.toStringAsFixed(0),
+      ) ?? '',
+    );
+    _customReturnRateController = TextEditingController(
+      text: widget.asset?.map(
+        realEstate: (_) => '',
+        rrsp: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
+        celi: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
+        cri: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
+        cash: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
+      ) ?? '',
+    );
+    _annualContributionController = TextEditingController(
+      text: widget.asset?.map(
+        realEstate: (_) => '',
+        rrsp: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+        celi: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+        cri: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+        cash: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+      ) ?? '',
+    );
+    _contributionRoomController = TextEditingController(
+      text: widget.asset?.map(
+        realEstate: (_) => '',
+        rrsp: (_) => '',
+        celi: (_) => '',
+        cri: (a) => a.contributionRoom?.toStringAsFixed(0) ?? '',
+        cash: (_) => '',
       ) ?? '',
     );
     _selectedIndividualId = widget.asset?.map(
       realEstate: (_) => null,
       rrsp: (a) => a.individualId,
       celi: (a) => a.individualId,
+      cri: (a) => a.individualId,
       cash: (a) => a.individualId,
     );
   }
@@ -54,6 +86,9 @@ class _AccountFormState extends ConsumerState<AccountForm> {
   @override
   void dispose() {
     _valueController.dispose();
+    _customReturnRateController.dispose();
+    _annualContributionController.dispose();
+    _contributionRoomController.dispose();
     super.dispose();
   }
 
@@ -71,10 +106,22 @@ class _AccountFormState extends ConsumerState<AccountForm> {
       realEstate: (a) => a.id,
       rrsp: (a) => a.id,
       celi: (a) => a.id,
+      cri: (a) => a.id,
       cash: (a) => a.id,
     ) ?? DateTime.now().millisecondsSinceEpoch.toString();
 
     final value = double.parse(_valueController.text.replaceAll(',', ''));
+
+    // Parse optional fields
+    final customReturnRate = _customReturnRateController.text.isEmpty
+        ? null
+        : double.tryParse(_customReturnRateController.text);
+    final annualContribution = _annualContributionController.text.isEmpty
+        ? null
+        : double.tryParse(_annualContributionController.text.replaceAll(',', ''));
+    final contributionRoom = _contributionRoomController.text.isEmpty
+        ? null
+        : double.tryParse(_contributionRoomController.text.replaceAll(',', ''));
 
     final Asset asset;
     switch (widget.accountType) {
@@ -83,6 +130,8 @@ class _AccountFormState extends ConsumerState<AccountForm> {
           id: id,
           individualId: _selectedIndividualId!,
           value: value,
+          customReturnRate: customReturnRate,
+          annualContribution: annualContribution,
         );
         break;
       case AccountType.celi:
@@ -90,6 +139,18 @@ class _AccountFormState extends ConsumerState<AccountForm> {
           id: id,
           individualId: _selectedIndividualId!,
           value: value,
+          customReturnRate: customReturnRate,
+          annualContribution: annualContribution,
+        );
+        break;
+      case AccountType.cri:
+        asset = Asset.cri(
+          id: id,
+          individualId: _selectedIndividualId!,
+          value: value,
+          contributionRoom: contributionRoom,
+          customReturnRate: customReturnRate,
+          annualContribution: annualContribution,
         );
         break;
       case AccountType.cash:
@@ -97,6 +158,8 @@ class _AccountFormState extends ConsumerState<AccountForm> {
           id: id,
           individualId: _selectedIndividualId!,
           value: value,
+          customReturnRate: customReturnRate,
+          annualContribution: annualContribution,
         );
         break;
     }
@@ -190,6 +253,77 @@ class _AccountFormState extends ConsumerState<AccountForm> {
               return null;
             },
           ),
+          const SizedBox(height: 16),
+          // Custom return rate field (optional)
+          TextFormField(
+            controller: _customReturnRateController,
+            decoration: const InputDecoration(
+              labelText: 'Custom Return Rate (optional)',
+              border: OutlineInputBorder(),
+              suffixText: '%',
+              helperText: 'Override project return rate for this account',
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+            ],
+            validator: (value) {
+              if (value == null || value.isEmpty) return null;
+              final numValue = double.tryParse(value);
+              if (numValue == null || numValue < 0 || numValue > 100) {
+                return 'Please enter a valid rate (0-100)';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          // Annual contribution field (optional)
+          TextFormField(
+            controller: _annualContributionController,
+            decoration: const InputDecoration(
+              labelText: 'Annual Contribution (optional)',
+              border: OutlineInputBorder(),
+              prefixText: '\$ ',
+              helperText: 'Automatic yearly contribution amount',
+            ),
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            validator: (value) {
+              if (value == null || value.isEmpty) return null;
+              final numValue = double.tryParse(value.replaceAll(',', ''));
+              if (numValue == null || numValue < 0) {
+                return 'Please enter a valid amount';
+              }
+              return null;
+            },
+          ),
+          // Contribution room field (CRI only)
+          if (widget.accountType == AccountType.cri) ...[
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _contributionRoomController,
+              decoration: const InputDecoration(
+                labelText: 'Contribution Room (optional)',
+                border: OutlineInputBorder(),
+                prefixText: '\$ ',
+                helperText: 'Available contribution room for CRI account',
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              validator: (value) {
+                if (value == null || value.isEmpty) return null;
+                final numValue = double.tryParse(value.replaceAll(',', ''));
+                if (numValue == null || numValue < 0) {
+                  return 'Please enter a valid amount';
+                }
+                return null;
+              },
+            ),
+          ],
           const SizedBox(height: 24),
           // Buttons
           Row(

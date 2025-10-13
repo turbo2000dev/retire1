@@ -103,6 +103,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
       realEstate: (a) => a.id,
       rrsp: (a) => a.id,
       celi: (a) => a.id,
+      cri: (a) => a.id,
       cash: (a) => a.id,
     );
 
@@ -110,6 +111,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
       realEstate: (a) => 'this property',
       rrsp: (a) => 'this RRSP account',
       celi: (a) => 'this CELI account',
+      cri: (a) => 'this CRI/FRV account',
       cash: (a) => 'this cash account',
     );
 

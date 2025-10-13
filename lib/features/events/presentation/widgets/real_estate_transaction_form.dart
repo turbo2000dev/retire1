@@ -58,7 +58,7 @@ class _RealEstateTransactionFormState
   List<Asset> get _cashAccounts {
     return widget.assets.where((asset) {
       return asset.maybeWhen(
-        cash: (_, __, ___) => true,
+        cash: (_, __, ___, ____, _____) => true,
         orElse: () => false,
       );
     }).toList();
@@ -256,7 +256,7 @@ class _RealEstateTransactionFormState
             ),
             items: _cashAccounts.map((asset) {
               return asset.maybeWhen(
-                cash: (id, _, __) {
+                cash: (id, _, __, ___, ____) {
                   return DropdownMenuItem(
                     value: id,
                     child: const Text('Cash Account'),
@@ -291,7 +291,7 @@ class _RealEstateTransactionFormState
             ),
             items: _cashAccounts.map((asset) {
               return asset.maybeWhen(
-                cash: (id, _, __) {
+                cash: (id, _, __, ___, ____) {
                   return DropdownMenuItem(
                     value: id,
                     child: const Text('Cash Account'),

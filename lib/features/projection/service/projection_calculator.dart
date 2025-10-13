@@ -128,9 +128,10 @@ class ProjectionCalculator {
       final override = overrides.whereType<AssetValueOverride>().where((o) {
         return o.assetId == asset.when(
           realEstate: (id, type, value, setAtStart) => id,
-          rrsp: (id, individualId, value) => id,
-          celi: (id, individualId, value) => id,
-          cash: (id, individualId, value) => id,
+          rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
+          celi: (id, individualId, value, customReturnRate, annualContribution) => id,
+          cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
+          cash: (id, individualId, value, customReturnRate, annualContribution) => id,
         );
       }).firstOrNull;
 
@@ -140,12 +141,14 @@ class ProjectionCalculator {
       return asset.when(
         realEstate: (id, type, value, setAtStart) =>
             Asset.realEstate(id: id, type: type, value: override.value, setAtStart: setAtStart),
-        rrsp: (id, individualId, value) =>
-            Asset.rrsp(id: id, individualId: individualId, value: override.value),
-        celi: (id, individualId, value) =>
-            Asset.celi(id: id, individualId: individualId, value: override.value),
-        cash: (id, individualId, value) =>
-            Asset.cash(id: id, individualId: individualId, value: override.value),
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+            Asset.rrsp(id: id, individualId: individualId, value: override.value, customReturnRate: customReturnRate, annualContribution: annualContribution),
+        celi: (id, individualId, value, customReturnRate, annualContribution) =>
+            Asset.celi(id: id, individualId: individualId, value: override.value, customReturnRate: customReturnRate, annualContribution: annualContribution),
+        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) =>
+            Asset.cri(id: id, individualId: individualId, value: override.value, contributionRoom: contributionRoom, customReturnRate: customReturnRate, annualContribution: annualContribution),
+        cash: (id, individualId, value, customReturnRate, annualContribution) =>
+            Asset.cash(id: id, individualId: individualId, value: override.value, customReturnRate: customReturnRate, annualContribution: annualContribution),
       );
     }).toList();
   }
@@ -195,13 +198,16 @@ class ProjectionCalculator {
         realEstate: (id, type, value, setAtStart) {
           values[id] = value;
         },
-        rrsp: (id, individualId, value) {
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) {
           values[id] = value;
         },
-        celi: (id, individualId, value) {
+        celi: (id, individualId, value, customReturnRate, annualContribution) {
           values[id] = value;
         },
-        cash: (id, individualId, value) {
+        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
+          values[id] = value;
+        },
+        cash: (id, individualId, value, customReturnRate, annualContribution) {
           values[id] = value;
         },
       );
@@ -301,9 +307,10 @@ class ProjectionCalculator {
             if (asset != null) {
               final purchaseValue = asset.when(
                 realEstate: (id, type, value, setAtStart) => value,
-                rrsp: (id, individualId, value) => 0.0,
-                celi: (id, individualId, value) => 0.0,
-                cash: (id, individualId, value) => 0.0,
+                rrsp: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
+                celi: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
+                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => 0.0,
+                cash: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
               );
 
               currentAssetValues[withdrawAccountId] =

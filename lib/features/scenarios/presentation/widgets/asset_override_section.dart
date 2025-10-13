@@ -105,24 +105,27 @@ class AssetOverrideSection extends ConsumerWidget {
             ...assets.map((asset) {
               final assetId = asset.when(
                 realEstate: (id, type, value, setAtStart) => id,
-                rrsp: (id, individualId, value) => id,
-                celi: (id, individualId, value) => id,
-                cash: (id, individualId, value) => id,
+                rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
+                celi: (id, individualId, value, customReturnRate, annualContribution) => id,
+                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
+                cash: (id, individualId, value, customReturnRate, annualContribution) => id,
               );
 
               final baseValue = asset.when(
                 realEstate: (id, type, value, setAtStart) => value,
-                rrsp: (id, individualId, value) => value,
-                celi: (id, individualId, value) => value,
-                cash: (id, individualId, value) => value,
+                rrsp: (id, individualId, value, customReturnRate, annualContribution) => value,
+                celi: (id, individualId, value, customReturnRate, annualContribution) => value,
+                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => value,
+                cash: (id, individualId, value, customReturnRate, annualContribution) => value,
               );
 
               final assetTypeName = asset.when(
                 realEstate: (id, type, value, setAtStart) =>
                     'Real Estate (${type.name})',
-                rrsp: (id, individualId, value) => 'RRSP Account',
-                celi: (id, individualId, value) => 'CELI Account',
-                cash: (id, individualId, value) => 'Cash Account',
+                rrsp: (id, individualId, value, customReturnRate, annualContribution) => 'RRSP Account',
+                celi: (id, individualId, value, customReturnRate, annualContribution) => 'CELI Account',
+                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => 'CRI/FRV Account',
+                cash: (id, individualId, value, customReturnRate, annualContribution) => 'Cash Account',
               );
 
               // Check if there's an override for this asset

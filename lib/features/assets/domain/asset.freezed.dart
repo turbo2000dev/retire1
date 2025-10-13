@@ -23,6 +23,8 @@ Asset _$AssetFromJson(Map<String, dynamic> json) {
       return RRSPAccount.fromJson(json);
     case 'celi':
       return CELIAccount.fromJson(json);
+    case 'cri':
+      return CRIAccount.fromJson(json);
     case 'cash':
       return CashAccount.fromJson(json);
 
@@ -49,11 +51,38 @@ mixin _$Asset {
       bool setAtStart,
     )
     realEstate,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     rrsp,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     celi,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    cri,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     cash,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -65,9 +94,39 @@ mixin _$Asset {
       bool setAtStart,
     )?
     realEstate,
-    TResult? Function(String id, String individualId, double value)? rrsp,
-    TResult? Function(String id, String individualId, double value)? celi,
-    TResult? Function(String id, String individualId, double value)? cash,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -78,9 +137,39 @@ mixin _$Asset {
       bool setAtStart,
     )?
     realEstate,
-    TResult Function(String id, String individualId, double value)? rrsp,
-    TResult Function(String id, String individualId, double value)? celi,
-    TResult Function(String id, String individualId, double value)? cash,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -88,6 +177,7 @@ mixin _$Asset {
     required TResult Function(RealEstateAsset value) realEstate,
     required TResult Function(RRSPAccount value) rrsp,
     required TResult Function(CELIAccount value) celi,
+    required TResult Function(CRIAccount value) cri,
     required TResult Function(CashAccount value) cash,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -95,6 +185,7 @@ mixin _$Asset {
     TResult? Function(RealEstateAsset value)? realEstate,
     TResult? Function(RRSPAccount value)? rrsp,
     TResult? Function(CELIAccount value)? celi,
+    TResult? Function(CRIAccount value)? cri,
     TResult? Function(CashAccount value)? cash,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -102,6 +193,7 @@ mixin _$Asset {
     TResult Function(RealEstateAsset value)? realEstate,
     TResult Function(RRSPAccount value)? rrsp,
     TResult Function(CELIAccount value)? celi,
+    TResult Function(CRIAccount value)? cri,
     TResult Function(CashAccount value)? cash,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -277,11 +369,38 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
       bool setAtStart,
     )
     realEstate,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     rrsp,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     celi,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    cri,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     cash,
   }) {
     return realEstate(id, type, value, setAtStart);
@@ -297,9 +416,39 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
       bool setAtStart,
     )?
     realEstate,
-    TResult? Function(String id, String individualId, double value)? rrsp,
-    TResult? Function(String id, String individualId, double value)? celi,
-    TResult? Function(String id, String individualId, double value)? cash,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
   }) {
     return realEstate?.call(id, type, value, setAtStart);
   }
@@ -314,9 +463,39 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
       bool setAtStart,
     )?
     realEstate,
-    TResult Function(String id, String individualId, double value)? rrsp,
-    TResult Function(String id, String individualId, double value)? celi,
-    TResult Function(String id, String individualId, double value)? cash,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
     required TResult orElse(),
   }) {
     if (realEstate != null) {
@@ -331,6 +510,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
     required TResult Function(RealEstateAsset value) realEstate,
     required TResult Function(RRSPAccount value) rrsp,
     required TResult Function(CELIAccount value) celi,
+    required TResult Function(CRIAccount value) cri,
     required TResult Function(CashAccount value) cash,
   }) {
     return realEstate(this);
@@ -342,6 +522,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
     TResult? Function(RealEstateAsset value)? realEstate,
     TResult? Function(RRSPAccount value)? rrsp,
     TResult? Function(CELIAccount value)? celi,
+    TResult? Function(CRIAccount value)? cri,
     TResult? Function(CashAccount value)? cash,
   }) {
     return realEstate?.call(this);
@@ -353,6 +534,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
     TResult Function(RealEstateAsset value)? realEstate,
     TResult Function(RRSPAccount value)? rrsp,
     TResult Function(CELIAccount value)? celi,
+    TResult Function(CRIAccount value)? cri,
     TResult Function(CashAccount value)? cash,
     required TResult orElse(),
   }) {
@@ -403,7 +585,13 @@ abstract class _$$RRSPAccountImplCopyWith<$Res>
   ) = __$$RRSPAccountImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String individualId, double value});
+  $Res call({
+    String id,
+    String individualId,
+    double value,
+    double? customReturnRate,
+    double? annualContribution,
+  });
 }
 
 /// @nodoc
@@ -423,6 +611,8 @@ class __$$RRSPAccountImplCopyWithImpl<$Res>
     Object? id = null,
     Object? individualId = null,
     Object? value = null,
+    Object? customReturnRate = freezed,
+    Object? annualContribution = freezed,
   }) {
     return _then(
       _$RRSPAccountImpl(
@@ -438,6 +628,14 @@ class __$$RRSPAccountImplCopyWithImpl<$Res>
             ? _value.value
             : value // ignore: cast_nullable_to_non_nullable
                   as double,
+        customReturnRate: freezed == customReturnRate
+            ? _value.customReturnRate
+            : customReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        annualContribution: freezed == annualContribution
+            ? _value.annualContribution
+            : annualContribution // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -450,6 +648,8 @@ class _$RRSPAccountImpl implements RRSPAccount {
     required this.id,
     required this.individualId,
     required this.value,
+    this.customReturnRate,
+    this.annualContribution,
     final String? $type,
   }) : $type = $type ?? 'rrsp';
 
@@ -462,13 +662,17 @@ class _$RRSPAccountImpl implements RRSPAccount {
   final String individualId;
   @override
   final double value;
+  @override
+  final double? customReturnRate;
+  @override
+  final double? annualContribution;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'Asset.rrsp(id: $id, individualId: $individualId, value: $value)';
+    return 'Asset.rrsp(id: $id, individualId: $individualId, value: $value, customReturnRate: $customReturnRate, annualContribution: $annualContribution)';
   }
 
   @override
@@ -479,12 +683,23 @@ class _$RRSPAccountImpl implements RRSPAccount {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.individualId, individualId) ||
                 other.individualId == individualId) &&
-            (identical(other.value, value) || other.value == value));
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.customReturnRate, customReturnRate) ||
+                other.customReturnRate == customReturnRate) &&
+            (identical(other.annualContribution, annualContribution) ||
+                other.annualContribution == annualContribution));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, individualId, value);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    individualId,
+    value,
+    customReturnRate,
+    annualContribution,
+  );
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.
@@ -504,14 +719,41 @@ class _$RRSPAccountImpl implements RRSPAccount {
       bool setAtStart,
     )
     realEstate,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     rrsp,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     celi,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    cri,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     cash,
   }) {
-    return rrsp(id, individualId, value);
+    return rrsp(id, individualId, value, customReturnRate, annualContribution);
   }
 
   @override
@@ -524,11 +766,47 @@ class _$RRSPAccountImpl implements RRSPAccount {
       bool setAtStart,
     )?
     realEstate,
-    TResult? Function(String id, String individualId, double value)? rrsp,
-    TResult? Function(String id, String individualId, double value)? celi,
-    TResult? Function(String id, String individualId, double value)? cash,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
   }) {
-    return rrsp?.call(id, individualId, value);
+    return rrsp?.call(
+      id,
+      individualId,
+      value,
+      customReturnRate,
+      annualContribution,
+    );
   }
 
   @override
@@ -541,13 +819,49 @@ class _$RRSPAccountImpl implements RRSPAccount {
       bool setAtStart,
     )?
     realEstate,
-    TResult Function(String id, String individualId, double value)? rrsp,
-    TResult Function(String id, String individualId, double value)? celi,
-    TResult Function(String id, String individualId, double value)? cash,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
     required TResult orElse(),
   }) {
     if (rrsp != null) {
-      return rrsp(id, individualId, value);
+      return rrsp(
+        id,
+        individualId,
+        value,
+        customReturnRate,
+        annualContribution,
+      );
     }
     return orElse();
   }
@@ -558,6 +872,7 @@ class _$RRSPAccountImpl implements RRSPAccount {
     required TResult Function(RealEstateAsset value) realEstate,
     required TResult Function(RRSPAccount value) rrsp,
     required TResult Function(CELIAccount value) celi,
+    required TResult Function(CRIAccount value) cri,
     required TResult Function(CashAccount value) cash,
   }) {
     return rrsp(this);
@@ -569,6 +884,7 @@ class _$RRSPAccountImpl implements RRSPAccount {
     TResult? Function(RealEstateAsset value)? realEstate,
     TResult? Function(RRSPAccount value)? rrsp,
     TResult? Function(CELIAccount value)? celi,
+    TResult? Function(CRIAccount value)? cri,
     TResult? Function(CashAccount value)? cash,
   }) {
     return rrsp?.call(this);
@@ -580,6 +896,7 @@ class _$RRSPAccountImpl implements RRSPAccount {
     TResult Function(RealEstateAsset value)? realEstate,
     TResult Function(RRSPAccount value)? rrsp,
     TResult Function(CELIAccount value)? celi,
+    TResult Function(CRIAccount value)? cri,
     TResult Function(CashAccount value)? cash,
     required TResult orElse(),
   }) {
@@ -600,6 +917,8 @@ abstract class RRSPAccount implements Asset {
     required final String id,
     required final String individualId,
     required final double value,
+    final double? customReturnRate,
+    final double? annualContribution,
   }) = _$RRSPAccountImpl;
 
   factory RRSPAccount.fromJson(Map<String, dynamic> json) =
@@ -610,6 +929,8 @@ abstract class RRSPAccount implements Asset {
   String get individualId;
   @override
   double get value;
+  double? get customReturnRate;
+  double? get annualContribution;
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.
@@ -628,7 +949,13 @@ abstract class _$$CELIAccountImplCopyWith<$Res>
   ) = __$$CELIAccountImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String individualId, double value});
+  $Res call({
+    String id,
+    String individualId,
+    double value,
+    double? customReturnRate,
+    double? annualContribution,
+  });
 }
 
 /// @nodoc
@@ -648,6 +975,8 @@ class __$$CELIAccountImplCopyWithImpl<$Res>
     Object? id = null,
     Object? individualId = null,
     Object? value = null,
+    Object? customReturnRate = freezed,
+    Object? annualContribution = freezed,
   }) {
     return _then(
       _$CELIAccountImpl(
@@ -663,6 +992,14 @@ class __$$CELIAccountImplCopyWithImpl<$Res>
             ? _value.value
             : value // ignore: cast_nullable_to_non_nullable
                   as double,
+        customReturnRate: freezed == customReturnRate
+            ? _value.customReturnRate
+            : customReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        annualContribution: freezed == annualContribution
+            ? _value.annualContribution
+            : annualContribution // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -675,6 +1012,8 @@ class _$CELIAccountImpl implements CELIAccount {
     required this.id,
     required this.individualId,
     required this.value,
+    this.customReturnRate,
+    this.annualContribution,
     final String? $type,
   }) : $type = $type ?? 'celi';
 
@@ -687,13 +1026,17 @@ class _$CELIAccountImpl implements CELIAccount {
   final String individualId;
   @override
   final double value;
+  @override
+  final double? customReturnRate;
+  @override
+  final double? annualContribution;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'Asset.celi(id: $id, individualId: $individualId, value: $value)';
+    return 'Asset.celi(id: $id, individualId: $individualId, value: $value, customReturnRate: $customReturnRate, annualContribution: $annualContribution)';
   }
 
   @override
@@ -704,12 +1047,23 @@ class _$CELIAccountImpl implements CELIAccount {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.individualId, individualId) ||
                 other.individualId == individualId) &&
-            (identical(other.value, value) || other.value == value));
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.customReturnRate, customReturnRate) ||
+                other.customReturnRate == customReturnRate) &&
+            (identical(other.annualContribution, annualContribution) ||
+                other.annualContribution == annualContribution));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, individualId, value);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    individualId,
+    value,
+    customReturnRate,
+    annualContribution,
+  );
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.
@@ -729,14 +1083,41 @@ class _$CELIAccountImpl implements CELIAccount {
       bool setAtStart,
     )
     realEstate,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     rrsp,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     celi,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    cri,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     cash,
   }) {
-    return celi(id, individualId, value);
+    return celi(id, individualId, value, customReturnRate, annualContribution);
   }
 
   @override
@@ -749,11 +1130,47 @@ class _$CELIAccountImpl implements CELIAccount {
       bool setAtStart,
     )?
     realEstate,
-    TResult? Function(String id, String individualId, double value)? rrsp,
-    TResult? Function(String id, String individualId, double value)? celi,
-    TResult? Function(String id, String individualId, double value)? cash,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
   }) {
-    return celi?.call(id, individualId, value);
+    return celi?.call(
+      id,
+      individualId,
+      value,
+      customReturnRate,
+      annualContribution,
+    );
   }
 
   @override
@@ -766,13 +1183,49 @@ class _$CELIAccountImpl implements CELIAccount {
       bool setAtStart,
     )?
     realEstate,
-    TResult Function(String id, String individualId, double value)? rrsp,
-    TResult Function(String id, String individualId, double value)? celi,
-    TResult Function(String id, String individualId, double value)? cash,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
     required TResult orElse(),
   }) {
     if (celi != null) {
-      return celi(id, individualId, value);
+      return celi(
+        id,
+        individualId,
+        value,
+        customReturnRate,
+        annualContribution,
+      );
     }
     return orElse();
   }
@@ -783,6 +1236,7 @@ class _$CELIAccountImpl implements CELIAccount {
     required TResult Function(RealEstateAsset value) realEstate,
     required TResult Function(RRSPAccount value) rrsp,
     required TResult Function(CELIAccount value) celi,
+    required TResult Function(CRIAccount value) cri,
     required TResult Function(CashAccount value) cash,
   }) {
     return celi(this);
@@ -794,6 +1248,7 @@ class _$CELIAccountImpl implements CELIAccount {
     TResult? Function(RealEstateAsset value)? realEstate,
     TResult? Function(RRSPAccount value)? rrsp,
     TResult? Function(CELIAccount value)? celi,
+    TResult? Function(CRIAccount value)? cri,
     TResult? Function(CashAccount value)? cash,
   }) {
     return celi?.call(this);
@@ -805,6 +1260,7 @@ class _$CELIAccountImpl implements CELIAccount {
     TResult Function(RealEstateAsset value)? realEstate,
     TResult Function(RRSPAccount value)? rrsp,
     TResult Function(CELIAccount value)? celi,
+    TResult Function(CRIAccount value)? cri,
     TResult Function(CashAccount value)? cash,
     required TResult orElse(),
   }) {
@@ -825,6 +1281,8 @@ abstract class CELIAccount implements Asset {
     required final String id,
     required final String individualId,
     required final double value,
+    final double? customReturnRate,
+    final double? annualContribution,
   }) = _$CELIAccountImpl;
 
   factory CELIAccount.fromJson(Map<String, dynamic> json) =
@@ -835,12 +1293,400 @@ abstract class CELIAccount implements Asset {
   String get individualId;
   @override
   double get value;
+  double? get customReturnRate;
+  double? get annualContribution;
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CELIAccountImplCopyWith<_$CELIAccountImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CRIAccountImplCopyWith<$Res> implements $AssetCopyWith<$Res> {
+  factory _$$CRIAccountImplCopyWith(
+    _$CRIAccountImpl value,
+    $Res Function(_$CRIAccountImpl) then,
+  ) = __$$CRIAccountImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String individualId,
+    double value,
+    double? contributionRoom,
+    double? customReturnRate,
+    double? annualContribution,
+  });
+}
+
+/// @nodoc
+class __$$CRIAccountImplCopyWithImpl<$Res>
+    extends _$AssetCopyWithImpl<$Res, _$CRIAccountImpl>
+    implements _$$CRIAccountImplCopyWith<$Res> {
+  __$$CRIAccountImplCopyWithImpl(
+    _$CRIAccountImpl _value,
+    $Res Function(_$CRIAccountImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of Asset
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? individualId = null,
+    Object? value = null,
+    Object? contributionRoom = freezed,
+    Object? customReturnRate = freezed,
+    Object? annualContribution = freezed,
+  }) {
+    return _then(
+      _$CRIAccountImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        individualId: null == individualId
+            ? _value.individualId
+            : individualId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        value: null == value
+            ? _value.value
+            : value // ignore: cast_nullable_to_non_nullable
+                  as double,
+        contributionRoom: freezed == contributionRoom
+            ? _value.contributionRoom
+            : contributionRoom // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        customReturnRate: freezed == customReturnRate
+            ? _value.customReturnRate
+            : customReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        annualContribution: freezed == annualContribution
+            ? _value.annualContribution
+            : annualContribution // ignore: cast_nullable_to_non_nullable
+                  as double?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CRIAccountImpl implements CRIAccount {
+  const _$CRIAccountImpl({
+    required this.id,
+    required this.individualId,
+    required this.value,
+    this.contributionRoom,
+    this.customReturnRate,
+    this.annualContribution,
+    final String? $type,
+  }) : $type = $type ?? 'cri';
+
+  factory _$CRIAccountImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CRIAccountImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String individualId;
+  @override
+  final double value;
+  @override
+  final double? contributionRoom;
+  @override
+  final double? customReturnRate;
+  @override
+  final double? annualContribution;
+
+  @JsonKey(name: 'runtimeType')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'Asset.cri(id: $id, individualId: $individualId, value: $value, contributionRoom: $contributionRoom, customReturnRate: $customReturnRate, annualContribution: $annualContribution)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CRIAccountImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.individualId, individualId) ||
+                other.individualId == individualId) &&
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.contributionRoom, contributionRoom) ||
+                other.contributionRoom == contributionRoom) &&
+            (identical(other.customReturnRate, customReturnRate) ||
+                other.customReturnRate == customReturnRate) &&
+            (identical(other.annualContribution, annualContribution) ||
+                other.annualContribution == annualContribution));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    individualId,
+    value,
+    contributionRoom,
+    customReturnRate,
+    annualContribution,
+  );
+
+  /// Create a copy of Asset
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CRIAccountImplCopyWith<_$CRIAccountImpl> get copyWith =>
+      __$$CRIAccountImplCopyWithImpl<_$CRIAccountImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+      String id,
+      RealEstateType type,
+      double value,
+      bool setAtStart,
+    )
+    realEstate,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    rrsp,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    celi,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    cri,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    cash,
+  }) {
+    return cri(
+      id,
+      individualId,
+      value,
+      contributionRoom,
+      customReturnRate,
+      annualContribution,
+    );
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(
+      String id,
+      RealEstateType type,
+      double value,
+      bool setAtStart,
+    )?
+    realEstate,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
+  }) {
+    return cri?.call(
+      id,
+      individualId,
+      value,
+      contributionRoom,
+      customReturnRate,
+      annualContribution,
+    );
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(
+      String id,
+      RealEstateType type,
+      double value,
+      bool setAtStart,
+    )?
+    realEstate,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
+    required TResult orElse(),
+  }) {
+    if (cri != null) {
+      return cri(
+        id,
+        individualId,
+        value,
+        contributionRoom,
+        customReturnRate,
+        annualContribution,
+      );
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(RealEstateAsset value) realEstate,
+    required TResult Function(RRSPAccount value) rrsp,
+    required TResult Function(CELIAccount value) celi,
+    required TResult Function(CRIAccount value) cri,
+    required TResult Function(CashAccount value) cash,
+  }) {
+    return cri(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(RealEstateAsset value)? realEstate,
+    TResult? Function(RRSPAccount value)? rrsp,
+    TResult? Function(CELIAccount value)? celi,
+    TResult? Function(CRIAccount value)? cri,
+    TResult? Function(CashAccount value)? cash,
+  }) {
+    return cri?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(RealEstateAsset value)? realEstate,
+    TResult Function(RRSPAccount value)? rrsp,
+    TResult Function(CELIAccount value)? celi,
+    TResult Function(CRIAccount value)? cri,
+    TResult Function(CashAccount value)? cash,
+    required TResult orElse(),
+  }) {
+    if (cri != null) {
+      return cri(this);
+    }
+    return orElse();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CRIAccountImplToJson(this);
+  }
+}
+
+abstract class CRIAccount implements Asset {
+  const factory CRIAccount({
+    required final String id,
+    required final String individualId,
+    required final double value,
+    final double? contributionRoom,
+    final double? customReturnRate,
+    final double? annualContribution,
+  }) = _$CRIAccountImpl;
+
+  factory CRIAccount.fromJson(Map<String, dynamic> json) =
+      _$CRIAccountImpl.fromJson;
+
+  @override
+  String get id;
+  String get individualId;
+  @override
+  double get value;
+  double? get contributionRoom;
+  double? get customReturnRate;
+  double? get annualContribution;
+
+  /// Create a copy of Asset
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CRIAccountImplCopyWith<_$CRIAccountImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -853,7 +1699,13 @@ abstract class _$$CashAccountImplCopyWith<$Res>
   ) = __$$CashAccountImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String individualId, double value});
+  $Res call({
+    String id,
+    String individualId,
+    double value,
+    double? customReturnRate,
+    double? annualContribution,
+  });
 }
 
 /// @nodoc
@@ -873,6 +1725,8 @@ class __$$CashAccountImplCopyWithImpl<$Res>
     Object? id = null,
     Object? individualId = null,
     Object? value = null,
+    Object? customReturnRate = freezed,
+    Object? annualContribution = freezed,
   }) {
     return _then(
       _$CashAccountImpl(
@@ -888,6 +1742,14 @@ class __$$CashAccountImplCopyWithImpl<$Res>
             ? _value.value
             : value // ignore: cast_nullable_to_non_nullable
                   as double,
+        customReturnRate: freezed == customReturnRate
+            ? _value.customReturnRate
+            : customReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        annualContribution: freezed == annualContribution
+            ? _value.annualContribution
+            : annualContribution // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -900,6 +1762,8 @@ class _$CashAccountImpl implements CashAccount {
     required this.id,
     required this.individualId,
     required this.value,
+    this.customReturnRate,
+    this.annualContribution,
     final String? $type,
   }) : $type = $type ?? 'cash';
 
@@ -912,13 +1776,17 @@ class _$CashAccountImpl implements CashAccount {
   final String individualId;
   @override
   final double value;
+  @override
+  final double? customReturnRate;
+  @override
+  final double? annualContribution;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'Asset.cash(id: $id, individualId: $individualId, value: $value)';
+    return 'Asset.cash(id: $id, individualId: $individualId, value: $value, customReturnRate: $customReturnRate, annualContribution: $annualContribution)';
   }
 
   @override
@@ -929,12 +1797,23 @@ class _$CashAccountImpl implements CashAccount {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.individualId, individualId) ||
                 other.individualId == individualId) &&
-            (identical(other.value, value) || other.value == value));
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.customReturnRate, customReturnRate) ||
+                other.customReturnRate == customReturnRate) &&
+            (identical(other.annualContribution, annualContribution) ||
+                other.annualContribution == annualContribution));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, individualId, value);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    individualId,
+    value,
+    customReturnRate,
+    annualContribution,
+  );
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.
@@ -954,14 +1833,41 @@ class _$CashAccountImpl implements CashAccount {
       bool setAtStart,
     )
     realEstate,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     rrsp,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     celi,
-    required TResult Function(String id, String individualId, double value)
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )
+    cri,
+    required TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )
     cash,
   }) {
-    return cash(id, individualId, value);
+    return cash(id, individualId, value, customReturnRate, annualContribution);
   }
 
   @override
@@ -974,11 +1880,47 @@ class _$CashAccountImpl implements CashAccount {
       bool setAtStart,
     )?
     realEstate,
-    TResult? Function(String id, String individualId, double value)? rrsp,
-    TResult? Function(String id, String individualId, double value)? celi,
-    TResult? Function(String id, String individualId, double value)? cash,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult? Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
   }) {
-    return cash?.call(id, individualId, value);
+    return cash?.call(
+      id,
+      individualId,
+      value,
+      customReturnRate,
+      annualContribution,
+    );
   }
 
   @override
@@ -991,13 +1933,49 @@ class _$CashAccountImpl implements CashAccount {
       bool setAtStart,
     )?
     realEstate,
-    TResult Function(String id, String individualId, double value)? rrsp,
-    TResult Function(String id, String individualId, double value)? celi,
-    TResult Function(String id, String individualId, double value)? cash,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    rrsp,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    celi,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? contributionRoom,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cri,
+    TResult Function(
+      String id,
+      String individualId,
+      double value,
+      double? customReturnRate,
+      double? annualContribution,
+    )?
+    cash,
     required TResult orElse(),
   }) {
     if (cash != null) {
-      return cash(id, individualId, value);
+      return cash(
+        id,
+        individualId,
+        value,
+        customReturnRate,
+        annualContribution,
+      );
     }
     return orElse();
   }
@@ -1008,6 +1986,7 @@ class _$CashAccountImpl implements CashAccount {
     required TResult Function(RealEstateAsset value) realEstate,
     required TResult Function(RRSPAccount value) rrsp,
     required TResult Function(CELIAccount value) celi,
+    required TResult Function(CRIAccount value) cri,
     required TResult Function(CashAccount value) cash,
   }) {
     return cash(this);
@@ -1019,6 +1998,7 @@ class _$CashAccountImpl implements CashAccount {
     TResult? Function(RealEstateAsset value)? realEstate,
     TResult? Function(RRSPAccount value)? rrsp,
     TResult? Function(CELIAccount value)? celi,
+    TResult? Function(CRIAccount value)? cri,
     TResult? Function(CashAccount value)? cash,
   }) {
     return cash?.call(this);
@@ -1030,6 +2010,7 @@ class _$CashAccountImpl implements CashAccount {
     TResult Function(RealEstateAsset value)? realEstate,
     TResult Function(RRSPAccount value)? rrsp,
     TResult Function(CELIAccount value)? celi,
+    TResult Function(CRIAccount value)? cri,
     TResult Function(CashAccount value)? cash,
     required TResult orElse(),
   }) {
@@ -1050,6 +2031,8 @@ abstract class CashAccount implements Asset {
     required final String id,
     required final String individualId,
     required final double value,
+    final double? customReturnRate,
+    final double? annualContribution,
   }) = _$CashAccountImpl;
 
   factory CashAccount.fromJson(Map<String, dynamic> json) =
@@ -1060,6 +2043,8 @@ abstract class CashAccount implements Asset {
   String get individualId;
   @override
   double get value;
+  double? get customReturnRate;
+  double? get annualContribution;
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.

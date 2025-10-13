@@ -111,6 +111,7 @@ final assetsByTypeProvider = Provider<Map<String, List<Asset>>>((ref) {
         'Real Estate': [],
         'RRSP': [],
         'CELI': [],
+        'CRI/FRV': [],
         'Cash': [],
       };
 
@@ -119,6 +120,7 @@ final assetsByTypeProvider = Provider<Map<String, List<Asset>>>((ref) {
           realEstate: (a) => grouped['Real Estate']!.add(a),
           rrsp: (a) => grouped['RRSP']!.add(a),
           celi: (a) => grouped['CELI']!.add(a),
+          cri: (a) => grouped['CRI/FRV']!.add(a),
           cash: (a) => grouped['Cash']!.add(a),
         );
       }
@@ -129,6 +131,7 @@ final assetsByTypeProvider = Provider<Map<String, List<Asset>>>((ref) {
       'Real Estate': [],
       'RRSP': [],
       'CELI': [],
+      'CRI/FRV': [],
       'Cash': [],
     },
   );

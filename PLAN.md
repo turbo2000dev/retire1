@@ -2244,46 +2244,65 @@ Based on specs/projection_requirements.md, the following phases implement compre
 
 ---
 
-## PHASE 22: Expand Assets - Add CRI/FRV Account Type
+## ✅ PHASE 22 COMPLETED
 
-**Goal:** Add 5th asset type (CRI/FRV) and asset-specific return rates
+**What was accomplished:**
+- Updated Asset domain model with CRI/FRV account type:
+  - Added CRIAccount Freezed union case with id, individualId, value, contributionRoom
+  - Added optional customReturnRate field to all account types (RRSP, CELI, CRI, Cash)
+  - Added optional annualContribution field to all account types
+  - Contribution room is CRI-specific
+- Updated AddAssetDialog:
+  - Added 5th asset type selector tile for CRI/FRV
+  - Lock icon with "Locked-in Retirement Account" description
+  - Updated enum to include AssetTypeSelection.cri
+- Enhanced AccountForm:
+  - Added Custom Return Rate field (optional, 0-100% validation)
+  - Added Annual Contribution field (optional, currency format)
+  - Added Contribution Room field (CRI accounts only)
+  - All fields with proper validation and helper text
+- Updated AssetCard component:
+  - CRI accounts display with lock icon and errorContainer color
+  - Shows contribution room when set
+  - Shows custom return rate when set (with % formatting)
+  - Shows annual contribution when set (currency format)
+  - Helper methods for account and CRI subtitles
+- Updated Assets & Events screen:
+  - Added CRI/FRV grouping section
+  - Updated assetsByTypeProvider to include CRI category
+  - Updated delete dialog to handle CRI accounts
+- Updated AssetRepository:
+  - Added CRI case to all asset.map() calls
+  - Handles new optional fields in Firestore serialization
+  - Backward compatible with existing assets
+- Fixed all integration points:
+  - ProjectionCalculator - Updated asset.when() calls with new parameters
+  - AssetOverrideSection - Updated for CRI accounts in scenarios
+  - RealEstateTransactionForm - Fixed parameter signatures for cash accounts
+- Ran build_runner successfully (regenerated Freezed code)
+- All 34 analyzer errors resolved
+- Code passes flutter analyze with no issues
+
+**Key files created/modified:**
+- Updated lib/features/assets/domain/asset.dart - Added CRI type and optional fields
+- Updated lib/features/assets/presentation/widgets/add_asset_dialog.dart - 5 asset types
+- Updated lib/features/assets/presentation/widgets/account_form.dart - New optional fields
+- Updated lib/features/assets/presentation/widgets/asset_card.dart - CRI display and new fields
+- Updated lib/features/assets/presentation/assets_events_screen.dart - CRI section
+- Updated lib/features/assets/presentation/providers/assets_provider.dart - CRI grouping
+- Updated lib/features/assets/data/asset_repository.dart - CRI CRUD operations
+- Updated lib/features/projection/service/projection_calculator.dart - CRI support
+- Updated lib/features/scenarios/presentation/widgets/asset_override_section.dart - CRI overrides
+- Updated lib/features/events/presentation/widgets/real_estate_transaction_form.dart - Fixed signatures
+
+---
+
+## PHASE 23: Expand Assets - Add CRI/FRV Account Type (CONTINUED)
+
+**Goal:** Use custom return rates in projection calculations and add annual contributions
 
 ### Tasks:
-1. **Update Asset domain model:**
-   - [ ] Add new Freezed union case: `CRIAccount(id, individualId, value, contributionRoom)`
-   - [ ] Add optional `customReturnRate` field to all account types
-   - [ ] Add optional `annualContribution` field to accounts
-   - [ ] Run build_runner to regenerate Freezed code
-
-2. **Update AddAssetDialog:**
-   - [ ] Add 5th tile for CRI/FRV account
-   - [ ] Update asset type selector to show 5 options
-   - [ ] Ensure proper icon and description
-
-3. **Create CRI account form:**
-   - [ ] Reuse AccountForm or create specialized version
-   - [ ] Add contribution room field (optional)
-   - [ ] Individual selector dropdown
-   - [ ] Value field with validation
-   - [ ] Optional custom return rate field
-   - [ ] Optional annual contribution field
-
-4. **Update AssetCard component:**
-   - [ ] Handle CRI account display
-   - [ ] Show contribution room if applicable
-   - [ ] Show custom return rate if set
-   - [ ] Show annual contribution if set
-
-5. **Update Assets & Events screen:**
-   - [ ] Add CRI section to grouped view
-   - [ ] Empty state for CRI accounts
-   - [ ] Sorting includes CRI accounts
-
-6. **Update AssetRepository:**
-   - [ ] Handle new CRI account type in Firestore
-   - [ ] Ensure backward compatibility
-
-7. **Update projection calculator:**
+1. **Update projection calculator:**
    - [ ] Use custom return rates when calculating asset growth
    - [ ] Fall back to project-level rates if not set
    - [ ] Apply annual contributions to account balances

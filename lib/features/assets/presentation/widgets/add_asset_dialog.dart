@@ -20,6 +20,7 @@ enum AssetTypeSelection {
   realEstate,
   rrsp,
   celi,
+  cri,
   cash,
 }
 
@@ -56,6 +57,7 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
         realEstate: (_) => AssetTypeSelection.realEstate,
         rrsp: (_) => AssetTypeSelection.rrsp,
         celi: (_) => AssetTypeSelection.celi,
+        cri: (_) => AssetTypeSelection.cri,
         cash: (_) => AssetTypeSelection.cash,
       );
       _showForm = true;
@@ -154,6 +156,14 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
         const SizedBox(height: 8),
         _buildTypeCard(
           theme: theme,
+          icon: Icons.lock,
+          title: 'CRI/FRV Account',
+          subtitle: 'Locked-in Retirement Account',
+          type: AssetTypeSelection.cri,
+        ),
+        const SizedBox(height: 8),
+        _buildTypeCard(
+          theme: theme,
           icon: Icons.account_balance_wallet,
           title: 'Cash Account',
           subtitle: 'Savings or checking account',
@@ -236,6 +246,13 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
           onSave: _handleSave,
           onCancel: _handleCancel,
         );
+      case AssetTypeSelection.cri:
+        return AccountForm(
+          accountType: AccountType.cri,
+          asset: widget.asset,
+          onSave: _handleSave,
+          onCancel: _handleCancel,
+        );
       case AssetTypeSelection.cash:
         return AccountForm(
           accountType: AccountType.cash,
@@ -254,6 +271,8 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
         return 'RRSP';
       case AssetTypeSelection.celi:
         return 'CELI';
+      case AssetTypeSelection.cri:
+        return 'CRI/FRV';
       case AssetTypeSelection.cash:
         return 'Cash Account';
     }

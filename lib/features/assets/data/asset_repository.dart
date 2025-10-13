@@ -40,6 +40,7 @@ class AssetRepository {
         realEstate: (a) => a.id,
         rrsp: (a) => a.id,
         celi: (a) => a.id,
+        cri: (a) => a.id,
         cash: (a) => a.id,
       );
 
@@ -58,6 +59,7 @@ class AssetRepository {
         realEstate: (a) => a.id,
         rrsp: (a) => a.id,
         celi: (a) => a.id,
+        cri: (a) => a.id,
         cash: (a) => a.id,
       );
 

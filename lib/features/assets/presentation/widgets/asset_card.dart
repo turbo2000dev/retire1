@@ -82,6 +82,13 @@ class AssetCard extends StatelessWidget {
           color: theme.colorScheme.onTertiaryContainer,
         ),
       ),
+      cri: (a) => CircleAvatar(
+        backgroundColor: theme.colorScheme.errorContainer,
+        child: Icon(
+          Icons.lock,
+          color: theme.colorScheme.onErrorContainer,
+        ),
+      ),
       cash: (a) => CircleAvatar(
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
         child: Icon(
@@ -108,6 +115,12 @@ class AssetCard extends StatelessWidget {
       ),
       celi: (a) => Text(
         'CELI Account',
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      cri: (a) => Text(
+        'CRI/FRV Account',
         style: theme.textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
         ),
@@ -140,18 +153,87 @@ class AssetCard extends StatelessWidget {
             ),
         ],
       ),
-      rrsp: (a) => Text(
-        'Balance: ${currencyFormat.format(a.value)}',
+      rrsp: (a) => _buildAccountSubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution),
+      celi: (a) => _buildAccountSubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution),
+      cri: (a) => _buildCRISubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution, a.contributionRoom),
+      cash: (a) => _buildAccountSubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution),
+    );
+  }
+
+  Widget _buildAccountSubtitle(ThemeData theme, NumberFormat currencyFormat, double value, double? customReturnRate, double? annualContribution) {
+    final hasOptionalFields = customReturnRate != null || annualContribution != null;
+
+    if (!hasOptionalFields) {
+      return Text(
+        'Balance: ${currencyFormat.format(value)}',
         style: theme.textTheme.bodyMedium,
-      ),
-      celi: (a) => Text(
-        'Balance: ${currencyFormat.format(a.value)}',
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Balance: ${currencyFormat.format(value)}',
+          style: theme.textTheme.bodyMedium,
+        ),
+        if (customReturnRate != null)
+          Text(
+            'Custom return: ${customReturnRate.toStringAsFixed(2)}%',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+        if (annualContribution != null)
+          Text(
+            'Annual contribution: ${currencyFormat.format(annualContribution)}',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCRISubtitle(ThemeData theme, NumberFormat currencyFormat, double value, double? customReturnRate, double? annualContribution, double? contributionRoom) {
+    final hasOptionalFields = customReturnRate != null || annualContribution != null || contributionRoom != null;
+
+    if (!hasOptionalFields) {
+      return Text(
+        'Balance: ${currencyFormat.format(value)}',
         style: theme.textTheme.bodyMedium,
-      ),
-      cash: (a) => Text(
-        'Balance: ${currencyFormat.format(a.value)}',
-        style: theme.textTheme.bodyMedium,
-      ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Balance: ${currencyFormat.format(value)}',
+          style: theme.textTheme.bodyMedium,
+        ),
+        if (contributionRoom != null)
+          Text(
+            'Contribution room: ${currencyFormat.format(contributionRoom)}',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+        if (customReturnRate != null)
+          Text(
+            'Custom return: ${customReturnRate.toStringAsFixed(2)}%',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+        if (annualContribution != null)
+          Text(
+            'Annual contribution: ${currencyFormat.format(annualContribution)}',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+      ],
     );
   }
 
