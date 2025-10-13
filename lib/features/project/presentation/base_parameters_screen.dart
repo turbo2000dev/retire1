@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/services/project_export_service.dart';
 import 'package:retire1/core/ui/responsive/responsive_collapsible_section.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
+import 'package:retire1/core/utils/file_download_helper.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
@@ -309,6 +311,69 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       return 'Must be between -10% and 20%';
     }
     return null;
+  }
+
+  Future<void> _exportProjectData(Project project) async {
+    try {
+      final exportService = ProjectExportService();
+      final jsonContent = exportService.exportProject(project);
+      final filename = exportService.generateFilename(project);
+
+      // Try to download file (works on web)
+      try {
+        FileDownloadHelper.downloadTextFile(jsonContent, filename);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Project data exported to $filename')),
+          );
+        }
+      } on UnsupportedError {
+        // On mobile/desktop, show dialog with content to copy
+        if (mounted) {
+          await _showExportDialog(jsonContent, filename);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export project: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showExportDialog(String content, String filename) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Project Data'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: SelectableText(
+              content,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: content));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Copied to clipboard')),
+              );
+            },
+            child: const Text('Copy to Clipboard'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -783,6 +848,40 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                           ),
                         );
                       }),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Import/Export section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Import/Export',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Export project data for backup or sharing test cases',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: () => _exportProjectData(selectedProject),
+                      icon: const Icon(Icons.download),
+                      label: const Text('Export Project Data'),
+                    ),
                   ],
                 ),
               ),

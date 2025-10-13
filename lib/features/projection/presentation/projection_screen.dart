@@ -49,22 +49,9 @@ class ProjectionScreen extends ConsumerWidget {
                     items: scenarios.map((scenario) {
                       return DropdownMenuItem(
                         value: scenario.id,
-                        child: Row(
-                          children: [
-                            if (scenario.isBase)
-                              Icon(
-                                Icons.star,
-                                size: 16,
-                                color: theme.colorScheme.primary,
-                              ),
-                            if (scenario.isBase) const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                scenario.name,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          scenario.isBase ? '${scenario.name} ⭐' : scenario.name,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       );
                     }).toList(),

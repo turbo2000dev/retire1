@@ -82,6 +82,19 @@ class ProjectionCalculator {
       final totalExpenses = eventResults['expenses'] ?? 0.0;
       final netCashFlow = totalIncome - totalExpenses;
 
+      // Calculate asset growth (after events)
+      _applyAssetGrowth(
+        currentAssetValues,
+        effectiveAssets,
+        project,
+      );
+
+      // Apply annual contributions (end of year)
+      _applyAnnualContributions(
+        currentAssetValues,
+        effectiveAssets,
+      );
+
       // Update asset values for end of year
       final assetsEndOfYear = Map<String, double>.from(currentAssetValues);
       final netWorthEndOfYear = assetsEndOfYear.values.fold(0.0, (sum, value) => sum + value);
@@ -341,5 +354,89 @@ class ProjectionCalculator {
               withdrawAccountId, depositAccountId) =>
           id,
     );
+  }
+
+  /// Apply asset growth based on return rates
+  void _applyAssetGrowth(
+    Map<String, double> assetValues,
+    List<Asset> assets,
+    Project project,
+  ) {
+    for (final asset in assets) {
+      asset.when(
+        realEstate: (id, type, value, setAtStart) {
+          // Real estate grows at inflation rate
+          final currentValue = assetValues[id] ?? 0.0;
+          final newValue = currentValue * (1 + project.inflationRate);
+          assetValues[id] = newValue;
+        },
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) {
+          // RRSP grows at custom rate or project REER rate
+          final currentValue = assetValues[id] ?? 0.0;
+          final rate = customReturnRate ?? project.reerReturnRate;
+          final newValue = currentValue * (1 + rate);
+          assetValues[id] = newValue;
+        },
+        celi: (id, individualId, value, customReturnRate, annualContribution) {
+          // CELI grows at custom rate or project CELI rate
+          final currentValue = assetValues[id] ?? 0.0;
+          final rate = customReturnRate ?? project.celiReturnRate;
+          final newValue = currentValue * (1 + rate);
+          assetValues[id] = newValue;
+        },
+        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
+          // CRI grows at custom rate or project CRI rate
+          final currentValue = assetValues[id] ?? 0.0;
+          final rate = customReturnRate ?? project.criReturnRate;
+          final newValue = currentValue * (1 + rate);
+          assetValues[id] = newValue;
+        },
+        cash: (id, individualId, value, customReturnRate, annualContribution) {
+          // Cash grows at custom rate or project cash rate
+          final currentValue = assetValues[id] ?? 0.0;
+          final rate = customReturnRate ?? project.cashReturnRate;
+          final newValue = currentValue * (1 + rate);
+          assetValues[id] = newValue;
+        },
+      );
+    }
+  }
+
+  /// Apply annual contributions to accounts (end of year)
+  void _applyAnnualContributions(
+    Map<String, double> assetValues,
+    List<Asset> assets,
+  ) {
+    for (final asset in assets) {
+      asset.when(
+        realEstate: (id, type, value, setAtStart) {
+          // Real estate has no annual contributions
+        },
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) {
+          if (annualContribution != null && annualContribution > 0) {
+            final currentValue = assetValues[id] ?? 0.0;
+            assetValues[id] = currentValue + annualContribution;
+          }
+        },
+        celi: (id, individualId, value, customReturnRate, annualContribution) {
+          if (annualContribution != null && annualContribution > 0) {
+            final currentValue = assetValues[id] ?? 0.0;
+            assetValues[id] = currentValue + annualContribution;
+          }
+        },
+        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
+          if (annualContribution != null && annualContribution > 0) {
+            final currentValue = assetValues[id] ?? 0.0;
+            assetValues[id] = currentValue + annualContribution;
+          }
+        },
+        cash: (id, individualId, value, customReturnRate, annualContribution) {
+          if (annualContribution != null && annualContribution > 0) {
+            final currentValue = assetValues[id] ?? 0.0;
+            assetValues[id] = currentValue + annualContribution;
+          }
+        },
+      );
+    }
   }
 }

@@ -2297,30 +2297,295 @@ Based on specs/projection_requirements.md, the following phases implement compre
 
 ---
 
-## PHASE 23: Expand Assets - Add CRI/FRV Account Type (CONTINUED)
+## ✅ PHASE 23 COMPLETED (CONTINUED)
 
-**Goal:** Use custom return rates in projection calculations and add annual contributions
+**What was accomplished:**
+- Updated projection calculator to use custom return rates and annual contributions:
+  - Added `_applyAssetGrowth()` method that applies return rates to all assets
+  - Real estate grows at project.inflationRate
+  - RRSP accounts grow at customReturnRate ?? project.reerReturnRate
+  - CELI accounts grow at customReturnRate ?? project.celiReturnRate
+  - CRI accounts grow at customReturnRate ?? project.criReturnRate
+  - Cash accounts grow at customReturnRate ?? project.cashReturnRate
+  - Added `_applyAnnualContributions()` method
+  - Annual contributions applied at end of year (no growth benefit in contribution year)
+  - Contributions only apply to accounts with annualContribution > 0
+- Fixed projection screen layout error:
+  - Changed DropdownMenuItem Row to use simple Text to avoid layout constraints
+  - Added star emoji to base scenario name
+- Fixed auto-selection of base scenario:
+  - Updated selectedScenarioIdProvider to use ref.listen() for auto-selection
+  - Base scenario automatically selected when scenarios load
+  - Added autoSelectBaseIfNeeded() method to notifier
+- Code passes flutter analyze with no issues
 
-### Tasks:
-1. **Update projection calculator:**
-   - [ ] Use custom return rates when calculating asset growth
-   - [ ] Fall back to project-level rates if not set
-   - [ ] Apply annual contributions to account balances
+**Key files modified:**
+- Updated lib/features/projection/service/projection_calculator.dart - Asset growth and contributions
+- Updated lib/features/projection/presentation/projection_screen.dart - Layout fix
+- Updated lib/features/projection/presentation/providers/projection_provider.dart - Auto-selection
 
 **Manual Test Checklist:**
-- [ ] Can add CRI/FRV account
-- [ ] CRI accounts display correctly in list
-- [ ] Can set custom return rates for any account
-- [ ] Can set annual contributions
-- [ ] All 5 asset types work correctly
-- [ ] Changes persist to Firestore
-- [ ] Asset types serialize/deserialize correctly
-
-**Deliverable:** 5th asset type (CRI/FRV) with enhanced account features, fully integrated
+- Ready for testing: Custom return rates used in projections
+- Ready for testing: Annual contributions added each year
+- Ready for testing: Real estate grows at inflation rate
+- Ready for testing: Accounts grow at correct rates
+- Ready for testing: Base scenario auto-selected in projection screen
 
 ---
 
-## PHASE 23: Redesign Events - Add 6 Expense Categories
+## ✅ PHASE 23.5 COMPLETED: Foundation - Project Data Export
+
+**What was accomplished:**
+- Created ProjectExportService to export project data to JSON:
+  - Exports project with all metadata (id, name, description, dates, ownerId)
+  - Includes all individuals with complete pension parameters
+  - Includes all economic assumptions (inflation and return rates)
+  - Adds export metadata (version 1.0, timestamp)
+  - Pretty-prints JSON with 2-space indentation
+  - Generates clean filenames: `project_[sanitized-name]_[date].json`
+- Created cross-platform file download helper:
+  - FileDownloadHelper with conditional imports
+  - Web implementation using browser download API (dart:html)
+  - Stub for unsupported platforms
+  - Fallback dialog with copyable content for mobile/desktop
+- Updated Base Parameters screen with Import/Export section:
+  - Added new "Import/Export" card at bottom of screen
+  - "Export Project Data" button triggers export
+  - Web: Downloads JSON file directly to browser
+  - Mobile/Desktop: Shows dialog with copyable JSON (can paste into file)
+  - Success feedback via SnackBar
+  - Error handling with user-friendly messages
+- Uses Freezed's built-in JSON serialization (no DTOs needed)
+- Code passes flutter analyze with no issues
+- Tested successfully on web with proper file download
+
+**Example export structure:**
+```json
+{
+  "exportVersion": "1.0",
+  "exportedAt": "2025-10-13T11:14:51.404",
+  "project": {
+    "id": "...",
+    "name": "Test Project",
+    "ownerId": "...",
+    "description": "",
+    "createdAt": "2025-10-12T16:42:53.252",
+    "updatedAt": "2025-10-12T22:19:53.462",
+    "individuals": [...],
+    "inflationRate": 0.02,
+    "reerReturnRate": 0.06,
+    "celiReturnRate": 0.05,
+    "criReturnRate": 0.05,
+    "cashReturnRate": 0.015
+  }
+}
+```
+
+**Key files created:**
+- lib/core/services/project_export_service.dart - Export service with JSON generation
+- lib/core/utils/file_download_helper.dart - Cross-platform download helper
+- lib/core/utils/file_download_helper_web.dart - Web implementation
+- lib/core/utils/file_download_helper_stub.dart - Stub for unsupported platforms
+- Updated lib/features/project/presentation/base_parameters_screen.dart - Import/Export section
+
+---
+
+## PHASE 24: Expand Export - Assets & Events
+
+**Goal:** Include assets and events in project export for complete test case reproduction
+
+### Tasks:
+1. **Update ProjectExportService:**
+   - [ ] Add assets to export structure
+   - [ ] Add events to export structure
+   - [ ] Nest under project in JSON: `{ project: {...}, assets: [...], events: [...] }`
+   - [ ] Handle asset union types (all 5 types)
+   - [ ] Handle event union types (all 3 types)
+   - [ ] Handle EventTiming nested unions
+
+2. **Test comprehensive export:**
+   - [ ] Export project with all 5 asset types
+   - [ ] Export project with all 3 event types
+   - [ ] Verify custom return rates exported
+   - [ ] Verify annual contributions exported
+   - [ ] Verify all timing types (relative, absolute, age) exported
+   - [ ] JSON remains human-readable
+
+**Manual Test Checklist:**
+- [ ] Export includes all assets with correct types
+- [ ] Real estate properties exported correctly
+- [ ] RRSP, CELI, CRI, Cash accounts exported
+- [ ] Custom return rates and contributions included
+- [ ] All events exported with timing info
+- [ ] Event timing (relative/absolute/age) correct
+- [ ] Real estate transactions with asset references
+- [ ] JSON structure is clean and organized
+
+**Deliverable:** Complete project export with assets and events
+
+---
+
+## PHASE 25: Import Project Data
+
+**Goal:** Enable importing project data to recreate test cases for debugging and validation
+
+### Tasks:
+1. **Create import service:**
+   - [ ] Create `lib/core/services/project_import_service.dart`
+   - [ ] Parse JSON and validate structure
+   - [ ] Check required fields exist
+   - [ ] Validate data types
+   - [ ] Create new project from imported data
+   - [ ] Generate new IDs for project, assets, events, individuals
+
+2. **Add Import button to Base Parameters screen:**
+   - [ ] Add "Import Project Data" button next to Export
+   - [ ] File picker for JSON file selection
+   - [ ] Web: `<input type="file">` with accept=".json"
+   - [ ] Show preview dialog before import (project name, # assets, # events)
+   - [ ] User confirms import
+   - [ ] Create project in Firestore
+   - [ ] Switch to newly imported project
+
+3. **Error handling:**
+   - [ ] Handle malformed JSON gracefully
+   - [ ] Show clear error messages
+   - [ ] Validate against expected schema
+   - [ ] Don't crash on missing optional fields
+
+4. **Test round-trip:**
+   - [ ] Export a complex project
+   - [ ] Import the exported file
+   - [ ] Verify all data matches
+   - [ ] Check projection calculations match
+
+**Manual Test Checklist:**
+- [ ] Import button visible in Base Parameters screen
+- [ ] Can select JSON file from file picker
+- [ ] Preview shows project summary before import
+- [ ] Can cancel import from preview
+- [ ] Import creates new project with all data
+- [ ] App switches to imported project
+- [ ] All individuals imported correctly
+- [ ] All assets imported correctly
+- [ ] All events imported correctly
+- [ ] Economic rates imported correctly
+- [ ] Malformed JSON shows error (not crash)
+- [ ] Round-trip: export then import results in identical project
+
+**Deliverable:** Round-trip import/export works flawlessly
+
+---
+
+## PHASE 26: Scenario Export
+
+**Goal:** Include scenarios in project export for complete reproduction of analysis
+
+### Tasks:
+1. **Update export service:**
+   - [ ] Add scenarios to export structure
+   - [ ] Include base scenario
+   - [ ] Include all variation scenarios
+   - [ ] Export all overrides (asset values, event timing)
+   - [ ] Structure: `{ project, individuals, assets, events, scenarios }`
+
+2. **Update import service:**
+   - [ ] Import scenarios from JSON
+   - [ ] Recreate base scenario
+   - [ ] Recreate variation scenarios
+   - [ ] Apply overrides correctly
+   - [ ] Link overrides to imported asset/event IDs
+
+3. **Test with scenarios:**
+   - [ ] Export project with base + 2 variations
+   - [ ] Each variation has 3 asset overrides
+   - [ ] Each variation has 1 event timing override
+   - [ ] Import and verify scenarios identical
+   - [ ] Verify projections match
+
+**Manual Test Checklist:**
+- [ ] Export includes all scenarios
+- [ ] Base scenario marked correctly
+- [ ] Variation scenarios exported with names
+- [ ] All overrides included in export
+- [ ] Import recreates all scenarios
+- [ ] Override references updated to new IDs
+- [ ] Projections calculated correctly for all scenarios
+- [ ] Scenario comparison works after import
+
+**Deliverable:** Full project export including scenarios and overrides
+
+---
+
+## PHASE 27: Projection Export (for Validation)
+
+**Goal:** Export projection results to validate calculation accuracy
+
+### Tasks:
+1. **Create projection export:**
+   - [ ] Add "Export Projection" button to Projection screen (next to scenario selector)
+   - [ ] Format option: JSON or CSV (radio buttons or dropdown)
+   - [ ] JSON format: Complete yearly projection data with all fields
+   - [ ] CSV format: Rows=years, Columns=year,ages,income,expenses,cashFlow,netWorth,assets
+   - [ ] File names: `projection_[scenario]_[date].json` or `.csv`
+
+2. **JSON format structure:**
+   ```json
+   {
+     "scenario": "Base Scenario",
+     "projectId": "...",
+     "startYear": 2025,
+     "endYear": 2065,
+     "inflationRate": 0.02,
+     "useConstantDollars": false,
+     "calculatedAt": "2025-01-15T10:30:00Z",
+     "years": [
+       {
+         "year": 2025,
+         "yearsFromStart": 0,
+         "primaryAge": 40,
+         "spouseAge": 38,
+         "assetsStartOfYear": { "asset1": 100000, "asset2": 50000 },
+         "assetsEndOfYear": { "asset1": 105000, "asset2": 51000 },
+         "netWorthStartOfYear": 150000,
+         "netWorthEndOfYear": 156000,
+         "totalIncome": 0,
+         "totalExpenses": 0,
+         "netCashFlow": 0,
+         "eventsOccurred": []
+       }
+     ]
+   }
+   ```
+
+3. **CSV format:**
+   - Headers: Year, PrimaryAge, SpouseAge, Income, Expenses, CashFlow, NetWorthStart, NetWorthEnd, [AssetNames...]
+   - One row per year
+   - Asset columns show individual asset values
+
+4. **Test exports:**
+   - [ ] Export as JSON, examine structure
+   - [ ] Export as CSV, open in Excel/Google Sheets
+   - [ ] Manually verify calculations for 3 sample years
+   - [ ] Check asset growth rates
+   - [ ] Check annual contribution application
+
+**Manual Test Checklist:**
+- [ ] Export button visible on Projection screen
+- [ ] Can choose JSON or CSV format
+- [ ] JSON export downloads correctly
+- [ ] CSV export downloads correctly
+- [ ] JSON contains all yearly data
+- [ ] CSV opens in spreadsheet software
+- [ ] Can manually verify growth calculations
+- [ ] Can identify calculation errors from export
+- [ ] File names include scenario name and date
+
+**Deliverable:** Can export projections for manual validation and debugging
+
+---
+
+## PHASE 28: Redesign Events - Add 6 Expense Categories
 
 **Goal:** Replace simple events with comprehensive expense categories and lifecycle events
 

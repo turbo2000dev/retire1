@@ -66,25 +66,37 @@ final projectionProvider = FutureProvider.family<Projection?, String>((ref, scen
 
 /// Provider for the currently selected scenario ID for projection view
 final selectedScenarioIdProvider = StateNotifierProvider<SelectedScenarioIdNotifier, String?>((ref) {
-  return SelectedScenarioIdNotifier(ref);
+  final notifier = SelectedScenarioIdNotifier();
+
+  // Watch scenarios and auto-select base scenario when available
+  ref.listen<AsyncValue<List<Scenario>>>(
+    scenariosProvider,
+    (previous, next) {
+      next.whenData((scenarios) {
+        // Only auto-select if nothing is selected yet
+        notifier.autoSelectBaseIfNeeded(scenarios);
+      });
+    },
+  );
+
+  return notifier;
 });
 
 /// Notifier for managing the selected scenario ID
 class SelectedScenarioIdNotifier extends StateNotifier<String?> {
-  final Ref _ref;
-
-  SelectedScenarioIdNotifier(this._ref) : super(null) {
-    // Default to base scenario
-    final scenariosAsync = _ref.read(scenariosProvider);
-    scenariosAsync.whenData((scenarios) {
-      final baseScenario = scenarios.where((s) => s.isBase).firstOrNull;
-      if (baseScenario != null && state == null) {
-        state = baseScenario.id;
-      }
-    });
-  }
+  SelectedScenarioIdNotifier() : super(null);
 
   void selectScenario(String scenarioId) {
     state = scenarioId;
+  }
+
+  void autoSelectBaseIfNeeded(List<Scenario> scenarios) {
+    // Only auto-select if nothing is selected yet
+    if (state == null) {
+      final baseScenario = scenarios.where((s) => s.isBase).firstOrNull;
+      if (baseScenario != null) {
+        state = baseScenario.id;
+      }
+    }
   }
 }
