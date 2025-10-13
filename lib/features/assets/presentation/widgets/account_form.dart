@@ -50,10 +50,11 @@ class _AccountFormState extends ConsumerState<AccountForm> {
     _customReturnRateController = TextEditingController(
       text: widget.asset?.map(
         realEstate: (_) => '',
-        rrsp: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
-        celi: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
-        cri: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
-        cash: (a) => a.customReturnRate?.toStringAsFixed(2) ?? '',
+        // Convert from decimal (0.05) to percentage (5.0) for display
+        rrsp: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
+        celi: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
+        cri: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
+        cash: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
       ) ?? '',
     );
     _annualContributionController = TextEditingController(
@@ -113,9 +114,10 @@ class _AccountFormState extends ConsumerState<AccountForm> {
     final value = double.parse(_valueController.text.replaceAll(',', ''));
 
     // Parse optional fields
+    // Convert custom return rate from percentage (5.0) to decimal (0.05)
     final customReturnRate = _customReturnRateController.text.isEmpty
         ? null
-        : double.tryParse(_customReturnRateController.text);
+        : (double.tryParse(_customReturnRateController.text) ?? 0) / 100;
     final annualContribution = _annualContributionController.text.isEmpty
         ? null
         : double.tryParse(_annualContributionController.text.replaceAll(',', ''));
@@ -261,7 +263,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
               labelText: 'Custom Return Rate (optional)',
               border: OutlineInputBorder(),
               suffixText: '%',
-              helperText: 'Override project return rate for this account',
+              helperText: 'Enter as percentage (e.g., 5 for 5%). Overrides project return rate.',
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
@@ -271,7 +273,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
               if (value == null || value.isEmpty) return null;
               final numValue = double.tryParse(value);
               if (numValue == null || numValue < 0 || numValue > 100) {
-                return 'Please enter a valid rate (0-100)';
+                return 'Please enter a percentage between 0 and 100';
               }
               return null;
             },
