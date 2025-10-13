@@ -4,7 +4,6 @@ import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
-import 'package:retire1/features/scenarios/domain/parameter_override.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:uuid/uuid.dart';
 
