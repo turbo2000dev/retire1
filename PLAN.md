@@ -2132,3 +2132,1014 @@ After completing each phase:
 - **Keep commits small** - easier to debug if something breaks
 - **Don't skip phases** - the order is designed to minimize risk
 
+---
+
+# ADVANCED PROJECTION IMPLEMENTATION (Phases 21-36)
+
+Based on specs/projection_requirements.md, the following phases implement comprehensive projection calculations with tax optimization, multiple income sources, expense categories, and advanced visualizations.
+
+---
+
+## PHASE 21: Expand Base Parameters - Economic Rates & Pension Parameters
+
+**Goal:** Add economic assumptions and pension-related base parameters to Project model
+
+### Tasks:
+1. **Update Project domain model:**
+   - [ ] Add economic rate fields to Project:
+     - `inflationRate` (default: 2.0%)
+     - `reerReturnRate` (default: 5.0%)
+     - `celiReturnRate` (default: 5.0%)
+     - `criReturnRate` (default: 5.0%)
+     - `cashReturnRate` (default: 1.5%)
+   - [ ] Add pension parameters per individual:
+     - `rrqStartAge` (default: 65)
+     - `psvStartAge` (default: 65)
+     - `employmentIncome` (annual salary)
+   - [ ] Update Individual model with pension fields
+   - [ ] Run build_runner to regenerate Freezed code
+
+2. **Update Base Parameters screen UI:**
+   - [ ] Add "Economic Assumptions" collapsible section
+   - [ ] Create rate input fields (percentage format)
+   - [ ] Add validation (rates must be between -10% and 20%)
+   - [ ] Add "Pension Parameters" section for each individual
+   - [ ] Show RRQ/PSV start age dropdowns (60-70 range)
+   - [ ] Add employment income field (currency format)
+   - [ ] Responsive layout with ResponsiveCollapsibleSection
+
+3. **Update ProjectRepository:**
+   - [ ] Handle new fields in Firestore serialization
+   - [ ] Provide default values for existing projects
+   - [ ] Test Timestamp conversion if needed
+
+4. **Test interactions:**
+   - [ ] Can edit all economic rates
+   - [ ] Can set pension parameters for each individual
+   - [ ] Values save to Firestore automatically
+   - [ ] Values load correctly on app restart
+
+**Manual Test Checklist:**
+- [ ] Economic rates section displays with default values
+- [ ] Can modify all rate fields
+- [ ] Validation prevents extreme values
+- [ ] Each individual has pension parameters section
+- [ ] Can set RRQ/PSV start ages (60-70)
+- [ ] Can set employment income
+- [ ] All changes persist to Firestore
+- [ ] UI responsive on all screen sizes
+
+**Deliverable:** Base parameters expanded with economic and pension data, all persisted to Firestore
+
+---
+
+## PHASE 22: Expand Assets - Add CRI/FRV Account Type
+
+**Goal:** Add 5th asset type (CRI/FRV) and asset-specific return rates
+
+### Tasks:
+1. **Update Asset domain model:**
+   - [ ] Add new Freezed union case: `CRIAccount(id, individualId, value, contributionRoom)`
+   - [ ] Add optional `customReturnRate` field to all account types
+   - [ ] Add optional `annualContribution` field to accounts
+   - [ ] Run build_runner to regenerate Freezed code
+
+2. **Update AddAssetDialog:**
+   - [ ] Add 5th tile for CRI/FRV account
+   - [ ] Update asset type selector to show 5 options
+   - [ ] Ensure proper icon and description
+
+3. **Create CRI account form:**
+   - [ ] Reuse AccountForm or create specialized version
+   - [ ] Add contribution room field (optional)
+   - [ ] Individual selector dropdown
+   - [ ] Value field with validation
+   - [ ] Optional custom return rate field
+   - [ ] Optional annual contribution field
+
+4. **Update AssetCard component:**
+   - [ ] Handle CRI account display
+   - [ ] Show contribution room if applicable
+   - [ ] Show custom return rate if set
+   - [ ] Show annual contribution if set
+
+5. **Update Assets & Events screen:**
+   - [ ] Add CRI section to grouped view
+   - [ ] Empty state for CRI accounts
+   - [ ] Sorting includes CRI accounts
+
+6. **Update AssetRepository:**
+   - [ ] Handle new CRI account type in Firestore
+   - [ ] Ensure backward compatibility
+
+7. **Update projection calculator:**
+   - [ ] Use custom return rates when calculating asset growth
+   - [ ] Fall back to project-level rates if not set
+   - [ ] Apply annual contributions to account balances
+
+**Manual Test Checklist:**
+- [ ] Can add CRI/FRV account
+- [ ] CRI accounts display correctly in list
+- [ ] Can set custom return rates for any account
+- [ ] Can set annual contributions
+- [ ] All 5 asset types work correctly
+- [ ] Changes persist to Firestore
+- [ ] Asset types serialize/deserialize correctly
+
+**Deliverable:** 5th asset type (CRI/FRV) with enhanced account features, fully integrated
+
+---
+
+## PHASE 23: Redesign Events - Add 6 Expense Categories
+
+**Goal:** Replace simple events with comprehensive expense categories and lifecycle events
+
+### Tasks:
+1. **Create new expense domain models:**
+   - [ ] Create `lib/features/expenses/domain/expense_category.dart`
+   - [ ] Use Freezed unions for 6 expense types:
+     - `HousingExpense(id, startTiming, endTiming, annualAmount)`
+     - `TransportExpense(id, startTiming, endTiming, annualAmount)`
+     - `DailyLivingExpense(id, startTiming, endTiming, annualAmount)`
+     - `RecreationExpense(id, startTiming, endTiming, annualAmount)`
+     - `HealthExpense(id, startTiming, endTiming, annualAmount)`
+     - `FamilyExpense(id, startTiming, endTiming, annualAmount)`
+   - [ ] Each expense has start and end timing (both use EventTiming)
+   - [ ] Run build_runner
+
+2. **Keep lifecycle events:**
+   - [ ] Retirement, Death, Real Estate Transaction remain unchanged
+   - [ ] These are kept in the existing Event model
+
+3. **Create expenses screen/tab:**
+   - [ ] Add new tab or section to Assets & Events screen
+   - [ ] Or create dedicated Expenses screen with navigation
+   - [ ] List all 6 expense categories
+   - [ ] Show start/end timing for each
+   - [ ] Show annual amount with currency formatting
+
+4. **Create expense forms:**
+   - [ ] Create `expense_form.dart` - reusable for all categories
+   - [ ] Category name (read-only/title)
+   - [ ] Start timing selector (reuse TimingSelector)
+   - [ ] End timing selector (reuse TimingSelector)
+   - [ ] Annual amount field (currency format)
+   - [ ] Form validation
+
+5. **Create expense card component:**
+   - [ ] Category-specific icons and colors
+   - [ ] Display start and end timing
+   - [ ] Display annual amount
+   - [ ] Edit and delete buttons
+
+6. **Create expenses provider:**
+   - [ ] ExpensesNotifier with CRUD operations
+   - [ ] Load from Firestore
+   - [ ] Real-time updates
+
+7. **Create expense repository:**
+   - [ ] Store in `projects/{projectId}/expenses` collection
+   - [ ] Handle nested union serialization (timing within expense)
+   - [ ] CRUD operations
+
+8. **Update projection calculator:**
+   - [ ] Calculate total expenses for each year
+   - [ ] Check if expense is active based on start/end timing
+   - [ ] Sum all active expenses
+   - [ ] Apply inflation to expense amounts
+
+**Manual Test Checklist:**
+- [ ] Can add/edit all 6 expense categories
+- [ ] Start and end timing work correctly
+- [ ] Timing types (relative, absolute, age) all work
+- [ ] Annual amounts save and load correctly
+- [ ] Expenses persist to Firestore
+- [ ] Nested timing serialization works
+- [ ] Projection calculator uses expenses
+
+**Deliverable:** 6 expense categories with start/end timing, fully integrated with projection calculator
+
+---
+
+## PHASE 24: Update Scenarios - Add Event Timing & Amount Overrides
+
+**Goal:** Allow scenarios to override event timing and expense amounts
+
+### Tasks:
+1. **Update ParameterOverride domain model:**
+   - [ ] Add `EventTimingOverride(eventId, overrideTiming)` union case
+   - [ ] Add `ExpenseAmountOverride(expenseId, overrideAmount)` union case
+   - [ ] Run build_runner
+
+2. **Create EventOverrideSection widget:**
+   - [ ] Lists all lifecycle events
+   - [ ] Shows base timing for each
+   - [ ] Allows overriding timing for scenario
+   - [ ] Highlight overridden events
+   - [ ] Can clear override to use base
+
+3. **Create ExpenseOverrideSection widget:**
+   - [ ] Lists all 6 expense categories
+   - [ ] Shows base annual amount for each
+   - [ ] Allows overriding amount for scenario
+   - [ ] Shows start/end timing (not overridable in Phase 24)
+   - [ ] Highlight overridden expenses
+   - [ ] Can clear override to use base
+
+4. **Update scenario editor screen:**
+   - [ ] Add "Event Timing Overrides" collapsible section
+   - [ ] Add "Expense Amount Overrides" collapsible section
+   - [ ] Place after asset overrides section
+   - [ ] Responsive layout
+
+5. **Update ScenariosNotifier:**
+   - [ ] Handle new override types
+   - [ ] Add/remove event timing overrides
+   - [ ] Add/remove expense amount overrides
+
+6. **Update projection calculator:**
+   - [ ] Apply event timing overrides from scenario
+   - [ ] Apply expense amount overrides from scenario
+   - [ ] Fall back to base values if no override
+
+7. **Update Firestore integration:**
+   - [ ] Ensure nested unions serialize correctly
+   - [ ] Test all override types persist
+
+**Manual Test Checklist:**
+- [ ] Can override event timing in scenarios
+- [ ] Can override expense amounts in scenarios
+- [ ] Overrides highlighted in scenario editor
+- [ ] Can clear overrides
+- [ ] Projection reflects scenario overrides
+- [ ] All changes persist to Firestore
+
+**Deliverable:** Scenarios can override event timing and expense amounts
+
+---
+
+## PHASE 25: Tax Calculator Service - 2025 Constants & Calculation Logic
+
+**Goal:** Create tax calculation service with built-in 2025 tax brackets and credits (not user-configurable)
+
+### Tasks:
+1. **Create tax constants:**
+   - [ ] Create `lib/features/projection/service/tax_constants.dart`
+   - [ ] Define 2025 Federal tax brackets:
+     - 0 - $55,867: 15%
+     - $55,867 - $111,733: 20.5%
+     - $111,733 - $173,205: 26%
+     - $173,205 - $246,752: 29%
+     - $246,752+: 33%
+   - [ ] Define 2025 Quebec tax brackets:
+     - 0 - $51,780: 14%
+     - $51,780 - $103,545: 19%
+     - $103,545 - $126,000: 24%
+     - $126,000+: 25.75%
+   - [ ] Define personal tax credits:
+     - Federal basic: $15,705
+     - Quebec basic: $18,056
+     - Age credit (65+): federal $8,790, Quebec $3,458
+   - [ ] Define RRSP/REER deduction limits
+   - [ ] Define pension income splitting rules
+
+2. **Create TaxCalculator service:**
+   - [ ] Create `lib/features/projection/service/tax_calculator.dart`
+   - [ ] Method: `calculateFederalTax(taxableIncome, age)`
+   - [ ] Method: `calculateQuebecTax(taxableIncome, age)`
+   - [ ] Method: `calculateTotalTax(taxableIncome, age)` - combines both
+   - [ ] Apply progressive tax brackets correctly
+   - [ ] Apply tax credits (basic + age if applicable)
+   - [ ] Return TaxCalculation object with breakdown
+
+3. **Create TaxCalculation model:**
+   - [ ] Create `lib/features/projection/domain/tax_calculation.dart`
+   - [ ] Fields: federalTax, quebecTax, totalTax, effectiveRate
+   - [ ] Use Freezed
+   - [ ] Run build_runner
+
+4. **Add unit tests:**
+   - [ ] Test federal tax calculation with various incomes
+   - [ ] Test Quebec tax calculation
+   - [ ] Test combined calculation
+   - [ ] Test age credit application
+   - [ ] Test edge cases (zero income, very high income)
+
+5. **Create TaxCalculator provider:**
+   - [ ] Riverpod provider for TaxCalculator instance
+   - [ ] Make available to projection calculator
+
+**Manual Test Checklist:**
+- [ ] Tax calculator computes correct federal tax
+- [ ] Tax calculator computes correct Quebec tax
+- [ ] Tax brackets applied progressively
+- [ ] Tax credits reduce tax correctly
+- [ ] Age credit (65+) applied when applicable
+- [ ] Unit tests pass
+
+**Deliverable:** Tax calculation service with 2025 constants, ready for integration
+
+---
+
+## PHASE 26: Income Calculation - Employment, RRQ, PSV, RRPE
+
+**Goal:** Calculate all income sources for each year in projection
+
+### Tasks:
+1. **Create income calculation models:**
+   - [ ] Create `lib/features/projection/domain/annual_income.dart`
+   - [ ] Fields: employment, rrq, psv, rrpe, other, total
+   - [ ] Use Freezed
+   - [ ] Run build_runner
+
+2. **Extend ProjectionCalculator:**
+   - [ ] Add method: `_calculateEmploymentIncome(year, individual, events)`
+     - If before retirement: use employmentIncome from base parameters
+     - If after retirement: 0
+     - Check retirement event timing
+   - [ ] Add method: `_calculateRRQ(year, individual)`
+     - If age >= rrqStartAge: calculate based on earnings history
+     - Early penalty: -0.6% per month before 65
+     - Late bonus: +0.7% per month after 65
+     - Max benefit: ~$16,000/year (2025 estimate)
+     - Formula: maxBenefit * adjustmentFactor
+   - [ ] Add method: `_calculatePSV(year, individual, totalIncome)`
+     - If age >= psvStartAge: base amount ~$8,500/year
+     - Clawback: 15% on income over ~$90,000
+     - Formula: max(0, baseAmount - clawback)
+   - [ ] Add method: `_calculateRRPE(year, assetBalances)`
+     - If CRI/FRV account exists: minimum annual withdrawal
+     - Formula based on age and account balance
+     - Varies from ~5% at 65 to ~20% at 95
+
+3. **Add income calculation to yearly loop:**
+   - [ ] For each individual, calculate all income sources
+   - [ ] Sum employment + RRQ + PSV + RRPE
+   - [ ] Store in YearlyProjection.incomeBySource (new field)
+   - [ ] Store total in YearlyProjection.totalIncome
+
+4. **Update YearlyProjection model:**
+   - [ ] Add `Map<String, double> incomeBySource`
+   - [ ] Keys: 'employment', 'rrq', 'psv', 'rrpe', 'other'
+   - [ ] Run build_runner
+
+5. **Add unit tests:**
+   - [ ] Test employment income before/after retirement
+   - [ ] Test RRQ with early/on-time/late start
+   - [ ] Test PSV with clawback
+   - [ ] Test RRPE minimum withdrawal
+
+**Manual Test Checklist:**
+- [ ] Employment income stops at retirement
+- [ ] RRQ starts at specified age
+- [ ] RRQ early penalty applied correctly
+- [ ] RRQ late bonus applied correctly
+- [ ] PSV starts at specified age
+- [ ] PSV clawback applied when income high
+- [ ] RRPE calculated from CRI/FRV balance
+- [ ] All income sources sum correctly
+
+**Deliverable:** Complete income calculation for all sources
+
+---
+
+## PHASE 27: Expense Calculation - 6 Categories Integration
+
+**Goal:** Calculate total expenses for each year based on 6 expense categories
+
+### Tasks:
+1. **Extend ProjectionCalculator:**
+   - [ ] Add method: `_calculateExpenses(year, individuals, expenses, scenario)`
+     - For each of 6 expense categories
+     - Check if expense is active (year within start/end timing)
+     - Apply scenario overrides if present
+     - Apply inflation to amounts
+     - Sum all active expenses
+   - [ ] Add method: `_isExpenseActive(year, expense)`
+     - Convert start timing to year number
+     - Convert end timing to year number
+     - Return true if current year is within range
+   - [ ] Store expense breakdown in YearlyProjection
+
+2. **Update YearlyProjection model:**
+   - [ ] Add `Map<String, double> expensesByCategory`
+   - [ ] Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
+   - [ ] Run build_runner
+
+3. **Apply inflation correctly:**
+   - [ ] Compound inflation from start year
+   - [ ] Formula: baseAmount * (1 + inflationRate)^yearsFromStart
+   - [ ] Use inflationRate from base parameters
+
+4. **Handle expense timing edge cases:**
+   - [ ] Expense starts mid-projection
+   - [ ] Expense ends mid-projection
+   - [ ] Expense spans entire projection
+   - [ ] Multiple expenses of same category
+
+**Manual Test Checklist:**
+- [ ] Expenses calculated for each category
+- [ ] Only active expenses included each year
+- [ ] Inflation applied correctly
+- [ ] Scenario overrides change expense amounts
+- [ ] Total expenses sum correctly
+- [ ] Timing edge cases handled
+
+**Deliverable:** Expense calculation integrated into projection
+
+---
+
+## PHASE 28: Integrate Tax Calculation into Projection
+
+**Goal:** Calculate taxes on income and integrate into cash flow
+
+### Tasks:
+1. **Extend ProjectionCalculator:**
+   - [ ] Add method: `_calculateTaxableIncome(yearIncome, reerWithdrawals, celiWithdrawals)`
+     - Taxable: employment + RRQ + PSV + RRPE + REER withdrawals
+     - Non-taxable: CELI withdrawals, return of capital
+   - [ ] Add method: `_calculateTaxes(taxableIncome, age, individual)`
+     - Use TaxCalculator service
+     - Pass taxable income and age
+     - Return total tax amount
+   - [ ] Integrate into yearly loop:
+     - Calculate income (Phase 26)
+     - Calculate taxable income
+     - Calculate taxes
+     - Subtract taxes from available cash
+     - Store in YearlyProjection
+
+2. **Update YearlyProjection model:**
+   - [ ] Add `double taxableIncome`
+   - [ ] Add `double federalTax`
+   - [ ] Add `double quebecTax`
+   - [ ] Add `double totalTax`
+   - [ ] Add `double afterTaxIncome`
+   - [ ] Run build_runner
+
+3. **Handle multiple individuals:**
+   - [ ] If couple: calculate taxes separately for each
+   - [ ] Consider pension income splitting optimization
+   - [ ] Sum total household taxes
+
+4. **Test tax integration:**
+   - [ ] Verify REER withdrawals increase taxable income
+   - [ ] Verify CELI withdrawals don't increase taxable income
+   - [ ] Verify taxes reduce net cash flow
+   - [ ] Verify age credit applied when applicable
+
+**Manual Test Checklist:**
+- [ ] Taxable income calculated correctly
+- [ ] Taxes calculated and applied
+- [ ] REER withdrawals taxed
+- [ ] CELI withdrawals not taxed
+- [ ] After-tax income computed
+- [ ] Taxes shown in projection table
+
+**Deliverable:** Tax calculation fully integrated into cash flow projection
+
+---
+
+## PHASE 29: Withdrawal Strategy - Optimized Asset Drawdown
+
+**Goal:** Implement withdrawal strategy: CELI → Cash → CRI → REER, with tax optimization
+
+### Tasks:
+1. **Create withdrawal strategy service:**
+   - [ ] Create `lib/features/projection/service/withdrawal_strategy.dart`
+   - [ ] Method: `determineWithdrawals(shortfall, assetBalances, age, taxRate)`
+     - Input: amount needed, current balances, age, marginal tax rate
+     - Output: map of withdrawals by account type
+     - Priority: CELI first, then Cash, then CRI, then REER
+     - Respect CRI minimum withdrawal requirements
+     - Optimize to minimize taxes
+
+2. **Extend ProjectionCalculator:**
+   - [ ] Add method: `_calculateCashShortfall(year, income, expenses, taxes)`
+     - Formula: expenses + taxes - income
+     - If positive: need to withdraw
+     - If negative: have surplus to invest
+   - [ ] Add method: `_executeWithdrawals(shortfall, assetBalances, age, taxRate)`
+     - Use WithdrawalStrategy service
+     - Update asset balances
+     - Return withdrawal amounts by account
+     - Handle case when all accounts depleted
+   - [ ] Add method: `_depositSurplus(surplus, assetBalances, individual)`
+     - Priority: CELI (up to contribution room), then REER (up to room), then Cash
+     - Update asset balances
+
+3. **Handle CRI/FRV minimum withdrawal:**
+   - [ ] Calculate minimum based on age and balance
+   - [ ] Force withdrawal even if no shortfall
+   - [ ] Add to income (taxable)
+
+4. **Track contribution room:**
+   - [ ] CELI: annual limit ~$7,000 + unused from previous years
+   - [ ] REER: 18% of previous year income, max ~$32,000
+   - [ ] Reduce room when contributions made
+   - [ ] Increase room each year
+
+5. **Update YearlyProjection model:**
+   - [ ] Add `Map<String, double> withdrawalsByAccount`
+   - [ ] Add `Map<String, double> contributionsByAccount`
+   - [ ] Add `double celiContributionRoom`
+   - [ ] Add `double reerContributionRoom`
+   - [ ] Run build_runner
+
+**Manual Test Checklist:**
+- [ ] CELI withdrawn first (tax-free)
+- [ ] Cash withdrawn second
+- [ ] CRI withdrawn third (min required)
+- [ ] REER withdrawn last (taxed)
+- [ ] Surplus deposited correctly
+- [ ] Contribution rooms tracked
+- [ ] Withdrawals stop when accounts depleted
+
+**Deliverable:** Optimized withdrawal strategy with tax considerations
+
+---
+
+## PHASE 30: Asset Balance Updates - Year-over-Year Tracking
+
+**Goal:** Update asset balances each year based on returns, contributions, withdrawals
+
+### Tasks:
+1. **Extend ProjectionCalculator:**
+   - [ ] Add method: `_updateAssetBalances(year, assets, income, expenses, taxes, withdrawals, contributions)`
+     - For each asset:
+       - Start balance = end balance from previous year
+       - Apply return rate (use custom or project default)
+       - Subtract withdrawals
+       - Add contributions
+       - End balance = start + returns - withdrawals + contributions
+     - Store balances in YearlyProjection
+   - [ ] Add method: `_calculateAssetReturns(asset, balance, returnRate)`
+     - Formula: balance * returnRate
+     - Use custom rate if set, otherwise project default
+   - [ ] Track asset balances throughout projection
+
+2. **Handle real estate:**
+   - [ ] Real estate appreciates at inflation rate (or custom rate)
+   - [ ] Real estate can be sold (RealEstateTransaction event)
+   - [ ] Sale proceeds go to specified deposit account
+   - [ ] Purchase cost comes from specified withdrawal account
+
+3. **Handle account depletion:**
+   - [ ] When balance reaches $0, mark as depleted
+   - [ ] Cannot withdraw from depleted account
+   - [ ] Log warning when account depleted
+
+4. **Update YearlyProjection model:**
+   - [ ] Already has `assetsStartOfYear` and `assetsEndOfYear` (maps)
+   - [ ] Add `assetReturns` map
+   - [ ] Run build_runner if needed
+
+5. **Test asset tracking:**
+   - [ ] Balances increase with returns
+   - [ ] Balances decrease with withdrawals
+   - [ ] Balances increase with contributions
+   - [ ] Real estate transactions handled correctly
+   - [ ] Account depletion detected
+
+**Manual Test Checklist:**
+- [ ] Asset balances track correctly year-over-year
+- [ ] Returns applied based on rates
+- [ ] Withdrawals reduce balances
+- [ ] Contributions increase balances
+- [ ] Real estate appreciation works
+- [ ] Real estate sales/purchases work
+- [ ] Account depletion handled gracefully
+
+**Deliverable:** Complete asset balance tracking throughout projection
+
+---
+
+## PHASE 31: Edge Cases - Death, Survivor Benefits, Account Depletion
+
+**Goal:** Handle edge cases: death events, survivor benefits, running out of money
+
+### Tasks:
+1. **Handle death events:**
+   - [ ] When individual dies:
+     - Stop their employment income
+     - Stop their RRQ (or reduce to survivor benefit)
+     - Stop their PSV
+     - Transfer REER/RRSP to survivor (tax-deferred if spouse)
+     - Transfer CELI to survivor (tax-free)
+     - CRI/FRV to survivor
+   - [ ] Mark individual as deceased in projection
+   - [ ] Update YearlyProjection to track deceased status
+
+2. **Calculate survivor benefits:**
+   - [ ] RRQ survivor benefit:
+     - Spouse receives ~60% of deceased's benefit
+     - Or their own benefit, whichever is higher
+     - Combined maximum applies
+   - [ ] Add survivor benefit to income calculation
+
+3. **Handle account depletion:**
+   - [ ] When all accounts reach $0:
+     - Mark projection year as "shortfall"
+     - Calculate negative cash flow
+     - Flag as warning in UI
+   - [ ] Add `hasShortfall` boolean to YearlyProjection
+   - [ ] Add `shortfallAmount` double to YearlyProjection
+
+4. **Handle real estate as last resort:**
+   - [ ] If all accounts depleted and still need money:
+     - Can user sell primary residence?
+     - Optional: model reverse mortgage
+     - For Phase 31: just flag as shortfall
+
+5. **Update projection table to show warnings:**
+   - [ ] Highlight years with shortfalls
+   - [ ] Show deceased individuals
+   - [ ] Show survivor benefits
+
+**Manual Test Checklist:**
+- [ ] Death event stops individual's income
+- [ ] Assets transfer to survivor
+- [ ] Survivor benefits calculated correctly
+- [ ] Account depletion flagged
+- [ ] Shortfall years highlighted
+- [ ] Negative cash flow shown
+
+**Deliverable:** Edge cases handled, warnings displayed
+
+---
+
+## PHASE 32: Enhanced Projection Table - 40+ Columns
+
+**Goal:** Expand projection table to show detailed breakdown with 40+ columns
+
+### Tasks:
+1. **Design expanded table structure:**
+   - [ ] Year
+   - [ ] Age (Primary / Spouse)
+   - [ ] **Income sources:** Employment, RRQ, PSV, RRPE, Other, Total
+   - [ ] **Expenses:** Housing, Transport, Daily Living, Recreation, Health, Family, Total
+   - [ ] **Taxes:** Federal, Quebec, Total
+   - [ ] **Withdrawals:** CELI, Cash, CRI, REER, Total
+   - [ ] **Contributions:** CELI, REER, Total
+   - [ ] **Asset Balances (End of Year):** Real Estate, REER, CELI, CRI, Cash, Total
+   - [ ] **Net Worth:** Start, End
+   - [ ] **Cash Flow:** Net (income - expenses - taxes)
+
+2. **Create ExpandedProjectionTable widget:**
+   - [ ] Create `lib/features/projection/presentation/widgets/expanded_projection_table.dart`
+   - [ ] Use DataTable with horizontal scrolling
+   - [ ] Sticky header row
+   - [ ] Sticky first column (Year)
+   - [ ] Group columns with dividers
+   - [ ] Color-code positive/negative values
+   - [ ] Currency formatting for all monetary columns
+   - [ ] Percentage formatting for rates
+
+3. **Add column visibility toggles:**
+   - [ ] Checkbox list to show/hide column groups
+   - [ ] Income columns (show/hide all)
+   - [ ] Expense columns (show/hide all)
+   - [ ] Tax columns (show/hide all)
+   - [ ] Withdrawal columns (show/hide all)
+   - [ ] Asset balance columns (show/hide all)
+   - [ ] Save preferences to user settings
+
+4. **Add export functionality:**
+   - [ ] "Export to CSV" button
+   - [ ] Generate CSV with all columns
+   - [ ] Download file (web) or share (mobile)
+
+5. **Update projection screen:**
+   - [ ] Add tab or toggle to switch between:
+     - Simple table (existing, 7 columns)
+     - Expanded table (new, 40+ columns)
+   - [ ] Default to simple table
+
+**Manual Test Checklist:**
+- [ ] Expanded table shows all columns
+- [ ] Horizontal scrolling works
+- [ ] Column groups visually separated
+- [ ] Can toggle column visibility
+- [ ] Export to CSV works
+- [ ] Data matches simple table
+- [ ] Responsive on desktop/tablet (not phone)
+
+**Deliverable:** Detailed projection table with 40+ columns and export capability
+
+---
+
+## PHASE 33: Multiple Charts - Income, Expenses, Cash Flow, Asset Allocation
+
+**Goal:** Add 4 comprehensive charts to visualize projection data
+
+### Tasks:
+1. **Create IncomeSourcesChart:**
+   - [ ] Create `lib/features/projection/presentation/widgets/income_sources_chart.dart`
+   - [ ] Stacked area chart showing:
+     - Employment income (bottom)
+     - RRQ income
+     - PSV income
+     - RRPE income
+     - Other income (top)
+   - [ ] X-axis: years
+   - [ ] Y-axis: currency
+   - [ ] Legend for each income source
+   - [ ] Color-coded areas
+
+2. **Create ExpenseCategoriesChart:**
+   - [ ] Create `lib/features/projection/presentation/widgets/expense_categories_chart.dart`
+   - [ ] Stacked bar chart showing 6 categories per year
+   - [ ] X-axis: years (show every 5 years for readability)
+   - [ ] Y-axis: currency
+   - [ ] Legend for 6 categories
+   - [ ] Color-coded bars
+
+3. **Create CashFlowChart:**
+   - [ ] Create `lib/features/projection/presentation/widgets/cash_flow_chart.dart`
+   - [ ] Combination chart:
+     - Line: Net cash flow (income - expenses - taxes)
+     - Bars: Positive (green) / Negative (red)
+   - [ ] X-axis: years
+   - [ ] Y-axis: currency (allow negative)
+   - [ ] Highlight zero line
+   - [ ] Show years with shortfalls
+
+4. **Create AssetAllocationChart:**
+   - [ ] Create `lib/features/projection/presentation/widgets/asset_allocation_chart.dart`
+   - [ ] Stacked area chart showing asset balances over time:
+     - Real Estate
+     - REER accounts
+     - CELI accounts
+     - CRI accounts
+     - Cash accounts
+   - [ ] X-axis: years
+   - [ ] Y-axis: currency
+   - [ ] Total net worth line overlaid
+   - [ ] Legend for each asset type
+
+5. **Update projection screen:**
+   - [ ] Add "Charts" section below table
+   - [ ] Show all 4 charts in responsive grid (2x2 on desktop, 1x4 on mobile)
+   - [ ] Each chart in a card with title
+   - [ ] Charts update when scenario changes
+
+6. **Add chart interactivity:**
+   - [ ] Tooltips on hover
+   - [ ] Zoom/pan capabilities
+   - [ ] Click legend to show/hide series
+
+**Manual Test Checklist:**
+- [ ] All 4 charts render correctly
+- [ ] Data matches projection table
+- [ ] Charts responsive on all sizes
+- [ ] Tooltips show accurate values
+- [ ] Legend toggles series visibility
+- [ ] Charts update when scenario changes
+- [ ] Colors consistent with theme
+
+**Deliverable:** 4 comprehensive charts visualizing projection data
+
+---
+
+## PHASE 34: Dollar Toggle - Current vs Constant Dollars
+
+**Goal:** Add toggle to view projection in current or constant dollars
+
+### Tasks:
+1. **Add dollar mode to projection calculation:**
+   - [ ] Update ProjectionCalculator to accept `useConstantDollars` parameter
+   - [ ] If constant dollars:
+     - Divide all monetary values by (1 + inflationRate)^yearsFromStart
+     - Display values in today's purchasing power
+   - [ ] If current dollars:
+     - Show actual nominal values (existing behavior)
+
+2. **Add toggle to projection screen:**
+   - [ ] Create toggle switch in app bar or above charts
+   - [ ] "Current Dollars" / "Constant Dollars"
+   - [ ] Default: Current Dollars
+   - [ ] Save preference to user settings
+
+3. **Update all visualizations:**
+   - [ ] Table values adjust based on toggle
+   - [ ] Chart values adjust based on toggle
+   - [ ] Y-axis labels reflect dollar type
+   - [ ] Add indicator "(Current $)" or "(Constant $)" to chart titles
+
+4. **Update calculation correctly:**
+   - [ ] Constant dollars only affect display
+   - [ ] Underlying calculation still uses nominal values
+   - [ ] Adjust values only for display purposes
+   - [ ] Ensure consistency across all views
+
+5. **Show explanation:**
+   - [ ] Add info icon next to toggle
+   - [ ] Explain difference between current and constant dollars
+   - [ ] "Current dollars show nominal values including inflation"
+   - [ ] "Constant dollars show purchasing power in today's dollars"
+
+**Manual Test Checklist:**
+- [ ] Toggle switches between current and constant dollars
+- [ ] Table values update correctly
+- [ ] Chart values update correctly
+- [ ] Y-axis labels update
+- [ ] Chart titles show dollar type
+- [ ] Explanation dialog helpful
+- [ ] Preference persists across sessions
+
+**Deliverable:** Toggle to view projection in current or constant dollars
+
+---
+
+## PHASE 35: KPIs, Warnings, and Scenario Comparison
+
+**Goal:** Add key metrics, warning indicators, and side-by-side scenario comparison
+
+### Tasks:
+1. **Calculate KPIs:**
+   - [ ] Create `lib/features/projection/domain/projection_kpis.dart`
+   - [ ] Fields:
+     - `yearMoneyRunsOut` (int or null if never)
+     - `lowestNetWorth` (double)
+     - `yearOfLowestNetWorth` (int)
+     - `finalNetWorth` (double)
+     - `totalTaxesPaid` (double)
+     - `totalWithdrawals` (double)
+     - `averageTaxRate` (double)
+   - [ ] Use Freezed
+   - [ ] Run build_runner
+
+2. **Extend ProjectionCalculator:**
+   - [ ] Add method: `_calculateKPIs(projection)` → ProjectionKPIs
+   - [ ] Calculate each KPI from projection data
+   - [ ] Return KPIs object
+
+3. **Create KPI display widget:**
+   - [ ] Create `lib/features/projection/presentation/widgets/projection_kpis_card.dart`
+   - [ ] Card showing all KPIs in grid layout
+   - [ ] Use icons and color coding
+   - [ ] Green: good (money lasts, high net worth)
+   - [ ] Red: warning (money runs out, low net worth)
+   - [ ] Place at top of projection screen
+
+4. **Create warnings system:**
+   - [ ] Create `lib/features/projection/domain/projection_warning.dart`
+   - [ ] Warning types:
+     - MoneyRunsOut (year)
+     - HighTaxRate (year, rate)
+     - AccountDepleted (account type, year)
+     - NoSurvivorIncome (year after death)
+   - [ ] List of warnings per projection
+
+5. **Display warnings:**
+   - [ ] Create warnings section below KPIs
+   - [ ] Show each warning with icon and description
+   - [ ] Click warning to jump to year in table
+   - [ ] Empty state if no warnings
+
+6. **Create scenario comparison view:**
+   - [ ] Create `lib/features/projection/presentation/scenario_comparison_screen.dart`
+   - [ ] Select 2-3 scenarios to compare
+   - [ ] Show KPIs side-by-side
+   - [ ] Show overlaid charts
+   - [ ] Highlight differences
+   - [ ] Add navigation to comparison screen
+
+7. **Update GoRouter:**
+   - [ ] Add route for scenario comparison screen
+   - [ ] `/projection/compare`
+
+**Manual Test Checklist:**
+- [ ] KPIs calculated correctly
+- [ ] KPIs displayed prominently
+- [ ] Warnings detected and shown
+- [ ] Click warning jumps to year
+- [ ] Can compare multiple scenarios
+- [ ] Comparison shows differences clearly
+- [ ] Navigation to comparison works
+
+**Deliverable:** KPIs, warnings, and scenario comparison for better decision-making
+
+---
+
+## PHASE 36: Advanced Projection Testing & Refinement
+
+**Goal:** End-to-end testing of advanced projection calculations and polish
+
+### Tasks:
+1. **Create comprehensive test scenarios:**
+   - [ ] Scenario 1: Single individual, early retirement
+   - [ ] Scenario 2: Couple, both retire at 65
+   - [ ] Scenario 3: One death event mid-projection
+   - [ ] Scenario 4: High income with RRQ/PSV clawbacks
+   - [ ] Scenario 5: Money runs out at age 80
+   - [ ] Scenario 6: Multiple real estate transactions
+   - [ ] For each: manually calculate expected values, compare to app
+
+2. **Write unit tests:**
+   - [ ] Test TaxCalculator with various incomes
+   - [ ] Test income calculations (employment, RRQ, PSV, RRPE)
+   - [ ] Test expense calculations with timing
+   - [ ] Test withdrawal strategy
+   - [ ] Test asset balance updates
+   - [ ] Test edge cases (death, depletion)
+   - [ ] Aim for >80% coverage of projection logic
+
+3. **Test all timing types:**
+   - [ ] Relative timing (years from start)
+   - [ ] Absolute timing (calendar year)
+   - [ ] Age timing (when individual reaches age)
+   - [ ] Verify all work for events and expenses
+
+4. **Test scenario overrides:**
+   - [ ] Asset value overrides
+   - [ ] Event timing overrides
+   - [ ] Expense amount overrides
+   - [ ] Verify overrides applied in calculation
+
+5. **Performance testing:**
+   - [ ] Test projection calculation speed
+   - [ ] Ensure <1 second for 40-year projection
+   - [ ] Optimize if needed
+
+6. **Verify data consistency:**
+   - [ ] Asset balances always add up
+   - [ ] Income - expenses - taxes = change in assets (closed loop)
+   - [ ] No negative balances (except cash flow)
+   - [ ] Contribution rooms never go negative
+
+7. **Polish projection UI:**
+   - [ ] Loading states during calculation
+   - [ ] Error messages if calculation fails
+   - [ ] Smooth scrolling in large tables
+   - [ ] Chart animations on load
+   - [ ] Responsive on all screen sizes
+
+8. **Add user documentation:**
+   - [ ] Help tooltip for each parameter
+   - [ ] Explanation of each KPI
+   - [ ] Explanation of withdrawal strategy
+   - [ ] Explanation of tax calculation
+   - [ ] Link to user guide (future)
+
+9. **Test on all platforms:**
+   - [ ] iOS simulator/device
+   - [ ] Android emulator/device
+   - [ ] Web browser (Chrome, Safari, Firefox)
+   - [ ] macOS desktop
+
+10. **Commit and document:**
+    - [ ] Commit all changes
+    - [ ] Update PLAN.md with completion notes
+    - [ ] Update README with projection features
+    - [ ] Tag release: v2.0-projection-engine
+
+**Manual Test Checklist:**
+- [ ] All 6 test scenarios calculate correctly
+- [ ] Unit tests pass
+- [ ] All timing types work correctly
+- [ ] Scenario overrides apply correctly
+- [ ] Projection calculates in <1 second
+- [ ] Data consistency verified
+- [ ] UI polished and responsive
+- [ ] Documentation helpful
+- [ ] Works on all platforms
+- [ ] No console errors or warnings
+
+**Deliverable:** Production-ready advanced projection engine with comprehensive testing
+
+---
+
+## Summary of Phases 21-36
+
+**Phases 21-24:** Expand domain models and UI
+- Phase 21: Economic rates & pension parameters
+- Phase 22: CRI/FRV asset type
+- Phase 23: 6 expense categories
+- Phase 24: Event/expense overrides in scenarios
+
+**Phases 25-31:** Build calculation engine
+- Phase 25: Tax calculator with 2025 constants
+- Phase 26: Income sources (employment, RRQ, PSV, RRPE)
+- Phase 27: Expense calculation
+- Phase 28: Tax integration
+- Phase 29: Withdrawal strategy
+- Phase 30: Asset balance tracking
+- Phase 31: Edge cases (death, depletion)
+
+**Phases 32-35:** Enhanced visualization
+- Phase 32: 40+ column table
+- Phase 33: 4 charts (income, expenses, cash flow, assets)
+- Phase 34: Current vs constant dollars toggle
+- Phase 35: KPIs, warnings, scenario comparison
+
+**Phase 36:** Testing, polish, and release
+
+**Key Principles:**
+- Tax brackets are built-in constants, not user parameters
+- Withdrawal priority: CELI → Cash → CRI → REER
+- Progressive tax calculation with credits
+- Inflation applied to expenses and asset values
+- Scenario overrides allow "what-if" analysis
+- Warnings guide user to potential issues
+

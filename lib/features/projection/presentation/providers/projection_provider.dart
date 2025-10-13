@@ -14,7 +14,7 @@ final projectionCalculatorProvider = Provider<ProjectionCalculator>((ref) {
   return ProjectionCalculator();
 });
 
-/// Provider for calculating projection for a specific scenario
+/// Provider for calculating projection for a specific scenario with caching
 final projectionProvider = FutureProvider.family<Projection?, String>((ref, scenarioId) async {
   // Watch all dependencies
   final projectState = ref.watch(currentProjectProvider);
@@ -54,7 +54,7 @@ final projectionProvider = FutureProvider.family<Projection?, String>((ref, scen
     return null;
   }
 
-  // Calculate projection
+  // Calculate projection (caching logic is inside the calculator)
   final calculator = ref.read(projectionCalculatorProvider);
   return calculator.calculateProjection(
     project: project,
