@@ -9,6 +9,10 @@ import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/presentation/providers/events_provider.dart';
 import 'package:retire1/features/events/presentation/widgets/add_event_dialog.dart';
 import 'package:retire1/features/events/presentation/widgets/event_card.dart';
+import 'package:retire1/features/expenses/domain/expense.dart';
+import 'package:retire1/features/expenses/presentation/providers/expenses_provider.dart';
+import 'package:retire1/features/expenses/presentation/widgets/add_expense_dialog.dart';
+import 'package:retire1/features/expenses/presentation/widgets/expense_card.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 
@@ -28,7 +32,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     // Listen to tab changes to update FAB label
     _tabController.addListener(() {
       setState(() {});
@@ -304,12 +308,162 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
     }
   }
 
+  Future<void> _addExpense(BuildContext context, WidgetRef ref) async {
+    bool createAnother = true;
+
+    while (createAnother) {
+      if (!context.mounted) break;
+
+      final projectState = ref.read(currentProjectProvider);
+      final individuals = switch (projectState) {
+        ProjectSelected(project: final project) => project.individuals,
+        _ => <Individual>[],
+      };
+      final eventsAsync = ref.read(sortedEventsProvider);
+      final events = eventsAsync.maybeWhen(
+        data: (events) => events,
+        orElse: () => <Event>[],
+      );
+
+      final result = await AddExpenseDialog.show(
+        context,
+        individuals: individuals,
+        events: events,
+      );
+
+      if (result == null) {
+        // User cancelled
+        break;
+      }
+
+      if (!context.mounted) break;
+
+      try {
+        await ref.read(expensesProvider.notifier).addExpense(result.expense);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Expense added successfully')),
+          );
+        }
+
+        // Check if user wants to create another
+        createAnother = result.createAnother;
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to add expense: $e')),
+          );
+        }
+        // Break on error
+        break;
+      }
+    }
+  }
+
+  Future<void> _editExpense(
+    BuildContext context,
+    WidgetRef ref,
+    Expense expense,
+  ) async {
+    final projectState = ref.read(currentProjectProvider);
+    final individuals = switch (projectState) {
+      ProjectSelected(project: final project) => project.individuals,
+      _ => <Individual>[],
+    };
+    final eventsAsync = ref.read(sortedEventsProvider);
+    final events = eventsAsync.maybeWhen(
+      data: (events) => events,
+      orElse: () => <Event>[],
+    );
+
+    final result = await AddExpenseDialog.show(
+      context,
+      expense: expense,
+      individuals: individuals,
+      events: events,
+    );
+
+    if (result != null && context.mounted) {
+      try {
+        await ref.read(expensesProvider.notifier).updateExpense(result.expense);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Expense updated successfully')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update expense: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _deleteExpense(
+    BuildContext context,
+    WidgetRef ref,
+    Expense expense,
+  ) async {
+    final expenseId = expense.when(
+      housing: (id, _, __, ___) => id,
+      transport: (id, _, __, ___) => id,
+      dailyLiving: (id, _, __, ___) => id,
+      recreation: (id, _, __, ___) => id,
+      health: (id, _, __, ___) => id,
+      family: (id, _, __, ___) => id,
+    );
+
+    final expenseName = '${expense.categoryName} expense';
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Expense'),
+        content: Text('Are you sure you want to delete this $expenseName?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      try {
+        await ref.read(expensesProvider.notifier).deleteExpense(expenseId);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Expense deleted successfully')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete expense: $e')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final assetsAsync = ref.watch(assetsProvider);
     final assetsByType = ref.watch(assetsByTypeProvider);
     final eventsAsync = ref.watch(sortedEventsProvider);
+    final expensesAsync = ref.watch(expensesProvider);
+    final expensesByCategory = ref.watch(expensesByCategoryProvider);
     final projectState = ref.watch(currentProjectProvider);
     final individuals = switch (projectState) {
       ProjectSelected(project: final project) => project.individuals,
@@ -324,6 +478,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
           tabs: const [
             Tab(text: 'Assets', icon: Icon(Icons.account_balance_wallet)),
             Tab(text: 'Events', icon: Icon(Icons.event)),
+            Tab(text: 'Expenses', icon: Icon(Icons.receipt_long)),
           ],
         ),
       ),
@@ -587,18 +742,168 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
               ],
             ),
           ),
+          // Expenses tab
+          expensesAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Failed to load expenses',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        error.toString(),
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      FilledButton.icon(
+                        onPressed: () => ref.invalidate(expensesProvider),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            data: (expenses) => expenses.isEmpty
+                ? Center(
+                    child: ResponsiveContainer(
+                      child: Padding(
+                        padding: const EdgeInsets.all(48),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.receipt_long,
+                              size: 64,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No expenses yet',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Add your first expense to get started',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : CustomScrollView(
+                    slivers: [
+                      // Expenses grouped by category
+                      ...expensesByCategory.entries.map((entry) {
+                        final categoryName = entry.key;
+                        final categoryExpenses = entry.value;
+
+                        return SliverToBoxAdapter(
+                          child: ResponsiveContainer(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Category header
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          categoryName,
+                                          style: theme.textTheme.titleLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: theme.colorScheme.primaryContainer,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            '${categoryExpenses.length}',
+                                            style: theme.textTheme.labelMedium?.copyWith(
+                                              color: theme.colorScheme.onPrimaryContainer,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Expense cards
+                                  ...categoryExpenses.map((expense) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: ExpenseCard(
+                                        expense: expense,
+                                        individuals: individuals,
+                                        onEdit: () => _editExpense(context, ref, expense),
+                                        onDelete: () => _deleteExpense(context, ref, expense),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                      // Bottom padding
+                      const SliverToBoxAdapter(
+                        child: SizedBox(height: 80),
+                      ),
+                    ],
+                  ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           if (_tabController.index == 0) {
             _addAsset(context, ref);
-          } else {
+          } else if (_tabController.index == 1) {
             _addEvent(context, ref);
+          } else {
+            _addExpense(context, ref);
           }
         },
         icon: const Icon(Icons.add),
-        label: Text(_tabController.index == 0 ? 'Add Asset' : 'Add Event'),
+        label: Text(
+          _tabController.index == 0
+              ? 'Add Asset'
+              : _tabController.index == 1
+                  ? 'Add Event'
+                  : 'Add Expense',
+        ),
       ),
     );
   }

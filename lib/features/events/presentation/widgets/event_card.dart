@@ -181,6 +181,10 @@ class EventCard extends StatelessWidget {
         final individual = _getIndividual(t.individualId);
         return 'When ${individual?.name ?? 'individual'} turns ${t.age}';
       },
+      eventRelative: (t) {
+        final boundaryText = t.boundary == EventBoundary.start ? 'start' : 'end';
+        return 'At $boundaryText of event';
+      },
     );
   }
 

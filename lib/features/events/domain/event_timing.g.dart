@@ -45,3 +45,24 @@ Map<String, dynamic> _$$AgeTimingImplToJson(_$AgeTimingImpl instance) =>
       'age': instance.age,
       'runtimeType': instance.$type,
     };
+
+_$EventRelativeTimingImpl _$$EventRelativeTimingImplFromJson(
+  Map<String, dynamic> json,
+) => _$EventRelativeTimingImpl(
+  eventId: json['eventId'] as String,
+  boundary: $enumDecode(_$EventBoundaryEnumMap, json['boundary']),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$$EventRelativeTimingImplToJson(
+  _$EventRelativeTimingImpl instance,
+) => <String, dynamic>{
+  'eventId': instance.eventId,
+  'boundary': _$EventBoundaryEnumMap[instance.boundary]!,
+  'runtimeType': instance.$type,
+};
+
+const _$EventBoundaryEnumMap = {
+  EventBoundary.start: 'start',
+  EventBoundary.end: 'end',
+};

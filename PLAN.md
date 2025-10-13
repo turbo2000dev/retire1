@@ -1483,10 +1483,11 @@
 ## ✅ PHASE 15 COMPLETED
 
 **What was accomplished:**
-- Created EventTiming domain model with Freezed unions for 3 timing types:
+- Created EventTiming domain model with Freezed unions for timing types:
   - RelativeTiming (years from start of projection)
   - AbsoluteTiming (specific calendar year)
   - AgeTiming (when individual reaches age)
+  - **EventRelativeTiming (relative to start/end of another event)** ✨ *Enhancement added later*
 - Created Event domain model with Freezed unions for 3 event types:
   - RetirementEvent (individual ID, timing)
   - DeathEvent (individual ID, timing)
@@ -1542,6 +1543,30 @@
 - lib/features/events/presentation/providers/events_provider.dart - Mock events state management
 - Updated lib/features/assets/presentation/assets_events_screen.dart - Added Events tab
 - Updated pubspec.yaml - Added uuid package
+
+**✨ Enhancement Added (2025-10-13):**
+- Added 4th timing type: EventRelativeTiming with EventBoundary enum (start/end)
+- Updated TimingSelector to support event-relative timing:
+  - Event dropdown shows readable labels (e.g., "Retirement - John")
+  - Boundary dropdown for selecting start/end of event
+- Updated ExpenseForm and AddExpenseDialog to pass events list
+- Updated all .map()/.when() calls to handle eventRelative case:
+  - events_provider.dart - Event sorting logic
+  - event_override_section.dart - Base timing description display
+  - projection_calculator.dart - Event occurrence checking with full implementation
+  - event_card.dart - Event timing formatting
+  - expense_card.dart - Expense timing formatting
+- Implemented event-relative timing resolution in projection calculator:
+  - Created `_resolveEventYear()` helper method for recursive event resolution
+  - Handles multi-level event references (Event A → Event B → Event C)
+  - Includes circular dependency detection with visited set
+  - Returns calendar year for event-relative timing
+  - Logs warnings for invalid references or circular dependencies
+  - Updated `_isEventInYear()` to use event resolution
+  - Supports all timing types: relative, absolute, age, and event-relative
+- Regenerated Freezed code with build_runner
+- Expense timing can now be tied to events, automatically adjusting with scenario overrides
+- Event-relative timing fully functional in projection calculations
 
 ---
 
@@ -3458,6 +3483,7 @@ Based on specs/projection_requirements.md, the following phases implement compre
    - [ ] Relative timing (years from start)
    - [ ] Absolute timing (calendar year)
    - [ ] Age timing (when individual reaches age)
+   - [ ] Event-relative timing (at start/end of another event) ✨
    - [ ] Verify all work for events and expenses
 
 4. **Test scenario overrides:**

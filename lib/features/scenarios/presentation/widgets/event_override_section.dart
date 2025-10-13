@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/features/events/domain/event.dart';
+import 'package:retire1/features/events/domain/event_timing.dart';
 import 'package:retire1/features/events/presentation/providers/events_provider.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
@@ -204,6 +205,10 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
       absolute: (calendarYear) => 'Year $calendarYear',
       age: (individualId, age) =>
           'When ${_getIndividualName(individualId)} reaches age $age',
+      eventRelative: (eventId, boundary) {
+        final boundaryText = boundary == EventBoundary.start ? 'start' : 'end';
+        return 'At $boundaryText of event';
+      },
     );
   }
 

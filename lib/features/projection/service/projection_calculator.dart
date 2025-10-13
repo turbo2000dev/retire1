@@ -246,12 +246,12 @@ class ProjectionCalculator {
     return events.where((event) {
       return event.when(
         retirement: (id, individualId, timing) =>
-            _isEventInYear(timing, year, yearsFromStart, individuals, startYear),
+            _isEventInYear(timing, year, yearsFromStart, individuals, startYear, events),
         death: (id, individualId, timing) =>
-            _isEventInYear(timing, year, yearsFromStart, individuals, startYear),
+            _isEventInYear(timing, year, yearsFromStart, individuals, startYear, events),
         realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
                 withdrawAccountId, depositAccountId) =>
-            _isEventInYear(timing, year, yearsFromStart, individuals, startYear),
+            _isEventInYear(timing, year, yearsFromStart, individuals, startYear, events),
       );
     }).toList();
   }
@@ -263,6 +263,7 @@ class ProjectionCalculator {
     int yearsFromStart,
     List<Individual> individuals,
     int startYear,
+    List<Event> events,
   ) {
     return timing.when(
       relative: (years) => years == yearsFromStart,
@@ -272,6 +273,90 @@ class ProjectionCalculator {
         if (individual == null) return false;
         final currentAge = _calculateAge(individual.birthdate, year);
         return currentAge == targetAge;
+      },
+      eventRelative: (eventId, boundary) {
+        // Resolve when the referenced event occurs
+        final resolvedYear = _resolveEventYear(
+          eventId,
+          events,
+          individuals,
+          startYear,
+          {},
+        );
+
+        if (resolvedYear == null) {
+          log('Warning: Could not resolve event-relative timing for event $eventId');
+          return false;
+        }
+
+        // For now, both start and end boundaries use the same year
+        // In future, events could have duration
+        return resolvedYear == year;
+      },
+    );
+  }
+
+  /// Resolve when an event occurs (returns calendar year)
+  ///
+  /// This method recursively resolves event timing, including event-relative timing.
+  /// Returns null if the event cannot be resolved (not found, circular dependency, etc.)
+  int? _resolveEventYear(
+    String eventId,
+    List<Event> events,
+    List<Individual> individuals,
+    int startYear,
+    Set<String> visitedEventIds,
+  ) {
+    // Check for circular dependencies
+    if (visitedEventIds.contains(eventId)) {
+      log('Warning: Circular event reference detected for event $eventId');
+      return null;
+    }
+
+    // Find the event
+    final event = events.where((e) => _getEventId(e) == eventId).firstOrNull;
+    if (event == null) {
+      log('Warning: Referenced event $eventId not found');
+      return null;
+    }
+
+    // Get the event's timing
+    final timing = event.when(
+      retirement: (id, individualId, timing) => timing,
+      death: (id, individualId, timing) => timing,
+      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
+              withdrawAccountId, depositAccountId) =>
+          timing,
+    );
+
+    // Mark this event as visited (for cycle detection)
+    final newVisitedIds = {...visitedEventIds, eventId};
+
+    // Resolve the timing to a calendar year
+    return timing.when(
+      relative: (years) => startYear + years,
+      absolute: (calendarYear) => calendarYear,
+      age: (individualId, targetAge) {
+        final individual = individuals.where((i) => i.id == individualId).firstOrNull;
+        if (individual == null) {
+          log('Warning: Individual $individualId not found for age-based timing');
+          return null;
+        }
+        // Calculate what year the individual reaches the target age
+        return individual.birthdate.year + targetAge;
+      },
+      eventRelative: (referencedEventId, boundary) {
+        // Recursively resolve the referenced event
+        final referencedYear = _resolveEventYear(
+          referencedEventId,
+          events,
+          individuals,
+          startYear,
+          newVisitedIds,
+        );
+        // For now, both start and end boundaries return the same year
+        // In future, events could have duration and end could be different from start
+        return referencedYear;
       },
     );
   }

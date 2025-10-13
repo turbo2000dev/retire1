@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:retire1/core/ui/responsive/responsive_text_field.dart';
+import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/domain/event_timing.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 
-enum TimingType { relative, absolute, age }
+enum TimingType { relative, absolute, age, eventRelative }
 
 /// Widget for selecting event timing
 class TimingSelector extends StatefulWidget {
   final EventTiming? initialTiming;
   final List<Individual> individuals;
+  final List<Event>? events; // Optional list of events for event-relative timing
   final ValueChanged<EventTiming?>? onChanged;
   final String? defaultIndividualId;
 
@@ -17,6 +19,7 @@ class TimingSelector extends StatefulWidget {
     super.key,
     this.initialTiming,
     required this.individuals,
+    this.events,
     this.onChanged,
     this.defaultIndividualId,
   });
@@ -31,6 +34,8 @@ class _TimingSelectorState extends State<TimingSelector> {
   final _yearController = TextEditingController();
   final _ageController = TextEditingController();
   String? _selectedIndividualId;
+  String? _selectedEventId;
+  EventBoundary _selectedBoundary = EventBoundary.start;
 
   @override
   void initState() {
@@ -53,6 +58,11 @@ class _TimingSelectorState extends State<TimingSelector> {
           _selectedType = TimingType.age;
           _selectedIndividualId = individualId;
           _ageController.text = age.toString();
+        },
+        eventRelative: (eventId, boundary) {
+          _selectedType = TimingType.eventRelative;
+          _selectedEventId = eventId;
+          _selectedBoundary = boundary;
         },
       );
     } else {
@@ -89,6 +99,14 @@ class _TimingSelectorState extends State<TimingSelector> {
           final age = int.tryParse(_ageController.text);
           if (age != null && _selectedIndividualId != null) {
             timing = EventTiming.age(individualId: _selectedIndividualId!, age: age);
+          }
+          break;
+        case TimingType.eventRelative:
+          if (_selectedEventId != null) {
+            timing = EventTiming.eventRelative(
+              eventId: _selectedEventId!,
+              boundary: _selectedBoundary,
+            );
           }
           break;
       }
@@ -228,6 +246,88 @@ class _TimingSelectorState extends State<TimingSelector> {
               },
             ),
           ],
+        ] else if (_selectedType == TimingType.eventRelative) ...[
+          if (widget.events == null || widget.events!.isEmpty)
+            Card(
+              color: theme.colorScheme.errorContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning, color: theme.colorScheme.onErrorContainer),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'No events found. Please add events first.',
+                        style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else ...[
+            DropdownButtonFormField<String>(
+              value: _selectedEventId,
+              decoration: const InputDecoration(labelText: 'Event', border: OutlineInputBorder()),
+              items: widget.events!.map((event) {
+                final eventLabel = event.when(
+                  retirement: (_, individualId, __) {
+                    final individual = widget.individuals.firstWhere(
+                      (i) => i.id == individualId,
+                      orElse: () => widget.individuals.first,
+                    );
+                    return 'Retirement - ${individual.name}';
+                  },
+                  death: (_, individualId, __) {
+                    final individual = widget.individuals.firstWhere(
+                      (i) => i.id == individualId,
+                      orElse: () => widget.individuals.first,
+                    );
+                    return 'Death - ${individual.name}';
+                  },
+                  realEstateTransaction: (_, __, ___, ____, _____, ______) => 'Real Estate Transaction',
+                );
+
+                final eventId = event.when(
+                  retirement: (id, _, __) => id,
+                  death: (id, _, __) => id,
+                  realEstateTransaction: (id, _, __, ___, ____, _____) => id,
+                );
+
+                return DropdownMenuItem(value: eventId, child: Text(eventLabel));
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedEventId = value;
+                });
+                _notifyChange();
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select an event';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<EventBoundary>(
+              value: _selectedBoundary,
+              decoration: const InputDecoration(labelText: 'Timing', border: OutlineInputBorder()),
+              items: const [
+                DropdownMenuItem(value: EventBoundary.start, child: Text('At start of event')),
+                DropdownMenuItem(value: EventBoundary.end, child: Text('At end of event')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedBoundary = value;
+                  });
+                  _notifyChange();
+                }
+              },
+            ),
+          ],
         ],
       ],
     );
@@ -241,6 +341,8 @@ class _TimingSelectorState extends State<TimingSelector> {
         return 'Specific calendar year';
       case TimingType.age:
         return 'When individual reaches age';
+      case TimingType.eventRelative:
+        return 'Relative to an event';
     }
   }
 }
