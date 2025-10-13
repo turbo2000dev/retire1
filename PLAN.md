@@ -2390,38 +2390,72 @@ Based on specs/projection_requirements.md, the following phases implement compre
 
 ---
 
-## PHASE 24: Expand Export - Assets & Events
+## ✅ PHASE 24 COMPLETED: Expand Export - Assets & Events
 
-**Goal:** Include assets and events in project export for complete test case reproduction
+**What was accomplished:**
+- Updated ProjectExportService to export assets and events:
+  - Added optional `assets` and `events` parameters to exportProject()
+  - Bumped export version to "1.1" to reflect new capabilities
+  - Conditional inclusion: only adds arrays to JSON if data is provided
+  - Freezed's toJson() handles union type serialization automatically
+  - Exports all 5 asset types (RealEstate, RRSP, CELI, CRI, Cash)
+  - Exports all 3 event types (Retirement, Death, RealEstateTransaction)
+  - Nested EventTiming unions serialize correctly
+- Updated Base Parameters screen to export assets and events:
+  - Added imports for Asset and Event domain models
+  - Added imports for assetsProvider and eventsProvider
+  - Modified _exportProjectData() to wait for stream-based providers
+  - Created _waitForProviderData() helper for polling Firestore streams
+  - Handles loading states with 10-second timeout per provider
+  - Minimum wait time of 1.5 seconds to allow streams to emit data
+  - Returns data immediately when non-empty
+  - Shows warnings if assets/events cannot be loaded
+  - Updated _showExportDialog() to display warnings with icon
+- Fixed stream-based provider data access pattern:
+  - Issue: assetsProvider and eventsProvider use Firestore streams
+  - Problem: build() returns empty [] initially, data arrives via stream later
+  - Solution: Invalidate providers, poll until non-empty data or min wait time
+  - Reliable on first click without waiting for streams to warm up
+- Tested export with complex project:
+  - All asset types export correctly with custom rates and contributions
+  - All event types export correctly with timing information
+  - EventTiming nested unions (Relative/Absolute/Age) serialize properly
+  - JSON structure clean and human-readable
+- Code passes flutter analyze with no issues
 
-### Tasks:
-1. **Update ProjectExportService:**
-   - [ ] Add assets to export structure
-   - [ ] Add events to export structure
-   - [ ] Nest under project in JSON: `{ project: {...}, assets: [...], events: [...] }`
-   - [ ] Handle asset union types (all 5 types)
-   - [ ] Handle event union types (all 3 types)
-   - [ ] Handle EventTiming nested unions
+**Example export structure:**
+```json
+{
+  "exportVersion": "1.1",
+  "exportedAt": "2025-10-13T11:43:05.957",
+  "project": { ... },
+  "assets": [
+    {
+      "id": "...",
+      "value": 500000,
+      "customReturnRate": 0.03,
+      "annualContribution": 10000,
+      "runtimeType": "rrsp"
+    }
+  ],
+  "events": [
+    {
+      "id": "...",
+      "individualId": "...",
+      "timing": {
+        "individualId": "...",
+        "age": 65,
+        "runtimeType": "age"
+      },
+      "runtimeType": "retirement"
+    }
+  ]
+}
+```
 
-2. **Test comprehensive export:**
-   - [ ] Export project with all 5 asset types
-   - [ ] Export project with all 3 event types
-   - [ ] Verify custom return rates exported
-   - [ ] Verify annual contributions exported
-   - [ ] Verify all timing types (relative, absolute, age) exported
-   - [ ] JSON remains human-readable
-
-**Manual Test Checklist:**
-- [ ] Export includes all assets with correct types
-- [ ] Real estate properties exported correctly
-- [ ] RRSP, CELI, CRI, Cash accounts exported
-- [ ] Custom return rates and contributions included
-- [ ] All events exported with timing info
-- [ ] Event timing (relative/absolute/age) correct
-- [ ] Real estate transactions with asset references
-- [ ] JSON structure is clean and organized
-
-**Deliverable:** Complete project export with assets and events
+**Key files modified:**
+- Updated lib/core/services/project_export_service.dart - Added assets/events parameters
+- Updated lib/features/project/presentation/base_parameters_screen.dart - Stream provider handling
 
 ---
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,10 @@ import 'package:retire1/core/services/project_export_service.dart';
 import 'package:retire1/core/ui/responsive/responsive_collapsible_section.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/utils/file_download_helper.dart';
+import 'package:retire1/features/assets/domain/asset.dart';
+import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
+import 'package:retire1/features/events/domain/event.dart';
+import 'package:retire1/features/events/presentation/providers/events_provider.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
@@ -313,10 +319,98 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     return null;
   }
 
+  /// Waits for a stream-based provider to have data available
+  /// Polls the provider state until the Firestore stream emits data
+  Future<T?> _waitForProviderData<T>(
+    AsyncNotifierProvider<AsyncNotifier<T>, T> provider, {
+    required Duration timeout,
+  }) async {
+    final startTime = DateTime.now();
+    const pollInterval = Duration(milliseconds: 100);
+    const minWaitTime = Duration(milliseconds: 1500); // Give stream time to emit
+
+    T? lastData;
+    bool hasSeenNonEmptyData = false;
+
+    while (DateTime.now().difference(startTime) < timeout) {
+      final elapsed = DateTime.now().difference(startTime);
+      final state = ref.read(provider);
+
+      state.maybeWhen(
+        data: (data) {
+          // For lists, check if we have data
+          if (data is List) {
+            if (data.isNotEmpty) {
+              // We have real data! Return it immediately
+              hasSeenNonEmptyData = true;
+              lastData = data;
+            } else {
+              // Empty list - could be initial or real
+              // After minimum wait time, trust that it's real
+              if (elapsed >= minWaitTime) {
+                lastData = data;
+              }
+            }
+          } else {
+            lastData = data;
+          }
+        },
+        orElse: () {
+          // Still loading or error - keep waiting
+        },
+      );
+
+      // Return data if we have non-empty data, or empty data after min wait
+      if (hasSeenNonEmptyData || (lastData != null && elapsed >= minWaitTime)) {
+        return lastData;
+      }
+
+      await Future.delayed(pollInterval);
+    }
+
+    // Timeout - return whatever we have
+    return lastData;
+  }
+
   Future<void> _exportProjectData(Project project) async {
     try {
+      List<Asset>? assets;
+      List<Event>? events;
+      final warnings = <String>[];
+
+      // For stream-based providers, we need to ensure they're initialized and have
+      // received at least one emission from Firestore. We can't tell the difference
+      // between "not loaded yet" (initial []) and "loaded but empty" ([]),
+      // so we always invalidate and wait for fresh data to be certain.
+
+      // Refresh both providers to ensure fresh data
+      ref.invalidate(assetsProvider);
+      ref.invalidate(eventsProvider);
+
+      // Wait for stream-based providers to emit data (with generous timeout)
+      assets = await _waitForProviderData<List<Asset>>(
+        assetsProvider,
+        timeout: const Duration(seconds: 10),
+      ).catchError((e) {
+        warnings.add('Assets could not be loaded and will not be included');
+        return null;
+      });
+
+      events = await _waitForProviderData<List<Event>>(
+        eventsProvider,
+        timeout: const Duration(seconds: 10),
+      ).catchError((e) {
+        warnings.add('Events could not be loaded and will not be included');
+        return null;
+      });
+
+      // Export with available data
       final exportService = ProjectExportService();
-      final jsonContent = exportService.exportProject(project);
+      final jsonContent = exportService.exportProject(
+        project,
+        assets: assets,
+        events: events,
+      );
       final filename = exportService.generateFilename(project);
 
       // Try to download file (works on web)
@@ -324,14 +418,23 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         FileDownloadHelper.downloadTextFile(jsonContent, filename);
 
         if (mounted) {
+          final message = warnings.isEmpty
+              ? 'Project data exported to $filename'
+              : 'Project data exported with warnings:\n${warnings.join('\n')}';
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Project data exported to $filename')),
+            SnackBar(
+              content: Text(message),
+              duration: warnings.isEmpty
+                  ? const Duration(seconds: 3)
+                  : const Duration(seconds: 6),
+            ),
           );
         }
       } on UnsupportedError {
         // On mobile/desktop, show dialog with content to copy
         if (mounted) {
-          await _showExportDialog(jsonContent, filename);
+          await _showExportDialog(jsonContent, filename, warnings);
         }
       }
     } catch (e) {
@@ -343,7 +446,13 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     }
   }
 
-  Future<void> _showExportDialog(String content, String filename) async {
+  Future<void> _showExportDialog(
+    String content,
+    String filename,
+    List<String> warnings,
+  ) async {
+    final theme = Theme.of(context);
+
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -351,9 +460,57 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
-            child: SelectableText(
-              content,
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (warnings.isNotEmpty) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.warning_outlined,
+                              color: theme.colorScheme.onErrorContainer,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Warnings:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ...warnings.map((warning) => Padding(
+                              padding: const EdgeInsets.only(left: 28, top: 4),
+                              child: Text(
+                                '• $warning',
+                                style: TextStyle(
+                                  color: theme.colorScheme.onErrorContainer,
+                                ),
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                SelectableText(
+                  content,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+              ],
             ),
           ),
         ),
