@@ -159,7 +159,15 @@ class ProjectionCalculator {
 
       // STEP 6: Apply withdrawals to asset balances
       for (final entry in withdrawalsByAccount.entries) {
-        currentAssetValues[entry.key] = (currentAssetValues[entry.key] ?? 0.0) - entry.value;
+        final newBalance = (currentAssetValues[entry.key] ?? 0.0) - entry.value;
+
+        // Check for account depletion
+        if (newBalance <= 0.0 && entry.value > 0) {
+          log('Warning: Account ${entry.key} depleted in year $year (balance before withdrawal: \$${currentAssetValues[entry.key]}, withdrawal: \$${entry.value})', level: 900);
+        }
+
+        // Clamp balance to 0 (prevent negative balances)
+        currentAssetValues[entry.key] = newBalance > 0 ? newBalance : 0.0;
       }
 
       // STEP 7: Calculate net cash flow and handle surplus
@@ -196,8 +204,8 @@ class ProjectionCalculator {
       // Add annual CELI room increase (for next year)
       celiRoomAvailable += 7000.0;
 
-      // Calculate asset growth (after events)
-      _applyAssetGrowth(currentAssetValues, effectiveAssets, project);
+      // Calculate asset growth (after events) and track returns
+      final assetReturns = _applyAssetGrowth(currentAssetValues, effectiveAssets, project);
 
       // Apply annual contributions (end of year)
       _applyAnnualContributions(currentAssetValues, effectiveAssets);
@@ -206,7 +214,7 @@ class ProjectionCalculator {
       final assetsEndOfYear = Map<String, double>.from(currentAssetValues);
       final netWorthEndOfYear = assetsEndOfYear.values.fold(0.0, (sum, value) => sum + value);
 
-      // Create yearly projection with all Phase 29 fields
+      // Create yearly projection with all Phase 30 fields
       years.add(
         YearlyProjection(
           year: year,
@@ -230,6 +238,7 @@ class ProjectionCalculator {
           netCashFlow: netCashFlow,
           assetsStartOfYear: assetsStartOfYear,
           assetsEndOfYear: assetsEndOfYear,
+          assetReturns: assetReturns,
           netWorthStartOfYear: netWorthStartOfYear,
           netWorthEndOfYear: netWorthEndOfYear,
           eventsOccurred: yearEvents.map((e) => _getEventId(e)).toList(),
@@ -259,7 +268,7 @@ class ProjectionCalculator {
       final override = overrides.whereType<AssetValueOverride>().where((o) {
         return o.assetId ==
             asset.when(
-              realEstate: (id, type, value, setAtStart) => id,
+              realEstate: (id, type, value, setAtStart, customReturnRate) => id,
               rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
               celi: (id, individualId, value, customReturnRate, annualContribution) => id,
               cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
@@ -271,8 +280,8 @@ class ProjectionCalculator {
 
       // Apply override
       return asset.when(
-        realEstate: (id, type, value, setAtStart) =>
-            Asset.realEstate(id: id, type: type, value: override.value, setAtStart: setAtStart),
+        realEstate: (id, type, value, setAtStart, customReturnRate) =>
+            Asset.realEstate(id: id, type: type, value: override.value, setAtStart: setAtStart, customReturnRate: customReturnRate),
         rrsp: (id, individualId, value, customReturnRate, annualContribution) => Asset.rrsp(
           id: id,
           individualId: individualId,
@@ -477,7 +486,7 @@ class ProjectionCalculator {
     final values = <String, double>{};
     for (final asset in assets) {
       asset.when(
-        realEstate: (id, type, value, setAtStart) {
+        realEstate: (id, type, value, setAtStart, customReturnRate) {
           values[id] = value;
         },
         rrsp: (id, individualId, value, customReturnRate, annualContribution) {
@@ -650,7 +659,7 @@ class ProjectionCalculator {
             final asset = assets
                 .where(
                   (a) => a.maybeWhen(
-                    realEstate: (id, type, value, setAtStart) => id == assetPurchasedId,
+                    realEstate: (id, type, value, setAtStart, customReturnRate) => id == assetPurchasedId,
                     orElse: () => false,
                   ),
                 )
@@ -658,7 +667,7 @@ class ProjectionCalculator {
 
             if (asset != null) {
               final purchaseValue = asset.when(
-                realEstate: (id, type, value, setAtStart) => value,
+                realEstate: (id, type, value, setAtStart, customReturnRate) => value,
                 rrsp: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
                 celi: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
                 cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => 0.0,
@@ -690,52 +699,99 @@ class ProjectionCalculator {
   }
 
   /// Apply asset growth based on return rates
-  void _applyAssetGrowth(Map<String, double> assetValues, List<Asset> assets, Project project) {
+  ///
+  /// Returns a map of asset ID to returns earned this year
+  Map<String, double> _applyAssetGrowth(Map<String, double> assetValues, List<Asset> assets, Project project) {
+    final returns = <String, double>{};
+
     for (final asset in assets) {
       asset.when(
-        realEstate: (id, type, value, setAtStart) {
-          // Real estate grows at inflation rate
+        realEstate: (id, type, value, setAtStart, customReturnRate) {
+          // Real estate grows at custom rate or inflation rate
           final currentValue = assetValues[id] ?? 0.0;
-          final newValue = currentValue * (1 + project.inflationRate);
+          if (currentValue <= 0) {
+            returns[id] = 0.0;
+            return;
+          }
+
+          final rate = customReturnRate ?? project.inflationRate;
+          final returnAmount = currentValue * rate;
+          final newValue = currentValue + returnAmount;
+
           assetValues[id] = newValue;
+          returns[id] = returnAmount;
         },
         rrsp: (id, individualId, value, customReturnRate, annualContribution) {
           // RRSP grows at custom rate or project REER rate
           final currentValue = assetValues[id] ?? 0.0;
+          if (currentValue <= 0) {
+            returns[id] = 0.0;
+            return;
+          }
+
           final rate = customReturnRate ?? project.reerReturnRate;
-          final newValue = currentValue * (1 + rate);
+          final returnAmount = currentValue * rate;
+          final newValue = currentValue + returnAmount;
+
           assetValues[id] = newValue;
+          returns[id] = returnAmount;
         },
         celi: (id, individualId, value, customReturnRate, annualContribution) {
           // CELI grows at custom rate or project CELI rate
           final currentValue = assetValues[id] ?? 0.0;
+          if (currentValue <= 0) {
+            returns[id] = 0.0;
+            return;
+          }
+
           final rate = customReturnRate ?? project.celiReturnRate;
-          final newValue = currentValue * (1 + rate);
+          final returnAmount = currentValue * rate;
+          final newValue = currentValue + returnAmount;
+
           assetValues[id] = newValue;
+          returns[id] = returnAmount;
         },
         cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
           // CRI grows at custom rate or project CRI rate
           final currentValue = assetValues[id] ?? 0.0;
+          if (currentValue <= 0) {
+            returns[id] = 0.0;
+            return;
+          }
+
           final rate = customReturnRate ?? project.criReturnRate;
-          final newValue = currentValue * (1 + rate);
+          final returnAmount = currentValue * rate;
+          final newValue = currentValue + returnAmount;
+
           assetValues[id] = newValue;
+          returns[id] = returnAmount;
         },
         cash: (id, individualId, value, customReturnRate, annualContribution) {
           // Cash grows at custom rate or project cash rate
           final currentValue = assetValues[id] ?? 0.0;
+          if (currentValue <= 0) {
+            returns[id] = 0.0;
+            return;
+          }
+
           final rate = customReturnRate ?? project.cashReturnRate;
-          final newValue = currentValue * (1 + rate);
+          final returnAmount = currentValue * rate;
+          final newValue = currentValue + returnAmount;
+
           assetValues[id] = newValue;
+          returns[id] = returnAmount;
         },
       );
     }
+
+    return returns;
   }
 
   /// Apply annual contributions to accounts (end of year)
   void _applyAnnualContributions(Map<String, double> assetValues, List<Asset> assets) {
     for (final asset in assets) {
       asset.when(
-        realEstate: (id, type, value, setAtStart) {
+        realEstate: (id, type, value, setAtStart, customReturnRate) {
           // Real estate has no annual contributions
         },
         rrsp: (id, individualId, value, customReturnRate, annualContribution) {
@@ -1038,7 +1094,7 @@ class ProjectionCalculator {
   /// Get asset ID from asset union
   String _getAssetId(Asset asset) {
     return asset.when(
-      realEstate: (id, type, value, setAtStart) => id,
+      realEstate: (id, type, value, setAtStart, customReturnRate) => id,
       rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
       celi: (id, individualId, value, customReturnRate, annualContribution) => id,
       cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,

@@ -5,7 +5,7 @@ import 'package:retire1/features/projection/service/income_constants.dart';
 /// Asset ID extractor helper
 String _getAssetIndividualId(Asset asset) {
   return asset.when(
-    realEstate: (id, type, value, setAtStart) => '',
+    realEstate: (id, type, value, setAtStart, customReturnRate) => '',
     rrsp: (id, individualId, value, customReturnRate, annualContribution) => individualId,
     celi: (id, individualId, value, customReturnRate, annualContribution) => individualId,
     cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => individualId,

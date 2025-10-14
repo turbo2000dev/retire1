@@ -51,6 +51,11 @@ _$YearlyProjectionImpl _$$YearlyProjectionImplFromJson(
   assetsEndOfYear: (json['assetsEndOfYear'] as Map<String, dynamic>).map(
     (k, e) => MapEntry(k, (e as num).toDouble()),
   ),
+  assetReturns:
+      (json['assetReturns'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toDouble()),
+      ) ??
+      const {},
   netWorthStartOfYear: (json['netWorthStartOfYear'] as num).toDouble(),
   netWorthEndOfYear: (json['netWorthEndOfYear'] as num).toDouble(),
   eventsOccurred: (json['eventsOccurred'] as List<dynamic>)
@@ -84,6 +89,7 @@ Map<String, dynamic> _$$YearlyProjectionImplToJson(
   'netCashFlow': instance.netCashFlow,
   'assetsStartOfYear': instance.assetsStartOfYear,
   'assetsEndOfYear': instance.assetsEndOfYear,
+  'assetReturns': instance.assetReturns,
   'netWorthStartOfYear': instance.netWorthStartOfYear,
   'netWorthEndOfYear': instance.netWorthEndOfYear,
   'eventsOccurred': instance.eventsOccurred,

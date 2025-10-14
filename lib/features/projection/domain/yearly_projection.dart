@@ -73,6 +73,9 @@ class YearlyProjection with _$YearlyProjection {
     /// Assets at end of year
     required Map<String, double> assetsEndOfYear,
 
+    /// Asset returns for the year (keyed by asset ID)
+    @Default({}) Map<String, double> assetReturns,
+
     /// Total net worth at start of year
     required double netWorthStartOfYear,
 

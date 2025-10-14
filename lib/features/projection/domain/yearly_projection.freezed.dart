@@ -90,6 +90,9 @@ mixin _$YearlyProjection {
   /// Assets at end of year
   Map<String, double> get assetsEndOfYear => throw _privateConstructorUsedError;
 
+  /// Asset returns for the year (keyed by asset ID)
+  Map<String, double> get assetReturns => throw _privateConstructorUsedError;
+
   /// Total net worth at start of year
   double get netWorthStartOfYear => throw _privateConstructorUsedError;
 
@@ -138,6 +141,7 @@ abstract class $YearlyProjectionCopyWith<$Res> {
     double netCashFlow,
     Map<String, double> assetsStartOfYear,
     Map<String, double> assetsEndOfYear,
+    Map<String, double> assetReturns,
     double netWorthStartOfYear,
     double netWorthEndOfYear,
     List<String> eventsOccurred,
@@ -180,6 +184,7 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
     Object? netCashFlow = null,
     Object? assetsStartOfYear = null,
     Object? assetsEndOfYear = null,
+    Object? assetReturns = null,
     Object? netWorthStartOfYear = null,
     Object? netWorthEndOfYear = null,
     Object? eventsOccurred = null,
@@ -270,6 +275,10 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
                 ? _value.assetsEndOfYear
                 : assetsEndOfYear // ignore: cast_nullable_to_non_nullable
                       as Map<String, double>,
+            assetReturns: null == assetReturns
+                ? _value.assetReturns
+                : assetReturns // ignore: cast_nullable_to_non_nullable
+                      as Map<String, double>,
             netWorthStartOfYear: null == netWorthStartOfYear
                 ? _value.netWorthStartOfYear
                 : netWorthStartOfYear // ignore: cast_nullable_to_non_nullable
@@ -319,6 +328,7 @@ abstract class _$$YearlyProjectionImplCopyWith<$Res>
     double netCashFlow,
     Map<String, double> assetsStartOfYear,
     Map<String, double> assetsEndOfYear,
+    Map<String, double> assetReturns,
     double netWorthStartOfYear,
     double netWorthEndOfYear,
     List<String> eventsOccurred,
@@ -360,6 +370,7 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
     Object? netCashFlow = null,
     Object? assetsStartOfYear = null,
     Object? assetsEndOfYear = null,
+    Object? assetReturns = null,
     Object? netWorthStartOfYear = null,
     Object? netWorthEndOfYear = null,
     Object? eventsOccurred = null,
@@ -450,6 +461,10 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
             ? _value._assetsEndOfYear
             : assetsEndOfYear // ignore: cast_nullable_to_non_nullable
                   as Map<String, double>,
+        assetReturns: null == assetReturns
+            ? _value._assetReturns
+            : assetReturns // ignore: cast_nullable_to_non_nullable
+                  as Map<String, double>,
         netWorthStartOfYear: null == netWorthStartOfYear
             ? _value.netWorthStartOfYear
             : netWorthStartOfYear // ignore: cast_nullable_to_non_nullable
@@ -492,6 +507,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     required this.netCashFlow,
     required final Map<String, double> assetsStartOfYear,
     required final Map<String, double> assetsEndOfYear,
+    final Map<String, double> assetReturns = const {},
     required this.netWorthStartOfYear,
     required this.netWorthEndOfYear,
     required final List<String> eventsOccurred,
@@ -501,6 +517,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
        _contributionsByAccount = contributionsByAccount,
        _assetsStartOfYear = assetsStartOfYear,
        _assetsEndOfYear = assetsEndOfYear,
+       _assetReturns = assetReturns,
        _eventsOccurred = eventsOccurred;
 
   factory _$YearlyProjectionImpl.fromJson(Map<String, dynamic> json) =>
@@ -651,6 +668,18 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     return EqualUnmodifiableMapView(_assetsEndOfYear);
   }
 
+  /// Asset returns for the year (keyed by asset ID)
+  final Map<String, double> _assetReturns;
+
+  /// Asset returns for the year (keyed by asset ID)
+  @override
+  @JsonKey()
+  Map<String, double> get assetReturns {
+    if (_assetReturns is EqualUnmodifiableMapView) return _assetReturns;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_assetReturns);
+  }
+
   /// Total net worth at start of year
   @override
   final double netWorthStartOfYear;
@@ -672,7 +701,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
 
   @override
   String toString() {
-    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, taxableIncome: $taxableIncome, federalTax: $federalTax, quebecTax: $quebecTax, totalTax: $totalTax, afterTaxIncome: $afterTaxIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, withdrawalsByAccount: $withdrawalsByAccount, contributionsByAccount: $contributionsByAccount, totalWithdrawals: $totalWithdrawals, totalContributions: $totalContributions, celiContributionRoom: $celiContributionRoom, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
+    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, taxableIncome: $taxableIncome, federalTax: $federalTax, quebecTax: $quebecTax, totalTax: $totalTax, afterTaxIncome: $afterTaxIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, withdrawalsByAccount: $withdrawalsByAccount, contributionsByAccount: $contributionsByAccount, totalWithdrawals: $totalWithdrawals, totalContributions: $totalContributions, celiContributionRoom: $celiContributionRoom, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, assetReturns: $assetReturns, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
   }
 
   @override
@@ -733,6 +762,10 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
               other._assetsEndOfYear,
               _assetsEndOfYear,
             ) &&
+            const DeepCollectionEquality().equals(
+              other._assetReturns,
+              _assetReturns,
+            ) &&
             (identical(other.netWorthStartOfYear, netWorthStartOfYear) ||
                 other.netWorthStartOfYear == netWorthStartOfYear) &&
             (identical(other.netWorthEndOfYear, netWorthEndOfYear) ||
@@ -768,6 +801,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     netCashFlow,
     const DeepCollectionEquality().hash(_assetsStartOfYear),
     const DeepCollectionEquality().hash(_assetsEndOfYear),
+    const DeepCollectionEquality().hash(_assetReturns),
     netWorthStartOfYear,
     netWorthEndOfYear,
     const DeepCollectionEquality().hash(_eventsOccurred),
@@ -813,6 +847,7 @@ abstract class _YearlyProjection implements YearlyProjection {
     required final double netCashFlow,
     required final Map<String, double> assetsStartOfYear,
     required final Map<String, double> assetsEndOfYear,
+    final Map<String, double> assetReturns,
     required final double netWorthStartOfYear,
     required final double netWorthEndOfYear,
     required final List<String> eventsOccurred,
@@ -905,6 +940,10 @@ abstract class _YearlyProjection implements YearlyProjection {
   /// Assets at end of year
   @override
   Map<String, double> get assetsEndOfYear;
+
+  /// Asset returns for the year (keyed by asset ID)
+  @override
+  Map<String, double> get assetReturns;
 
   /// Total net worth at start of year
   @override

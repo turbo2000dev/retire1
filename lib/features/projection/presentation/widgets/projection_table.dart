@@ -110,6 +110,15 @@ class ProjectionTable extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Text(
+                      'Asset Returns',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    numeric: true,
+                  ),
+                  DataColumn(
+                    label: Text(
                       'Net Worth (Start)',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -196,6 +205,18 @@ class ProjectionTable extends StatelessWidget {
                                     ? theme.colorScheme.error
                                     : null,
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          currencyFormat.format(
+                            year.assetReturns.values.fold(0.0, (sum, val) => sum + val),
+                          ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: year.assetReturns.values.fold(0.0, (sum, val) => sum + val) > 0
+                                ? theme.colorScheme.tertiary
+                                : null,
                           ),
                         ),
                       ),

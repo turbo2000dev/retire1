@@ -22,6 +22,7 @@ class Asset with _$Asset {
     required RealEstateType type,
     required double value,
     @Default(false) bool setAtStart,
+    double? customReturnRate,
   }) = RealEstateAsset;
 
   /// RRSP (Registered Retirement Savings Plan) account

@@ -1,0 +1,307 @@
+{
+  "exportVersion": "1.2",
+  "exportedAt": "2025-10-14T14:44:20.597",
+  "project": {
+    "id": "hCtjYeHdiiO4WwpVZMWU",
+    "name": "Test Project",
+    "ownerId": "dn1vkJOgZbVtXiANsYzYHHolZtq1",
+    "description": "",
+    "createdAt": "2025-10-12T16:42:53.252",
+    "updatedAt": "2025-10-12T22:19:53.462",
+    "individuals": [
+      {
+        "id": "1760301790395",
+        "name": "André Boisvert",
+        "birthdate": "1967-01-30T00:00:00.000",
+        "employmentIncome": 0,
+        "rrqStartAge": 65,
+        "psvStartAge": 65,
+        "rrqAnnualBenefit": 16000,
+        "initialCeliRoom": 0
+      },
+      {
+        "id": "1760301803411",
+        "name": "Anne Milot",
+        "birthdate": "1967-01-19T00:00:00.000",
+        "employmentIncome": 0,
+        "rrqStartAge": 65,
+        "psvStartAge": 65,
+        "rrqAnnualBenefit": 16000,
+        "initialCeliRoom": 0
+      },
+      {
+        "id": "1760321822708",
+        "name": "Jeanne Boisvert",
+        "birthdate": "1970-01-01T00:00:00.000",
+        "employmentIncome": 100000,
+        "rrqStartAge": 65,
+        "psvStartAge": 65,
+        "rrqAnnualBenefit": 16000,
+        "initialCeliRoom": 0
+      }
+    ],
+    "inflationRate": 0.02,
+    "reerReturnRate": 0.06,
+    "celiReturnRate": 0.05,
+    "criReturnRate": 0.05,
+    "cashReturnRate": 0.015
+  },
+  "assets": [
+    {
+      "id": "1760301816411",
+      "type": "house",
+      "value": 1500000,
+      "setAtStart": true,
+      "customReturnRate": 0.045,
+      "runtimeType": "realEstate"
+    },
+    {
+      "id": "1760301826162",
+      "type": "condo",
+      "value": 800000,
+      "setAtStart": false,
+      "customReturnRate": null,
+      "runtimeType": "realEstate"
+    },
+    {
+      "id": "1760301832495",
+      "individualId": "1760301790395",
+      "value": 560000,
+      "customReturnRate": null,
+      "annualContribution": null,
+      "runtimeType": "rrsp"
+    },
+    {
+      "id": "1760301846211",
+      "individualId": "1760301803411",
+      "value": 540000,
+      "customReturnRate": null,
+      "annualContribution": null,
+      "runtimeType": "rrsp"
+    },
+    {
+      "id": "1760301856711",
+      "individualId": "1760301790395",
+      "value": 20000,
+      "customReturnRate": null,
+      "annualContribution": null,
+      "runtimeType": "celi"
+    },
+    {
+      "id": "1760301863645",
+      "individualId": "1760301790395",
+      "value": 100,
+      "customReturnRate": null,
+      "annualContribution": null,
+      "runtimeType": "cash"
+    },
+    {
+      "id": "1760323175602",
+      "individualId": "1760301790395",
+      "value": 56000,
+      "contributionRoom": null,
+      "customReturnRate": 0.06,
+      "annualContribution": null,
+      "runtimeType": "cri"
+    },
+    {
+      "id": "1760323205266",
+      "individualId": "1760301790395",
+      "value": 22000,
+      "customReturnRate": null,
+      "annualContribution": null,
+      "runtimeType": "rrsp"
+    }
+  ],
+  "events": [
+    {
+      "id": "14cb844e-c1c9-4544-a7d9-9d453a96e937",
+      "individualId": "1760301803411",
+      "timing": {
+        "individualId": "1760301803411",
+        "age": 91,
+        "runtimeType": "age"
+      },
+      "runtimeType": "death"
+    },
+    {
+      "id": "9036f91d-e9ca-4526-a64d-951e4976daaf",
+      "individualId": "1760301803411",
+      "timing": {
+        "individualId": "1760301803411",
+        "age": 62,
+        "runtimeType": "age"
+      },
+      "runtimeType": "retirement"
+    },
+    {
+      "id": "cc8ba5d7-f2b9-4a83-93c9-02fc87899d2f",
+      "timing": {
+        "individualId": "1760301790395",
+        "age": 70,
+        "runtimeType": "age"
+      },
+      "assetSoldId": "1760301816411",
+      "assetPurchasedId": "1760301826162",
+      "withdrawAccountId": "1760301863645",
+      "depositAccountId": "1760301863645",
+      "runtimeType": "realEstateTransaction"
+    },
+    {
+      "id": "d7bf35bc-f6ed-48f8-a25e-3e4beab5271e",
+      "individualId": "1760301790395",
+      "timing": {
+        "individualId": "1760301790395",
+        "age": 65,
+        "runtimeType": "age"
+      },
+      "runtimeType": "retirement"
+    },
+    {
+      "id": "ed72ec50-b004-4ced-8a1a-f51bd04f415c",
+      "timing": {
+        "individualId": "1760301790395",
+        "age": 82,
+        "runtimeType": "age"
+      },
+      "assetSoldId": "1760301826162",
+      "assetPurchasedId": null,
+      "withdrawAccountId": "1760301863645",
+      "depositAccountId": "1760301863645",
+      "runtimeType": "realEstateTransaction"
+    },
+    {
+      "id": "faa21ea9-3e65-44d7-b243-8b78ebc08b1c",
+      "individualId": "1760301790395",
+      "timing": {
+        "individualId": "1760301790395",
+        "age": 91,
+        "runtimeType": "age"
+      },
+      "runtimeType": "death"
+    },
+    {
+      "id": "fcfa4588-3e1b-4f76-81ef-86c65ce07cc7",
+      "timing": {
+        "individualId": "1760301790395",
+        "age": 78,
+        "runtimeType": "age"
+      },
+      "assetSoldId": "1760301816411",
+      "assetPurchasedId": "1760301826162",
+      "withdrawAccountId": "1760301863645",
+      "depositAccountId": "1760301863645",
+      "runtimeType": "realEstateTransaction"
+    }
+  ],
+  "expenses": [
+    {
+      "id": "1760390764194",
+      "startTiming": {
+        "yearsFromStart": 0,
+        "runtimeType": "relative"
+      },
+      "endTiming": {
+        "runtimeType": "projectionEnd"
+      },
+      "annualAmount": 12500,
+      "runtimeType": "housing"
+    },
+    {
+      "id": "1760390783778",
+      "startTiming": {
+        "yearsFromStart": 0,
+        "runtimeType": "relative"
+      },
+      "endTiming": {
+        "individualId": "1760301790395",
+        "age": 78,
+        "runtimeType": "age"
+      },
+      "annualAmount": 4000,
+      "runtimeType": "transport"
+    },
+    {
+      "id": "1760390813211",
+      "startTiming": {
+        "eventId": "d7bf35bc-f6ed-48f8-a25e-3e4beab5271e",
+        "boundary": "start",
+        "runtimeType": "eventRelative"
+      },
+      "endTiming": {
+        "individualId": "1760301790395",
+        "age": 82,
+        "runtimeType": "age"
+      },
+      "annualAmount": 40000,
+      "runtimeType": "recreation"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "base",
+      "name": "Base Scenario",
+      "isBase": true,
+      "overrides": [],
+      "createdAt": "2025-10-12T16:47:38.864",
+      "updatedAt": "2025-10-12T16:47:38.864"
+    },
+    {
+      "id": "daf80c14-96ff-4720-8f75-df52c6f40aa3",
+      "name": "Optimistic",
+      "isBase": false,
+      "overrides": [
+        {
+          "eventId": "d7bf35bc-f6ed-48f8-a25e-3e4beab5271e",
+          "yearsFromStart": 4,
+          "runtimeType": "eventTiming"
+        },
+        {
+          "expenseId": "1760390783778",
+          "overrideAmount": 3000,
+          "amountMultiplier": null,
+          "runtimeType": "expenseAmount"
+        }
+      ],
+      "createdAt": "2025-10-12T16:47:49.862",
+      "updatedAt": "2025-10-14T09:19:00.842"
+    },
+    {
+      "id": "dd662cca-00f1-45f9-847d-c626b68f7407",
+      "name": "Whatever",
+      "isBase": false,
+      "overrides": [
+        {
+          "expenseId": "1760390813211",
+          "overrideStartTiming": {
+            "individualId": "1760301790395",
+            "age": 67,
+            "runtimeType": "age"
+          },
+          "overrideEndTiming": null,
+          "runtimeType": "expenseTiming"
+        },
+        {
+          "expenseId": "1760390764194",
+          "overrideAmount": null,
+          "amountMultiplier": 6,
+          "runtimeType": "expenseAmount"
+        },
+        {
+          "expenseId": "1760390783778",
+          "overrideAmount": null,
+          "amountMultiplier": 6,
+          "runtimeType": "expenseAmount"
+        },
+        {
+          "expenseId": "1760390813211",
+          "overrideAmount": null,
+          "amountMultiplier": 2,
+          "runtimeType": "expenseAmount"
+        }
+      ],
+      "createdAt": "2025-10-13T21:23:00.241",
+      "updatedAt": "2025-10-14T14:43:14.830"
+    }
+  ]
+}

@@ -13,6 +13,7 @@ _$RealEstateAssetImpl _$$RealEstateAssetImplFromJson(
   type: $enumDecode(_$RealEstateTypeEnumMap, json['type']),
   value: (json['value'] as num).toDouble(),
   setAtStart: json['setAtStart'] as bool? ?? false,
+  customReturnRate: (json['customReturnRate'] as num?)?.toDouble(),
   $type: json['runtimeType'] as String?,
 );
 
@@ -23,6 +24,7 @@ Map<String, dynamic> _$$RealEstateAssetImplToJson(
   'type': _$RealEstateTypeEnumMap[instance.type]!,
   'value': instance.value,
   'setAtStart': instance.setAtStart,
+  'customReturnRate': instance.customReturnRate,
   'runtimeType': instance.$type,
 };
 

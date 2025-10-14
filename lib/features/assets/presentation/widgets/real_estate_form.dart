@@ -22,6 +22,7 @@ class RealEstateForm extends StatefulWidget {
 class _RealEstateFormState extends State<RealEstateForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _valueController;
+  late final TextEditingController _customReturnRateController;
   late RealEstateType _selectedType;
   late bool _setAtStart;
 
@@ -33,22 +34,36 @@ class _RealEstateFormState extends State<RealEstateForm> {
       text: widget.asset?.value.toStringAsFixed(0) ?? '',
     );
     _setAtStart = widget.asset?.setAtStart ?? false;
+    _customReturnRateController = TextEditingController(
+      text: widget.asset?.customReturnRate != null
+          ? (widget.asset!.customReturnRate! * 100).toStringAsFixed(2)
+          : '',
+    );
   }
 
   @override
   void dispose() {
     _valueController.dispose();
+    _customReturnRateController.dispose();
     super.dispose();
   }
 
   void _submit({bool createAnother = false}) {
     if (!_formKey.currentState!.validate()) return;
 
+    // Parse custom return rate (convert from percentage to decimal)
+    double? customReturnRate;
+    if (_customReturnRateController.text.isNotEmpty) {
+      final percentage = double.parse(_customReturnRateController.text.replaceAll(',', ''));
+      customReturnRate = percentage / 100;
+    }
+
     final asset = Asset.realEstate(
       id: widget.asset?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       type: _selectedType,
       value: double.parse(_valueController.text.replaceAll(',', '')),
       setAtStart: _setAtStart,
+      customReturnRate: customReturnRate,
     ) as RealEstateAsset;
 
     widget.onSave(asset, createAnother: createAnother);
@@ -103,6 +118,34 @@ class _RealEstateFormState extends State<RealEstateForm> {
               final numValue = double.tryParse(value.replaceAll(',', ''));
               if (numValue == null || numValue <= 0) {
                 return 'Please enter a valid positive value';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          // Custom return rate field
+          TextFormField(
+            controller: _customReturnRateController,
+            decoration: const InputDecoration(
+              labelText: 'Custom appreciation rate (optional)',
+              border: OutlineInputBorder(),
+              suffixText: '%',
+              helperText: 'Leave empty to use inflation rate',
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+            ],
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return null; // Optional field
+              }
+              final numValue = double.tryParse(value.replaceAll(',', ''));
+              if (numValue == null) {
+                return 'Please enter a valid percentage';
+              }
+              if (numValue < -100 || numValue > 100) {
+                return 'Percentage must be between -100 and 100';
               }
               return null;
             },

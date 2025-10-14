@@ -127,7 +127,7 @@ class ProjectionExportService {
 
     for (final asset in assets) {
       asset.when(
-        realEstate: (id, type, value, setAtStart) {
+        realEstate: (id, type, value, setAtStart, customReturnRate) {
           map[id] = 'realEstate';
         },
         rrsp: (id, individualId, value, customReturnRate, annualContribution) {

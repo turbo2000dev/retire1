@@ -42,6 +42,7 @@ Asset _$AssetFromJson(Map<String, dynamic> json) {
 mixin _$Asset {
   String get id => throw _privateConstructorUsedError;
   double get value => throw _privateConstructorUsedError;
+  double? get customReturnRate => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
@@ -49,6 +50,7 @@ mixin _$Asset {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )
     realEstate,
     required TResult Function(
@@ -92,6 +94,7 @@ mixin _$Asset {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult? Function(
@@ -135,6 +138,7 @@ mixin _$Asset {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult Function(
@@ -212,7 +216,7 @@ abstract class $AssetCopyWith<$Res> {
   factory $AssetCopyWith(Asset value, $Res Function(Asset) then) =
       _$AssetCopyWithImpl<$Res, Asset>;
   @useResult
-  $Res call({String id, double value});
+  $Res call({String id, double value, double? customReturnRate});
 }
 
 /// @nodoc
@@ -229,7 +233,11 @@ class _$AssetCopyWithImpl<$Res, $Val extends Asset>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? value = null}) {
+  $Res call({
+    Object? id = null,
+    Object? value = null,
+    Object? customReturnRate = freezed,
+  }) {
     return _then(
       _value.copyWith(
             id: null == id
@@ -240,6 +248,10 @@ class _$AssetCopyWithImpl<$Res, $Val extends Asset>
                 ? _value.value
                 : value // ignore: cast_nullable_to_non_nullable
                       as double,
+            customReturnRate: freezed == customReturnRate
+                ? _value.customReturnRate
+                : customReturnRate // ignore: cast_nullable_to_non_nullable
+                      as double?,
           )
           as $Val,
     );
@@ -255,7 +267,13 @@ abstract class _$$RealEstateAssetImplCopyWith<$Res>
   ) = __$$RealEstateAssetImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, RealEstateType type, double value, bool setAtStart});
+  $Res call({
+    String id,
+    RealEstateType type,
+    double value,
+    bool setAtStart,
+    double? customReturnRate,
+  });
 }
 
 /// @nodoc
@@ -276,6 +294,7 @@ class __$$RealEstateAssetImplCopyWithImpl<$Res>
     Object? type = null,
     Object? value = null,
     Object? setAtStart = null,
+    Object? customReturnRate = freezed,
   }) {
     return _then(
       _$RealEstateAssetImpl(
@@ -295,6 +314,10 @@ class __$$RealEstateAssetImplCopyWithImpl<$Res>
             ? _value.setAtStart
             : setAtStart // ignore: cast_nullable_to_non_nullable
                   as bool,
+        customReturnRate: freezed == customReturnRate
+            ? _value.customReturnRate
+            : customReturnRate // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -308,6 +331,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
     required this.type,
     required this.value,
     this.setAtStart = false,
+    this.customReturnRate,
     final String? $type,
   }) : $type = $type ?? 'realEstate';
 
@@ -323,13 +347,15 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
   @override
   @JsonKey()
   final bool setAtStart;
+  @override
+  final double? customReturnRate;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'Asset.realEstate(id: $id, type: $type, value: $value, setAtStart: $setAtStart)';
+    return 'Asset.realEstate(id: $id, type: $type, value: $value, setAtStart: $setAtStart, customReturnRate: $customReturnRate)';
   }
 
   @override
@@ -341,12 +367,15 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.value, value) || other.value == value) &&
             (identical(other.setAtStart, setAtStart) ||
-                other.setAtStart == setAtStart));
+                other.setAtStart == setAtStart) &&
+            (identical(other.customReturnRate, customReturnRate) ||
+                other.customReturnRate == customReturnRate));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, type, value, setAtStart);
+  int get hashCode =>
+      Object.hash(runtimeType, id, type, value, setAtStart, customReturnRate);
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.
@@ -367,6 +396,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )
     realEstate,
     required TResult Function(
@@ -403,7 +433,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
     )
     cash,
   }) {
-    return realEstate(id, type, value, setAtStart);
+    return realEstate(id, type, value, setAtStart, customReturnRate);
   }
 
   @override
@@ -414,6 +444,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult? Function(
@@ -450,7 +481,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
     )?
     cash,
   }) {
-    return realEstate?.call(id, type, value, setAtStart);
+    return realEstate?.call(id, type, value, setAtStart, customReturnRate);
   }
 
   @override
@@ -461,6 +492,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult Function(
@@ -499,7 +531,7 @@ class _$RealEstateAssetImpl implements RealEstateAsset {
     required TResult orElse(),
   }) {
     if (realEstate != null) {
-      return realEstate(id, type, value, setAtStart);
+      return realEstate(id, type, value, setAtStart, customReturnRate);
     }
     return orElse();
   }
@@ -556,6 +588,7 @@ abstract class RealEstateAsset implements Asset {
     required final RealEstateType type,
     required final double value,
     final bool setAtStart,
+    final double? customReturnRate,
   }) = _$RealEstateAssetImpl;
 
   factory RealEstateAsset.fromJson(Map<String, dynamic> json) =
@@ -567,6 +600,8 @@ abstract class RealEstateAsset implements Asset {
   @override
   double get value;
   bool get setAtStart;
+  @override
+  double? get customReturnRate;
 
   /// Create a copy of Asset
   /// with the given fields replaced by the non-null parameter values.
@@ -717,6 +752,7 @@ class _$RRSPAccountImpl implements RRSPAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )
     realEstate,
     required TResult Function(
@@ -764,6 +800,7 @@ class _$RRSPAccountImpl implements RRSPAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult? Function(
@@ -817,6 +854,7 @@ class _$RRSPAccountImpl implements RRSPAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult Function(
@@ -929,6 +967,7 @@ abstract class RRSPAccount implements Asset {
   String get individualId;
   @override
   double get value;
+  @override
   double? get customReturnRate;
   double? get annualContribution;
 
@@ -1081,6 +1120,7 @@ class _$CELIAccountImpl implements CELIAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )
     realEstate,
     required TResult Function(
@@ -1128,6 +1168,7 @@ class _$CELIAccountImpl implements CELIAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult? Function(
@@ -1181,6 +1222,7 @@ class _$CELIAccountImpl implements CELIAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult Function(
@@ -1293,6 +1335,7 @@ abstract class CELIAccount implements Asset {
   String get individualId;
   @override
   double get value;
+  @override
   double? get customReturnRate;
   double? get annualContribution;
 
@@ -1456,6 +1499,7 @@ class _$CRIAccountImpl implements CRIAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )
     realEstate,
     required TResult Function(
@@ -1510,6 +1554,7 @@ class _$CRIAccountImpl implements CRIAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult? Function(
@@ -1564,6 +1609,7 @@ class _$CRIAccountImpl implements CRIAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult Function(
@@ -1679,6 +1725,7 @@ abstract class CRIAccount implements Asset {
   @override
   double get value;
   double? get contributionRoom;
+  @override
   double? get customReturnRate;
   double? get annualContribution;
 
@@ -1831,6 +1878,7 @@ class _$CashAccountImpl implements CashAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )
     realEstate,
     required TResult Function(
@@ -1878,6 +1926,7 @@ class _$CashAccountImpl implements CashAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult? Function(
@@ -1931,6 +1980,7 @@ class _$CashAccountImpl implements CashAccount {
       RealEstateType type,
       double value,
       bool setAtStart,
+      double? customReturnRate,
     )?
     realEstate,
     TResult Function(
@@ -2043,6 +2093,7 @@ abstract class CashAccount implements Asset {
   String get individualId;
   @override
   double get value;
+  @override
   double? get customReturnRate;
   double? get annualContribution;
 

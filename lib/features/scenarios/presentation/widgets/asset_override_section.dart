@@ -104,7 +104,7 @@ class AssetOverrideSection extends ConsumerWidget {
             const SizedBox(height: 16),
             ...assets.map((asset) {
               final assetId = asset.when(
-                realEstate: (id, type, value, setAtStart) => id,
+                realEstate: (id, type, value, setAtStart, customReturnRate) => id,
                 rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
                 celi: (id, individualId, value, customReturnRate, annualContribution) => id,
                 cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
@@ -112,7 +112,7 @@ class AssetOverrideSection extends ConsumerWidget {
               );
 
               final baseValue = asset.when(
-                realEstate: (id, type, value, setAtStart) => value,
+                realEstate: (id, type, value, setAtStart, customReturnRate) => value,
                 rrsp: (id, individualId, value, customReturnRate, annualContribution) => value,
                 celi: (id, individualId, value, customReturnRate, annualContribution) => value,
                 cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => value,
@@ -120,7 +120,7 @@ class AssetOverrideSection extends ConsumerWidget {
               );
 
               final assetTypeName = asset.when(
-                realEstate: (id, type, value, setAtStart) =>
+                realEstate: (id, type, value, setAtStart, customReturnRate) =>
                     'Real Estate (${type.name})',
                 rrsp: (id, individualId, value, customReturnRate, annualContribution) => 'RRSP Account',
                 celi: (id, individualId, value, customReturnRate, annualContribution) => 'CELI Account',

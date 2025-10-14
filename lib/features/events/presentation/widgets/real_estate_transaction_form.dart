@@ -49,7 +49,7 @@ class _RealEstateTransactionFormState
   List<Asset> get _realEstateAssets {
     return widget.assets.where((asset) {
       return asset.maybeWhen(
-        realEstate: (_, __, ___, ____) => true,
+        realEstate: (_, __, ___, ____, _____) => true,
         orElse: () => false,
       );
     }).toList();
@@ -156,7 +156,7 @@ class _RealEstateTransactionFormState
               ),
               ..._realEstateAssets.map((asset) {
                 return asset.maybeWhen(
-                  realEstate: (id, type, _, __) {
+                  realEstate: (id, type, _, __, ___) {
                     return DropdownMenuItem(
                       value: id,
                       child: Text(_getRealEstateTypeName(type)),
@@ -192,7 +192,7 @@ class _RealEstateTransactionFormState
               ),
               ..._realEstateAssets.map((asset) {
                 return asset.maybeWhen(
-                  realEstate: (id, type, _, __) {
+                  realEstate: (id, type, _, __, ___) {
                     return DropdownMenuItem(
                       value: id,
                       child: Text(_getRealEstateTypeName(type)),
