@@ -63,6 +63,23 @@ mixin _$YearlyProjection {
   Map<String, double> get expensesByCategory =>
       throw _privateConstructorUsedError;
 
+  /// Withdrawals by account (keyed by asset ID)
+  Map<String, double> get withdrawalsByAccount =>
+      throw _privateConstructorUsedError;
+
+  /// Contributions by account (keyed by asset ID)
+  Map<String, double> get contributionsByAccount =>
+      throw _privateConstructorUsedError;
+
+  /// Total withdrawals for the year
+  double get totalWithdrawals => throw _privateConstructorUsedError;
+
+  /// Total contributions for the year
+  double get totalContributions => throw _privateConstructorUsedError;
+
+  /// CELI contribution room remaining at end of year
+  double get celiContributionRoom => throw _privateConstructorUsedError;
+
   /// Net cash flow (income - expenses - taxes)
   double get netCashFlow => throw _privateConstructorUsedError;
 
@@ -113,6 +130,11 @@ abstract class $YearlyProjectionCopyWith<$Res> {
     double afterTaxIncome,
     double totalExpenses,
     Map<String, double> expensesByCategory,
+    Map<String, double> withdrawalsByAccount,
+    Map<String, double> contributionsByAccount,
+    double totalWithdrawals,
+    double totalContributions,
+    double celiContributionRoom,
     double netCashFlow,
     Map<String, double> assetsStartOfYear,
     Map<String, double> assetsEndOfYear,
@@ -150,6 +172,11 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
     Object? afterTaxIncome = null,
     Object? totalExpenses = null,
     Object? expensesByCategory = null,
+    Object? withdrawalsByAccount = null,
+    Object? contributionsByAccount = null,
+    Object? totalWithdrawals = null,
+    Object? totalContributions = null,
+    Object? celiContributionRoom = null,
     Object? netCashFlow = null,
     Object? assetsStartOfYear = null,
     Object? assetsEndOfYear = null,
@@ -211,6 +238,26 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
                 ? _value.expensesByCategory
                 : expensesByCategory // ignore: cast_nullable_to_non_nullable
                       as Map<String, double>,
+            withdrawalsByAccount: null == withdrawalsByAccount
+                ? _value.withdrawalsByAccount
+                : withdrawalsByAccount // ignore: cast_nullable_to_non_nullable
+                      as Map<String, double>,
+            contributionsByAccount: null == contributionsByAccount
+                ? _value.contributionsByAccount
+                : contributionsByAccount // ignore: cast_nullable_to_non_nullable
+                      as Map<String, double>,
+            totalWithdrawals: null == totalWithdrawals
+                ? _value.totalWithdrawals
+                : totalWithdrawals // ignore: cast_nullable_to_non_nullable
+                      as double,
+            totalContributions: null == totalContributions
+                ? _value.totalContributions
+                : totalContributions // ignore: cast_nullable_to_non_nullable
+                      as double,
+            celiContributionRoom: null == celiContributionRoom
+                ? _value.celiContributionRoom
+                : celiContributionRoom // ignore: cast_nullable_to_non_nullable
+                      as double,
             netCashFlow: null == netCashFlow
                 ? _value.netCashFlow
                 : netCashFlow // ignore: cast_nullable_to_non_nullable
@@ -264,6 +311,11 @@ abstract class _$$YearlyProjectionImplCopyWith<$Res>
     double afterTaxIncome,
     double totalExpenses,
     Map<String, double> expensesByCategory,
+    Map<String, double> withdrawalsByAccount,
+    Map<String, double> contributionsByAccount,
+    double totalWithdrawals,
+    double totalContributions,
+    double celiContributionRoom,
     double netCashFlow,
     Map<String, double> assetsStartOfYear,
     Map<String, double> assetsEndOfYear,
@@ -300,6 +352,11 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
     Object? afterTaxIncome = null,
     Object? totalExpenses = null,
     Object? expensesByCategory = null,
+    Object? withdrawalsByAccount = null,
+    Object? contributionsByAccount = null,
+    Object? totalWithdrawals = null,
+    Object? totalContributions = null,
+    Object? celiContributionRoom = null,
     Object? netCashFlow = null,
     Object? assetsStartOfYear = null,
     Object? assetsEndOfYear = null,
@@ -361,6 +418,26 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
             ? _value._expensesByCategory
             : expensesByCategory // ignore: cast_nullable_to_non_nullable
                   as Map<String, double>,
+        withdrawalsByAccount: null == withdrawalsByAccount
+            ? _value._withdrawalsByAccount
+            : withdrawalsByAccount // ignore: cast_nullable_to_non_nullable
+                  as Map<String, double>,
+        contributionsByAccount: null == contributionsByAccount
+            ? _value._contributionsByAccount
+            : contributionsByAccount // ignore: cast_nullable_to_non_nullable
+                  as Map<String, double>,
+        totalWithdrawals: null == totalWithdrawals
+            ? _value.totalWithdrawals
+            : totalWithdrawals // ignore: cast_nullable_to_non_nullable
+                  as double,
+        totalContributions: null == totalContributions
+            ? _value.totalContributions
+            : totalContributions // ignore: cast_nullable_to_non_nullable
+                  as double,
+        celiContributionRoom: null == celiContributionRoom
+            ? _value.celiContributionRoom
+            : celiContributionRoom // ignore: cast_nullable_to_non_nullable
+                  as double,
         netCashFlow: null == netCashFlow
             ? _value.netCashFlow
             : netCashFlow // ignore: cast_nullable_to_non_nullable
@@ -407,6 +484,11 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     this.afterTaxIncome = 0.0,
     required this.totalExpenses,
     final Map<String, double> expensesByCategory = const {},
+    final Map<String, double> withdrawalsByAccount = const {},
+    final Map<String, double> contributionsByAccount = const {},
+    this.totalWithdrawals = 0.0,
+    this.totalContributions = 0.0,
+    this.celiContributionRoom = 0.0,
     required this.netCashFlow,
     required final Map<String, double> assetsStartOfYear,
     required final Map<String, double> assetsEndOfYear,
@@ -415,6 +497,8 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     required final List<String> eventsOccurred,
   }) : _incomeByIndividual = incomeByIndividual,
        _expensesByCategory = expensesByCategory,
+       _withdrawalsByAccount = withdrawalsByAccount,
+       _contributionsByAccount = contributionsByAccount,
        _assetsStartOfYear = assetsStartOfYear,
        _assetsEndOfYear = assetsEndOfYear,
        _eventsOccurred = eventsOccurred;
@@ -499,6 +583,47 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     return EqualUnmodifiableMapView(_expensesByCategory);
   }
 
+  /// Withdrawals by account (keyed by asset ID)
+  final Map<String, double> _withdrawalsByAccount;
+
+  /// Withdrawals by account (keyed by asset ID)
+  @override
+  @JsonKey()
+  Map<String, double> get withdrawalsByAccount {
+    if (_withdrawalsByAccount is EqualUnmodifiableMapView)
+      return _withdrawalsByAccount;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_withdrawalsByAccount);
+  }
+
+  /// Contributions by account (keyed by asset ID)
+  final Map<String, double> _contributionsByAccount;
+
+  /// Contributions by account (keyed by asset ID)
+  @override
+  @JsonKey()
+  Map<String, double> get contributionsByAccount {
+    if (_contributionsByAccount is EqualUnmodifiableMapView)
+      return _contributionsByAccount;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_contributionsByAccount);
+  }
+
+  /// Total withdrawals for the year
+  @override
+  @JsonKey()
+  final double totalWithdrawals;
+
+  /// Total contributions for the year
+  @override
+  @JsonKey()
+  final double totalContributions;
+
+  /// CELI contribution room remaining at end of year
+  @override
+  @JsonKey()
+  final double celiContributionRoom;
+
   /// Net cash flow (income - expenses - taxes)
   @override
   final double netCashFlow;
@@ -547,7 +672,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
 
   @override
   String toString() {
-    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, taxableIncome: $taxableIncome, federalTax: $federalTax, quebecTax: $quebecTax, totalTax: $totalTax, afterTaxIncome: $afterTaxIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
+    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, taxableIncome: $taxableIncome, federalTax: $federalTax, quebecTax: $quebecTax, totalTax: $totalTax, afterTaxIncome: $afterTaxIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, withdrawalsByAccount: $withdrawalsByAccount, contributionsByAccount: $contributionsByAccount, totalWithdrawals: $totalWithdrawals, totalContributions: $totalContributions, celiContributionRoom: $celiContributionRoom, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
   }
 
   @override
@@ -584,6 +709,20 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
               other._expensesByCategory,
               _expensesByCategory,
             ) &&
+            const DeepCollectionEquality().equals(
+              other._withdrawalsByAccount,
+              _withdrawalsByAccount,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._contributionsByAccount,
+              _contributionsByAccount,
+            ) &&
+            (identical(other.totalWithdrawals, totalWithdrawals) ||
+                other.totalWithdrawals == totalWithdrawals) &&
+            (identical(other.totalContributions, totalContributions) ||
+                other.totalContributions == totalContributions) &&
+            (identical(other.celiContributionRoom, celiContributionRoom) ||
+                other.celiContributionRoom == celiContributionRoom) &&
             (identical(other.netCashFlow, netCashFlow) ||
                 other.netCashFlow == netCashFlow) &&
             const DeepCollectionEquality().equals(
@@ -621,6 +760,11 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     afterTaxIncome,
     totalExpenses,
     const DeepCollectionEquality().hash(_expensesByCategory),
+    const DeepCollectionEquality().hash(_withdrawalsByAccount),
+    const DeepCollectionEquality().hash(_contributionsByAccount),
+    totalWithdrawals,
+    totalContributions,
+    celiContributionRoom,
     netCashFlow,
     const DeepCollectionEquality().hash(_assetsStartOfYear),
     const DeepCollectionEquality().hash(_assetsEndOfYear),
@@ -661,6 +805,11 @@ abstract class _YearlyProjection implements YearlyProjection {
     final double afterTaxIncome,
     required final double totalExpenses,
     final Map<String, double> expensesByCategory,
+    final Map<String, double> withdrawalsByAccount,
+    final Map<String, double> contributionsByAccount,
+    final double totalWithdrawals,
+    final double totalContributions,
+    final double celiContributionRoom,
     required final double netCashFlow,
     required final Map<String, double> assetsStartOfYear,
     required final Map<String, double> assetsEndOfYear,
@@ -724,6 +873,26 @@ abstract class _YearlyProjection implements YearlyProjection {
   /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
   @override
   Map<String, double> get expensesByCategory;
+
+  /// Withdrawals by account (keyed by asset ID)
+  @override
+  Map<String, double> get withdrawalsByAccount;
+
+  /// Contributions by account (keyed by asset ID)
+  @override
+  Map<String, double> get contributionsByAccount;
+
+  /// Total withdrawals for the year
+  @override
+  double get totalWithdrawals;
+
+  /// Total contributions for the year
+  @override
+  double get totalContributions;
+
+  /// CELI contribution room remaining at end of year
+  @override
+  double get celiContributionRoom;
 
   /// Net cash flow (income - expenses - taxes)
   @override

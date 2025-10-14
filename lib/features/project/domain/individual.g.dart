@@ -16,6 +16,7 @@ _$IndividualImpl _$$IndividualImplFromJson(Map<String, dynamic> json) =>
       psvStartAge: (json['psvStartAge'] as num?)?.toInt() ?? 65,
       rrqAnnualBenefit:
           (json['rrqAnnualBenefit'] as num?)?.toDouble() ?? 16000.0,
+      initialCeliRoom: (json['initialCeliRoom'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
@@ -27,4 +28,5 @@ Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
       'rrqStartAge': instance.rrqStartAge,
       'psvStartAge': instance.psvStartAge,
       'rrqAnnualBenefit': instance.rrqAnnualBenefit,
+      'initialCeliRoom': instance.initialCeliRoom,
     };

@@ -30,7 +30,9 @@ mixin _$Individual {
       throw _privateConstructorUsedError; // RRQ start age (60-70)
   int get psvStartAge =>
       throw _privateConstructorUsedError; // PSV start age (65-70, OAS age)
-  double get rrqAnnualBenefit => throw _privateConstructorUsedError;
+  double get rrqAnnualBenefit =>
+      throw _privateConstructorUsedError; // Expected annual RRQ benefit at 65
+  double get initialCeliRoom => throw _privateConstructorUsedError;
 
   /// Serializes this Individual to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -57,6 +59,7 @@ abstract class $IndividualCopyWith<$Res> {
     int rrqStartAge,
     int psvStartAge,
     double rrqAnnualBenefit,
+    double initialCeliRoom,
   });
 }
 
@@ -82,6 +85,7 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
     Object? rrqStartAge = null,
     Object? psvStartAge = null,
     Object? rrqAnnualBenefit = null,
+    Object? initialCeliRoom = null,
   }) {
     return _then(
       _value.copyWith(
@@ -113,6 +117,10 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
                 ? _value.rrqAnnualBenefit
                 : rrqAnnualBenefit // ignore: cast_nullable_to_non_nullable
                       as double,
+            initialCeliRoom: null == initialCeliRoom
+                ? _value.initialCeliRoom
+                : initialCeliRoom // ignore: cast_nullable_to_non_nullable
+                      as double,
           )
           as $Val,
     );
@@ -136,6 +144,7 @@ abstract class _$$IndividualImplCopyWith<$Res>
     int rrqStartAge,
     int psvStartAge,
     double rrqAnnualBenefit,
+    double initialCeliRoom,
   });
 }
 
@@ -160,6 +169,7 @@ class __$$IndividualImplCopyWithImpl<$Res>
     Object? rrqStartAge = null,
     Object? psvStartAge = null,
     Object? rrqAnnualBenefit = null,
+    Object? initialCeliRoom = null,
   }) {
     return _then(
       _$IndividualImpl(
@@ -191,6 +201,10 @@ class __$$IndividualImplCopyWithImpl<$Res>
             ? _value.rrqAnnualBenefit
             : rrqAnnualBenefit // ignore: cast_nullable_to_non_nullable
                   as double,
+        initialCeliRoom: null == initialCeliRoom
+            ? _value.initialCeliRoom
+            : initialCeliRoom // ignore: cast_nullable_to_non_nullable
+                  as double,
       ),
     );
   }
@@ -207,6 +221,7 @@ class _$IndividualImpl extends _Individual {
     this.rrqStartAge = 65,
     this.psvStartAge = 65,
     this.rrqAnnualBenefit = 16000.0,
+    this.initialCeliRoom = 0.0,
   }) : super._();
 
   factory _$IndividualImpl.fromJson(Map<String, dynamic> json) =>
@@ -233,10 +248,14 @@ class _$IndividualImpl extends _Individual {
   @override
   @JsonKey()
   final double rrqAnnualBenefit;
+  // Expected annual RRQ benefit at 65
+  @override
+  @JsonKey()
+  final double initialCeliRoom;
 
   @override
   String toString() {
-    return 'Individual(id: $id, name: $name, birthdate: $birthdate, employmentIncome: $employmentIncome, rrqStartAge: $rrqStartAge, psvStartAge: $psvStartAge, rrqAnnualBenefit: $rrqAnnualBenefit)';
+    return 'Individual(id: $id, name: $name, birthdate: $birthdate, employmentIncome: $employmentIncome, rrqStartAge: $rrqStartAge, psvStartAge: $psvStartAge, rrqAnnualBenefit: $rrqAnnualBenefit, initialCeliRoom: $initialCeliRoom)';
   }
 
   @override
@@ -255,7 +274,9 @@ class _$IndividualImpl extends _Individual {
             (identical(other.psvStartAge, psvStartAge) ||
                 other.psvStartAge == psvStartAge) &&
             (identical(other.rrqAnnualBenefit, rrqAnnualBenefit) ||
-                other.rrqAnnualBenefit == rrqAnnualBenefit));
+                other.rrqAnnualBenefit == rrqAnnualBenefit) &&
+            (identical(other.initialCeliRoom, initialCeliRoom) ||
+                other.initialCeliRoom == initialCeliRoom));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -269,6 +290,7 @@ class _$IndividualImpl extends _Individual {
     rrqStartAge,
     psvStartAge,
     rrqAnnualBenefit,
+    initialCeliRoom,
   );
 
   /// Create a copy of Individual
@@ -294,6 +316,7 @@ abstract class _Individual extends Individual {
     final int rrqStartAge,
     final int psvStartAge,
     final double rrqAnnualBenefit,
+    final double initialCeliRoom,
   }) = _$IndividualImpl;
   const _Individual._() : super._();
 
@@ -313,7 +336,9 @@ abstract class _Individual extends Individual {
   @override
   int get psvStartAge; // PSV start age (65-70, OAS age)
   @override
-  double get rrqAnnualBenefit;
+  double get rrqAnnualBenefit; // Expected annual RRQ benefit at 65
+  @override
+  double get initialCeliRoom;
 
   /// Create a copy of Individual
   /// with the given fields replaced by the non-null parameter values.

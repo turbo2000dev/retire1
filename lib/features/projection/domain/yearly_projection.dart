@@ -49,6 +49,21 @@ class YearlyProjection with _$YearlyProjection {
     /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
     @Default({}) Map<String, double> expensesByCategory,
 
+    /// Withdrawals by account (keyed by asset ID)
+    @Default({}) Map<String, double> withdrawalsByAccount,
+
+    /// Contributions by account (keyed by asset ID)
+    @Default({}) Map<String, double> contributionsByAccount,
+
+    /// Total withdrawals for the year
+    @Default(0.0) double totalWithdrawals,
+
+    /// Total contributions for the year
+    @Default(0.0) double totalContributions,
+
+    /// CELI contribution room remaining at end of year
+    @Default(0.0) double celiContributionRoom,
+
     /// Net cash flow (income - expenses - taxes)
     required double netCashFlow,
 

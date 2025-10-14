@@ -30,6 +30,20 @@ _$YearlyProjectionImpl _$$YearlyProjectionImplFromJson(
         (k, e) => MapEntry(k, (e as num).toDouble()),
       ) ??
       const {},
+  withdrawalsByAccount:
+      (json['withdrawalsByAccount'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toDouble()),
+      ) ??
+      const {},
+  contributionsByAccount:
+      (json['contributionsByAccount'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toDouble()),
+      ) ??
+      const {},
+  totalWithdrawals: (json['totalWithdrawals'] as num?)?.toDouble() ?? 0.0,
+  totalContributions: (json['totalContributions'] as num?)?.toDouble() ?? 0.0,
+  celiContributionRoom:
+      (json['celiContributionRoom'] as num?)?.toDouble() ?? 0.0,
   netCashFlow: (json['netCashFlow'] as num).toDouble(),
   assetsStartOfYear: (json['assetsStartOfYear'] as Map<String, dynamic>).map(
     (k, e) => MapEntry(k, (e as num).toDouble()),
@@ -62,6 +76,11 @@ Map<String, dynamic> _$$YearlyProjectionImplToJson(
   'afterTaxIncome': instance.afterTaxIncome,
   'totalExpenses': instance.totalExpenses,
   'expensesByCategory': instance.expensesByCategory,
+  'withdrawalsByAccount': instance.withdrawalsByAccount,
+  'contributionsByAccount': instance.contributionsByAccount,
+  'totalWithdrawals': instance.totalWithdrawals,
+  'totalContributions': instance.totalContributions,
+  'celiContributionRoom': instance.celiContributionRoom,
   'netCashFlow': instance.netCashFlow,
   'assetsStartOfYear': instance.assetsStartOfYear,
   'assetsEndOfYear': instance.assetsEndOfYear,

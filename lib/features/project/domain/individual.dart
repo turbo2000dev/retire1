@@ -16,6 +16,7 @@ class Individual with _$Individual {
     @Default(65) int rrqStartAge, // RRQ start age (60-70)
     @Default(65) int psvStartAge, // PSV start age (65-70, OAS age)
     @Default(16000.0) double rrqAnnualBenefit, // Expected annual RRQ benefit at 65
+    @Default(0.0) double initialCeliRoom, // Initial CELI contribution room available
   }) = _Individual;
 
   factory Individual.fromJson(Map<String, dynamic> json) =>
