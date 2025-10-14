@@ -179,60 +179,69 @@
 
 ### Tasks:
 1. **Create tax constants:**
-   - [ ] Create `lib/features/projection/service/tax_constants.dart`
-   - [ ] Define 2025 Federal tax brackets:
+   - [x] Create `lib/features/projection/service/tax_constants.dart`
+   - [x] Define 2025 Federal tax brackets:
      - 0 - $55,867: 15%
      - $55,867 - $111,733: 20.5%
      - $111,733 - $173,205: 26%
      - $173,205 - $246,752: 29%
      - $246,752+: 33%
-   - [ ] Define 2025 Quebec tax brackets:
+   - [x] Define 2025 Quebec tax brackets:
      - 0 - $51,780: 14%
      - $51,780 - $103,545: 19%
      - $103,545 - $126,000: 24%
      - $126,000+: 25.75%
-   - [ ] Define personal tax credits:
+   - [x] Define personal tax credits:
      - Federal basic: $15,705
      - Quebec basic: $18,056
      - Age credit (65+): federal $8,790, Quebec $3,458
-   - [ ] Define RRSP/REER deduction limits
-   - [ ] Define pension income splitting rules
+   - [x] Define RRSP/REER deduction limits (for reference only - not used until Phase 28)
+   - [x] Pension income splitting rules (deferred to Phase 28)
 
 2. **Create TaxCalculator service:**
-   - [ ] Create `lib/features/projection/service/tax_calculator.dart`
-   - [ ] Method: `calculateFederalTax(taxableIncome, age)`
-   - [ ] Method: `calculateQuebecTax(taxableIncome, age)`
-   - [ ] Method: `calculateTotalTax(taxableIncome, age)` - combines both
-   - [ ] Apply progressive tax brackets correctly
-   - [ ] Apply tax credits (basic + age if applicable)
-   - [ ] Return TaxCalculation object with breakdown
+   - [x] Create `lib/features/projection/service/tax_calculator.dart`
+   - [x] Method: `calculateFederalTax(taxableIncome, age)`
+   - [x] Method: `calculateQuebecTax(taxableIncome, age)`
+   - [x] Method: `calculateTotalTax(taxableIncome, age)` - combines both
+   - [x] Apply progressive tax brackets correctly
+   - [x] Apply tax credits (basic + age if applicable) using exact calculation
+   - [x] Return TaxCalculation object with breakdown
 
 3. **Create TaxCalculation model:**
-   - [ ] Create `lib/features/projection/domain/tax_calculation.dart`
-   - [ ] Fields: federalTax, quebecTax, totalTax, effectiveRate
-   - [ ] Use Freezed
-   - [ ] Run build_runner
+   - [x] Create `lib/features/projection/domain/tax_calculation.dart`
+   - [x] Fields: grossIncome, taxableIncome, federalTax, quebecTax, totalTax, effectiveRate
+   - [x] Use Freezed
+   - [x] Run build_runner
 
 4. **Add unit tests:**
-   - [ ] Test federal tax calculation with various incomes
-   - [ ] Test Quebec tax calculation
-   - [ ] Test combined calculation
-   - [ ] Test age credit application
-   - [ ] Test edge cases (zero income, very high income)
+   - [x] Test federal tax calculation with various incomes
+   - [x] Test Quebec tax calculation
+   - [x] Test combined calculation
+   - [x] Test age credit application
+   - [x] Test edge cases (zero income, very high income)
 
 5. **Create TaxCalculator provider:**
-   - [ ] Riverpod provider for TaxCalculator instance
-   - [ ] Make available to projection calculator
+   - [x] Riverpod provider for TaxCalculator instance
+   - [x] Make available to projection calculator
 
 **Manual Test Checklist:**
-- [ ] Tax calculator computes correct federal tax
-- [ ] Tax calculator computes correct Quebec tax
-- [ ] Tax brackets applied progressively
-- [ ] Tax credits reduce tax correctly
-- [ ] Age credit (65+) applied when applicable
-- [ ] Unit tests pass
+- [x] Tax calculator computes correct federal tax
+- [x] Tax calculator computes correct Quebec tax
+- [x] Tax brackets applied progressively
+- [x] Tax credits reduce tax correctly
+- [x] Age credit (65+) applied when applicable
+- [x] Unit tests pass (18 tests, all passing)
 
 **Deliverable:** Tax calculation service with 2025 constants, ready for integration
+
+**Completion Notes:**
+- Implemented with hardcoded 2025 tax brackets and credits (no year parameter)
+- Tax credits applied using exact calculation: credit_amount × lowest_marginal_rate (15% federal, 14% Quebec)
+- Simple TaxCalculation model with 6 essential fields
+- RRSP deductions and pension income splitting deferred to Phase 28
+- Comprehensive test suite with 18 tests covering all scenarios including edge cases
+- Progressive tax brackets implemented correctly with marginal rates
+- Tax owing clamped to zero (non-refundable credits)
 
 ---
 

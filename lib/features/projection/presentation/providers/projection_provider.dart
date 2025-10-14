@@ -8,12 +8,18 @@ import 'package:retire1/features/expenses/presentation/providers/expenses_provid
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
 import 'package:retire1/features/projection/service/projection_calculator.dart';
+import 'package:retire1/features/projection/service/tax_calculator.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 
 /// Provider for the projection calculator service
 final projectionCalculatorProvider = Provider<ProjectionCalculator>((ref) {
   return ProjectionCalculator();
+});
+
+/// Provider for the tax calculator service
+final taxCalculatorProvider = Provider<TaxCalculator>((ref) {
+  return TaxCalculator();
 });
 
 /// Provider for calculating projection for a specific scenario with caching

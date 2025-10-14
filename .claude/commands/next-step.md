@@ -1,0 +1,1 @@
+Continue with the next step in @plan.md. Stop to review, discuss and adjust design decisions and then stop when we are ready to test so I can review.
