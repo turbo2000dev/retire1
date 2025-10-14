@@ -6,13 +6,45 @@ import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/project/presentation/providers/projects_provider.dart';
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
+import 'package:retire1/features/projection/domain/projection.dart';
+import 'package:retire1/features/projection/domain/projection_kpis_calculator.dart';
+import 'package:retire1/features/projection/presentation/providers/dollar_mode_provider.dart';
+import 'package:retire1/features/projection/presentation/providers/projection_provider.dart';
+import 'package:retire1/features/projection/presentation/widgets/projection_kpi_card.dart';
+import 'package:retire1/features/projection/presentation/widgets/projection_warnings_section.dart';
+import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 
-/// Dashboard screen - shows executive summary of current project
-class DashboardScreen extends ConsumerWidget {
+/// Dashboard screen - shows KPIs and scenario comparison for current project
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _navigateToBaseParameters(BuildContext context) {
     context.go(AppRoutes.baseParameters);
+  }
+
+  void _navigateToProjection(BuildContext context, {int? scrollToYear}) {
+    context.go(AppRoutes.projection);
+    // TODO: Implement scroll to specific year when warning is tapped
   }
 
   Future<void> _createNewProject(BuildContext context, WidgetRef ref) async {
@@ -45,7 +77,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final currentProjectState = ref.watch(currentProjectProvider);
 
@@ -55,7 +87,7 @@ class DashboardScreen extends ConsumerWidget {
           NoProjectSelected() => _buildEmptyState(context, ref),
           ProjectLoading() => const Center(child: CircularProgressIndicator()),
           ProjectError(:final message) => _buildErrorState(context, message),
-          ProjectSelected(:final project) => _buildSummary(context, theme, project),
+          ProjectSelected(:final project) => _buildDashboard(context, theme),
         },
       ),
     );
@@ -122,73 +154,239 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSummary(BuildContext context, ThemeData theme, project) {
-    return CustomScrollView(
-      slivers: [
-        // Header with project name
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  project.name,
-                  style: theme.textTheme.headlineMedium,
-                ),
-                if (project.description != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    project.description!,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
+  Widget _buildDashboard(BuildContext context, ThemeData theme) {
+    // Get base scenario
+    final baseScenario = ref.watch(baseScenarioProvider);
 
-        // Summary cards
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Executive Summary',
-                          style: theme.textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Project summary and key metrics will be displayed here.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: () => _navigateToBaseParameters(context),
-                          icon: const Icon(Icons.edit),
-                          label: const Text('Edit Project Details'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+    // If no base scenario, show loading or error
+    if (baseScenario == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Get projection for base scenario
+    final projectionAsync = ref.watch(projectionProvider(baseScenario.id));
+
+    return Column(
+      children: [
+        // Tab bar
+        TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'KPIs'),
+            Tab(text: 'Comparison'),
+          ],
+        ),
+        // Tab views
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildKpisTab(context, theme, projectionAsync),
+              _buildComparisonTab(context, theme),
+            ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildKpisTab(
+    BuildContext context,
+    ThemeData theme,
+    AsyncValue<Projection?> projectionAsync,
+  ) {
+    return projectionAsync.when(
+      data: (projection) {
+        if (projection == null) {
+          return _buildNoProjectionState(context, theme);
+        }
+
+        // Calculate KPIs using extension method
+        final kpis = projection.calculateKpis();
+        final useConstantDollars = ref.watch(dollarModeProvider);
+
+        // Apply dollar mode conversion if needed
+        // For simplicity in Phase 35A, we'll show current dollars
+        // TODO: Add dollar mode conversion in future iteration
+
+        return CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Text(
+                      'Key Performance Indicators',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Quick summary of your projection',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // KPI cards in grid
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Responsive columns: 3 on desktop, 2 on tablet, 1 on mobile
+                        final crossAxisCount = constraints.maxWidth > 1024
+                            ? 3
+                            : constraints.maxWidth > 600
+                                ? 2
+                                : 1;
+
+                        return GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: crossAxisCount,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          childAspectRatio: 1.5,
+                          children: [
+                            ProjectionKpiCard.currency(
+                              icon: Icons.account_balance_wallet,
+                              label: 'Final Net Worth',
+                              amount: kpis.finalNetWorth,
+                              subtitle: 'At end of projection',
+                              status: kpis.finalNetWorth > 500000
+                                  ? KpiStatus.good
+                                  : kpis.finalNetWorth > 100000
+                                      ? KpiStatus.neutral
+                                      : KpiStatus.warning,
+                            ),
+                            ProjectionKpiCard.currency(
+                              icon: Icons.trending_down,
+                              label: 'Lowest Net Worth',
+                              amount: kpis.lowestNetWorth,
+                              subtitle: 'Year ${kpis.yearOfLowestNetWorth}',
+                              status: kpis.lowestNetWorth < 0
+                                  ? KpiStatus.critical
+                                  : kpis.lowestNetWorth < 100000
+                                      ? KpiStatus.warning
+                                      : KpiStatus.neutral,
+                            ),
+                            ProjectionKpiCard.year(
+                              icon: Icons.warning_amber,
+                              label: 'Money Runs Out',
+                              year: kpis.yearMoneyRunsOut,
+                              status: kpis.yearMoneyRunsOut != null
+                                  ? KpiStatus.critical
+                                  : KpiStatus.good,
+                            ),
+                            ProjectionKpiCard.currency(
+                              icon: Icons.account_balance,
+                              label: 'Total Taxes Paid',
+                              amount: kpis.totalTaxesPaid,
+                              status: KpiStatus.neutral,
+                            ),
+                            ProjectionKpiCard.currency(
+                              icon: Icons.attach_money,
+                              label: 'Total Withdrawals',
+                              amount: kpis.totalWithdrawals,
+                              status: KpiStatus.neutral,
+                            ),
+                            ProjectionKpiCard.percentage(
+                              icon: Icons.percent,
+                              label: 'Average Tax Rate',
+                              rate: kpis.averageTaxRate,
+                              status: kpis.averageTaxRate > 0.45
+                                  ? KpiStatus.warning
+                                  : KpiStatus.neutral,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Warnings section
+                    ProjectionWarningsSection(
+                      kpis: kpis,
+                      onMoneyRunsOutTap: () => _navigateToProjection(
+                        context,
+                        scrollToYear: kpis.yearMoneyRunsOut,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text('Error loading projection: $error'),
+      ),
+    );
+  }
+
+  Widget _buildComparisonTab(BuildContext context, ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.compare_arrows,
+            size: 64,
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Scenario Comparison',
+            style: theme.textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Coming in Phase 35C',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoProjectionState(BuildContext context, ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.calculate,
+            size: 64,
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No projection available',
+            style: theme.textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Complete your project setup to view KPIs',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: () => _navigateToBaseParameters(context),
+            icon: const Icon(Icons.edit),
+            label: const Text('Setup Project'),
+          ),
+        ],
+      ),
     );
   }
 }
