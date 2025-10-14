@@ -42,6 +42,7 @@ class ProjectionCalculator {
     // Apply scenario overrides
     final effectiveAssets = _applyAssetOverrides(assets, scenario.overrides);
     final effectiveEvents = _applyEventOverrides(events, scenario.overrides);
+    final effectiveExpenses = _applyExpenseOverrides(expenses, scenario.overrides);
 
     // Calculate yearly projections
     final years = <YearlyProjection>[];
@@ -86,7 +87,7 @@ class ProjectionCalculator {
 
       // Calculate expenses from Expense entities (adjusted for inflation)
       final expenseAmount = _calculateExpensesForYear(
-        expenses,
+        effectiveExpenses,
         year,
         yearsFromStart,
         project.individuals,
@@ -216,6 +217,138 @@ class ProjectionCalculator {
               withdrawAccountId: withdrawAccountId,
               depositAccountId: depositAccountId,
             ),
+      );
+    }).toList();
+  }
+
+  /// Apply expense overrides from scenario (amount and/or timing)
+  List<Expense> _applyExpenseOverrides(
+    List<Expense> expenses,
+    List<ParameterOverride> overrides,
+  ) {
+    return expenses.map((expense) {
+      // Get expense ID
+      final expenseId = expense.when(
+        housing: (id, startTiming, endTiming, annualAmount) => id,
+        transport: (id, startTiming, endTiming, annualAmount) => id,
+        dailyLiving: (id, startTiming, endTiming, annualAmount) => id,
+        recreation: (id, startTiming, endTiming, annualAmount) => id,
+        health: (id, startTiming, endTiming, annualAmount) => id,
+        family: (id, startTiming, endTiming, annualAmount) => id,
+      );
+
+      // Find amount override for this expense
+      final amountOverride = overrides.where((o) => o.maybeWhen(
+        expenseAmount: (id, overrideAmount, amountMultiplier) => id == expenseId,
+        orElse: () => false,
+      )).firstOrNull;
+
+      // Find timing override for this expense
+      final timingOverride = overrides.where((o) => o.maybeWhen(
+        expenseTiming: (id, overrideStart, overrideEnd) => id == expenseId,
+        orElse: () => false,
+      )).firstOrNull;
+
+      // Get current values
+      final currentAmount = expense.when(
+        housing: (id, startTiming, endTiming, annualAmount) => annualAmount,
+        transport: (id, startTiming, endTiming, annualAmount) => annualAmount,
+        dailyLiving: (id, startTiming, endTiming, annualAmount) => annualAmount,
+        recreation: (id, startTiming, endTiming, annualAmount) => annualAmount,
+        health: (id, startTiming, endTiming, annualAmount) => annualAmount,
+        family: (id, startTiming, endTiming, annualAmount) => annualAmount,
+      );
+
+      final currentStartTiming = expense.when(
+        housing: (id, startTiming, endTiming, annualAmount) => startTiming,
+        transport: (id, startTiming, endTiming, annualAmount) => startTiming,
+        dailyLiving: (id, startTiming, endTiming, annualAmount) => startTiming,
+        recreation: (id, startTiming, endTiming, annualAmount) => startTiming,
+        health: (id, startTiming, endTiming, annualAmount) => startTiming,
+        family: (id, startTiming, endTiming, annualAmount) => startTiming,
+      );
+
+      final currentEndTiming = expense.when(
+        housing: (id, startTiming, endTiming, annualAmount) => endTiming,
+        transport: (id, startTiming, endTiming, annualAmount) => endTiming,
+        dailyLiving: (id, startTiming, endTiming, annualAmount) => endTiming,
+        recreation: (id, startTiming, endTiming, annualAmount) => endTiming,
+        health: (id, startTiming, endTiming, annualAmount) => endTiming,
+        family: (id, startTiming, endTiming, annualAmount) => endTiming,
+      );
+
+      // Calculate effective amount (apply override if present)
+      double effectiveAmount = currentAmount;
+      if (amountOverride != null) {
+        amountOverride.maybeWhen(
+          expenseAmount: (id, overrideAmount, amountMultiplier) {
+            if (overrideAmount != null) {
+              // Absolute amount override
+              effectiveAmount = overrideAmount;
+            } else if (amountMultiplier != null) {
+              // Multiplier override
+              effectiveAmount = currentAmount * amountMultiplier;
+            }
+          },
+          orElse: () {},
+        );
+      }
+
+      // Calculate effective timing (apply override if present)
+      EventTiming effectiveStartTiming = currentStartTiming;
+      EventTiming effectiveEndTiming = currentEndTiming;
+      if (timingOverride != null) {
+        timingOverride.maybeWhen(
+          expenseTiming: (id, overrideStart, overrideEnd) {
+            if (overrideStart != null) {
+              effectiveStartTiming = overrideStart;
+            }
+            if (overrideEnd != null) {
+              effectiveEndTiming = overrideEnd;
+            }
+          },
+          orElse: () {},
+        );
+      }
+
+      // Return expense with effective values
+      return expense.when(
+        housing: (id, startTiming, endTiming, annualAmount) => Expense.housing(
+          id: id,
+          startTiming: effectiveStartTiming,
+          endTiming: effectiveEndTiming,
+          annualAmount: effectiveAmount,
+        ),
+        transport: (id, startTiming, endTiming, annualAmount) => Expense.transport(
+          id: id,
+          startTiming: effectiveStartTiming,
+          endTiming: effectiveEndTiming,
+          annualAmount: effectiveAmount,
+        ),
+        dailyLiving: (id, startTiming, endTiming, annualAmount) => Expense.dailyLiving(
+          id: id,
+          startTiming: effectiveStartTiming,
+          endTiming: effectiveEndTiming,
+          annualAmount: effectiveAmount,
+        ),
+        recreation: (id, startTiming, endTiming, annualAmount) => Expense.recreation(
+          id: id,
+          startTiming: effectiveStartTiming,
+          endTiming: effectiveEndTiming,
+          annualAmount: effectiveAmount,
+        ),
+        health: (id, startTiming, endTiming, annualAmount) => Expense.health(
+          id: id,
+          startTiming: effectiveStartTiming,
+          endTiming: effectiveEndTiming,
+          annualAmount: effectiveAmount,
+        ),
+        family: (id, startTiming, endTiming, annualAmount) => Expense.family(
+          id: id,
+          startTiming: effectiveStartTiming,
+          endTiming: effectiveEndTiming,
+          annualAmount: effectiveAmount,
+        ),
       );
     }).toList();
   }

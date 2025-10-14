@@ -37,3 +37,45 @@ Map<String, dynamic> _$$EventTimingOverrideImplToJson(
   'yearsFromStart': instance.yearsFromStart,
   'runtimeType': instance.$type,
 };
+
+_$ExpenseAmountOverrideImpl _$$ExpenseAmountOverrideImplFromJson(
+  Map<String, dynamic> json,
+) => _$ExpenseAmountOverrideImpl(
+  expenseId: json['expenseId'] as String,
+  overrideAmount: (json['overrideAmount'] as num?)?.toDouble(),
+  amountMultiplier: (json['amountMultiplier'] as num?)?.toDouble(),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$$ExpenseAmountOverrideImplToJson(
+  _$ExpenseAmountOverrideImpl instance,
+) => <String, dynamic>{
+  'expenseId': instance.expenseId,
+  'overrideAmount': instance.overrideAmount,
+  'amountMultiplier': instance.amountMultiplier,
+  'runtimeType': instance.$type,
+};
+
+_$ExpenseTimingOverrideImpl _$$ExpenseTimingOverrideImplFromJson(
+  Map<String, dynamic> json,
+) => _$ExpenseTimingOverrideImpl(
+  expenseId: json['expenseId'] as String,
+  overrideStartTiming: json['overrideStartTiming'] == null
+      ? null
+      : EventTiming.fromJson(
+          json['overrideStartTiming'] as Map<String, dynamic>,
+        ),
+  overrideEndTiming: json['overrideEndTiming'] == null
+      ? null
+      : EventTiming.fromJson(json['overrideEndTiming'] as Map<String, dynamic>),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$$ExpenseTimingOverrideImplToJson(
+  _$ExpenseTimingOverrideImpl instance,
+) => <String, dynamic>{
+  'expenseId': instance.expenseId,
+  'overrideStartTiming': instance.overrideStartTiming?.toJson(),
+  'overrideEndTiming': instance.overrideEndTiming?.toJson(),
+  'runtimeType': instance.$type,
+};

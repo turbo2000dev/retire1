@@ -6,6 +6,8 @@ import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 import 'package:retire1/features/scenarios/presentation/widgets/asset_override_section.dart';
 import 'package:retire1/features/scenarios/presentation/widgets/event_override_section.dart';
+import 'package:retire1/features/scenarios/presentation/widgets/expense_amount_override_section.dart';
+import 'package:retire1/features/scenarios/presentation/widgets/expense_timing_override_section.dart';
 
 /// Screen for editing a scenario and its parameter overrides
 class ScenarioEditorScreen extends ConsumerStatefulWidget {
@@ -353,6 +355,64 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: EventOverrideSection(scenario: scenario),
+                ),
+              ),
+            ),
+            // Expense Amount Overrides
+            SliverToBoxAdapter(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'EXPENSE AMOUNT OVERRIDES',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: ExpenseAmountOverrideSection(scenario: scenario),
+                ),
+              ),
+            ),
+            // Expense Timing Overrides
+            SliverToBoxAdapter(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'EXPENSE TIMING OVERRIDES',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: ResponsiveContainer(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: ExpenseTimingOverrideSection(scenario: scenario),
                 ),
               ),
             ),

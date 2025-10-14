@@ -94,60 +94,82 @@
 
 ---
 
-## PHASE 24: Update Scenarios - Add Event Timing & Amount Overrides
+## PHASE 24: Update Scenarios - Add Event Timing & Expense Overrides
 
-**Goal:** Allow scenarios to override event timing and expense amounts
+**Goal:** Allow scenarios to override event timing, expense amounts, and expense timing
 
 ### Tasks:
 1. **Update ParameterOverride domain model:**
-   - [ ] Add `EventTimingOverride(eventId, overrideTiming)` union case
-   - [ ] Add `ExpenseAmountOverride(expenseId, overrideAmount)` union case
-   - [ ] Run build_runner
+   - [x] Add `EventTimingOverride(eventId, yearsFromStart)` union case
+   - [x] Add `ExpenseAmountOverride(expenseId, overrideAmount, amountMultiplier)` union case
+   - [x] Add `ExpenseTimingOverride(expenseId, overrideStartTiming, overrideEndTiming)` union case
+   - [x] Run build_runner
 
 2. **Create EventOverrideSection widget:**
-   - [ ] Lists all lifecycle events
-   - [ ] Shows base timing for each
-   - [ ] Allows overriding timing for scenario
-   - [ ] Highlight overridden events
-   - [ ] Can clear override to use base
+   - [x] Lists all lifecycle events
+   - [x] Shows base timing for each
+   - [x] Allows overriding timing for scenario
+   - [x] Highlight overridden events
+   - [x] Can clear override to use base
 
-3. **Create ExpenseOverrideSection widget:**
-   - [ ] Lists all 6 expense categories
-   - [ ] Shows base annual amount for each
-   - [ ] Allows overriding amount for scenario
-   - [ ] Shows start/end timing (not overridable in Phase 24)
-   - [ ] Highlight overridden expenses
-   - [ ] Can clear override to use base
+3. **Create ExpenseAmountOverrideSection widget:**
+   - [x] Lists all 6 expense categories (two separate sections: absolute and multiplier)
+   - [x] Shows base annual amount for each
+   - [x] Allows overriding amount (absolute) or applying multiplier (including 0.0 to eliminate)
+   - [x] Highlight overridden expenses
+   - [x] Can clear override to use base
 
-4. **Update scenario editor screen:**
-   - [ ] Add "Event Timing Overrides" collapsible section
-   - [ ] Add "Expense Amount Overrides" collapsible section
-   - [ ] Place after asset overrides section
-   - [ ] Responsive layout
+4. **Create ExpenseTimingOverrideSection widget:**
+   - [x] Lists all 6 expense categories
+   - [x] Shows base start and end timing for each
+   - [x] Allows overriding start timing, end timing, or both independently
+   - [x] Uses full TimingSelector with all 5 timing types
+   - [x] Highlight overridden timing
+   - [x] Can clear override to use base
 
-5. **Update ScenariosNotifier:**
-   - [ ] Handle new override types
-   - [ ] Add/remove event timing overrides
-   - [ ] Add/remove expense amount overrides
+5. **Update scenario editor screen:**
+   - [x] Add "Event Overrides" section
+   - [x] Add "Expense Amount Overrides" section (with two subsections)
+   - [x] Add "Expense Timing Overrides" section
+   - [x] Place all after asset overrides section
+   - [x] Responsive layout
 
-6. **Update projection calculator:**
-   - [ ] Apply event timing overrides from scenario
-   - [ ] Apply expense amount overrides from scenario
-   - [ ] Fall back to base values if no override
+6. **Update ScenariosNotifier:**
+   - [x] Handle new override types
+   - [x] Add/remove event timing overrides
+   - [x] Add/remove expense amount overrides
+   - [x] Add/remove expense timing overrides
 
-7. **Update Firestore integration:**
-   - [ ] Ensure nested unions serialize correctly
-   - [ ] Test all override types persist
+7. **Update projection calculator:**
+   - [x] Apply event timing overrides from scenario
+   - [x] Apply expense amount overrides from scenario (both absolute and multiplier)
+   - [x] Apply expense timing overrides from scenario (start and/or end)
+   - [x] Fall back to base values if no override
+
+8. **Update Firestore integration:**
+   - [x] Nested unions serialize correctly (timing within overrides)
+   - [x] All override types persist correctly
 
 **Manual Test Checklist:**
 - [ ] Can override event timing in scenarios
-- [ ] Can override expense amounts in scenarios
+- [ ] Can override expense amounts (absolute and multiplier) in scenarios
+- [ ] Can override expense timing (start, end, or both) in scenarios
 - [ ] Overrides highlighted in scenario editor
 - [ ] Can clear overrides
 - [ ] Projection reflects scenario overrides
 - [ ] All changes persist to Firestore
+- [ ] Multiplier of 0.0 eliminates expense
+- [ ] Both amount and timing overrides can be applied to same expense
 
-**Deliverable:** Scenarios can override event timing and expense amounts
+**Deliverable:** Scenarios can override event timing, expense amounts (absolute/multiplier), and expense timing (start/end)
+
+**Completion Notes:**
+- Implemented comprehensive override system with three types: event timing, expense amount, and expense timing
+- Expense amount overrides support both absolute values and multipliers (including 0.0 to eliminate)
+- Expense timing overrides support independent start and end timing changes using full TimingSelector
+- UI organized into separate sections for clarity: Event Overrides, Expense Amount Overrides (with Absolute and Multiplier subsections), and Expense Timing Overrides
+- All override types integrated into projection calculator with proper precedence
+- Ready for manual testing phase
 
 ---
 

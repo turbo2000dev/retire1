@@ -155,6 +155,18 @@ class ScenariosNotifier extends AsyncNotifier<List<Scenario>> {
               orElse: () => false,
             );
           },
+          expenseAmount: (expenseId, overrideAmount, amountMultiplier) {
+            return !override.maybeWhen(
+              expenseAmount: (id, _, __) => id == expenseId,
+              orElse: () => false,
+            );
+          },
+          expenseTiming: (expenseId, overrideStart, overrideEnd) {
+            return !override.maybeWhen(
+              expenseTiming: (id, _, __) => id == expenseId,
+              orElse: () => false,
+            );
+          },
         );
       }).toList();
 
@@ -193,6 +205,18 @@ class ScenariosNotifier extends AsyncNotifier<List<Scenario>> {
           eventTiming: (eventId, years) {
             return !override.maybeWhen(
               eventTiming: (id, _) => id == eventId,
+              orElse: () => false,
+            );
+          },
+          expenseAmount: (expenseId, overrideAmount, amountMultiplier) {
+            return !override.maybeWhen(
+              expenseAmount: (id, _, __) => id == expenseId,
+              orElse: () => false,
+            );
+          },
+          expenseTiming: (expenseId, overrideStart, overrideEnd) {
+            return !override.maybeWhen(
+              expenseTiming: (id, _, __) => id == expenseId,
               orElse: () => false,
             );
           },
