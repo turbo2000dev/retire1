@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
@@ -38,6 +39,11 @@ class ProjectionChart extends StatelessWidget {
     final paddedMin = minY - (range * 0.1);
     final paddedMax = maxY + (range * 0.1);
 
+    // Calculate interval with protection against division by zero
+    // Ensure interval is always positive and non-zero for fl_chart
+    final calculatedInterval = (paddedMax - paddedMin) / 5;
+    final safeInterval = max(calculatedInterval, 1.0);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -67,7 +73,7 @@ class ProjectionChart extends StatelessWidget {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: true,
-                    horizontalInterval: (paddedMax - paddedMin) / 5,
+                    horizontalInterval: safeInterval,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
                         color: theme.colorScheme.outlineVariant,
@@ -113,7 +119,7 @@ class ProjectionChart extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 80,
-                        interval: (paddedMax - paddedMin) / 5,
+                        interval: safeInterval,
                         getTitlesWidget: (value, meta) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),

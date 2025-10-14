@@ -6,11 +6,28 @@ import 'package:retire1/features/projection/domain/projection.dart';
 /// Bar chart showing cash flow over time with positive/negative indicators
 class CashFlowChart extends StatelessWidget {
   final Projection projection;
+  final bool useConstantDollars;
 
   const CashFlowChart({
     super.key,
     required this.projection,
+    required this.useConstantDollars,
   });
+
+  /// Apply dollar mode conversion to a value
+  double _applyDollarMode(double value, int yearsFromStart) {
+    if (!useConstantDollars || yearsFromStart == 0) {
+      return value;
+    }
+
+    // Calculate inflation multiplier
+    double multiplier = 1.0;
+    for (int i = 0; i < yearsFromStart; i++) {
+      multiplier *= (1 + projection.inflationRate);
+    }
+
+    return value / multiplier;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +43,14 @@ class CashFlowChart extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    // Calculate min and max Y for scaling (allow negative)
+    // Calculate min and max Y for scaling (allow negative, using converted values)
     double minY = 0;
     double maxY = 0;
 
     for (final year in filteredYears) {
-      if (year.netCashFlow < minY) minY = year.netCashFlow;
-      if (year.netCashFlow > maxY) maxY = year.netCashFlow;
+      final convertedCashFlow = _applyDollarMode(year.netCashFlow, year.yearsFromStart);
+      if (convertedCashFlow < minY) minY = convertedCashFlow;
+      if (convertedCashFlow > maxY) maxY = convertedCashFlow;
     }
 
     // Add padding
@@ -58,7 +76,7 @@ class CashFlowChart extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Net Cash Flow Over Time',
+                  'Net Cash Flow Over Time ${useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -189,7 +207,7 @@ class CashFlowChart extends StatelessWidget {
                   barGroups: filteredYears.asMap().entries.map((entry) {
                     final index = entry.key;
                     final year = entry.value;
-                    final cashFlow = year.netCashFlow;
+                    final cashFlow = _applyDollarMode(year.netCashFlow, year.yearsFromStart);
                     final hasShortfall = year.hasShortfall;
 
                     // Determine color based on positive/negative

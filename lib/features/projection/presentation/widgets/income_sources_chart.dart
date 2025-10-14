@@ -6,10 +6,12 @@ import 'package:retire1/features/projection/domain/projection.dart';
 /// Stacked area chart showing income sources over time
 class IncomeSourcesChart extends StatefulWidget {
   final Projection projection;
+  final bool useConstantDollars;
 
   const IncomeSourcesChart({
     super.key,
     required this.projection,
+    required this.useConstantDollars,
   });
 
   @override
@@ -25,6 +27,21 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
     'RRPE': true,
     'Other': true,
   };
+
+  /// Apply dollar mode conversion to a value
+  double _applyDollarMode(double value, int yearsFromStart) {
+    if (!widget.useConstantDollars || yearsFromStart == 0) {
+      return value;
+    }
+
+    // Calculate inflation multiplier
+    double multiplier = 1.0;
+    for (int i = 0; i < yearsFromStart; i++) {
+      multiplier *= (1 + widget.projection.inflationRate);
+    }
+
+    return value / multiplier;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +78,13 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
         other += income.other;
       }
 
+      // Apply dollar mode conversion
+      employment = _applyDollarMode(employment, year.yearsFromStart);
+      rrq = _applyDollarMode(rrq, year.yearsFromStart);
+      psv = _applyDollarMode(psv, year.yearsFromStart);
+      rrpe = _applyDollarMode(rrpe, year.yearsFromStart);
+      other = _applyDollarMode(other, year.yearsFromStart);
+
       employmentData.add(FlSpot(x, employment));
       rrqData.add(FlSpot(x, rrq));
       psvData.add(FlSpot(x, psv));
@@ -68,13 +92,14 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
       otherData.add(FlSpot(x, other));
     }
 
-    // Calculate max Y for scaling
+    // Calculate max Y for scaling (using converted values)
     double maxY = 0;
     for (final year in filteredYears) {
       double total = 0;
       for (final income in year.incomeByIndividual.values) {
         total += income.total;
       }
+      total = _applyDollarMode(total, year.yearsFromStart);
       if (total > maxY) maxY = total;
     }
 
@@ -104,7 +129,7 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Income Sources Over Time',
+                  'Income Sources Over Time ${widget.useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -339,20 +364,22 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
 
                         final total = employment + rrq + psv + rrpe + other;
 
-                        return [
-                          LineTooltipItem(
-                            'Year ${year.year}\n'
+                        final tooltipText = 'Year ${year.year}\n'
                             '${employment > 0 ? 'Employment: ${currencyFormat.format(employment)}\n' : ''}'
                             '${rrq > 0 ? 'RRQ: ${currencyFormat.format(rrq)}\n' : ''}'
                             '${psv > 0 ? 'PSV: ${currencyFormat.format(psv)}\n' : ''}'
                             '${rrpe > 0 ? 'RRPE: ${currencyFormat.format(rrpe)}\n' : ''}'
                             '${other > 0 ? 'Other: ${currencyFormat.format(other)}\n' : ''}'
-                            'Total: ${currencyFormat.format(total)}',
-                            theme.textTheme.bodySmall!.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ];
+                            'Total: ${currencyFormat.format(total)}';
+
+                        final tooltipStyle = theme.textTheme.bodySmall!.copyWith(
+                          color: Colors.white,
+                        );
+
+                        // Return one tooltip item per touched spot
+                        return touchedSpots.map((spot) {
+                          return LineTooltipItem(tooltipText, tooltipStyle);
+                        }).toList();
                       },
                     ),
                   ),

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,10 +7,12 @@ import 'package:retire1/features/projection/domain/projection.dart';
 /// Stacked bar chart showing expense categories over time
 class ExpenseCategoriesChart extends StatefulWidget {
   final Projection projection;
+  final bool useConstantDollars;
 
   const ExpenseCategoriesChart({
     super.key,
     required this.projection,
+    required this.useConstantDollars,
   });
 
   @override
@@ -27,6 +30,21 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
     'Family': true,
   };
 
+  /// Apply dollar mode conversion to a value
+  double _applyDollarMode(double value, int yearsFromStart) {
+    if (!widget.useConstantDollars || yearsFromStart == 0) {
+      return value;
+    }
+
+    // Calculate inflation multiplier
+    double multiplier = 1.0;
+    for (int i = 0; i < yearsFromStart; i++) {
+      multiplier *= (1 + widget.projection.inflationRate);
+    }
+
+    return value / multiplier;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -41,14 +59,20 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
       return const SizedBox.shrink();
     }
 
-    // Calculate max Y for scaling
+    // Calculate max Y for scaling (using converted values)
     double maxY = 0;
     for (final year in filteredYears) {
-      if (year.totalExpenses > maxY) maxY = year.totalExpenses;
+      final convertedExpenses = _applyDollarMode(year.totalExpenses, year.yearsFromStart);
+      if (convertedExpenses > maxY) maxY = convertedExpenses;
     }
 
     // Add padding to max Y
     final paddedMaxY = maxY * 1.1;
+
+    // Calculate interval with protection against division by zero
+    // Ensure interval is always positive and non-zero for fl_chart
+    final calculatedInterval = paddedMaxY / 5;
+    final safeInterval = max(calculatedInterval, 1.0);
 
     // Define colors for each expense category
     final colors = {
@@ -84,7 +108,7 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Expense Categories Over Time',
+                  'Expense Categories Over Time ${widget.useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -181,7 +205,7 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 80,
-                        interval: paddedMaxY / 5,
+                        interval: safeInterval,
                         getTitlesWidget: (value, meta) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -218,13 +242,14 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
                       if (!_categoryVisibility[displayName]!) continue;
 
                       final amount = expenses[storageKey] ?? 0.0;
-                      if (amount > 0) {
+                      final convertedAmount = _applyDollarMode(amount, year.yearsFromStart);
+                      if (convertedAmount > 0) {
                         barRods.add(BarChartRodStackItem(
                           cumulative,
-                          cumulative + amount,
+                          cumulative + convertedAmount,
                           colors[displayName]!,
                         ));
-                        cumulative += amount;
+                        cumulative += convertedAmount;
                       }
                     }
 

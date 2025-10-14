@@ -8,9 +8,11 @@ import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/projection/presentation/providers/column_visibility_provider.dart';
 import 'package:retire1/features/projection/presentation/providers/projection_provider.dart';
+import 'package:retire1/features/projection/presentation/providers/dollar_mode_provider.dart';
 import 'package:retire1/features/projection/presentation/widgets/asset_allocation_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/cash_flow_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/column_visibility_dialog.dart';
+import 'package:retire1/features/projection/presentation/widgets/dollar_mode_explanation_dialog.dart';
 import 'package:retire1/features/projection/presentation/widgets/expanded_projection_table.dart';
 import 'package:retire1/features/projection/presentation/widgets/expense_categories_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/export_projection_dialog.dart';
@@ -20,6 +22,38 @@ import 'package:retire1/features/projection/presentation/widgets/projection_tabl
 import 'package:retire1/features/projection/service/projection_csv_export.dart';
 import 'package:retire1/features/projection/service/projection_export_service.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
+
+/// Apply dollar mode conversion to a monetary value
+///
+/// If [useConstantDollars] is true, deflate the value by dividing by the
+/// inflation multiplier to show purchasing power in today's dollars.
+/// Otherwise, return the nominal value as-is.
+///
+/// Formula for constant dollars: value / (1 + inflationRate)^yearsFromStart
+double applyDollarMode(
+  double value,
+  int yearsFromStart,
+  bool useConstantDollars,
+  double inflationRate,
+) {
+  if (!useConstantDollars || yearsFromStart == 0) {
+    return value; // Current dollars or year 0 (no deflation needed)
+  }
+
+  // Calculate inflation multiplier: (1 + rate)^years
+  double multiplier = 1.0;
+  for (int i = 0; i < yearsFromStart; i++) {
+    multiplier *= (1 + inflationRate);
+  }
+
+  // Deflate value to constant dollars
+  return value / multiplier;
+}
+
+/// Get dollar mode label for display
+String getDollarModeLabel(bool useConstantDollars) {
+  return useConstantDollars ? '(Constant \$)' : '(Current \$)';
+}
 
 /// Screen for displaying retirement projections
 class ProjectionScreen extends ConsumerWidget {
@@ -51,6 +85,28 @@ class ProjectionScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Projection'),
         actions: [
+          // Dollar mode toggle with explanation
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                ref.watch(dollarModeProvider) ? 'Constant \$' : 'Current \$',
+                style: theme.textTheme.bodySmall,
+              ),
+              Switch(
+                value: ref.watch(dollarModeProvider),
+                onChanged: (_) {
+                  ref.read(dollarModeProvider.notifier).toggle();
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.help_outline, size: 20),
+                tooltip: 'Explain dollar modes',
+                onPressed: () => DollarModeExplanationDialog.show(context),
+              ),
+            ],
+          ),
+          const SizedBox(width: 8),
           // Export button
           IconButton(
             icon: const Icon(Icons.download),
@@ -469,7 +525,10 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                         child: ResponsiveContainer(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                            child: IncomeSourcesChart(projection: projection),
+                            child: IncomeSourcesChart(
+                              projection: projection,
+                              useConstantDollars: ref.watch(dollarModeProvider),
+                            ),
                           ),
                         ),
                       ),
@@ -478,7 +537,10 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                         child: ResponsiveContainer(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                            child: ExpenseCategoriesChart(projection: projection),
+                            child: ExpenseCategoriesChart(
+                              projection: projection,
+                              useConstantDollars: ref.watch(dollarModeProvider),
+                            ),
                           ),
                         ),
                       ),
@@ -487,7 +549,10 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                         child: ResponsiveContainer(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                            child: CashFlowChart(projection: projection),
+                            child: CashFlowChart(
+                              projection: projection,
+                              useConstantDollars: ref.watch(dollarModeProvider),
+                            ),
                           ),
                         ),
                       ),
@@ -499,6 +564,7 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                             child: AssetAllocationChart(
                               projection: projection,
                               assets: assets,
+                              useConstantDollars: ref.watch(dollarModeProvider),
                             ),
                           ),
                         ),
@@ -512,6 +578,7 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                               projection: projection,
                               events: events,
                               individuals: individuals,
+                              useConstantDollars: ref.watch(dollarModeProvider),
                             ),
                           ),
                         ),
@@ -535,6 +602,7 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                   projection: projection,
                                   events: events,
                                   individuals: individuals,
+                                  useConstantDollars: ref.watch(dollarModeProvider),
                                   visibleColumnGroups:
                                       columnVisibility.visibleColumnGroups,
                                 );

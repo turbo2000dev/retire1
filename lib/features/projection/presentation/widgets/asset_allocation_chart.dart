@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,11 +9,13 @@ import 'package:retire1/features/projection/domain/projection.dart';
 class AssetAllocationChart extends StatefulWidget {
   final Projection projection;
   final List<Asset> assets;
+  final bool useConstantDollars;
 
   const AssetAllocationChart({
     super.key,
     required this.projection,
     required this.assets,
+    required this.useConstantDollars,
   });
 
   @override
@@ -29,6 +32,21 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
     'Cash': true,
     'Net Worth': true,
   };
+
+  /// Apply dollar mode conversion to a value
+  double _applyDollarMode(double value, int yearsFromStart) {
+    if (!widget.useConstantDollars || yearsFromStart == 0) {
+      return value;
+    }
+
+    // Calculate inflation multiplier
+    double multiplier = 1.0;
+    for (int i = 0; i < yearsFromStart; i++) {
+      multiplier *= (1 + widget.projection.inflationRate);
+    }
+
+    return value / multiplier;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +80,7 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
       );
     }
 
-    // Aggregate asset balances by type for each year
+    // Aggregate asset balances by type for each year (with dollar mode conversion)
     final realEstateData = <FlSpot>[];
     final rrspData = <FlSpot>[];
     final celiData = <FlSpot>[];
@@ -100,22 +118,36 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
         }
       }
 
+      // Apply dollar mode conversion
+      realEstate = _applyDollarMode(realEstate, year.yearsFromStart);
+      rrsp = _applyDollarMode(rrsp, year.yearsFromStart);
+      celi = _applyDollarMode(celi, year.yearsFromStart);
+      cri = _applyDollarMode(cri, year.yearsFromStart);
+      cash = _applyDollarMode(cash, year.yearsFromStart);
+      final netWorth = _applyDollarMode(year.netWorthEndOfYear, year.yearsFromStart);
+
       realEstateData.add(FlSpot(x, realEstate));
       rrspData.add(FlSpot(x, rrsp));
       celiData.add(FlSpot(x, celi));
       criData.add(FlSpot(x, cri));
       cashData.add(FlSpot(x, cash));
-      netWorthData.add(FlSpot(x, year.netWorthEndOfYear));
+      netWorthData.add(FlSpot(x, netWorth));
     }
 
-    // Calculate max Y for scaling
+    // Calculate max Y for scaling (using converted values)
     double maxY = 0;
     for (final year in filteredYears) {
-      if (year.netWorthEndOfYear > maxY) maxY = year.netWorthEndOfYear;
+      final convertedNetWorth = _applyDollarMode(year.netWorthEndOfYear, year.yearsFromStart);
+      if (convertedNetWorth > maxY) maxY = convertedNetWorth;
     }
 
     // Add padding to max Y
     final paddedMaxY = maxY * 1.1;
+
+    // Calculate interval with protection against division by zero
+    // Ensure interval is always positive and non-zero for fl_chart
+    final calculatedInterval = paddedMaxY / 5;
+    final safeInterval = max(calculatedInterval, 1.0);
 
     // Define colors for each asset type
     final colors = {
@@ -141,7 +173,7 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Asset Allocation Over Time',
+                  'Asset Allocation Over Time ${widget.useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -256,7 +288,7 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 80,
-                        interval: paddedMaxY / 5,
+                        interval: safeInterval,
                         getTitlesWidget: (value, meta) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -417,20 +449,22 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
                           }
                         }
 
-                        return [
-                          LineTooltipItem(
-                            'Year ${year.year}\n'
+                        final tooltipText = 'Year ${year.year}\n'
                             '${realEstate > 0 ? 'Real Estate: ${currencyFormat.format(realEstate)}\n' : ''}'
                             '${rrsp > 0 ? 'RRSP: ${currencyFormat.format(rrsp)}\n' : ''}'
                             '${celi > 0 ? 'CELI: ${currencyFormat.format(celi)}\n' : ''}'
                             '${cri > 0 ? 'CRI: ${currencyFormat.format(cri)}\n' : ''}'
                             '${cash > 0 ? 'Cash: ${currencyFormat.format(cash)}\n' : ''}'
-                            'Net Worth: ${currencyFormat.format(year.netWorthEndOfYear)}',
-                            theme.textTheme.bodySmall!.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ];
+                            'Net Worth: ${currencyFormat.format(year.netWorthEndOfYear)}';
+
+                        final tooltipStyle = theme.textTheme.bodySmall!.copyWith(
+                          color: Colors.white,
+                        );
+
+                        // Return one tooltip item per touched spot
+                        return touchedSpots.map((spot) {
+                          return LineTooltipItem(tooltipText, tooltipStyle);
+                        }).toList();
                       },
                     ),
                   ),

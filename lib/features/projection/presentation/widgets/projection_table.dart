@@ -10,13 +10,30 @@ class ProjectionTable extends StatelessWidget {
   final Projection projection;
   final List<Event> events;
   final List<Individual> individuals;
+  final bool useConstantDollars;
 
   const ProjectionTable({
     super.key,
     required this.projection,
     required this.events,
     required this.individuals,
+    required this.useConstantDollars,
   });
+
+  /// Apply dollar mode conversion to a value
+  double _applyDollarMode(double value, int yearsFromStart) {
+    if (!useConstantDollars || yearsFromStart == 0) {
+      return value;
+    }
+
+    // Calculate inflation multiplier
+    double multiplier = 1.0;
+    for (int i = 0; i < yearsFromStart; i++) {
+      multiplier *= (1 + projection.inflationRate);
+    }
+
+    return value / multiplier;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +55,7 @@ class ProjectionTable extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Yearly Breakdown',
+                  'Yearly Breakdown ${useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -172,6 +189,20 @@ class ProjectionTable extends StatelessWidget {
                   ),
                 ],
                 rows: projection.years.map((year) {
+                  // Apply dollar mode conversion
+                  final totalIncome = _applyDollarMode(year.totalIncome, year.yearsFromStart);
+                  final totalTax = _applyDollarMode(year.totalTax, year.yearsFromStart);
+                  final afterTaxIncome = _applyDollarMode(year.afterTaxIncome, year.yearsFromStart);
+                  final totalExpenses = _applyDollarMode(year.totalExpenses, year.yearsFromStart);
+                  final netCashFlow = _applyDollarMode(year.netCashFlow, year.yearsFromStart);
+                  final assetReturns = _applyDollarMode(
+                    year.assetReturns.values.fold(0.0, (sum, val) => sum + val),
+                    year.yearsFromStart,
+                  );
+                  final netWorthStart = _applyDollarMode(year.netWorthStartOfYear, year.yearsFromStart);
+                  final netWorthEnd = _applyDollarMode(year.netWorthEndOfYear, year.yearsFromStart);
+                  final shortfall = _applyDollarMode(year.shortfallAmount, year.yearsFromStart);
+
                   // Add warning color for years with shortfalls
                   final rowColor = year.hasShortfall
                       ? theme.colorScheme.errorContainer.withOpacity(0.3)
@@ -225,7 +256,7 @@ class ProjectionTable extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    currencyFormat.format(year.totalIncome),
+                                    currencyFormat.format(totalIncome),
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.tertiary,
                                     ),
@@ -233,9 +264,9 @@ class ProjectionTable extends StatelessWidget {
                                 ],
                               )
                             : Text(
-                                currencyFormat.format(year.totalIncome),
+                                currencyFormat.format(totalIncome),
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: year.totalIncome > 0
+                                  color: totalIncome > 0
                                       ? theme.colorScheme.tertiary
                                       : null,
                                 ),
@@ -243,9 +274,9 @@ class ProjectionTable extends StatelessWidget {
                       ),
                       DataCell(
                         Text(
-                          currencyFormat.format(year.totalTax),
+                          currencyFormat.format(totalTax),
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: year.totalTax > 0
+                            color: totalTax > 0
                                 ? theme.colorScheme.error
                                 : null,
                           ),
@@ -253,9 +284,9 @@ class ProjectionTable extends StatelessWidget {
                       ),
                       DataCell(
                         Text(
-                          currencyFormat.format(year.afterTaxIncome),
+                          currencyFormat.format(afterTaxIncome),
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: year.afterTaxIncome > 0
+                            color: afterTaxIncome > 0
                                 ? theme.colorScheme.tertiary
                                 : null,
                             fontWeight: FontWeight.w500,
@@ -264,9 +295,9 @@ class ProjectionTable extends StatelessWidget {
                       ),
                       DataCell(
                         Text(
-                          currencyFormat.format(year.totalExpenses),
+                          currencyFormat.format(totalExpenses),
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: year.totalExpenses > 0
+                            color: totalExpenses > 0
                                 ? theme.colorScheme.error
                                 : null,
                           ),
@@ -274,11 +305,11 @@ class ProjectionTable extends StatelessWidget {
                       ),
                       DataCell(
                         Text(
-                          currencyFormat.format(year.netCashFlow),
+                          currencyFormat.format(netCashFlow),
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: year.netCashFlow > 0
+                            color: netCashFlow > 0
                                 ? theme.colorScheme.tertiary
-                                : year.netCashFlow < 0
+                                : netCashFlow < 0
                                     ? theme.colorScheme.error
                                     : null,
                             fontWeight: FontWeight.bold,
@@ -287,11 +318,9 @@ class ProjectionTable extends StatelessWidget {
                       ),
                       DataCell(
                         Text(
-                          currencyFormat.format(
-                            year.assetReturns.values.fold(0.0, (sum, val) => sum + val),
-                          ),
+                          currencyFormat.format(assetReturns),
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: year.assetReturns.values.fold(0.0, (sum, val) => sum + val) > 0
+                            color: assetReturns > 0
                                 ? theme.colorScheme.tertiary
                                 : null,
                           ),
@@ -299,13 +328,13 @@ class ProjectionTable extends StatelessWidget {
                       ),
                       DataCell(
                         Text(
-                          currencyFormat.format(year.netWorthStartOfYear),
+                          currencyFormat.format(netWorthStart),
                           style: theme.textTheme.bodyMedium,
                         ),
                       ),
                       DataCell(
                         Text(
-                          currencyFormat.format(year.netWorthEndOfYear),
+                          currencyFormat.format(netWorthEnd),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -323,7 +352,7 @@ class ProjectionTable extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    currencyFormat.format(year.shortfallAmount),
+                                    currencyFormat.format(shortfall),
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.error,
                                       fontWeight: FontWeight.bold,

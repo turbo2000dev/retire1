@@ -873,6 +873,15 @@
 
 **Ready for Phase 34:** Current vs constant dollars toggle
 
+**Bug Fixes After Phase 33:**
+- Fixed chart interval division-by-zero errors in 3 charts (projection_chart.dart, expense_categories_chart.dart, asset_allocation_chart.dart)
+  - Added safe interval calculation: `max(calculatedInterval, 1.0)` to prevent fl_chart assertion failures
+  - Charts now handle edge cases where data range is zero
+- Fixed tooltip mismatch errors in 2 charts (income_sources_chart.dart, asset_allocation_chart.dart)
+  - Modified tooltip handlers to return one `LineTooltipItem` per touched spot
+  - Charts with togglable series now display tooltips correctly regardless of which series are visible
+- All charts now render without exceptions on Chrome
+
 ---
 
 ## PHASE 34: Dollar Toggle - Current vs Constant Dollars

@@ -11,12 +11,14 @@ class ExpandedProjectionTable extends StatelessWidget {
   final List<Event> events;
   final List<Individual> individuals;
   final Set<String> visibleColumnGroups;
+  final bool useConstantDollars;
 
   const ExpandedProjectionTable({
     super.key,
     required this.projection,
     required this.events,
     required this.individuals,
+    required this.useConstantDollars,
     this.visibleColumnGroups = const {
       'basic',
       'income',
@@ -30,6 +32,21 @@ class ExpandedProjectionTable extends StatelessWidget {
       'warnings',
     },
   });
+
+  /// Apply dollar mode conversion to a value
+  double _applyDollarMode(double value, int yearsFromStart) {
+    if (!useConstantDollars || yearsFromStart == 0) {
+      return value;
+    }
+
+    // Calculate inflation multiplier
+    double multiplier = 1.0;
+    for (int i = 0; i < yearsFromStart; i++) {
+      multiplier *= (1 + projection.inflationRate);
+    }
+
+    return value / multiplier;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +71,7 @@ class ExpandedProjectionTable extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Detailed Yearly Breakdown',
+                  'Detailed Yearly Breakdown ${useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -466,56 +483,109 @@ class ExpandedProjectionTable extends StatelessWidget {
                       ? theme.colorScheme.errorContainer.withOpacity(0.3)
                       : null;
 
-                  // Calculate totals for income breakdown
-                  final totalEmployment = year.incomeByIndividual.values
-                      .fold(0.0, (sum, income) => sum + income.employment);
-                  final totalRRQ = year.incomeByIndividual.values
-                      .fold(0.0, (sum, income) => sum + income.rrq);
-                  final totalPSV = year.incomeByIndividual.values
-                      .fold(0.0, (sum, income) => sum + income.psv);
-                  final totalRRPE = year.incomeByIndividual.values
-                      .fold(0.0, (sum, income) => sum + income.rrpe);
-                  final totalOther = year.incomeByIndividual.values
-                      .fold(0.0, (sum, income) => sum + income.other);
+                  // Calculate totals for income breakdown (then apply conversion)
+                  final totalEmployment = _applyDollarMode(
+                    year.incomeByIndividual.values.fold(0.0, (sum, income) => sum + income.employment),
+                    year.yearsFromStart,
+                  );
+                  final totalRRQ = _applyDollarMode(
+                    year.incomeByIndividual.values.fold(0.0, (sum, income) => sum + income.rrq),
+                    year.yearsFromStart,
+                  );
+                  final totalPSV = _applyDollarMode(
+                    year.incomeByIndividual.values.fold(0.0, (sum, income) => sum + income.psv),
+                    year.yearsFromStart,
+                  );
+                  final totalRRPE = _applyDollarMode(
+                    year.incomeByIndividual.values.fold(0.0, (sum, income) => sum + income.rrpe),
+                    year.yearsFromStart,
+                  );
+                  final totalOther = _applyDollarMode(
+                    year.incomeByIndividual.values.fold(0.0, (sum, income) => sum + income.other),
+                    year.yearsFromStart,
+                  );
+                  final totalIncome = _applyDollarMode(year.totalIncome, year.yearsFromStart);
 
-                  // Calculate totals for withdrawals by account type
-                  final celiWithdrawals = year.withdrawalsByAccount.entries
-                      .where((e) => e.key.contains('celi'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final cashWithdrawals = year.withdrawalsByAccount.entries
-                      .where((e) => e.key.contains('cash'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final criWithdrawals = year.withdrawalsByAccount.entries
-                      .where((e) => e.key.contains('cri'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final reerWithdrawals = year.withdrawalsByAccount.entries
-                      .where((e) => e.key.contains('rrsp') || e.key.contains('reer'))
-                      .fold(0.0, (sum, e) => sum + e.value);
+                  // Calculate expense categories (apply conversion)
+                  final housingExpense = _applyDollarMode(year.expensesByCategory['housing'] ?? 0.0, year.yearsFromStart);
+                  final transportExpense = _applyDollarMode(year.expensesByCategory['transport'] ?? 0.0, year.yearsFromStart);
+                  final dailyLivingExpense = _applyDollarMode(year.expensesByCategory['dailyLiving'] ?? 0.0, year.yearsFromStart);
+                  final recreationExpense = _applyDollarMode(year.expensesByCategory['recreation'] ?? 0.0, year.yearsFromStart);
+                  final healthExpense = _applyDollarMode(year.expensesByCategory['health'] ?? 0.0, year.yearsFromStart);
+                  final familyExpense = _applyDollarMode(year.expensesByCategory['family'] ?? 0.0, year.yearsFromStart);
+                  final totalExpenses = _applyDollarMode(year.totalExpenses, year.yearsFromStart);
 
-                  // Calculate totals for contributions by account type
-                  final celiContributions = year.contributionsByAccount.entries
-                      .where((e) => e.key.contains('celi'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final cashContributions = year.contributionsByAccount.entries
-                      .where((e) => e.key.contains('cash'))
-                      .fold(0.0, (sum, e) => sum + e.value);
+                  // Tax values (apply conversion)
+                  final federalTax = _applyDollarMode(year.federalTax, year.yearsFromStart);
+                  final quebecTax = _applyDollarMode(year.quebecTax, year.yearsFromStart);
+                  final totalTax = _applyDollarMode(year.totalTax, year.yearsFromStart);
 
-                  // Calculate asset balances by type
-                  final realEstateBalance = year.assetsEndOfYear.entries
-                      .where((e) => e.key.contains('realEstate'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final reerBalance = year.assetsEndOfYear.entries
-                      .where((e) => e.key.contains('rrsp') || e.key.contains('reer'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final celiBalance = year.assetsEndOfYear.entries
-                      .where((e) => e.key.contains('celi'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final criBalance = year.assetsEndOfYear.entries
-                      .where((e) => e.key.contains('cri'))
-                      .fold(0.0, (sum, e) => sum + e.value);
-                  final cashBalance = year.assetsEndOfYear.entries
-                      .where((e) => e.key.contains('cash'))
-                      .fold(0.0, (sum, e) => sum + e.value);
+                  // Cash flow values (apply conversion)
+                  final afterTaxIncome = _applyDollarMode(year.afterTaxIncome, year.yearsFromStart);
+                  final netCashFlow = _applyDollarMode(year.netCashFlow, year.yearsFromStart);
+
+                  // Calculate totals for withdrawals by account type (apply conversion)
+                  final celiWithdrawals = _applyDollarMode(
+                    year.withdrawalsByAccount.entries.where((e) => e.key.contains('celi')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final cashWithdrawals = _applyDollarMode(
+                    year.withdrawalsByAccount.entries.where((e) => e.key.contains('cash')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final criWithdrawals = _applyDollarMode(
+                    year.withdrawalsByAccount.entries.where((e) => e.key.contains('cri')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final reerWithdrawals = _applyDollarMode(
+                    year.withdrawalsByAccount.entries.where((e) => e.key.contains('rrsp') || e.key.contains('reer')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final totalWithdrawals = _applyDollarMode(year.totalWithdrawals, year.yearsFromStart);
+
+                  // Calculate totals for contributions by account type (apply conversion)
+                  final celiContributions = _applyDollarMode(
+                    year.contributionsByAccount.entries.where((e) => e.key.contains('celi')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final cashContributions = _applyDollarMode(
+                    year.contributionsByAccount.entries.where((e) => e.key.contains('cash')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final totalContributions = _applyDollarMode(year.totalContributions, year.yearsFromStart);
+
+                  // Calculate asset balances by type (apply conversion)
+                  final realEstateBalance = _applyDollarMode(
+                    year.assetsEndOfYear.entries.where((e) => e.key.contains('realEstate')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final reerBalance = _applyDollarMode(
+                    year.assetsEndOfYear.entries.where((e) => e.key.contains('rrsp') || e.key.contains('reer')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final celiBalance = _applyDollarMode(
+                    year.assetsEndOfYear.entries.where((e) => e.key.contains('celi')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final criBalance = _applyDollarMode(
+                    year.assetsEndOfYear.entries.where((e) => e.key.contains('cri')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final cashBalance = _applyDollarMode(
+                    year.assetsEndOfYear.entries.where((e) => e.key.contains('cash')).fold(0.0, (sum, e) => sum + e.value),
+                    year.yearsFromStart,
+                  );
+                  final assetReturns = _applyDollarMode(
+                    year.assetReturns.values.fold(0.0, (sum, val) => sum + val),
+                    year.yearsFromStart,
+                  );
+
+                  // Net worth values (apply conversion)
+                  final netWorthStart = _applyDollarMode(year.netWorthStartOfYear, year.yearsFromStart);
+                  final netWorthEnd = _applyDollarMode(year.netWorthEndOfYear, year.yearsFromStart);
+
+                  // Shortfall (apply conversion)
+                  final shortfall = _applyDollarMode(year.shortfallAmount, year.yearsFromStart);
 
                   return DataRow(
                     color: rowColor != null
@@ -568,49 +638,43 @@ class ExpandedProjectionTable extends StatelessWidget {
                         _buildNumericCell(theme, currencyFormat, totalOther,
                             positive: theme.colorScheme.tertiary,
                             showHeartIcon: totalOther > 0),
-                        _buildNumericCell(theme, currencyFormat, year.totalIncome,
+                        _buildNumericCell(theme, currencyFormat, totalIncome,
                             positive: theme.colorScheme.tertiary, bold: true),
                       ],
 
                       // === EXPENSES GROUP ===
                       if (visibleColumnGroups.contains('expenses')) ...[
-                        _buildNumericCell(theme, currencyFormat,
-                            year.expensesByCategory['housing'] ?? 0.0,
+                        _buildNumericCell(theme, currencyFormat, housingExpense,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat,
-                            year.expensesByCategory['transport'] ?? 0.0,
+                        _buildNumericCell(theme, currencyFormat, transportExpense,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat,
-                            year.expensesByCategory['dailyLiving'] ?? 0.0,
+                        _buildNumericCell(theme, currencyFormat, dailyLivingExpense,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat,
-                            year.expensesByCategory['recreation'] ?? 0.0,
+                        _buildNumericCell(theme, currencyFormat, recreationExpense,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat,
-                            year.expensesByCategory['health'] ?? 0.0,
+                        _buildNumericCell(theme, currencyFormat, healthExpense,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat,
-                            year.expensesByCategory['family'] ?? 0.0,
+                        _buildNumericCell(theme, currencyFormat, familyExpense,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat, year.totalExpenses,
+                        _buildNumericCell(theme, currencyFormat, totalExpenses,
                             negative: theme.colorScheme.error, bold: true),
                       ],
 
                       // === TAXES GROUP ===
                       if (visibleColumnGroups.contains('taxes')) ...[
-                        _buildNumericCell(theme, currencyFormat, year.federalTax,
+                        _buildNumericCell(theme, currencyFormat, federalTax,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat, year.quebecTax,
+                        _buildNumericCell(theme, currencyFormat, quebecTax,
                             negative: theme.colorScheme.error),
-                        _buildNumericCell(theme, currencyFormat, year.totalTax,
+                        _buildNumericCell(theme, currencyFormat, totalTax,
                             negative: theme.colorScheme.error, bold: true),
                       ],
 
                       // === CASH FLOW GROUP ===
                       if (visibleColumnGroups.contains('cashFlow')) ...[
-                        _buildNumericCell(theme, currencyFormat, year.afterTaxIncome,
+                        _buildNumericCell(theme, currencyFormat, afterTaxIncome,
                             positive: theme.colorScheme.tertiary, bold: true),
-                        _buildNumericCell(theme, currencyFormat, year.netCashFlow,
+                        _buildNumericCell(theme, currencyFormat, netCashFlow,
                             positive: theme.colorScheme.tertiary,
                             negative: theme.colorScheme.error,
                             bold: true),
@@ -622,7 +686,7 @@ class ExpandedProjectionTable extends StatelessWidget {
                         _buildNumericCell(theme, currencyFormat, cashWithdrawals),
                         _buildNumericCell(theme, currencyFormat, criWithdrawals),
                         _buildNumericCell(theme, currencyFormat, reerWithdrawals),
-                        _buildNumericCell(theme, currencyFormat, year.totalWithdrawals,
+                        _buildNumericCell(theme, currencyFormat, totalWithdrawals,
                             bold: true),
                       ],
 
@@ -632,7 +696,7 @@ class ExpandedProjectionTable extends StatelessWidget {
                             positive: theme.colorScheme.tertiary),
                         _buildNumericCell(theme, currencyFormat, cashContributions,
                             positive: theme.colorScheme.tertiary),
-                        _buildNumericCell(theme, currencyFormat, year.totalContributions,
+                        _buildNumericCell(theme, currencyFormat, totalContributions,
                             positive: theme.colorScheme.tertiary, bold: true),
                       ],
 
@@ -643,15 +707,14 @@ class ExpandedProjectionTable extends StatelessWidget {
                         _buildNumericCell(theme, currencyFormat, celiBalance),
                         _buildNumericCell(theme, currencyFormat, criBalance),
                         _buildNumericCell(theme, currencyFormat, cashBalance),
-                        _buildNumericCell(theme, currencyFormat,
-                            year.assetReturns.values.fold(0.0, (sum, val) => sum + val),
+                        _buildNumericCell(theme, currencyFormat, assetReturns,
                             positive: theme.colorScheme.tertiary),
                       ],
 
                       // === NET WORTH GROUP ===
                       if (visibleColumnGroups.contains('netWorth')) ...[
-                        _buildNumericCell(theme, currencyFormat, year.netWorthStartOfYear),
-                        _buildNumericCell(theme, currencyFormat, year.netWorthEndOfYear,
+                        _buildNumericCell(theme, currencyFormat, netWorthStart),
+                        _buildNumericCell(theme, currencyFormat, netWorthEnd,
                             bold: true),
                       ],
 
@@ -669,7 +732,7 @@ class ExpandedProjectionTable extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      currencyFormat.format(year.shortfallAmount),
+                                      currencyFormat.format(shortfall),
                                       style: theme.textTheme.bodyMedium?.copyWith(
                                         color: theme.colorScheme.error,
                                         fontWeight: FontWeight.bold,
