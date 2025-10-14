@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:retire1/features/events/domain/event.dart';
+import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
+import 'package:retire1/features/projection/domain/yearly_projection.dart';
 import 'package:intl/intl.dart';
 
 /// Widget for displaying projection data as a table
 class ProjectionTable extends StatelessWidget {
   final Projection projection;
+  final List<Event> events;
+  final List<Individual> individuals;
 
   const ProjectionTable({
     super.key,
     required this.projection,
+    required this.events,
+    required this.individuals,
   });
 
   @override
@@ -17,12 +24,13 @@ class ProjectionTable extends StatelessWidget {
     final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with padding
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            child: Row(
               children: [
                 Icon(
                   Icons.table_chart,
@@ -37,11 +45,20 @@ class ProjectionTable extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            // Table
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
+          ),
+          // Table with horizontal scrolling - no left/right padding
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 600, // Max height for vertical scrolling
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: DataTable(
+                    horizontalMargin: 24,
                 headingRowColor: WidgetStateProperty.resolveWith(
                   (states) => theme.colorScheme.surfaceContainerHighest,
                 ),
@@ -57,7 +74,16 @@ class ProjectionTable extends StatelessWidget {
                   if (projection.years.any((y) => y.primaryAge != null))
                     DataColumn(
                       label: Text(
-                        'Age',
+                        'Age 1',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  if (projection.years.any((y) => y.spouseAge != null))
+                    DataColumn(
+                      label: Text(
+                        'Age 2',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -168,7 +194,22 @@ class ProjectionTable extends StatelessWidget {
                         DataCell(
                           Text(
                             year.primaryAge?.toString() ?? '-',
-                            style: theme.textTheme.bodyMedium,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              decoration: _isPrimaryDeceased(projection.years, year)
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      if (projection.years.any((y) => y.spouseAge != null))
+                        DataCell(
+                          Text(
+                            year.spouseAge?.toString() ?? '-',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              decoration: _isSpouseDeceased(projection.years, year)
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
                           ),
                         ),
                       DataCell(
@@ -298,11 +339,79 @@ class ProjectionTable extends StatelessWidget {
                     ],
                   );
                 }).toList(),
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  /// Check if primary individual is deceased by checking if death event occurred in this year or any previous year
+  bool _isPrimaryDeceased(List<YearlyProjection> years, YearlyProjection currentYear) {
+    if (individuals.isEmpty) return false;
+
+    final primaryIndividual = individuals.first;
+    final currentIndex = years.indexOf(currentYear);
+
+    // Check all years up to and including current year for death event
+    for (int i = 0; i <= currentIndex; i++) {
+      final year = years[i];
+      final hasDeath = year.eventsOccurred.any((eventId) {
+        final event = events.where((e) => e.map(
+          retirement: (e) => e.id == eventId,
+          death: (e) => e.id == eventId,
+          realEstateTransaction: (e) => e.id == eventId,
+        )).firstOrNull;
+
+        if (event == null) return false;
+
+        // Check if it's a death event for the primary individual
+        return event.map(
+          retirement: (_) => false,
+          death: (e) => e.individualId == primaryIndividual.id,
+          realEstateTransaction: (_) => false,
+        );
+      });
+
+      if (hasDeath) return true;
+    }
+
+    return false;
+  }
+
+  /// Check if spouse is deceased by checking if death event occurred in this year or any previous year
+  bool _isSpouseDeceased(List<YearlyProjection> years, YearlyProjection currentYear) {
+    if (individuals.length < 2) return false;
+
+    final spouseIndividual = individuals[1];
+    final currentIndex = years.indexOf(currentYear);
+
+    // Check all years up to and including current year for death event
+    for (int i = 0; i <= currentIndex; i++) {
+      final year = years[i];
+      final hasDeath = year.eventsOccurred.any((eventId) {
+        final event = events.where((e) => e.map(
+          retirement: (e) => e.id == eventId,
+          death: (e) => e.id == eventId,
+          realEstateTransaction: (e) => e.id == eventId,
+        )).firstOrNull;
+
+        if (event == null) return false;
+
+        // Check if it's a death event for the spouse
+        return event.map(
+          retirement: (_) => false,
+          death: (e) => e.individualId == spouseIndividual.id,
+          realEstateTransaction: (_) => false,
+        );
+      });
+
+      if (hasDeath) return true;
+    }
+
+    return false;
   }
 }

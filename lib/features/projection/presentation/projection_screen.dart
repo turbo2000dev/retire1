@@ -3,10 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/utils/file_download_helper.dart';
 import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
+import 'package:retire1/features/events/presentation/providers/events_provider.dart';
+import 'package:retire1/features/project/domain/individual.dart';
+import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
+import 'package:retire1/features/projection/presentation/providers/column_visibility_provider.dart';
 import 'package:retire1/features/projection/presentation/providers/projection_provider.dart';
+import 'package:retire1/features/projection/presentation/widgets/column_visibility_dialog.dart';
+import 'package:retire1/features/projection/presentation/widgets/expanded_projection_table.dart';
 import 'package:retire1/features/projection/presentation/widgets/export_projection_dialog.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_table.dart';
+import 'package:retire1/features/projection/service/projection_csv_export.dart';
 import 'package:retire1/features/projection/service/projection_export_service.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 
@@ -203,15 +210,43 @@ class ProjectionScreen extends ConsumerWidget {
 }
 
 /// Content widget that displays the projection for a selected scenario
-class _ProjectionContent extends ConsumerWidget {
+class _ProjectionContent extends ConsumerStatefulWidget {
   final String scenarioId;
 
   const _ProjectionContent({required this.scenarioId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ProjectionContent> createState() => _ProjectionContentState();
+}
+
+class _ProjectionContentState extends ConsumerState<_ProjectionContent>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectionAsync = ref.watch(projectionProvider(scenarioId));
+    final projectionAsync = ref.watch(projectionProvider(widget.scenarioId));
+    final eventsAsync = ref.watch(eventsProvider);
+    final projectState = ref.watch(currentProjectProvider);
+
+    // Get events and individuals lists
+    final events = eventsAsync.value ?? [];
+    final individuals = projectState is ProjectSelected
+        ? projectState.project.individuals.cast<Individual>().toList()
+        : <Individual>[];
 
     return projectionAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -240,7 +275,7 @@ class _ProjectionContent extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => ref.refresh(projectionProvider(scenarioId)),
+              onPressed: () => ref.refresh(projectionProvider(widget.scenarioId)),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
             ),
@@ -276,69 +311,199 @@ class _ProjectionContent extends ConsumerWidget {
           );
         }
 
-        return CustomScrollView(
-          slivers: [
-            // Projection info header
-            SliverToBoxAdapter(
-              child: ResponsiveContainer(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: theme.colorScheme.primary,
+        return Column(
+          children: [
+            // Tab bar with actions
+            Container(
+              color: theme.colorScheme.surface,
+              child: Column(
+                children: [
+                  TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(
+                        icon: Icon(Icons.table_chart_outlined),
+                        text: 'Simple',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.table_view),
+                        text: 'Detailed',
+                      ),
+                    ],
+                  ),
+                  // Action buttons for detailed tab
+                  AnimatedBuilder(
+                    animation: _tabController,
+                    builder: (context, child) {
+                      if (_tabController.index == 1) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 8,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Projection: ${projection.startYear} - ${projection.endYear}',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              // Column visibility button
+                              TextButton.icon(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const ColumnVisibilityDialog(),
+                                  );
+                                },
+                                icon: const Icon(Icons.visibility),
+                                label: const Text('Column Visibility'),
+                              ),
+                              const SizedBox(width: 12),
+                              // CSV export button
+                              FilledButton.icon(
+                                onPressed: () {
+                                  // Get scenario name
+                                  final scenariosAsync = ref.read(scenariosProvider);
+                                  final scenarios = scenariosAsync.value ?? [];
+                                  final scenario = scenarios.firstWhere(
+                                    (s) => s.id == widget.scenarioId,
+                                    orElse: () => scenarios.first,
+                                  );
+
+                                  // Export to CSV
+                                  ProjectionCsvExport.exportToCSV(
+                                    projection,
+                                    scenario.name,
+                                  );
+
+                                  // Show success message
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Projection exported to CSV'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.file_download),
+                                label: const Text('Export CSV'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            // Tab views
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Simple view
+                  CustomScrollView(
+                    slivers: [
+                      // Projection info header
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Projection: ${projection.startYear} - ${projection.endYear}',
+                                            style: theme.textTheme.titleMedium
+                                                ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '${projection.years.length} years • ${projection.useConstantDollars ? 'Constant' : 'Current'} dollars',
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(
+                                              color: theme
+                                                  .colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${projection.years.length} years • ${projection.useConstantDollars ? 'Constant' : 'Current'} dollars',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      // Chart section
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: ProjectionChart(projection: projection),
+                          ),
+                        ),
+                      ),
+                      // Simple table
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: ProjectionTable(
+                              projection: projection,
+                              events: events,
+                              individuals: individuals,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                    ],
                   ),
-                ),
+                  // Detailed view
+                  CustomScrollView(
+                    slivers: [
+                      // Expanded table
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Consumer(
+                              builder: (context, ref, child) {
+                                final columnVisibility =
+                                    ref.watch(columnVisibilityProvider);
+                                return ExpandedProjectionTable(
+                                  projection: projection,
+                                  events: events,
+                                  individuals: individuals,
+                                  visibleColumnGroups:
+                                      columnVisibility.visibleColumnGroups,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                    ],
+                  ),
+                ],
               ),
             ),
-            // Chart section
-            SliverToBoxAdapter(
-              child: ResponsiveContainer(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                  child: ProjectionChart(projection: projection),
-                ),
-              ),
-            ),
-            // Table section
-            SliverToBoxAdapter(
-              child: ResponsiveContainer(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                  child: ProjectionTable(projection: projection),
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
           ],
         );
       },
