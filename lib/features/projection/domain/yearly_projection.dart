@@ -30,6 +30,10 @@ class YearlyProjection with _$YearlyProjection {
     /// Total expenses for the year
     required double totalExpenses,
 
+    /// Expenses by category (keyed by category name)
+    /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
+    @Default({}) Map<String, double> expensesByCategory,
+
     /// Net cash flow (income - expenses)
     required double netCashFlow,
 

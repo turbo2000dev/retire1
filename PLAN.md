@@ -328,33 +328,30 @@
 
 ### Tasks:
 1. **Extend ProjectionCalculator:**
-   - [ ] Add method: `_calculateExpenses(year, individuals, expenses, scenario)`
+   - [x] Method `_calculateExpensesForYear` already implemented (Phase 28)
      - For each of 6 expense categories
      - Check if expense is active (year within start/end timing)
      - Apply scenario overrides if present
      - Apply inflation to amounts
      - Sum all active expenses
-   - [ ] Add method: `_isExpenseActive(year, expense)`
-     - Convert start timing to year number
-     - Convert end timing to year number
-     - Return true if current year is within range
-   - [ ] Store expense breakdown in YearlyProjection
+   - [x] Modified to return both total and category breakdown
+   - [x] Store expense breakdown in YearlyProjection
 
 2. **Update YearlyProjection model:**
-   - [ ] Add `Map<String, double> expensesByCategory`
-   - [ ] Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
-   - [ ] Run build_runner
+   - [x] Add `Map<String, double> expensesByCategory`
+   - [x] Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
+   - [x] Run build_runner
 
 3. **Apply inflation correctly:**
-   - [ ] Compound inflation from start year
-   - [ ] Formula: baseAmount * (1 + inflationRate)^yearsFromStart
-   - [ ] Use inflationRate from base parameters
+   - [x] Compound inflation from start year (already implemented)
+   - [x] Formula: baseAmount * (1 + inflationRate)^yearsFromStart
+   - [x] Use inflationRate from base parameters
 
 4. **Handle expense timing edge cases:**
-   - [ ] Expense starts mid-projection
-   - [ ] Expense ends mid-projection
-   - [ ] Expense spans entire projection
-   - [ ] Multiple expenses of same category
+   - [x] Expense starts mid-projection (handled by timing resolution)
+   - [x] Expense ends mid-projection (handled by timing resolution)
+   - [x] Expense spans entire projection (supported)
+   - [x] Multiple expenses of same category (supported)
 
 **Manual Test Checklist:**
 - [ ] Expenses calculated for each category
@@ -365,6 +362,15 @@
 - [ ] Timing edge cases handled
 
 **Deliverable:** Expense calculation integrated into projection
+
+**Completion Notes:**
+- Most functionality was already implemented in Phase 28 (expense categories phase)
+- Added expense category breakdown tracking to YearlyProjection
+- Modified `_calculateExpensesForYear` to return Map with 'total' and 'byCategory'
+- Updated projection loop to extract and store category breakdown
+- All 38 existing unit tests still passing
+- Expense breakdown enables future detailed charts (Phases 32-33)
+- Import/export automatically compatible via Freezed serialization
 
 ---
 

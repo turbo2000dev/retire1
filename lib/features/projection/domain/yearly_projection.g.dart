@@ -20,6 +20,11 @@ _$YearlyProjectionImpl _$$YearlyProjectionImplFromJson(
       const {},
   totalIncome: (json['totalIncome'] as num).toDouble(),
   totalExpenses: (json['totalExpenses'] as num).toDouble(),
+  expensesByCategory:
+      (json['expensesByCategory'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toDouble()),
+      ) ??
+      const {},
   netCashFlow: (json['netCashFlow'] as num).toDouble(),
   assetsStartOfYear: (json['assetsStartOfYear'] as Map<String, dynamic>).map(
     (k, e) => MapEntry(k, (e as num).toDouble()),
@@ -46,6 +51,7 @@ Map<String, dynamic> _$$YearlyProjectionImplToJson(
   ),
   'totalIncome': instance.totalIncome,
   'totalExpenses': instance.totalExpenses,
+  'expensesByCategory': instance.expensesByCategory,
   'netCashFlow': instance.netCashFlow,
   'assetsStartOfYear': instance.assetsStartOfYear,
   'assetsEndOfYear': instance.assetsEndOfYear,

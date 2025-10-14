@@ -86,7 +86,7 @@ class ProjectionCalculator {
       final eventExpenses = eventResults['expenses'] ?? 0.0;
 
       // Calculate expenses from Expense entities (adjusted for inflation)
-      final expenseAmount = _calculateExpensesForYear(
+      final expenseResults = _calculateExpensesForYear(
         effectiveExpenses,
         year,
         yearsFromStart,
@@ -95,6 +95,9 @@ class ProjectionCalculator {
         events,
         inflationRate,
       );
+
+      final expenseAmount = expenseResults['total'] as double;
+      final expensesByCategory = expenseResults['byCategory'] as Map<String, double>;
 
       final totalIncome = eventIncome;
       final totalExpenses = eventExpenses + expenseAmount;
@@ -125,6 +128,7 @@ class ProjectionCalculator {
         spouseAge: spouseAge,
         totalIncome: totalIncome,
         totalExpenses: totalExpenses,
+        expensesByCategory: expensesByCategory,
         netCashFlow: netCashFlow,
         assetsStartOfYear: assetsStartOfYear,
         assetsEndOfYear: assetsEndOfYear,
@@ -682,7 +686,11 @@ class ProjectionCalculator {
   /// Expenses are entered in "today's dollars" (constant dollars at year 0)
   /// and are adjusted for inflation each year using the formula:
   /// adjustedAmount = baseAmount * (1 + inflationRate)^yearsFromStart
-  double _calculateExpensesForYear(
+  ///
+  /// Returns a Map with:
+  /// - 'total': total expenses for the year
+  /// - 'byCategory': Map of String to double for expenses by category
+  Map<String, dynamic> _calculateExpensesForYear(
     List<Expense> expenses,
     int year,
     int yearsFromStart,
@@ -692,6 +700,14 @@ class ProjectionCalculator {
     double inflationRate,
   ) {
     double totalExpenses = 0.0;
+    final expensesByCategory = <String, double>{
+      'housing': 0.0,
+      'transport': 0.0,
+      'dailyLiving': 0.0,
+      'recreation': 0.0,
+      'health': 0.0,
+      'family': 0.0,
+    };
 
     for (final expense in expenses) {
       // Extract timing information
@@ -749,11 +765,37 @@ class ProjectionCalculator {
         final inflationMultiplier = _calculateInflationMultiplier(inflationRate, yearsFromStart);
         final adjustedAmount = baseAmount * inflationMultiplier;
 
+        // Add to total
         totalExpenses += adjustedAmount;
+
+        // Add to category breakdown
+        expense.when(
+          housing: (_, __, ___, ____) {
+            expensesByCategory['housing'] = (expensesByCategory['housing'] ?? 0.0) + adjustedAmount;
+          },
+          transport: (_, __, ___, ____) {
+            expensesByCategory['transport'] = (expensesByCategory['transport'] ?? 0.0) + adjustedAmount;
+          },
+          dailyLiving: (_, __, ___, ____) {
+            expensesByCategory['dailyLiving'] = (expensesByCategory['dailyLiving'] ?? 0.0) + adjustedAmount;
+          },
+          recreation: (_, __, ___, ____) {
+            expensesByCategory['recreation'] = (expensesByCategory['recreation'] ?? 0.0) + adjustedAmount;
+          },
+          health: (_, __, ___, ____) {
+            expensesByCategory['health'] = (expensesByCategory['health'] ?? 0.0) + adjustedAmount;
+          },
+          family: (_, __, ___, ____) {
+            expensesByCategory['family'] = (expensesByCategory['family'] ?? 0.0) + adjustedAmount;
+          },
+        );
       }
     }
 
-    return totalExpenses;
+    return {
+      'total': totalExpenses,
+      'byCategory': expensesByCategory,
+    };
   }
 
   /// Calculate inflation multiplier for a given number of years

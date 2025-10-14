@@ -43,6 +43,11 @@ mixin _$YearlyProjection {
   /// Total expenses for the year
   double get totalExpenses => throw _privateConstructorUsedError;
 
+  /// Expenses by category (keyed by category name)
+  /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
+  Map<String, double> get expensesByCategory =>
+      throw _privateConstructorUsedError;
+
   /// Net cash flow (income - expenses)
   double get netCashFlow => throw _privateConstructorUsedError;
 
@@ -87,6 +92,7 @@ abstract class $YearlyProjectionCopyWith<$Res> {
     Map<String, AnnualIncome> incomeByIndividual,
     double totalIncome,
     double totalExpenses,
+    Map<String, double> expensesByCategory,
     double netCashFlow,
     Map<String, double> assetsStartOfYear,
     Map<String, double> assetsEndOfYear,
@@ -118,6 +124,7 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
     Object? incomeByIndividual = null,
     Object? totalIncome = null,
     Object? totalExpenses = null,
+    Object? expensesByCategory = null,
     Object? netCashFlow = null,
     Object? assetsStartOfYear = null,
     Object? assetsEndOfYear = null,
@@ -155,6 +162,10 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
                 ? _value.totalExpenses
                 : totalExpenses // ignore: cast_nullable_to_non_nullable
                       as double,
+            expensesByCategory: null == expensesByCategory
+                ? _value.expensesByCategory
+                : expensesByCategory // ignore: cast_nullable_to_non_nullable
+                      as Map<String, double>,
             netCashFlow: null == netCashFlow
                 ? _value.netCashFlow
                 : netCashFlow // ignore: cast_nullable_to_non_nullable
@@ -202,6 +213,7 @@ abstract class _$$YearlyProjectionImplCopyWith<$Res>
     Map<String, AnnualIncome> incomeByIndividual,
     double totalIncome,
     double totalExpenses,
+    Map<String, double> expensesByCategory,
     double netCashFlow,
     Map<String, double> assetsStartOfYear,
     Map<String, double> assetsEndOfYear,
@@ -232,6 +244,7 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
     Object? incomeByIndividual = null,
     Object? totalIncome = null,
     Object? totalExpenses = null,
+    Object? expensesByCategory = null,
     Object? netCashFlow = null,
     Object? assetsStartOfYear = null,
     Object? assetsEndOfYear = null,
@@ -269,6 +282,10 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
             ? _value.totalExpenses
             : totalExpenses // ignore: cast_nullable_to_non_nullable
                   as double,
+        expensesByCategory: null == expensesByCategory
+            ? _value._expensesByCategory
+            : expensesByCategory // ignore: cast_nullable_to_non_nullable
+                  as Map<String, double>,
         netCashFlow: null == netCashFlow
             ? _value.netCashFlow
             : netCashFlow // ignore: cast_nullable_to_non_nullable
@@ -309,6 +326,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     final Map<String, AnnualIncome> incomeByIndividual = const {},
     required this.totalIncome,
     required this.totalExpenses,
+    final Map<String, double> expensesByCategory = const {},
     required this.netCashFlow,
     required final Map<String, double> assetsStartOfYear,
     required final Map<String, double> assetsEndOfYear,
@@ -316,6 +334,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     required this.netWorthEndOfYear,
     required final List<String> eventsOccurred,
   }) : _incomeByIndividual = incomeByIndividual,
+       _expensesByCategory = expensesByCategory,
        _assetsStartOfYear = assetsStartOfYear,
        _assetsEndOfYear = assetsEndOfYear,
        _eventsOccurred = eventsOccurred;
@@ -359,6 +378,21 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
   /// Total expenses for the year
   @override
   final double totalExpenses;
+
+  /// Expenses by category (keyed by category name)
+  /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
+  final Map<String, double> _expensesByCategory;
+
+  /// Expenses by category (keyed by category name)
+  /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
+  @override
+  @JsonKey()
+  Map<String, double> get expensesByCategory {
+    if (_expensesByCategory is EqualUnmodifiableMapView)
+      return _expensesByCategory;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_expensesByCategory);
+  }
 
   /// Net cash flow (income - expenses)
   @override
@@ -408,7 +442,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
 
   @override
   String toString() {
-    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, totalExpenses: $totalExpenses, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
+    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
   }
 
   @override
@@ -431,6 +465,10 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
                 other.totalIncome == totalIncome) &&
             (identical(other.totalExpenses, totalExpenses) ||
                 other.totalExpenses == totalExpenses) &&
+            const DeepCollectionEquality().equals(
+              other._expensesByCategory,
+              _expensesByCategory,
+            ) &&
             (identical(other.netCashFlow, netCashFlow) ||
                 other.netCashFlow == netCashFlow) &&
             const DeepCollectionEquality().equals(
@@ -462,6 +500,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     const DeepCollectionEquality().hash(_incomeByIndividual),
     totalIncome,
     totalExpenses,
+    const DeepCollectionEquality().hash(_expensesByCategory),
     netCashFlow,
     const DeepCollectionEquality().hash(_assetsStartOfYear),
     const DeepCollectionEquality().hash(_assetsEndOfYear),
@@ -496,6 +535,7 @@ abstract class _YearlyProjection implements YearlyProjection {
     final Map<String, AnnualIncome> incomeByIndividual,
     required final double totalIncome,
     required final double totalExpenses,
+    final Map<String, double> expensesByCategory,
     required final double netCashFlow,
     required final Map<String, double> assetsStartOfYear,
     required final Map<String, double> assetsEndOfYear,
@@ -534,6 +574,11 @@ abstract class _YearlyProjection implements YearlyProjection {
   /// Total expenses for the year
   @override
   double get totalExpenses;
+
+  /// Expenses by category (keyed by category name)
+  /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
+  @override
+  Map<String, double> get expensesByCategory;
 
   /// Net cash flow (income - expenses)
   @override
