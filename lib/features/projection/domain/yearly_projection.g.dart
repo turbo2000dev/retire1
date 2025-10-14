@@ -13,6 +13,11 @@ _$YearlyProjectionImpl _$$YearlyProjectionImplFromJson(
   yearsFromStart: (json['yearsFromStart'] as num).toInt(),
   primaryAge: (json['primaryAge'] as num?)?.toInt(),
   spouseAge: (json['spouseAge'] as num?)?.toInt(),
+  incomeByIndividual:
+      (json['incomeByIndividual'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, AnnualIncome.fromJson(e as Map<String, dynamic>)),
+      ) ??
+      const {},
   totalIncome: (json['totalIncome'] as num).toDouble(),
   totalExpenses: (json['totalExpenses'] as num).toDouble(),
   netCashFlow: (json['netCashFlow'] as num).toDouble(),
@@ -36,6 +41,9 @@ Map<String, dynamic> _$$YearlyProjectionImplToJson(
   'yearsFromStart': instance.yearsFromStart,
   'primaryAge': instance.primaryAge,
   'spouseAge': instance.spouseAge,
+  'incomeByIndividual': instance.incomeByIndividual.map(
+    (k, e) => MapEntry(k, e.toJson()),
+  ),
   'totalIncome': instance.totalIncome,
   'totalExpenses': instance.totalExpenses,
   'netCashFlow': instance.netCashFlow,

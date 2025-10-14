@@ -251,47 +251,51 @@
 
 ### Tasks:
 1. **Create income calculation models:**
-   - [ ] Create `lib/features/projection/domain/annual_income.dart`
-   - [ ] Fields: employment, rrq, psv, rrpe, other, total
-   - [ ] Use Freezed
-   - [ ] Run build_runner
+   - [x] Create `lib/features/projection/domain/annual_income.dart`
+   - [x] Fields: employment, rrq, psv, rrpe, other, total
+   - [x] Use Freezed
+   - [x] Run build_runner
 
-2. **Extend ProjectionCalculator:**
-   - [ ] Add method: `_calculateEmploymentIncome(year, individual, events)`
-     - If before retirement: use employmentIncome from base parameters
-     - If after retirement: 0
-     - Check retirement event timing
-   - [ ] Add method: `_calculateRRQ(year, individual)`
-     - If age >= rrqStartAge: calculate based on earnings history
+2. **Create income constants:**
+   - [x] Create `lib/features/projection/service/income_constants.dart`
+   - [x] Define 2025 RRQ constants (max benefit, early penalty, late bonus)
+   - [x] Define 2025 PSV constants (base amount, clawback threshold, clawback rate)
+   - [x] Define RRIF minimum withdrawal rates (ages 65-95+)
+
+3. **Update Individual model:**
+   - [x] Add `rrqAnnualBenefit` field (user-specified RRQ benefit amount)
+   - [x] Run build_runner
+
+4. **Create IncomeCalculator service:**
+   - [x] Create `lib/features/projection/service/income_calculator.dart`
+   - [x] Method: `calculateIncome()` - calculates all income sources
+   - [x] Method: `_calculateEmploymentIncome()` - continues until retirement event
+   - [x] Method: `_calculateRRQ()` - applies age-based adjustments
      - Early penalty: -0.6% per month before 65
      - Late bonus: +0.7% per month after 65
-     - Max benefit: ~$16,000/year (2025 estimate)
-     - Formula: maxBenefit * adjustmentFactor
-   - [ ] Add method: `_calculatePSV(year, individual, totalIncome)`
-     - If age >= psvStartAge: base amount ~$8,500/year
-     - Clawback: 15% on income over ~$90,000
-     - Formula: max(0, baseAmount - clawback)
-   - [ ] Add method: `_calculateRRPE(year, assetBalances)`
-     - If CRI/FRV account exists: minimum annual withdrawal
-     - Formula based on age and account balance
-     - Varies from ~5% at 65 to ~20% at 95
+     - Uses user-specified rrqAnnualBenefit as base
+   - [x] Method: `_calculatePSV()` - applies income-based clawback
+     - Base amount: $8,500/year
+     - Clawback: 15% on income over $90,000
+   - [x] Method: `_calculateRRPE()` - calculates RRIF minimum withdrawal
+     - Age-based percentages from 4% (age 65) to 20% (age 95+)
 
-3. **Add income calculation to yearly loop:**
-   - [ ] For each individual, calculate all income sources
-   - [ ] Sum employment + RRQ + PSV + RRPE
-   - [ ] Store in YearlyProjection.incomeBySource (new field)
-   - [ ] Store total in YearlyProjection.totalIncome
+5. **Update YearlyProjection model:**
+   - [x] Add `Map<String, AnnualIncome> incomeByIndividual`
+   - [x] Supports per-individual income tracking for couples
+   - [x] Run build_runner
 
-4. **Update YearlyProjection model:**
-   - [ ] Add `Map<String, double> incomeBySource`
-   - [ ] Keys: 'employment', 'rrq', 'psv', 'rrpe', 'other'
-   - [ ] Run build_runner
+6. **Create IncomeCalculator provider:**
+   - [x] Add incomeCalculatorProvider to projection_provider.dart
+   - [x] Make available for dependency injection
 
-5. **Add unit tests:**
-   - [ ] Test employment income before/after retirement
-   - [ ] Test RRQ with early/on-time/late start
-   - [ ] Test PSV with clawback
-   - [ ] Test RRPE minimum withdrawal
+7. **Add unit tests:**
+   - [x] Test RRQ with early/on-time/late start (5 tests)
+   - [x] Test PSV with various income levels and clawback (5 tests)
+   - [x] Test RRPE minimum withdrawal at different ages (6 tests)
+   - [x] Test income constants verification (2 tests)
+   - [x] Test combined income calculation (2 tests)
+   - [x] All 20 tests passing
 
 **Manual Test Checklist:**
 - [ ] Employment income stops at retirement
@@ -304,6 +308,17 @@
 - [ ] All income sources sum correctly
 
 **Deliverable:** Complete income calculation for all sources
+
+**Completion Notes:**
+- Implemented with hardcoded 2025 constants (consistent with Phase 25 tax brackets)
+- RRQ benefit uses user-specified rrqAnnualBenefit field (default $16,000) instead of earnings history
+- Income tracking supports both individuals and couples via Map<String, AnnualIncome>
+- Employment income uses binary model (full or zero) with placeholder for retirement event integration
+- PSV clawback calculated based on total other income (employment + RRQ)
+- RRIF withdrawal rates include full table from age 65 to 95+ (20% cap)
+- Comprehensive test suite with 20 unit tests covering all income sources and edge cases
+- All calculations use dart:developer log() for debugging (not print)
+- Ready for integration with ProjectionCalculator in Phase 27
 
 ---
 

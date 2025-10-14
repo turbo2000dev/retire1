@@ -33,7 +33,11 @@ mixin _$YearlyProjection {
   /// Age of spouse at start of year (if applicable)
   int? get spouseAge => throw _privateConstructorUsedError;
 
-  /// Total income for the year
+  /// Income by individual (keyed by individual ID)
+  Map<String, AnnualIncome> get incomeByIndividual =>
+      throw _privateConstructorUsedError;
+
+  /// Total income for the year (household)
   double get totalIncome => throw _privateConstructorUsedError;
 
   /// Total expenses for the year
@@ -80,6 +84,7 @@ abstract class $YearlyProjectionCopyWith<$Res> {
     int yearsFromStart,
     int? primaryAge,
     int? spouseAge,
+    Map<String, AnnualIncome> incomeByIndividual,
     double totalIncome,
     double totalExpenses,
     double netCashFlow,
@@ -110,6 +115,7 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
     Object? yearsFromStart = null,
     Object? primaryAge = freezed,
     Object? spouseAge = freezed,
+    Object? incomeByIndividual = null,
     Object? totalIncome = null,
     Object? totalExpenses = null,
     Object? netCashFlow = null,
@@ -137,6 +143,10 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
                 ? _value.spouseAge
                 : spouseAge // ignore: cast_nullable_to_non_nullable
                       as int?,
+            incomeByIndividual: null == incomeByIndividual
+                ? _value.incomeByIndividual
+                : incomeByIndividual // ignore: cast_nullable_to_non_nullable
+                      as Map<String, AnnualIncome>,
             totalIncome: null == totalIncome
                 ? _value.totalIncome
                 : totalIncome // ignore: cast_nullable_to_non_nullable
@@ -189,6 +199,7 @@ abstract class _$$YearlyProjectionImplCopyWith<$Res>
     int yearsFromStart,
     int? primaryAge,
     int? spouseAge,
+    Map<String, AnnualIncome> incomeByIndividual,
     double totalIncome,
     double totalExpenses,
     double netCashFlow,
@@ -218,6 +229,7 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
     Object? yearsFromStart = null,
     Object? primaryAge = freezed,
     Object? spouseAge = freezed,
+    Object? incomeByIndividual = null,
     Object? totalIncome = null,
     Object? totalExpenses = null,
     Object? netCashFlow = null,
@@ -245,6 +257,10 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
             ? _value.spouseAge
             : spouseAge // ignore: cast_nullable_to_non_nullable
                   as int?,
+        incomeByIndividual: null == incomeByIndividual
+            ? _value._incomeByIndividual
+            : incomeByIndividual // ignore: cast_nullable_to_non_nullable
+                  as Map<String, AnnualIncome>,
         totalIncome: null == totalIncome
             ? _value.totalIncome
             : totalIncome // ignore: cast_nullable_to_non_nullable
@@ -290,6 +306,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     required this.yearsFromStart,
     required this.primaryAge,
     required this.spouseAge,
+    final Map<String, AnnualIncome> incomeByIndividual = const {},
     required this.totalIncome,
     required this.totalExpenses,
     required this.netCashFlow,
@@ -298,7 +315,8 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     required this.netWorthStartOfYear,
     required this.netWorthEndOfYear,
     required final List<String> eventsOccurred,
-  }) : _assetsStartOfYear = assetsStartOfYear,
+  }) : _incomeByIndividual = incomeByIndividual,
+       _assetsStartOfYear = assetsStartOfYear,
        _assetsEndOfYear = assetsEndOfYear,
        _eventsOccurred = eventsOccurred;
 
@@ -321,7 +339,20 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
   @override
   final int? spouseAge;
 
-  /// Total income for the year
+  /// Income by individual (keyed by individual ID)
+  final Map<String, AnnualIncome> _incomeByIndividual;
+
+  /// Income by individual (keyed by individual ID)
+  @override
+  @JsonKey()
+  Map<String, AnnualIncome> get incomeByIndividual {
+    if (_incomeByIndividual is EqualUnmodifiableMapView)
+      return _incomeByIndividual;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_incomeByIndividual);
+  }
+
+  /// Total income for the year (household)
   @override
   final double totalIncome;
 
@@ -377,7 +408,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
 
   @override
   String toString() {
-    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, totalIncome: $totalIncome, totalExpenses: $totalExpenses, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
+    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, totalExpenses: $totalExpenses, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
   }
 
   @override
@@ -392,6 +423,10 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
                 other.primaryAge == primaryAge) &&
             (identical(other.spouseAge, spouseAge) ||
                 other.spouseAge == spouseAge) &&
+            const DeepCollectionEquality().equals(
+              other._incomeByIndividual,
+              _incomeByIndividual,
+            ) &&
             (identical(other.totalIncome, totalIncome) ||
                 other.totalIncome == totalIncome) &&
             (identical(other.totalExpenses, totalExpenses) ||
@@ -424,6 +459,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     yearsFromStart,
     primaryAge,
     spouseAge,
+    const DeepCollectionEquality().hash(_incomeByIndividual),
     totalIncome,
     totalExpenses,
     netCashFlow,
@@ -457,6 +493,7 @@ abstract class _YearlyProjection implements YearlyProjection {
     required final int yearsFromStart,
     required final int? primaryAge,
     required final int? spouseAge,
+    final Map<String, AnnualIncome> incomeByIndividual,
     required final double totalIncome,
     required final double totalExpenses,
     required final double netCashFlow,
@@ -486,7 +523,11 @@ abstract class _YearlyProjection implements YearlyProjection {
   @override
   int? get spouseAge;
 
-  /// Total income for the year
+  /// Income by individual (keyed by individual ID)
+  @override
+  Map<String, AnnualIncome> get incomeByIndividual;
+
+  /// Total income for the year (household)
   @override
   double get totalIncome;
 

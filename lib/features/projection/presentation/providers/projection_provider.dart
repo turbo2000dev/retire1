@@ -7,6 +7,7 @@ import 'package:retire1/features/expenses/domain/expense.dart';
 import 'package:retire1/features/expenses/presentation/providers/expenses_provider.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
+import 'package:retire1/features/projection/service/income_calculator.dart';
 import 'package:retire1/features/projection/service/projection_calculator.dart';
 import 'package:retire1/features/projection/service/tax_calculator.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
@@ -20,6 +21,11 @@ final projectionCalculatorProvider = Provider<ProjectionCalculator>((ref) {
 /// Provider for the tax calculator service
 final taxCalculatorProvider = Provider<TaxCalculator>((ref) {
   return TaxCalculator();
+});
+
+/// Provider for the income calculator service
+final incomeCalculatorProvider = Provider<IncomeCalculator>((ref) {
+  return IncomeCalculator();
 });
 
 /// Provider for calculating projection for a specific scenario with caching

@@ -14,7 +14,8 @@ class Individual with _$Individual {
     required DateTime birthdate,
     @Default(0.0) double employmentIncome, // Annual salary
     @Default(65) int rrqStartAge, // RRQ start age (60-70)
-    @Default(65) int psvStartAge, // PSV start age (60-70)
+    @Default(65) int psvStartAge, // PSV start age (65-70, OAS age)
+    @Default(16000.0) double rrqAnnualBenefit, // Expected annual RRQ benefit at 65
   }) = _Individual;
 
   factory Individual.fromJson(Map<String, dynamic> json) =>

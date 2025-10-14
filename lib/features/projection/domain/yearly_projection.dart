@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'annual_income.dart';
+
 part 'yearly_projection.freezed.dart';
 part 'yearly_projection.g.dart';
 
@@ -19,7 +21,10 @@ class YearlyProjection with _$YearlyProjection {
     /// Age of spouse at start of year (if applicable)
     required int? spouseAge,
 
-    /// Total income for the year
+    /// Income by individual (keyed by individual ID)
+    @Default({}) Map<String, AnnualIncome> incomeByIndividual,
+
+    /// Total income for the year (household)
     required double totalIncome,
 
     /// Total expenses for the year
