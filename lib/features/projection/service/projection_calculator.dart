@@ -99,11 +99,12 @@ class ProjectionCalculator {
       final criMinimumIncome = criMinimums.values.fold(0.0, (a, b) => a + b);
 
       // STEP 2: Calculate income for all individuals (employment, RRQ, PSV, RRPE)
+      // Pass only events that have occurred so far (for death/retirement checks)
       final incomeResults = _calculateIncomeForYear(
         project: project,
         year: year,
         yearsFromStart: yearsFromStart,
-        events: effectiveEvents,
+        events: allYearEventsSoFar,
         assetValues: currentAssetValues,
       );
 
@@ -156,6 +157,8 @@ class ProjectionCalculator {
       final afterTaxIncome = cashFlowResults['afterTaxIncome'] as double;
       final withdrawalsByAccount = cashFlowResults['withdrawalsByAccount'] as Map<String, double>;
       final totalWithdrawals = cashFlowResults['totalWithdrawals'] as double;
+      final hasShortfall = cashFlowResults['hasShortfall'] as bool;
+      final shortfallAmount = cashFlowResults['shortfallAmount'] as double;
 
       // STEP 6: Apply withdrawals to asset balances
       for (final entry in withdrawalsByAccount.entries) {
@@ -214,7 +217,7 @@ class ProjectionCalculator {
       final assetsEndOfYear = Map<String, double>.from(currentAssetValues);
       final netWorthEndOfYear = assetsEndOfYear.values.fold(0.0, (sum, value) => sum + value);
 
-      // Create yearly projection with all Phase 30 fields
+      // Create yearly projection with all fields including Phase 31 shortfall tracking
       years.add(
         YearlyProjection(
           year: year,
@@ -242,6 +245,8 @@ class ProjectionCalculator {
           netWorthStartOfYear: netWorthStartOfYear,
           netWorthEndOfYear: netWorthEndOfYear,
           eventsOccurred: yearEvents.map((e) => _getEventId(e)).toList(),
+          hasShortfall: hasShortfall,
+          shortfallAmount: shortfallAmount,
         ),
       );
 
@@ -1012,6 +1017,7 @@ class ProjectionCalculator {
         age: age,
         events: events,
         criBalance: criBalance,
+        allIndividuals: project.individuals, // Pass all individuals for survivor benefit calculation
       );
 
       incomeByIndividual[individual.id] = income;
@@ -1226,6 +1232,8 @@ class ProjectionCalculator {
           ...taxResults,
           'withdrawalsByAccount': finalWithdrawals,
           'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
+          'hasShortfall': false,
+          'shortfallAmount': 0.0,
         };
       }
 
@@ -1240,6 +1248,13 @@ class ProjectionCalculator {
       );
 
       finalWithdrawals = withdrawals;
+
+      // Calculate total actual withdrawals
+      final totalActualWithdrawals = withdrawals.values.fold(0.0, (a, b) => a + b);
+
+      // Check if withdrawals covered the full shortfall
+      final remainingShortfall = shortfall - totalActualWithdrawals;
+      final hasShortfall = remainingShortfall > 0.01; // $0.01 threshold
 
       // Calculate REER withdrawals (which are taxable)
       reerWithdrawalsThisIteration = _sumReerWithdrawals(withdrawals, assetMap);
@@ -1267,6 +1282,8 @@ class ProjectionCalculator {
           ...finalTaxResults,
           'withdrawalsByAccount': finalWithdrawals,
           'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
+          'hasShortfall': hasShortfall,
+          'shortfallAmount': hasShortfall ? remainingShortfall : 0.0,
         };
       }
 
@@ -1283,17 +1300,26 @@ class ProjectionCalculator {
     // Hit max iterations without converging
     log('Warning: Tax/withdrawal calculation did not converge after $maxIterations iterations', level: 900);
 
+    // Calculate final shortfall status
+    final totalActualWithdrawals = finalWithdrawals.values.fold(0.0, (a, b) => a + b);
+    final finalTaxes = _calculateTaxesForYear(
+      project: project,
+      year: year,
+      incomeByIndividual: incomeByIndividual,
+      totalIncome: currentIncome,
+    );
+    final finalShortfall = (totalExpenses + (finalTaxes['totalTax'] as double)) - currentIncome;
+    final remainingShortfall = finalShortfall - totalActualWithdrawals;
+    final hasShortfall = remainingShortfall > 0.01;
+
     // Return best approximation
     return {
       'totalIncome': currentIncome,
-      ..._calculateTaxesForYear(
-        project: project,
-        year: year,
-        incomeByIndividual: incomeByIndividual,
-        totalIncome: currentIncome,
-      ),
+      ...finalTaxes,
       'withdrawalsByAccount': finalWithdrawals,
-      'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
+      'totalWithdrawals': totalActualWithdrawals,
+      'hasShortfall': hasShortfall,
+      'shortfallAmount': hasShortfall ? remainingShortfall : 0.0,
     };
   }
 }

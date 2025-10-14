@@ -1,6 +1,6 @@
 {
   "exportVersion": "1.2",
-  "exportedAt": "2025-10-14T14:44:20.597",
+  "exportedAt": "2025-10-14T15:08:28.866",
   "project": {
     "id": "hCtjYeHdiiO4WwpVZMWU",
     "name": "Test Project",
@@ -119,7 +119,7 @@
       "individualId": "1760301803411",
       "timing": {
         "individualId": "1760301803411",
-        "age": 91,
+        "age": 96,
         "runtimeType": "age"
       },
       "runtimeType": "death"

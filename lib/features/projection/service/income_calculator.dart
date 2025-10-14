@@ -19,8 +19,9 @@ class IncomeCalculator {
   /// - [year]: The projection year (calendar year)
   /// - [yearsFromStart]: Years from start of projection
   /// - [age]: Individual's age during this year
-  /// - [events]: List of lifecycle events
+  /// - [events]: List of lifecycle events (that have occurred so far)
   /// - [criBalance]: Current CRI/RRIF account balance (for RRPE calculation)
+  /// - [allIndividuals]: All individuals in the project (for survivor benefit calculation)
   ///
   /// Returns an [AnnualIncome] object with all income sources
   AnnualIncome calculateIncome({
@@ -30,9 +31,28 @@ class IncomeCalculator {
     required int age,
     required List<Event> events,
     double criBalance = 0.0,
+    List<Individual> allIndividuals = const [],
   }) {
     log('IncomeCalculator.calculateIncome: year=$year, age=$age, individual=${individual.name}',
         name: 'IncomeCalculator');
+
+    // Check if individual is deceased (death event occurred)
+    final isDeceased = _isIndividualDeceased(
+      individual: individual,
+      events: events,
+    );
+
+    if (isDeceased) {
+      log('IncomeCalculator: Individual ${individual.name} is deceased - no income',
+          name: 'IncomeCalculator');
+      return AnnualIncome(
+        employment: 0.0,
+        rrq: 0.0,
+        psv: 0.0,
+        rrpe: 0.0,
+        other: 0.0,
+      );
+    }
 
     // Calculate each income source
     final employment = _calculateEmploymentIncome(
@@ -58,19 +78,113 @@ class IncomeCalculator {
       criBalance: criBalance,
     );
 
+    // Calculate survivor benefits from deceased spouses
+    final survivorBenefits = _calculateSurvivorBenefits(
+      individual: individual,
+      allIndividuals: allIndividuals,
+      events: events,
+      year: year,
+    );
+
     final income = AnnualIncome(
       employment: employment,
       rrq: rrq,
       psv: psv,
       rrpe: rrpe,
-      other: 0.0, // Reserved for future income sources
+      other: survivorBenefits, // Survivor benefits go in 'other'
     );
 
     log('IncomeCalculator: Total income=${income.total} '
-        '(employment=$employment, rrq=$rrq, psv=$psv, rrpe=$rrpe)',
+        '(employment=$employment, rrq=$rrq, psv=$psv, rrpe=$rrpe, survivor=$survivorBenefits)',
         name: 'IncomeCalculator');
 
     return income;
+  }
+
+  /// Check if an individual is deceased based on death events that have occurred
+  bool _isIndividualDeceased({
+    required Individual individual,
+    required List<Event> events,
+  }) {
+    // Check if death event exists for this individual in events that have occurred
+    final deathEvent = events.where((event) {
+      return event.when(
+        death: (id, individualId, timing) => individualId == individual.id,
+        retirement: (id, individualId, timing) => false,
+        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
+                withdrawAccountId, depositAccountId) =>
+            false,
+      );
+    }).firstOrNull;
+
+    return deathEvent != null;
+  }
+
+  /// Calculate survivor benefits from deceased spouses
+  ///
+  /// Simplified survivor benefit calculation:
+  /// - Survivor receives 60% of deceased spouse's RRQ and PSV benefits
+  /// - This is a simplified model (actual RRQ/QPP survivor rules are complex)
+  double _calculateSurvivorBenefits({
+    required Individual individual,
+    required List<Individual> allIndividuals,
+    required List<Event> events,
+    required int year,
+  }) {
+    double totalSurvivorBenefits = 0.0;
+
+    // Find all deceased individuals (potential spouses)
+    for (final otherIndividual in allIndividuals) {
+      // Skip self
+      if (otherIndividual.id == individual.id) continue;
+
+      // Check if this individual is deceased
+      final isDeceased = _isIndividualDeceased(
+        individual: otherIndividual,
+        events: events,
+      );
+
+      if (!isDeceased) continue;
+
+      // Calculate what their RRQ and PSV would have been
+      final deceasedAge = _calculateAgeAtYear(otherIndividual.birthdate, year);
+
+      // Calculate deceased's RRQ (if they were receiving it)
+      double deceasedRRQ = 0.0;
+      if (deceasedAge >= otherIndividual.rrqStartAge) {
+        deceasedRRQ = _calculateRRQ(
+          individual: otherIndividual,
+          age: deceasedAge,
+        );
+      }
+
+      // Calculate deceased's PSV (if they were receiving it)
+      double deceasedPSV = 0.0;
+      if (deceasedAge >= otherIndividual.psvStartAge) {
+        // For survivor benefit calculation, assume no clawback on deceased's PSV
+        // (simplified model)
+        deceasedPSV = kPSVBaseAmount2025;
+      }
+
+      // Survivor receives 60% of RRQ and PSV
+      const survivorBenefitRate = 0.60;
+      final survivorBenefit = (deceasedRRQ + deceasedPSV) * survivorBenefitRate;
+
+      log('IncomeCalculator._calculateSurvivorBenefits: ${individual.name} receives '
+          '\$$survivorBenefit from deceased ${otherIndividual.name} '
+          '(RRQ: \$$deceasedRRQ, PSV: \$$deceasedPSV)',
+          name: 'IncomeCalculator');
+
+      totalSurvivorBenefits += survivorBenefit;
+    }
+
+    return totalSurvivorBenefits;
+  }
+
+  /// Helper to calculate age at a specific year
+  int _calculateAgeAtYear(DateTime birthdate, int year) {
+    int age = year - birthdate.year;
+    return age;
   }
 
   /// Calculate employment income for the year

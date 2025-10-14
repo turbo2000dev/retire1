@@ -102,6 +102,12 @@ mixin _$YearlyProjection {
   /// Events that occurred during this year
   List<String> get eventsOccurred => throw _privateConstructorUsedError;
 
+  /// Whether there was a shortfall this year (insufficient funds to cover expenses)
+  bool get hasShortfall => throw _privateConstructorUsedError;
+
+  /// Amount of shortfall if hasShortfall is true
+  double get shortfallAmount => throw _privateConstructorUsedError;
+
   /// Serializes this YearlyProjection to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -145,6 +151,8 @@ abstract class $YearlyProjectionCopyWith<$Res> {
     double netWorthStartOfYear,
     double netWorthEndOfYear,
     List<String> eventsOccurred,
+    bool hasShortfall,
+    double shortfallAmount,
   });
 }
 
@@ -188,6 +196,8 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
     Object? netWorthStartOfYear = null,
     Object? netWorthEndOfYear = null,
     Object? eventsOccurred = null,
+    Object? hasShortfall = null,
+    Object? shortfallAmount = null,
   }) {
     return _then(
       _value.copyWith(
@@ -291,6 +301,14 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
                 ? _value.eventsOccurred
                 : eventsOccurred // ignore: cast_nullable_to_non_nullable
                       as List<String>,
+            hasShortfall: null == hasShortfall
+                ? _value.hasShortfall
+                : hasShortfall // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            shortfallAmount: null == shortfallAmount
+                ? _value.shortfallAmount
+                : shortfallAmount // ignore: cast_nullable_to_non_nullable
+                      as double,
           )
           as $Val,
     );
@@ -332,6 +350,8 @@ abstract class _$$YearlyProjectionImplCopyWith<$Res>
     double netWorthStartOfYear,
     double netWorthEndOfYear,
     List<String> eventsOccurred,
+    bool hasShortfall,
+    double shortfallAmount,
   });
 }
 
@@ -374,6 +394,8 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
     Object? netWorthStartOfYear = null,
     Object? netWorthEndOfYear = null,
     Object? eventsOccurred = null,
+    Object? hasShortfall = null,
+    Object? shortfallAmount = null,
   }) {
     return _then(
       _$YearlyProjectionImpl(
@@ -477,6 +499,14 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
             ? _value._eventsOccurred
             : eventsOccurred // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        hasShortfall: null == hasShortfall
+            ? _value.hasShortfall
+            : hasShortfall // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        shortfallAmount: null == shortfallAmount
+            ? _value.shortfallAmount
+            : shortfallAmount // ignore: cast_nullable_to_non_nullable
+                  as double,
       ),
     );
   }
@@ -511,6 +541,8 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     required this.netWorthStartOfYear,
     required this.netWorthEndOfYear,
     required final List<String> eventsOccurred,
+    this.hasShortfall = false,
+    this.shortfallAmount = 0.0,
   }) : _incomeByIndividual = incomeByIndividual,
        _expensesByCategory = expensesByCategory,
        _withdrawalsByAccount = withdrawalsByAccount,
@@ -699,9 +731,19 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     return EqualUnmodifiableListView(_eventsOccurred);
   }
 
+  /// Whether there was a shortfall this year (insufficient funds to cover expenses)
+  @override
+  @JsonKey()
+  final bool hasShortfall;
+
+  /// Amount of shortfall if hasShortfall is true
+  @override
+  @JsonKey()
+  final double shortfallAmount;
+
   @override
   String toString() {
-    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, taxableIncome: $taxableIncome, federalTax: $federalTax, quebecTax: $quebecTax, totalTax: $totalTax, afterTaxIncome: $afterTaxIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, withdrawalsByAccount: $withdrawalsByAccount, contributionsByAccount: $contributionsByAccount, totalWithdrawals: $totalWithdrawals, totalContributions: $totalContributions, celiContributionRoom: $celiContributionRoom, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, assetReturns: $assetReturns, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
+    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, taxableIncome: $taxableIncome, federalTax: $federalTax, quebecTax: $quebecTax, totalTax: $totalTax, afterTaxIncome: $afterTaxIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, withdrawalsByAccount: $withdrawalsByAccount, contributionsByAccount: $contributionsByAccount, totalWithdrawals: $totalWithdrawals, totalContributions: $totalContributions, celiContributionRoom: $celiContributionRoom, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, assetReturns: $assetReturns, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred, hasShortfall: $hasShortfall, shortfallAmount: $shortfallAmount)';
   }
 
   @override
@@ -773,7 +815,11 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
             const DeepCollectionEquality().equals(
               other._eventsOccurred,
               _eventsOccurred,
-            ));
+            ) &&
+            (identical(other.hasShortfall, hasShortfall) ||
+                other.hasShortfall == hasShortfall) &&
+            (identical(other.shortfallAmount, shortfallAmount) ||
+                other.shortfallAmount == shortfallAmount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -805,6 +851,8 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     netWorthStartOfYear,
     netWorthEndOfYear,
     const DeepCollectionEquality().hash(_eventsOccurred),
+    hasShortfall,
+    shortfallAmount,
   ]);
 
   /// Create a copy of YearlyProjection
@@ -851,6 +899,8 @@ abstract class _YearlyProjection implements YearlyProjection {
     required final double netWorthStartOfYear,
     required final double netWorthEndOfYear,
     required final List<String> eventsOccurred,
+    final bool hasShortfall,
+    final double shortfallAmount,
   }) = _$YearlyProjectionImpl;
 
   factory _YearlyProjection.fromJson(Map<String, dynamic> json) =
@@ -956,6 +1006,14 @@ abstract class _YearlyProjection implements YearlyProjection {
   /// Events that occurred during this year
   @override
   List<String> get eventsOccurred;
+
+  /// Whether there was a shortfall this year (insufficient funds to cover expenses)
+  @override
+  bool get hasShortfall;
+
+  /// Amount of shortfall if hasShortfall is true
+  @override
+  double get shortfallAmount;
 
   /// Create a copy of YearlyProjection
   /// with the given fields replaced by the non-null parameter values.

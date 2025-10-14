@@ -135,9 +135,26 @@ class ProjectionTable extends StatelessWidget {
                     ),
                     numeric: true,
                   ),
+                  DataColumn(
+                    label: Text(
+                      'Shortfall',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    numeric: true,
+                  ),
                 ],
                 rows: projection.years.map((year) {
+                  // Add warning color for years with shortfalls
+                  final rowColor = year.hasShortfall
+                      ? theme.colorScheme.errorContainer.withOpacity(0.3)
+                      : null;
+
                   return DataRow(
+                    color: rowColor != null
+                        ? WidgetStateProperty.all(rowColor)
+                        : null,
                     cells: [
                       DataCell(
                         Text(
@@ -155,14 +172,33 @@ class ProjectionTable extends StatelessWidget {
                           ),
                         ),
                       DataCell(
-                        Text(
-                          currencyFormat.format(year.totalIncome),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: year.totalIncome > 0
-                                ? theme.colorScheme.tertiary
-                                : null,
-                          ),
-                        ),
+                        // Check if there are survivor benefits (other income > 0)
+                        year.incomeByIndividual.values.any((income) => income.other > 0)
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.favorite,
+                                    size: 14,
+                                    color: theme.colorScheme.tertiary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    currencyFormat.format(year.totalIncome),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.tertiary,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                currencyFormat.format(year.totalIncome),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: year.totalIncome > 0
+                                      ? theme.colorScheme.tertiary
+                                      : null,
+                                ),
+                              ),
                       ),
                       DataCell(
                         Text(
@@ -233,6 +269,31 @@ class ProjectionTable extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ),
+                      DataCell(
+                        year.hasShortfall
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.warning,
+                                    size: 16,
+                                    color: theme.colorScheme.error,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    currencyFormat.format(year.shortfallAmount),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.error,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                '-',
+                                style: theme.textTheme.bodyMedium,
+                              ),
                       ),
                     ],
                   );

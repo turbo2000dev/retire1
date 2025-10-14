@@ -593,51 +593,72 @@
 
 ### Tasks:
 1. **Handle death events:**
-   - [ ] When individual dies:
-     - Stop their employment income
-     - Stop their RRQ (or reduce to survivor benefit)
-     - Stop their PSV
-     - Transfer REER/RRSP to survivor (tax-deferred if spouse)
-     - Transfer CELI to survivor (tax-free)
-     - CRI/FRV to survivor
-   - [ ] Mark individual as deceased in projection
-   - [ ] Update YearlyProjection to track deceased status
+   - [x] When individual dies:
+     - [x] Stop their employment income
+     - [x] Stop their RRQ and PSV
+     - [x] Survivor benefits calculated separately (60% rule)
+     - [ ] Transfer REER/RRSP to survivor (deferred - assets remain in projection)
+     - [ ] Transfer CELI to survivor (deferred - assets remain in projection)
+     - [ ] CRI/FRV to survivor (deferred - assets remain in projection)
+   - [x] Individual income calculation checks death status
+   - [x] Death detection uses event timeline (not YearlyProjection field)
 
 2. **Calculate survivor benefits:**
-   - [ ] RRQ survivor benefit:
-     - Spouse receives ~60% of deceased's benefit
-     - Or their own benefit, whichever is higher
-     - Combined maximum applies
-   - [ ] Add survivor benefit to income calculation
+   - [x] RRQ survivor benefit:
+     - [x] Spouse receives 60% of deceased's RRQ benefit
+     - [x] Spouse receives 60% of deceased's PSV benefit
+     - [x] Simplified rule (no combined maximum)
+   - [x] Add survivor benefit to income calculation (stored in `AnnualIncome.other`)
 
 3. **Handle account depletion:**
-   - [ ] When all accounts reach $0:
-     - Mark projection year as "shortfall"
-     - Calculate negative cash flow
-     - Flag as warning in UI
-   - [ ] Add `hasShortfall` boolean to YearlyProjection
-   - [ ] Add `shortfallAmount` double to YearlyProjection
+   - [x] When all accounts reach $0:
+     - [x] Mark projection year as "shortfall"
+     - [x] Calculate shortfall amount
+     - [x] Flag in YearlyProjection
+   - [x] Add `hasShortfall` boolean to YearlyProjection
+   - [x] Add `shortfallAmount` double to YearlyProjection
 
 4. **Handle real estate as last resort:**
-   - [ ] If all accounts depleted and still need money:
-     - Can user sell primary residence?
-     - Optional: model reverse mortgage
-     - For Phase 31: just flag as shortfall
+   - [x] If all accounts depleted and still need money:
+     - [x] For Phase 31: just flag as shortfall
+     - [ ] Auto-sell real estate (deferred to future phase)
+     - [ ] Reverse mortgage modeling (deferred to future phase)
 
 5. **Update projection table to show warnings:**
-   - [ ] Highlight years with shortfalls
-   - [ ] Show deceased individuals
-   - [ ] Show survivor benefits
+   - [x] Highlight years with shortfalls (light red background)
+   - [x] Show shortfall amounts in dedicated column with warning icon
+   - [x] Show survivor benefits with heart icon (♥) in Income column
+   - [x] Deceased indicator removed due to bug (detecting by zero income was faulty)
 
 **Manual Test Checklist:**
-- [ ] Death event stops individual's income
-- [ ] Assets transfer to survivor
-- [ ] Survivor benefits calculated correctly
-- [ ] Account depletion flagged
-- [ ] Shortfall years highlighted
-- [ ] Negative cash flow shown
+- [x] Death event stops individual's income
+- [ ] Assets transfer to survivor (deferred)
+- [x] Survivor benefits calculated correctly (60% rule)
+- [x] Account depletion flagged
+- [x] Shortfall years highlighted
+- [x] Shortfall amounts shown
 
 **Deliverable:** Edge cases handled, warnings displayed
+
+**Completion Notes:**
+- Implemented simplified 60% survivor benefit rule (60% of deceased's RRQ + PSV)
+- Death event detection in `IncomeCalculator` checks event list (not income levels)
+- Modified `calculateIncome()` to accept `allIndividuals` parameter for survivor benefit calculation
+- Survivor benefits stored in `AnnualIncome.other` field and displayed with heart icon
+- Enhanced shortfall tracking with boolean flag and dollar amount in YearlyProjection
+- Modified `_calculateCashFlowWithWithdrawals()` to return shortfall data in all return paths
+- UI enhancements: light red row background for shortfall years, dedicated Shortfall column with warning icon
+- Bug fix: Removed faulty deceased detection from Age column (was incorrectly flagging retired individuals with no income yet)
+- Design decisions:
+  - Simplified survivor benefits (no complex "higher of own or survivor" logic, no combined maximum)
+  - Shortfall flagging only (no automatic real estate liquidation)
+  - Asset transfers deferred to future phase (assets remain in projection after death)
+- Modified files:
+  - `lib/features/projection/service/income_calculator.dart` (death detection, survivor benefits)
+  - `lib/features/projection/service/projection_calculator.dart` (pass events to income calculator)
+  - `lib/features/projection/domain/yearly_projection.dart` (hasShortfall, shortfallAmount fields)
+  - `lib/features/projection/presentation/widgets/projection_table.dart` (UI warnings)
+- Ready for Phase 32 (Enhanced Projection Table)
 
 ---
 

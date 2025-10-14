@@ -84,6 +84,12 @@ class YearlyProjection with _$YearlyProjection {
 
     /// Events that occurred during this year
     required List<String> eventsOccurred,
+
+    /// Whether there was a shortfall this year (insufficient funds to cover expenses)
+    @Default(false) bool hasShortfall,
+
+    /// Amount of shortfall if hasShortfall is true
+    @Default(0.0) double shortfallAmount,
   }) = _YearlyProjection;
 
   factory YearlyProjection.fromJson(Map<String, dynamic> json) =>

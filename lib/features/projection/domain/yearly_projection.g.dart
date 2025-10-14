@@ -61,6 +61,8 @@ _$YearlyProjectionImpl _$$YearlyProjectionImplFromJson(
   eventsOccurred: (json['eventsOccurred'] as List<dynamic>)
       .map((e) => e as String)
       .toList(),
+  hasShortfall: json['hasShortfall'] as bool? ?? false,
+  shortfallAmount: (json['shortfallAmount'] as num?)?.toDouble() ?? 0.0,
 );
 
 Map<String, dynamic> _$$YearlyProjectionImplToJson(
@@ -93,4 +95,6 @@ Map<String, dynamic> _$$YearlyProjectionImplToJson(
   'netWorthStartOfYear': instance.netWorthStartOfYear,
   'netWorthEndOfYear': instance.netWorthEndOfYear,
   'eventsOccurred': instance.eventsOccurred,
+  'hasShortfall': instance.hasShortfall,
+  'shortfallAmount': instance.shortfallAmount,
 };
