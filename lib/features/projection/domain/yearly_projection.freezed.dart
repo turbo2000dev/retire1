@@ -40,6 +40,21 @@ mixin _$YearlyProjection {
   /// Total income for the year (household)
   double get totalIncome => throw _privateConstructorUsedError;
 
+  /// Total taxable income for the year (household)
+  double get taxableIncome => throw _privateConstructorUsedError;
+
+  /// Federal tax owing for the year (household)
+  double get federalTax => throw _privateConstructorUsedError;
+
+  /// Quebec provincial tax owing for the year (household)
+  double get quebecTax => throw _privateConstructorUsedError;
+
+  /// Total tax owing for the year (household, federal + Quebec)
+  double get totalTax => throw _privateConstructorUsedError;
+
+  /// After-tax income (total income - total tax)
+  double get afterTaxIncome => throw _privateConstructorUsedError;
+
   /// Total expenses for the year
   double get totalExpenses => throw _privateConstructorUsedError;
 
@@ -48,7 +63,7 @@ mixin _$YearlyProjection {
   Map<String, double> get expensesByCategory =>
       throw _privateConstructorUsedError;
 
-  /// Net cash flow (income - expenses)
+  /// Net cash flow (income - expenses - taxes)
   double get netCashFlow => throw _privateConstructorUsedError;
 
   /// Assets at start of year
@@ -91,6 +106,11 @@ abstract class $YearlyProjectionCopyWith<$Res> {
     int? spouseAge,
     Map<String, AnnualIncome> incomeByIndividual,
     double totalIncome,
+    double taxableIncome,
+    double federalTax,
+    double quebecTax,
+    double totalTax,
+    double afterTaxIncome,
     double totalExpenses,
     Map<String, double> expensesByCategory,
     double netCashFlow,
@@ -123,6 +143,11 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
     Object? spouseAge = freezed,
     Object? incomeByIndividual = null,
     Object? totalIncome = null,
+    Object? taxableIncome = null,
+    Object? federalTax = null,
+    Object? quebecTax = null,
+    Object? totalTax = null,
+    Object? afterTaxIncome = null,
     Object? totalExpenses = null,
     Object? expensesByCategory = null,
     Object? netCashFlow = null,
@@ -157,6 +182,26 @@ class _$YearlyProjectionCopyWithImpl<$Res, $Val extends YearlyProjection>
             totalIncome: null == totalIncome
                 ? _value.totalIncome
                 : totalIncome // ignore: cast_nullable_to_non_nullable
+                      as double,
+            taxableIncome: null == taxableIncome
+                ? _value.taxableIncome
+                : taxableIncome // ignore: cast_nullable_to_non_nullable
+                      as double,
+            federalTax: null == federalTax
+                ? _value.federalTax
+                : federalTax // ignore: cast_nullable_to_non_nullable
+                      as double,
+            quebecTax: null == quebecTax
+                ? _value.quebecTax
+                : quebecTax // ignore: cast_nullable_to_non_nullable
+                      as double,
+            totalTax: null == totalTax
+                ? _value.totalTax
+                : totalTax // ignore: cast_nullable_to_non_nullable
+                      as double,
+            afterTaxIncome: null == afterTaxIncome
+                ? _value.afterTaxIncome
+                : afterTaxIncome // ignore: cast_nullable_to_non_nullable
                       as double,
             totalExpenses: null == totalExpenses
                 ? _value.totalExpenses
@@ -212,6 +257,11 @@ abstract class _$$YearlyProjectionImplCopyWith<$Res>
     int? spouseAge,
     Map<String, AnnualIncome> incomeByIndividual,
     double totalIncome,
+    double taxableIncome,
+    double federalTax,
+    double quebecTax,
+    double totalTax,
+    double afterTaxIncome,
     double totalExpenses,
     Map<String, double> expensesByCategory,
     double netCashFlow,
@@ -243,6 +293,11 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
     Object? spouseAge = freezed,
     Object? incomeByIndividual = null,
     Object? totalIncome = null,
+    Object? taxableIncome = null,
+    Object? federalTax = null,
+    Object? quebecTax = null,
+    Object? totalTax = null,
+    Object? afterTaxIncome = null,
     Object? totalExpenses = null,
     Object? expensesByCategory = null,
     Object? netCashFlow = null,
@@ -277,6 +332,26 @@ class __$$YearlyProjectionImplCopyWithImpl<$Res>
         totalIncome: null == totalIncome
             ? _value.totalIncome
             : totalIncome // ignore: cast_nullable_to_non_nullable
+                  as double,
+        taxableIncome: null == taxableIncome
+            ? _value.taxableIncome
+            : taxableIncome // ignore: cast_nullable_to_non_nullable
+                  as double,
+        federalTax: null == federalTax
+            ? _value.federalTax
+            : federalTax // ignore: cast_nullable_to_non_nullable
+                  as double,
+        quebecTax: null == quebecTax
+            ? _value.quebecTax
+            : quebecTax // ignore: cast_nullable_to_non_nullable
+                  as double,
+        totalTax: null == totalTax
+            ? _value.totalTax
+            : totalTax // ignore: cast_nullable_to_non_nullable
+                  as double,
+        afterTaxIncome: null == afterTaxIncome
+            ? _value.afterTaxIncome
+            : afterTaxIncome // ignore: cast_nullable_to_non_nullable
                   as double,
         totalExpenses: null == totalExpenses
             ? _value.totalExpenses
@@ -325,6 +400,11 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     required this.spouseAge,
     final Map<String, AnnualIncome> incomeByIndividual = const {},
     required this.totalIncome,
+    this.taxableIncome = 0.0,
+    this.federalTax = 0.0,
+    this.quebecTax = 0.0,
+    this.totalTax = 0.0,
+    this.afterTaxIncome = 0.0,
     required this.totalExpenses,
     final Map<String, double> expensesByCategory = const {},
     required this.netCashFlow,
@@ -375,6 +455,31 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
   @override
   final double totalIncome;
 
+  /// Total taxable income for the year (household)
+  @override
+  @JsonKey()
+  final double taxableIncome;
+
+  /// Federal tax owing for the year (household)
+  @override
+  @JsonKey()
+  final double federalTax;
+
+  /// Quebec provincial tax owing for the year (household)
+  @override
+  @JsonKey()
+  final double quebecTax;
+
+  /// Total tax owing for the year (household, federal + Quebec)
+  @override
+  @JsonKey()
+  final double totalTax;
+
+  /// After-tax income (total income - total tax)
+  @override
+  @JsonKey()
+  final double afterTaxIncome;
+
   /// Total expenses for the year
   @override
   final double totalExpenses;
@@ -394,7 +499,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     return EqualUnmodifiableMapView(_expensesByCategory);
   }
 
-  /// Net cash flow (income - expenses)
+  /// Net cash flow (income - expenses - taxes)
   @override
   final double netCashFlow;
 
@@ -442,7 +547,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
 
   @override
   String toString() {
-    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
+    return 'YearlyProjection(year: $year, yearsFromStart: $yearsFromStart, primaryAge: $primaryAge, spouseAge: $spouseAge, incomeByIndividual: $incomeByIndividual, totalIncome: $totalIncome, taxableIncome: $taxableIncome, federalTax: $federalTax, quebecTax: $quebecTax, totalTax: $totalTax, afterTaxIncome: $afterTaxIncome, totalExpenses: $totalExpenses, expensesByCategory: $expensesByCategory, netCashFlow: $netCashFlow, assetsStartOfYear: $assetsStartOfYear, assetsEndOfYear: $assetsEndOfYear, netWorthStartOfYear: $netWorthStartOfYear, netWorthEndOfYear: $netWorthEndOfYear, eventsOccurred: $eventsOccurred)';
   }
 
   @override
@@ -463,6 +568,16 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
             ) &&
             (identical(other.totalIncome, totalIncome) ||
                 other.totalIncome == totalIncome) &&
+            (identical(other.taxableIncome, taxableIncome) ||
+                other.taxableIncome == taxableIncome) &&
+            (identical(other.federalTax, federalTax) ||
+                other.federalTax == federalTax) &&
+            (identical(other.quebecTax, quebecTax) ||
+                other.quebecTax == quebecTax) &&
+            (identical(other.totalTax, totalTax) ||
+                other.totalTax == totalTax) &&
+            (identical(other.afterTaxIncome, afterTaxIncome) ||
+                other.afterTaxIncome == afterTaxIncome) &&
             (identical(other.totalExpenses, totalExpenses) ||
                 other.totalExpenses == totalExpenses) &&
             const DeepCollectionEquality().equals(
@@ -491,7 +606,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     year,
     yearsFromStart,
@@ -499,6 +614,11 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     spouseAge,
     const DeepCollectionEquality().hash(_incomeByIndividual),
     totalIncome,
+    taxableIncome,
+    federalTax,
+    quebecTax,
+    totalTax,
+    afterTaxIncome,
     totalExpenses,
     const DeepCollectionEquality().hash(_expensesByCategory),
     netCashFlow,
@@ -507,7 +627,7 @@ class _$YearlyProjectionImpl implements _YearlyProjection {
     netWorthStartOfYear,
     netWorthEndOfYear,
     const DeepCollectionEquality().hash(_eventsOccurred),
-  );
+  ]);
 
   /// Create a copy of YearlyProjection
   /// with the given fields replaced by the non-null parameter values.
@@ -534,6 +654,11 @@ abstract class _YearlyProjection implements YearlyProjection {
     required final int? spouseAge,
     final Map<String, AnnualIncome> incomeByIndividual,
     required final double totalIncome,
+    final double taxableIncome,
+    final double federalTax,
+    final double quebecTax,
+    final double totalTax,
+    final double afterTaxIncome,
     required final double totalExpenses,
     final Map<String, double> expensesByCategory,
     required final double netCashFlow,
@@ -571,6 +696,26 @@ abstract class _YearlyProjection implements YearlyProjection {
   @override
   double get totalIncome;
 
+  /// Total taxable income for the year (household)
+  @override
+  double get taxableIncome;
+
+  /// Federal tax owing for the year (household)
+  @override
+  double get federalTax;
+
+  /// Quebec provincial tax owing for the year (household)
+  @override
+  double get quebecTax;
+
+  /// Total tax owing for the year (household, federal + Quebec)
+  @override
+  double get totalTax;
+
+  /// After-tax income (total income - total tax)
+  @override
+  double get afterTaxIncome;
+
   /// Total expenses for the year
   @override
   double get totalExpenses;
@@ -580,7 +725,7 @@ abstract class _YearlyProjection implements YearlyProjection {
   @override
   Map<String, double> get expensesByCategory;
 
-  /// Net cash flow (income - expenses)
+  /// Net cash flow (income - expenses - taxes)
   @override
   double get netCashFlow;
 

@@ -5,8 +5,11 @@ import 'package:retire1/features/events/domain/event_timing.dart';
 import 'package:retire1/features/expenses/domain/expense.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/domain/project.dart';
+import 'package:retire1/features/projection/domain/annual_income.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
 import 'package:retire1/features/projection/domain/yearly_projection.dart';
+import 'package:retire1/features/projection/service/income_calculator.dart';
+import 'package:retire1/features/projection/service/tax_calculator.dart';
 import 'package:retire1/features/scenarios/domain/parameter_override.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 
@@ -75,7 +78,33 @@ class ProjectionCalculator {
       final assetsStartOfYear = Map<String, double>.from(currentAssetValues);
       final netWorthStartOfYear = assetsStartOfYear.values.fold(0.0, (sum, value) => sum + value);
 
-      // Apply events and calculate income/expenses
+      // Calculate income for all individuals (employment, RRQ, PSV, RRPE)
+      final incomeResults = _calculateIncomeForYear(
+        project: project,
+        year: year,
+        yearsFromStart: yearsFromStart,
+        events: effectiveEvents,
+        assetValues: currentAssetValues,
+      );
+
+      final incomeByIndividual = incomeResults['incomeByIndividual'] as Map<String, AnnualIncome>;
+      final incomeFromWork = incomeResults['totalIncome'] as double;
+
+      // Calculate taxes for all individuals
+      final taxResults = _calculateTaxesForYear(
+        project: project,
+        year: year,
+        incomeByIndividual: incomeByIndividual,
+        totalIncome: incomeFromWork,
+      );
+
+      final taxableIncome = taxResults['taxableIncome'] as double;
+      final federalTax = taxResults['federalTax'] as double;
+      final quebecTax = taxResults['quebecTax'] as double;
+      final totalTax = taxResults['totalTax'] as double;
+      final afterTaxIncome = taxResults['afterTaxIncome'] as double;
+
+      // Apply events and calculate income/expenses from real estate transactions
       final eventResults = _applyYearEvents(
         yearEvents,
         currentAssetValues,
@@ -99,9 +128,12 @@ class ProjectionCalculator {
       final expenseAmount = expenseResults['total'] as double;
       final expensesByCategory = expenseResults['byCategory'] as Map<String, double>;
 
-      final totalIncome = eventIncome;
+      // Total income includes employment/pension income plus real estate transaction income
+      final totalIncome = incomeFromWork + eventIncome;
       final totalExpenses = eventExpenses + expenseAmount;
-      final netCashFlow = totalIncome - totalExpenses;
+
+      // Net cash flow = income - expenses - taxes
+      final netCashFlow = totalIncome - totalExpenses - totalTax;
 
       // Calculate asset growth (after events)
       _applyAssetGrowth(
@@ -126,7 +158,13 @@ class ProjectionCalculator {
         yearsFromStart: yearsFromStart,
         primaryAge: primaryAge,
         spouseAge: spouseAge,
+        incomeByIndividual: incomeByIndividual,
         totalIncome: totalIncome,
+        taxableIncome: taxableIncome,
+        federalTax: federalTax,
+        quebecTax: quebecTax,
+        totalTax: totalTax,
+        afterTaxIncome: afterTaxIncome,
         totalExpenses: totalExpenses,
         expensesByCategory: expensesByCategory,
         netCashFlow: netCashFlow,
@@ -853,5 +891,119 @@ class ProjectionCalculator {
       },
       projectionEnd: () => false, // Projection end never "occurs" - expenses continue until end
     );
+  }
+
+  /// Calculate income for all individuals for a specific year
+  ///
+  /// Returns a Map with:
+  /// - 'incomeByIndividual': Map<String, AnnualIncome> keyed by individual ID
+  /// - 'totalIncome': double - sum of all income
+  Map<String, dynamic> _calculateIncomeForYear({
+    required Project project,
+    required int year,
+    required int yearsFromStart,
+    required List<Event> events,
+    required Map<String, double> assetValues,
+  }) {
+    final incomeByIndividual = <String, AnnualIncome>{};
+    double totalIncome = 0.0;
+
+    for (final individual in project.individuals) {
+      final age = _calculateAge(individual.birthdate, year);
+
+      // Get CRI balance for this individual (for RRPE calculation)
+      double criBalance = 0.0;
+      for (final assetId in assetValues.keys) {
+        // Find CRI assets belonging to this individual
+        // For now, we'll sum all CRI values as a simplification
+        // In Phase 29, we'll track assets by individual properly
+        criBalance += assetValues[assetId] ?? 0.0;
+      }
+
+      // Create IncomeCalculator instance
+      final incomeCalculator = IncomeCalculator();
+
+      // Calculate income for this individual
+      final income = incomeCalculator.calculateIncome(
+        individual: individual,
+        year: year,
+        yearsFromStart: yearsFromStart,
+        age: age,
+        events: events,
+        criBalance: criBalance,
+      );
+
+      incomeByIndividual[individual.id] = income;
+      totalIncome += income.total;
+    }
+
+    log('Total household income for year $year: $totalIncome');
+
+    return {
+      'incomeByIndividual': incomeByIndividual,
+      'totalIncome': totalIncome,
+    };
+  }
+
+  /// Calculate taxes for all individuals for a specific year
+  ///
+  /// Returns a Map with:
+  /// - 'taxableIncome': double - total household taxable income
+  /// - 'federalTax': double - total household federal tax
+  /// - 'quebecTax': double - total household Quebec tax
+  /// - 'totalTax': double - total household taxes
+  /// - 'afterTaxIncome': double - total income minus taxes
+  Map<String, dynamic> _calculateTaxesForYear({
+    required Project project,
+    required int year,
+    required Map<String, AnnualIncome> incomeByIndividual,
+    required double totalIncome,
+  }) {
+    double totalTaxableIncome = 0.0;
+    double totalFederalTax = 0.0;
+    double totalQuebecTax = 0.0;
+
+    final taxCalculator = TaxCalculator();
+
+    for (final individual in project.individuals) {
+      final income = incomeByIndividual[individual.id];
+      if (income == null) continue;
+
+      // For Phase 28, taxable income equals total income
+      // (no REER/CELI withdrawals yet - those come in Phase 29)
+      final taxableIncome = income.total;
+
+      if (taxableIncome <= 0) continue;
+
+      // Calculate age for this year
+      final age = _calculateAge(individual.birthdate, year);
+
+      // Calculate taxes
+      final taxCalculation = taxCalculator.calculateTax(
+        grossIncome: taxableIncome,
+        age: age,
+      );
+
+      totalTaxableIncome += taxableIncome;
+      totalFederalTax += taxCalculation.federalTax;
+      totalQuebecTax += taxCalculation.quebecTax;
+
+      log('Individual ${individual.name}: income=$taxableIncome, '
+          'tax=${taxCalculation.totalTax}');
+    }
+
+    final totalTax = totalFederalTax + totalQuebecTax;
+    final afterTaxIncome = totalIncome - totalTax;
+
+    log('Total household taxes for year: $totalTax '
+        '(federal=$totalFederalTax, quebec=$totalQuebecTax)');
+
+    return {
+      'taxableIncome': totalTaxableIncome,
+      'federalTax': totalFederalTax,
+      'quebecTax': totalQuebecTax,
+      'totalTax': totalTax,
+      'afterTaxIncome': afterTaxIncome,
+    };
   }
 }

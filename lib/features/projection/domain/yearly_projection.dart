@@ -27,6 +27,21 @@ class YearlyProjection with _$YearlyProjection {
     /// Total income for the year (household)
     required double totalIncome,
 
+    /// Total taxable income for the year (household)
+    @Default(0.0) double taxableIncome,
+
+    /// Federal tax owing for the year (household)
+    @Default(0.0) double federalTax,
+
+    /// Quebec provincial tax owing for the year (household)
+    @Default(0.0) double quebecTax,
+
+    /// Total tax owing for the year (household, federal + Quebec)
+    @Default(0.0) double totalTax,
+
+    /// After-tax income (total income - total tax)
+    @Default(0.0) double afterTaxIncome,
+
     /// Total expenses for the year
     required double totalExpenses,
 
@@ -34,7 +49,7 @@ class YearlyProjection with _$YearlyProjection {
     /// Keys: 'housing', 'transport', 'dailyLiving', 'recreation', 'health', 'family'
     @Default({}) Map<String, double> expensesByCategory,
 
-    /// Net cash flow (income - expenses)
+    /// Net cash flow (income - expenses - taxes)
     required double netCashFlow,
 
     /// Assets at start of year

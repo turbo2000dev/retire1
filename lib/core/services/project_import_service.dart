@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:retire1/core/error/import_exception.dart';
+import 'package:retire1/core/services/import_schema_validator.dart';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/expenses/domain/expense.dart';
@@ -53,31 +55,31 @@ class ProjectImportService {
   /// Parse and validate JSON, return preview without creating entities
   ImportPreview validateAndPreview(String jsonContent) {
     try {
+      log('Starting import validation and preview');
       final data = jsonDecode(jsonContent) as Map<String, dynamic>;
 
-      // Validate export version
-      if (!data.containsKey('exportVersion')) {
-        throw Exception('Missing exportVersion field');
+      // Run schema validation first
+      log('Running schema validation');
+      final validator = ImportSchemaValidator();
+      final errors = validator.validate(data, jsonContent);
+
+      if (errors.isNotEmpty) {
+        // Log all validation errors to console
+        log('Schema validation failed with ${errors.length} error(s):',
+            level: 900);
+        for (final error in errors) {
+          log(error.toString(), error: error, level: 900);
+        }
+
+        // Throw first error for user display
+        throw Exception(errors.first.userMessage);
       }
 
-      final version = data['exportVersion'] as String;
-      if (version != '1.0' && version != '1.1' && version != '1.2') {
-        throw Exception('Unsupported export version: $version');
-      }
-
-      // Validate required project field
-      if (!data.containsKey('project')) {
-        throw Exception('Missing project data');
-      }
+      log('Schema validation passed');
 
       final projectData = data['project'] as Map<String, dynamic>;
-
-      // Validate required project fields
-      if (!projectData.containsKey('name')) {
-        throw Exception('Missing project name');
-      }
-
       final projectName = projectData['name'] as String;
+
       if (projectName.trim().isEmpty) {
         throw Exception('Project name cannot be empty');
       }
@@ -222,6 +224,30 @@ class ProjectImportService {
     try {
       log('Starting import process');
       final data = jsonDecode(jsonContent) as Map<String, dynamic>;
+
+      // Run schema validation first
+      log('Running schema validation');
+      final validator = ImportSchemaValidator();
+      final errors = validator.validate(data, jsonContent);
+
+      if (errors.isNotEmpty) {
+        // Log all validation errors to console
+        log('Schema validation failed with ${errors.length} error(s):',
+            level: 900);
+        for (final error in errors) {
+          log(error.toString(), error: error, level: 900);
+        }
+
+        // Throw first error for user display
+        throw ImportException.schemaViolation(
+          errors.first.userMessage,
+          fieldPath: errors.first.fieldPath,
+          lineNumber: errors.first.lineNumber,
+        );
+      }
+
+      log('Schema validation passed');
+
       final projectData = data['project'] as Map<String, dynamic>;
       log('Parsed JSON successfully');
 
@@ -276,11 +302,13 @@ class ProjectImportService {
 
       // Import assets with remapped IDs and individual references
       log('Importing ${assets.length} assets');
-      final importedAssets = assets.map((json) {
+      final importedAssets = <Asset>[];
+      for (var i = 0; i < assets.length; i++) {
         try {
+          final json = assets[i];
           final assetData = Map<String, dynamic>.from(json as Map<String, dynamic>);
           final oldId = assetData['id'] as String;
-          log('Processing asset: $oldId (type: ${assetData['runtimeType']})');
+          log('Processing asset [$i]: $oldId (type: ${assetData['runtimeType']})');
           assetData['id'] = assetIdMap[oldId]!;
 
           // Remap individual ID references for accounts
@@ -289,112 +317,169 @@ class ProjectImportService {
             if (individualIdMap.containsKey(oldIndividualId)) {
               assetData['individualId'] = individualIdMap[oldIndividualId]!;
             } else {
-              throw Exception('Asset references unknown individual ID: $oldIndividualId');
+              final error = 'Asset references unknown individual ID: $oldIndividualId';
+              log(error, level: 900);
+              throw ImportException.schemaViolation(
+                error,
+                fieldPath: 'assets[$i].individualId',
+              );
             }
           }
 
           log('Creating Asset from JSON for: $oldId');
-          return Asset.fromJson(assetData);
+          importedAssets.add(Asset.fromJson(assetData));
         } catch (e, stack) {
-          log('Error importing asset: $e', error: e, stackTrace: stack);
-          log('Asset JSON: $json');
-          rethrow;
+          if (e is ImportException) {
+            log('Import error for asset [$i]: $e', error: e, stackTrace: stack, level: 900);
+            rethrow;
+          }
+          log('Error importing asset [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log('Asset JSON: ${assets[i]}', level: 900);
+          throw ImportException.parsingFailed(
+            'assets[$i]',
+            assets[i],
+            e,
+            stack,
+          );
         }
-      }).toList();
+      }
       log('Assets imported successfully');
 
       // Import events with remapped IDs and references
       final events = (data['events'] as List<dynamic>?) ?? [];
       log('Importing ${events.length} events');
-      final importedEvents = events.map((json) {
+      final importedEvents = <Event>[];
+      for (var i = 0; i < events.length; i++) {
         try {
+          final json = events[i];
           final eventData = Map<String, dynamic>.from(json as Map<String, dynamic>);
           final oldId = eventData['id'] as String;
-          log('Processing event: $oldId (type: ${eventData['runtimeType']})');
+          log('Processing event [$i]: $oldId (type: ${eventData['runtimeType']})');
 
           // Generate new event ID and track mapping
           final newId = _uuid.v4();
           eventIdMap[oldId] = newId;
           eventData['id'] = newId;
 
-        // Remap individual ID references
-        if (eventData.containsKey('individualId') && eventData['individualId'] != null) {
-          final oldIndividualId = eventData['individualId'] as String;
-          if (individualIdMap.containsKey(oldIndividualId)) {
-            eventData['individualId'] = individualIdMap[oldIndividualId]!;
-          } else {
-            throw Exception('Event references unknown individual ID: $oldIndividualId');
-          }
-        }
-
-        // Remap timing individual ID if age-based
-        if (eventData.containsKey('timing')) {
-          final timingData = eventData['timing'] as Map<String, dynamic>;
-          if (timingData.containsKey('individualId') && timingData['individualId'] != null) {
-            final oldIndividualId = timingData['individualId'] as String;
+          // Remap individual ID references
+          if (eventData.containsKey('individualId') && eventData['individualId'] != null) {
+            final oldIndividualId = eventData['individualId'] as String;
             if (individualIdMap.containsKey(oldIndividualId)) {
-              timingData['individualId'] = individualIdMap[oldIndividualId]!;
+              eventData['individualId'] = individualIdMap[oldIndividualId]!;
             } else {
-              throw Exception('Event timing references unknown individual ID: $oldIndividualId');
+              final error = 'Event references unknown individual ID: $oldIndividualId';
+              log(error, level: 900);
+              throw ImportException.schemaViolation(
+                error,
+                fieldPath: 'events[$i].individualId',
+              );
             }
           }
-        }
 
-        // Remap asset ID references for real estate transactions
-        if (eventData.containsKey('assetSoldId') && eventData['assetSoldId'] != null) {
-          final oldAssetId = eventData['assetSoldId'] as String;
-          if (assetIdMap.containsKey(oldAssetId)) {
-            eventData['assetSoldId'] = assetIdMap[oldAssetId]!;
-          } else {
-            throw Exception('Event references unknown asset ID: $oldAssetId');
+          // Remap timing individual ID if age-based
+          if (eventData.containsKey('timing')) {
+            final timingData = eventData['timing'] as Map<String, dynamic>;
+            if (timingData.containsKey('individualId') && timingData['individualId'] != null) {
+              final oldIndividualId = timingData['individualId'] as String;
+              if (individualIdMap.containsKey(oldIndividualId)) {
+                timingData['individualId'] = individualIdMap[oldIndividualId]!;
+              } else {
+                final error = 'Event timing references unknown individual ID: $oldIndividualId';
+                log(error, level: 900);
+                throw ImportException.schemaViolation(
+                  error,
+                  fieldPath: 'events[$i].timing.individualId',
+                );
+              }
+            }
           }
-        }
 
-        if (eventData.containsKey('assetPurchasedId') && eventData['assetPurchasedId'] != null) {
-          final oldAssetId = eventData['assetPurchasedId'] as String;
-          if (assetIdMap.containsKey(oldAssetId)) {
-            eventData['assetPurchasedId'] = assetIdMap[oldAssetId]!;
-          } else {
-            throw Exception('Event references unknown asset ID: $oldAssetId');
+          // Remap asset ID references for real estate transactions
+          if (eventData.containsKey('assetSoldId') && eventData['assetSoldId'] != null) {
+            final oldAssetId = eventData['assetSoldId'] as String;
+            if (assetIdMap.containsKey(oldAssetId)) {
+              eventData['assetSoldId'] = assetIdMap[oldAssetId]!;
+            } else {
+              final error = 'Event references unknown asset ID: $oldAssetId';
+              log(error, level: 900);
+              throw ImportException.schemaViolation(
+                error,
+                fieldPath: 'events[$i].assetSoldId',
+              );
+            }
           }
-        }
 
-        if (eventData.containsKey('withdrawAccountId') && eventData['withdrawAccountId'] != null) {
-          final oldAssetId = eventData['withdrawAccountId'] as String;
-          if (assetIdMap.containsKey(oldAssetId)) {
-            eventData['withdrawAccountId'] = assetIdMap[oldAssetId]!;
-          } else {
-            throw Exception('Event references unknown account ID: $oldAssetId');
+          if (eventData.containsKey('assetPurchasedId') && eventData['assetPurchasedId'] != null) {
+            final oldAssetId = eventData['assetPurchasedId'] as String;
+            if (assetIdMap.containsKey(oldAssetId)) {
+              eventData['assetPurchasedId'] = assetIdMap[oldAssetId]!;
+            } else {
+              final error = 'Event references unknown asset ID: $oldAssetId';
+              log(error, level: 900);
+              throw ImportException.schemaViolation(
+                error,
+                fieldPath: 'events[$i].assetPurchasedId',
+              );
+            }
           }
-        }
 
-        if (eventData.containsKey('depositAccountId') && eventData['depositAccountId'] != null) {
-          final oldAssetId = eventData['depositAccountId'] as String;
-          if (assetIdMap.containsKey(oldAssetId)) {
-            eventData['depositAccountId'] = assetIdMap[oldAssetId]!;
-          } else {
-            throw Exception('Event references unknown account ID: $oldAssetId');
+          if (eventData.containsKey('withdrawAccountId') && eventData['withdrawAccountId'] != null) {
+            final oldAssetId = eventData['withdrawAccountId'] as String;
+            if (assetIdMap.containsKey(oldAssetId)) {
+              eventData['withdrawAccountId'] = assetIdMap[oldAssetId]!;
+            } else {
+              final error = 'Event references unknown account ID: $oldAssetId';
+              log(error, level: 900);
+              throw ImportException.schemaViolation(
+                error,
+                fieldPath: 'events[$i].withdrawAccountId',
+              );
+            }
           }
-        }
+
+          if (eventData.containsKey('depositAccountId') && eventData['depositAccountId'] != null) {
+            final oldAssetId = eventData['depositAccountId'] as String;
+            if (assetIdMap.containsKey(oldAssetId)) {
+              eventData['depositAccountId'] = assetIdMap[oldAssetId]!;
+            } else {
+              final error = 'Event references unknown account ID: $oldAssetId';
+              log(error, level: 900);
+              throw ImportException.schemaViolation(
+                error,
+                fieldPath: 'events[$i].depositAccountId',
+              );
+            }
+          }
 
           log('Creating Event from JSON for: $oldId');
-          return Event.fromJson(eventData);
+          importedEvents.add(Event.fromJson(eventData));
         } catch (e, stack) {
-          log('Error importing event: $e', error: e, stackTrace: stack);
-          log('Event JSON: $json');
-          rethrow;
+          if (e is ImportException) {
+            log('Import error for event [$i]: $e', error: e, stackTrace: stack, level: 900);
+            rethrow;
+          }
+          log('Error importing event [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log('Event JSON: ${events[i]}', level: 900);
+          throw ImportException.parsingFailed(
+            'events[$i]',
+            events[i],
+            e,
+            stack,
+          );
         }
-      }).toList();
+      }
       log('Events imported successfully');
 
       // Import expenses with remapped IDs and timing references
       final expenses = (data['expenses'] as List<dynamic>?) ?? [];
       log('Importing ${expenses.length} expenses');
-      final importedExpenses = expenses.map((json) {
+      final importedExpenses = <Expense>[];
+      for (var i = 0; i < expenses.length; i++) {
         try {
+          final json = expenses[i];
           final expenseData = Map<String, dynamic>.from(json as Map<String, dynamic>);
           final oldId = expenseData['id'] as String;
-          log('Processing expense: $oldId (type: ${expenseData['runtimeType']})');
+          log('Processing expense [$i]: $oldId (type: ${expenseData['runtimeType']})');
 
           // Generate new expense ID
           final newId = _uuid.v4();
@@ -411,7 +496,12 @@ class ProjectImportService {
                 if (individualIdMap.containsKey(oldIndividualId)) {
                   timingData['individualId'] = individualIdMap[oldIndividualId]!;
                 } else {
-                  throw Exception('Expense timing references unknown individual ID: $oldIndividualId');
+                  final error = 'Expense $timingKey references unknown individual ID: $oldIndividualId';
+                  log(error, level: 900);
+                  throw ImportException.schemaViolation(
+                    error,
+                    fieldPath: 'expenses[$i].$timingKey.individualId',
+                  );
                 }
               }
 
@@ -421,7 +511,12 @@ class ProjectImportService {
                 if (eventIdMap.containsKey(oldEventId)) {
                   timingData['eventId'] = eventIdMap[oldEventId]!;
                 } else {
-                  throw Exception('Expense timing references unknown event ID: $oldEventId');
+                  final error = 'Expense $timingKey references unknown event ID: $oldEventId';
+                  log(error, level: 900);
+                  throw ImportException.schemaViolation(
+                    error,
+                    fieldPath: 'expenses[$i].$timingKey.eventId',
+                  );
                 }
               }
             }
@@ -432,13 +527,22 @@ class ProjectImportService {
           remapTiming('endTiming');
 
           log('Creating Expense from JSON for: $oldId');
-          return Expense.fromJson(expenseData);
+          importedExpenses.add(Expense.fromJson(expenseData));
         } catch (e, stack) {
-          log('Error importing expense: $e', error: e, stackTrace: stack);
-          log('Expense JSON: $json');
-          rethrow;
+          if (e is ImportException) {
+            log('Import error for expense [$i]: $e', error: e, stackTrace: stack, level: 900);
+            rethrow;
+          }
+          log('Error importing expense [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log('Expense JSON: ${expenses[i]}', level: 900);
+          throw ImportException.parsingFailed(
+            'expenses[$i]',
+            expenses[i],
+            e,
+            stack,
+          );
         }
-      }).toList();
+      }
       log('Expenses imported successfully');
 
       // Import scenarios with remapped override references
@@ -467,55 +571,78 @@ class ProjectImportService {
         scenarioIdMap['base'] = baseScenario.id;
       }
 
-      for (final json in scenarios) {
+      for (var i = 0; i < scenarios.length; i++) {
         try {
+          final json = scenarios[i];
           final scenarioData = Map<String, dynamic>.from(json as Map<String, dynamic>);
 
           // Generate new scenario ID
           final newScenarioId = _uuid.v4();
           final oldScenarioId = scenarioData['id'] as String;
-          log('Processing scenario: $oldScenarioId');
+          log('Processing scenario [$i]: $oldScenarioId');
           scenarioIdMap[oldScenarioId] = newScenarioId;
           scenarioData['id'] = newScenarioId;
 
-        // Remap asset and event IDs in overrides
-        if (scenarioData.containsKey('overrides')) {
-          final overrides = scenarioData['overrides'] as List<dynamic>;
-          final remappedOverrides = overrides.map((overrideJson) {
-            final overrideData = Map<String, dynamic>.from(overrideJson as Map<String, dynamic>);
+          // Remap asset and event IDs in overrides
+          if (scenarioData.containsKey('overrides')) {
+            final overrides = scenarioData['overrides'] as List<dynamic>;
+            final remappedOverrides = <Map<String, dynamic>>[];
 
-            // Remap asset ID for AssetValueOverride
-            if (overrideData['runtimeType'] == 'assetValue' && overrideData.containsKey('assetId')) {
-              final oldAssetId = overrideData['assetId'] as String;
-              if (assetIdMap.containsKey(oldAssetId)) {
-                overrideData['assetId'] = assetIdMap[oldAssetId]!;
-              } else {
-                throw Exception('Override references unknown asset ID: $oldAssetId');
+            for (var j = 0; j < overrides.length; j++) {
+              final overrideJson = overrides[j];
+              final overrideData = Map<String, dynamic>.from(overrideJson as Map<String, dynamic>);
+
+              // Remap asset ID for AssetValueOverride
+              if (overrideData['runtimeType'] == 'assetValue' && overrideData.containsKey('assetId')) {
+                final oldAssetId = overrideData['assetId'] as String;
+                if (assetIdMap.containsKey(oldAssetId)) {
+                  overrideData['assetId'] = assetIdMap[oldAssetId]!;
+                } else {
+                  final error = 'Override references unknown asset ID: $oldAssetId';
+                  log(error, level: 900);
+                  throw ImportException.schemaViolation(
+                    error,
+                    fieldPath: 'scenarios[$i].overrides[$j].assetId',
+                  );
+                }
               }
+
+              // Remap event ID for EventTimingOverride
+              if (overrideData['runtimeType'] == 'eventTiming' && overrideData.containsKey('eventId')) {
+                final oldEventId = overrideData['eventId'] as String;
+                if (eventIdMap.containsKey(oldEventId)) {
+                  overrideData['eventId'] = eventIdMap[oldEventId]!;
+                } else {
+                  final error = 'Override references unknown event ID: $oldEventId';
+                  log(error, level: 900);
+                  throw ImportException.schemaViolation(
+                    error,
+                    fieldPath: 'scenarios[$i].overrides[$j].eventId',
+                  );
+                }
+              }
+
+              remappedOverrides.add(overrideData);
             }
 
-            // Remap event ID for EventTimingOverride
-            if (overrideData['runtimeType'] == 'eventTiming' && overrideData.containsKey('eventId')) {
-              final oldEventId = overrideData['eventId'] as String;
-              if (eventIdMap.containsKey(oldEventId)) {
-                overrideData['eventId'] = eventIdMap[oldEventId]!;
-              } else {
-                throw Exception('Override references unknown event ID: $oldEventId');
-              }
-            }
-
-            return overrideData;
-          }).toList();
-
-          scenarioData['overrides'] = remappedOverrides;
-        }
+            scenarioData['overrides'] = remappedOverrides;
+          }
 
           log('Creating Scenario from JSON for: $oldScenarioId');
           importedScenarios.add(Scenario.fromJson(scenarioData));
         } catch (e, stack) {
-          log('Error importing scenario: $e', error: e, stackTrace: stack);
-          log('Scenario JSON: $json');
-          rethrow;
+          if (e is ImportException) {
+            log('Import error for scenario [$i]: $e', error: e, stackTrace: stack, level: 900);
+            rethrow;
+          }
+          log('Error importing scenario [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log('Scenario JSON: ${scenarios[i]}', level: 900);
+          throw ImportException.parsingFailed(
+            'scenarios[$i]',
+            scenarios[i],
+            e,
+            stack,
+          );
         }
       }
       log('Scenarios imported successfully');
@@ -528,13 +655,23 @@ class ProjectImportService {
         expenses: importedExpenses,
         scenarios: importedScenarios,
       );
-    } on FormatException catch (e) {
-      log('Format exception: ${e.message}', error: e);
-      throw Exception('Invalid JSON format: ${e.message}');
+    } on FormatException catch (e, stack) {
+      log('Format exception: ${e.message}', error: e, stackTrace: stack, level: 900);
+      throw ImportException(
+        'Invalid JSON format: ${e.message}',
+        originalException: e,
+        stackTrace: stack,
+      );
+    } on ImportException {
+      // Already logged and formatted, just rethrow
+      rethrow;
     } catch (e, stack) {
-      log('Import failed: $e', error: e, stackTrace: stack);
-      if (e is Exception) rethrow;
-      throw Exception('Failed to import project: $e');
+      log('Import failed: $e', error: e, stackTrace: stack, level: 900);
+      throw ImportException(
+        'Failed to import project: $e',
+        originalException: e,
+        stackTrace: stack,
+      );
     }
   }
 }

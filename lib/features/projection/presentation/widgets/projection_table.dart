@@ -74,6 +74,24 @@ class ProjectionTable extends StatelessWidget {
                   ),
                   DataColumn(
                     label: Text(
+                      'Taxes',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    numeric: true,
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'After-Tax Income',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    numeric: true,
+                  ),
+                  DataColumn(
+                    label: Text(
                       'Expenses',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -134,6 +152,27 @@ class ProjectionTable extends StatelessWidget {
                             color: year.totalIncome > 0
                                 ? theme.colorScheme.tertiary
                                 : null,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          currencyFormat.format(year.totalTax),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: year.totalTax > 0
+                                ? theme.colorScheme.error
+                                : null,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          currencyFormat.format(year.afterTaxIncome),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: year.afterTaxIncome > 0
+                                ? theme.colorScheme.tertiary
+                                : null,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),

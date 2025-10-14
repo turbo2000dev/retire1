@@ -19,6 +19,11 @@ _$YearlyProjectionImpl _$$YearlyProjectionImplFromJson(
       ) ??
       const {},
   totalIncome: (json['totalIncome'] as num).toDouble(),
+  taxableIncome: (json['taxableIncome'] as num?)?.toDouble() ?? 0.0,
+  federalTax: (json['federalTax'] as num?)?.toDouble() ?? 0.0,
+  quebecTax: (json['quebecTax'] as num?)?.toDouble() ?? 0.0,
+  totalTax: (json['totalTax'] as num?)?.toDouble() ?? 0.0,
+  afterTaxIncome: (json['afterTaxIncome'] as num?)?.toDouble() ?? 0.0,
   totalExpenses: (json['totalExpenses'] as num).toDouble(),
   expensesByCategory:
       (json['expensesByCategory'] as Map<String, dynamic>?)?.map(
@@ -50,6 +55,11 @@ Map<String, dynamic> _$$YearlyProjectionImplToJson(
     (k, e) => MapEntry(k, e.toJson()),
   ),
   'totalIncome': instance.totalIncome,
+  'taxableIncome': instance.taxableIncome,
+  'federalTax': instance.federalTax,
+  'quebecTax': instance.quebecTax,
+  'totalTax': instance.totalTax,
+  'afterTaxIncome': instance.afterTaxIncome,
   'totalExpenses': instance.totalExpenses,
   'expensesByCategory': instance.expensesByCategory,
   'netCashFlow': instance.netCashFlow,
