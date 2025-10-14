@@ -1,0 +1,348 @@
+{
+  "exportVersion": "1.2",
+  "exportedAt": "2025-10-14T16:30:00.000Z",
+  "project": {
+    "id": "andre-anne-2025",
+    "name": "André & Anne - Plan de Retraite",
+    "description": "Plan de retraite pour André Boisvert et Anne Milot. André souhaite prendre sa retraite à 62 ans et Anne à 60 ans. Couple marié avec deux enfants adultes indépendants (Marie 27 ans, Jeanne 23 ans). Espérance de vie: 91 ans pour les deux.",
+    "createdAt": "2025-10-14T16:30:00.000Z",
+    "updatedAt": "2025-10-14T16:30:00.000Z",
+    "individuals": [
+      {
+        "id": "andre",
+        "name": "André Boisvert",
+        "birthdate": "1967-01-30",
+        "currentAnnualIncome": 312000.0,
+        "rrqAnnualBenefit": 16140.0,
+        "psvEligibilityAge": 65,
+        "initialCeliRoom": 95000.0
+      },
+      {
+        "id": "anne",
+        "name": "Anne Milot",
+        "birthdate": "1967-01-19",
+        "currentAnnualIncome": 167000.0,
+        "rrqAnnualBenefit": 16140.0,
+        "psvEligibilityAge": 65,
+        "initialCeliRoom": 95000.0
+      }
+    ],
+    "projectionStartYear": 2025,
+    "projectionEndYear": 2091,
+    "inflationRate": 0.025,
+    "defaultReturnRate": 0.055
+  },
+  "assets": [
+    {
+      "runtimeType": "realEstate",
+      "id": "house-vmr",
+      "type": "house",
+      "value": 1500000.0,
+      "customReturnRate": 0.025
+    },
+    {
+      "runtimeType": "realEstate",
+      "id": "condo-montreal",
+      "type": "condo",
+      "value": 800000.0,
+      "setAtStart": false,
+      "customReturnRate": 0.025
+    },
+    {
+      "runtimeType": "rrsp",
+      "id": "rrsp-andre",
+      "individualId": "andre",
+      "value": 592099.68,
+      "customReturnRate": 0.0609,
+      "annualContribution": 10512.0
+    },
+    {
+      "runtimeType": "rrsp",
+      "id": "rrsp-anne",
+      "individualId": "anne",
+      "value": 562219.14,
+      "customReturnRate": 0.0656,
+      "annualContribution": 10248.0
+    },
+    {
+      "runtimeType": "celi",
+      "id": "tfsa-joint",
+      "individualId": "andre",
+      "value": 34005.68,
+      "customReturnRate": 0.0609,
+      "annualContribution": 12600.0
+    },
+    {
+      "runtimeType": "cri",
+      "id": "cri-andre",
+      "individualId": "andre",
+      "value": 53494.30,
+      "customReturnRate": 0.0609
+    },
+    {
+      "runtimeType": "cash",
+      "id": "cash-liquidities",
+      "individualId": "andre",
+      "value": 0.0,
+      "customReturnRate": 0.02
+    }
+  ],
+  "events": [
+    {
+      "runtimeType": "retirement",
+      "id": "retirement-anne",
+      "name": "Retraite d'Anne",
+      "individualId": "anne",
+      "timing": {
+        "runtimeType": "age",
+        "individualId": "anne",
+        "age": 60
+      }
+    },
+    {
+      "runtimeType": "retirement",
+      "id": "retirement-andre",
+      "name": "Retraite d'André",
+      "individualId": "andre",
+      "timing": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 62
+      }
+    },
+    {
+      "runtimeType": "death",
+      "id": "death-andre",
+      "name": "Décès d'André (espérance)",
+      "individualId": "andre",
+      "timing": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 91
+      }
+    },
+    {
+      "runtimeType": "death",
+      "id": "death-anne",
+      "name": "Décès d'Anne (espérance)",
+      "individualId": "anne",
+      "timing": {
+        "runtimeType": "age",
+        "individualId": "anne",
+        "age": 91
+      }
+    },
+    {
+      "runtimeType": "realEstateTransaction",
+      "id": "sell-house-buy-condo",
+      "timing": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 70
+      },
+      "assetSoldId": "house-vmr",
+      "assetPurchasedId": "condo-montreal",
+      "withdrawAccountId": "cash-liquidities",
+      "depositAccountId": "cash-liquidities"
+    },
+    {
+      "runtimeType": "realEstateTransaction",
+      "id": "sell-condo-rpa",
+      "timing": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 78
+      },
+      "assetSoldId": "condo-montreal",
+      "withdrawAccountId": "cash-liquidities",
+      "depositAccountId": "cash-liquidities"
+    }
+  ],
+  "expenses": [
+    {
+      "runtimeType": "housing",
+      "id": "housing-house",
+      "name": "Logement - Maison VMR",
+      "annualAmount": 23100.0,
+      "startTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 0
+      },
+      "endTiming": {
+        "runtimeType": "eventRelative",
+        "eventId": "sell-house-buy-condo",
+        "boundary": "start"
+      }
+    },
+    {
+      "runtimeType": "housing",
+      "id": "housing-condo",
+      "name": "Logement - Condo",
+      "annualAmount": 13248.0,
+      "startTiming": {
+        "runtimeType": "eventRelative",
+        "eventId": "sell-house-buy-condo",
+        "boundary": "start"
+      },
+      "endTiming": {
+        "runtimeType": "eventRelative",
+        "eventId": "sell-condo-rpa",
+        "boundary": "start"
+      }
+    },
+    {
+      "runtimeType": "housing",
+      "id": "housing-rpa",
+      "name": "Logement - RPA",
+      "annualAmount": 75648.0,
+      "startTiming": {
+        "runtimeType": "eventRelative",
+        "eventId": "sell-condo-rpa",
+        "boundary": "start"
+      },
+      "endTiming": {
+        "runtimeType": "projectionEnd"
+      }
+    },
+    {
+      "runtimeType": "transport",
+      "id": "transport-base",
+      "name": "Transport (inclus dans budget de base)",
+      "annualAmount": 0.0,
+      "startTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 0
+      },
+      "endTiming": {
+        "runtimeType": "projectionEnd"
+      }
+    },
+    {
+      "runtimeType": "dailyLiving",
+      "id": "daily-base",
+      "name": "Vie courante (épicerie, électricité, assurances, loisirs, auto)",
+      "annualAmount": 72000.0,
+      "startTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 0
+      },
+      "endTiming": {
+        "runtimeType": "projectionEnd"
+      }
+    },
+    {
+      "runtimeType": "recreation",
+      "id": "recreation-voyages-actif",
+      "name": "Voyages - Période active (jusqu'à 75 ans)",
+      "annualAmount": 40000.0,
+      "startTiming": {
+        "runtimeType": "eventRelative",
+        "eventId": "retirement-anne",
+        "boundary": "start"
+      },
+      "endTiming": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 75
+      }
+    },
+    {
+      "runtimeType": "recreation",
+      "id": "recreation-voyages-reduit",
+      "name": "Voyages - Période réduite (après 75 ans)",
+      "annualAmount": 5000.0,
+      "startTiming": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 75
+      },
+      "endTiming": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 80
+      }
+    },
+    {
+      "runtimeType": "health",
+      "id": "health-65-75",
+      "name": "Santé 65-75 ans (médicaments, lunettes, dentiste)",
+      "annualAmount": 4000.0,
+      "startTiming": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 65
+      },
+      "endTiming": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 75
+      }
+    },
+    {
+      "runtimeType": "health",
+      "id": "health-75plus",
+      "name": "Santé 75+ ans (soins à domicile, physio, équipements)",
+      "annualAmount": 8500.0,
+      "startTiming": {
+        "runtimeType": "age",
+        "individualId": "andre",
+        "age": 75
+      },
+      "endTiming": {
+        "runtimeType": "projectionEnd"
+      }
+    },
+    {
+      "runtimeType": "family",
+      "id": "family-grandchild-1",
+      "name": "Études petit-enfant 1 (naît dans 5 ans)",
+      "annualAmount": 3000.0,
+      "startTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 5
+      },
+      "endTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 23
+      }
+    },
+    {
+      "runtimeType": "family",
+      "id": "family-grandchild-2",
+      "name": "Études petit-enfant 2 (naît dans 7 ans)",
+      "annualAmount": 3000.0,
+      "startTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 7
+      },
+      "endTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 25
+      }
+    },
+    {
+      "runtimeType": "family",
+      "id": "family-grandchild-3",
+      "name": "Études petit-enfant 3 (naît dans 10 ans)",
+      "annualAmount": 3000.0,
+      "startTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 10
+      },
+      "endTiming": {
+        "runtimeType": "relative",
+        "yearsFromStart": 28
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "base-scenario",
+      "name": "Scénario de base",
+      "isBase": true,
+      "overrides": [],
+      "createdAt": "2025-10-14T16:30:00.000Z",
+      "updatedAt": "2025-10-14T16:30:00.000Z"
+    }
+  ]
+}

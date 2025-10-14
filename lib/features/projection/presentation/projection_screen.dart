@@ -8,9 +8,13 @@ import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/projection/presentation/providers/column_visibility_provider.dart';
 import 'package:retire1/features/projection/presentation/providers/projection_provider.dart';
+import 'package:retire1/features/projection/presentation/widgets/asset_allocation_chart.dart';
+import 'package:retire1/features/projection/presentation/widgets/cash_flow_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/column_visibility_dialog.dart';
 import 'package:retire1/features/projection/presentation/widgets/expanded_projection_table.dart';
+import 'package:retire1/features/projection/presentation/widgets/expense_categories_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/export_projection_dialog.dart';
+import 'package:retire1/features/projection/presentation/widgets/income_sources_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_table.dart';
 import 'package:retire1/features/projection/service/projection_csv_export.dart';
@@ -240,10 +244,12 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
     final theme = Theme.of(context);
     final projectionAsync = ref.watch(projectionProvider(widget.scenarioId));
     final eventsAsync = ref.watch(eventsProvider);
+    final assetsAsync = ref.watch(assetsProvider);
     final projectState = ref.watch(currentProjectProvider);
 
-    // Get events and individuals lists
+    // Get events, assets, and individuals lists
     final events = eventsAsync.value ?? [];
+    final assets = assetsAsync.value ?? [];
     final individuals = projectState is ProjectSelected
         ? projectState.project.individuals.cast<Individual>().toList()
         : <Individual>[];
@@ -449,12 +455,51 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                           ),
                         ),
                       ),
-                      // Chart section
+                      // Chart section - Net Worth
                       SliverToBoxAdapter(
                         child: ResponsiveContainer(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                             child: ProjectionChart(projection: projection),
+                          ),
+                        ),
+                      ),
+                      // Income Sources Chart
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: IncomeSourcesChart(projection: projection),
+                          ),
+                        ),
+                      ),
+                      // Expense Categories Chart
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: ExpenseCategoriesChart(projection: projection),
+                          ),
+                        ),
+                      ),
+                      // Cash Flow Chart
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: CashFlowChart(projection: projection),
+                          ),
+                        ),
+                      ),
+                      // Asset Allocation Chart
+                      SliverToBoxAdapter(
+                        child: ResponsiveContainer(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: AssetAllocationChart(
+                              projection: projection,
+                              assets: assets,
+                            ),
                           ),
                         ),
                       ),
