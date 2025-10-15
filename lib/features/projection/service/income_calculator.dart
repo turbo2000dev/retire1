@@ -22,6 +22,7 @@ class IncomeCalculator {
   /// - [events]: List of lifecycle events (that have occurred so far)
   /// - [criBalance]: Current CRI/RRIF account balance (for RRPE calculation)
   /// - [allIndividuals]: All individuals in the project (for survivor benefit calculation)
+  /// - [inflationRate]: Annual inflation rate (defaults to 2%)
   ///
   /// Returns an [AnnualIncome] object with all income sources
   AnnualIncome calculateIncome({
@@ -32,6 +33,7 @@ class IncomeCalculator {
     required List<Event> events,
     double criBalance = 0.0,
     List<Individual> allIndividuals = const [],
+    double inflationRate = 0.02,
   }) {
     log('IncomeCalculator.calculateIncome: year=$year, age=$age, individual=${individual.name}',
         name: 'IncomeCalculator');
@@ -60,6 +62,7 @@ class IncomeCalculator {
       year: year,
       yearsFromStart: yearsFromStart,
       events: events,
+      inflationRate: inflationRate,
     );
 
     final rrq = _calculateRRQ(
@@ -189,39 +192,57 @@ class IncomeCalculator {
 
   /// Calculate employment income for the year
   ///
-  /// Employment income continues until retirement event occurs.
-  /// After retirement, employment income is zero.
+  /// Employment income:
+  /// - Grows with inflation each year: baseIncome * (1 + inflationRate)^yearsFromStart
+  /// - Continues until retirement event occurs
+  /// - After retirement, employment income is zero
   double _calculateEmploymentIncome({
     required Individual individual,
     required int year,
     required int yearsFromStart,
     required List<Event> events,
+    required double inflationRate,
   }) {
-    // Check if individual has retired by checking for retirement event
-    final retirementEvent = events.where((event) {
+    // Check if individual has retired by checking for retirement event in events that have occurred
+    final hasRetired = events.any((event) {
       return event.when(
         retirement: (id, individualId, timing) => individualId == individual.id,
         death: (id, individualId, timing) => false,
-        realEstateTransaction: (id, type, timing, propertyValue, depositAccount,
-                withdrawalAccount) =>
+        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
+                withdrawAccountId, depositAccountId) =>
             false,
       );
-    }).firstOrNull;
+    });
 
-    if (retirementEvent == null) {
-      // No retirement event - employment income continues
-      return individual.employmentIncome;
+    if (hasRetired) {
+      // Retirement event has occurred - no more employment income
+      log('IncomeCalculator._calculateEmploymentIncome: ${individual.name} is retired - no employment income',
+          name: 'IncomeCalculator');
+      return 0.0;
     }
 
-    // Check if retirement has occurred
-    // For now, we use a simplified check - in the full implementation,
-    // this would use the timing resolution logic from ProjectionCalculator
-    // For Phase 26, we'll assume retirement timing is properly resolved elsewhere
-    // and passed through the events list with resolved years
+    // Calculate inflation-adjusted employment income
+    // Base income grows each year: baseIncome * (1 + inflationRate)^yearsFromStart
+    final baseIncome = individual.employmentIncome;
 
-    // Simplified: If retirement event exists and we're past year 0, assume retired
-    // This will be properly integrated when we connect to ProjectionCalculator
-    return individual.employmentIncome; // Will be refined in integration
+    if (yearsFromStart == 0) {
+      return baseIncome;
+    }
+
+    // Apply compound inflation
+    double inflationMultiplier = 1.0;
+    for (int i = 0; i < yearsFromStart; i++) {
+      inflationMultiplier *= (1 + inflationRate);
+    }
+
+    final adjustedIncome = baseIncome * inflationMultiplier;
+
+    log('IncomeCalculator._calculateEmploymentIncome: ${individual.name} '
+        'baseIncome=\$$baseIncome, yearsFromStart=$yearsFromStart, '
+        'inflationRate=$inflationRate, adjustedIncome=\$$adjustedIncome',
+        name: 'IncomeCalculator');
+
+    return adjustedIncome;
   }
 
   /// Calculate RRQ (Régime de rentes du Québec / Quebec Pension Plan) benefit

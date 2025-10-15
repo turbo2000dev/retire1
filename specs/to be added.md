@@ -28,3 +28,7 @@ Projection Loop Flow:
   6. Update asset balances
   7. Update CELI room for next year
   8. Store all data in YearlyProjection
+
+# General
+- Cannot modify the Project Details. Should allow it.
+

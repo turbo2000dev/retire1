@@ -106,6 +106,7 @@ class ProjectionCalculator {
         yearsFromStart: yearsFromStart,
         events: allYearEventsSoFar,
         assetValues: currentAssetValues,
+        inflationRate: inflationRate,
       );
 
       final incomeByIndividual = incomeResults['incomeByIndividual'] as Map<String, AnnualIncome>;
@@ -990,6 +991,7 @@ class ProjectionCalculator {
     required int yearsFromStart,
     required List<Event> events,
     required Map<String, double> assetValues,
+    required double inflationRate,
   }) {
     final incomeByIndividual = <String, AnnualIncome>{};
     double totalIncome = 0.0;
@@ -1018,6 +1020,7 @@ class ProjectionCalculator {
         events: events,
         criBalance: criBalance,
         allIndividuals: project.individuals, // Pass all individuals for survivor benefit calculation
+        inflationRate: inflationRate,
       );
 
       incomeByIndividual[individual.id] = income;
