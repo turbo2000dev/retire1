@@ -289,10 +289,12 @@ class ProjectionTableV2 extends StatelessWidget {
                                   color: theme.colorScheme.tertiary,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  currencyFormat.format(totalIncome),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.tertiary,
+                                Flexible(
+                                  child: Text(
+                                    currencyFormat.format(totalIncome),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.tertiary,
+                                    ),
                                   ),
                                 ),
                               ],

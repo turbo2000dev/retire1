@@ -13,7 +13,7 @@ import 'package:retire1/features/projection/presentation/widgets/asset_allocatio
 import 'package:retire1/features/projection/presentation/widgets/cash_flow_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/column_visibility_dialog.dart';
 import 'package:retire1/features/projection/presentation/widgets/dollar_mode_explanation_dialog.dart';
-import 'package:retire1/features/projection/presentation/widgets/expanded_projection_table.dart';
+import 'package:retire1/features/projection/presentation/widgets/expanded_projection_table_v2.dart';
 import 'package:retire1/features/projection/presentation/widgets/expense_categories_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/export_projection_dialog.dart';
 import 'package:retire1/features/projection/presentation/widgets/income_sources_chart.dart';
@@ -598,7 +598,7 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                               builder: (context, ref, child) {
                                 final columnVisibility =
                                     ref.watch(columnVisibilityProvider);
-                                return ExpandedProjectionTable(
+                                return ExpandedProjectionTableV2(
                                   projection: projection,
                                   events: events,
                                   individuals: individuals,
