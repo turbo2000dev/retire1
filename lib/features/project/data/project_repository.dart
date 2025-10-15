@@ -40,7 +40,11 @@ class ProjectRepository {
         updatedAt: now,
       );
 
-      await docRef.set(project.toJson());
+      // Convert DateTime objects to Timestamps for Firestore
+      final json = project.toJson();
+      final firestoreData = _convertDateTimesToTimestamps(json);
+
+      await docRef.set(firestoreData);
       log('Project created in Firestore: ${project.name}');
 
       return project;

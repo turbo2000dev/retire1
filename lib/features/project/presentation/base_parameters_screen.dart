@@ -854,9 +854,20 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        'Project Details',
-                        style: theme.textTheme.titleMedium,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Project Details',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          if (!_isEditing)
+                            IconButton(
+                              onPressed: () => setState(() => _isEditing = true),
+                              icon: const Icon(Icons.edit),
+                              tooltip: 'Edit project details',
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -872,11 +883,6 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                           }
                           return null;
                         },
-                        onChanged: (_) {
-                          if (!_isEditing) {
-                            setState(() => _isEditing = true);
-                          }
-                        },
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -887,11 +893,6 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                         ),
                         enabled: _isEditing,
                         maxLines: 3,
-                        onChanged: (_) {
-                          if (!_isEditing) {
-                            setState(() => _isEditing = true);
-                          }
-                        },
                       ),
                       if (_isEditing) ...[
                         const SizedBox(height: 16),
@@ -936,6 +937,13 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                     subtitle: 'Investment returns and inflation rates',
                     icon: Icons.analytics_outlined,
                     initiallyExpanded: false,
+                    trailing: !_isEditingEconomic
+                        ? IconButton(
+                            onPressed: () => setState(() => _isEditingEconomic = true),
+                            icon: const Icon(Icons.edit),
+                            tooltip: 'Edit economic assumptions',
+                          )
+                        : null,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -948,16 +956,12 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             suffixText: '%',
                             helperText: 'Expected annual inflation rate',
                           ),
+                          enabled: _isEditingEconomic,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
                           ],
                           validator: _validatePercentage,
-                          onChanged: (_) {
-                            if (!_isEditingEconomic) {
-                              setState(() => _isEditingEconomic = true);
-                            }
-                          },
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
@@ -968,16 +972,12 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             suffixText: '%',
                             helperText: 'Expected annual return for REER accounts',
                           ),
+                          enabled: _isEditingEconomic,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
                           ],
                           validator: _validatePercentage,
-                          onChanged: (_) {
-                            if (!_isEditingEconomic) {
-                              setState(() => _isEditingEconomic = true);
-                            }
-                          },
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
@@ -988,16 +988,12 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             suffixText: '%',
                             helperText: 'Expected annual return for CELI accounts',
                           ),
+                          enabled: _isEditingEconomic,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
                           ],
                           validator: _validatePercentage,
-                          onChanged: (_) {
-                            if (!_isEditingEconomic) {
-                              setState(() => _isEditingEconomic = true);
-                            }
-                          },
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
@@ -1008,16 +1004,12 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             suffixText: '%',
                             helperText: 'Expected annual return for CRI accounts',
                           ),
+                          enabled: _isEditingEconomic,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
                           ],
                           validator: _validatePercentage,
-                          onChanged: (_) {
-                            if (!_isEditingEconomic) {
-                              setState(() => _isEditingEconomic = true);
-                            }
-                          },
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
@@ -1028,16 +1020,12 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             suffixText: '%',
                             helperText: 'Expected annual return for cash accounts',
                           ),
+                          enabled: _isEditingEconomic,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
                           ],
                           validator: _validatePercentage,
-                          onChanged: (_) {
-                            if (!_isEditingEconomic) {
-                              setState(() => _isEditingEconomic = true);
-                            }
-                          },
                         ),
                         if (_isEditingEconomic) ...[
                           const SizedBox(height: 16),
