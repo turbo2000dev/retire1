@@ -18,7 +18,7 @@ import 'package:retire1/features/projection/presentation/widgets/expense_categor
 import 'package:retire1/features/projection/presentation/widgets/export_projection_dialog.dart';
 import 'package:retire1/features/projection/presentation/widgets/income_sources_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_chart.dart';
-import 'package:retire1/features/projection/presentation/widgets/projection_table.dart';
+import 'package:retire1/features/projection/presentation/widgets/projection_table_v2.dart';
 import 'package:retire1/features/projection/service/projection_csv_export.dart';
 import 'package:retire1/features/projection/service/projection_export_service.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
@@ -574,7 +574,7 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                         child: ResponsiveContainer(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                            child: ProjectionTable(
+                            child: ProjectionTableV2(
                               projection: projection,
                               events: events,
                               individuals: individuals,

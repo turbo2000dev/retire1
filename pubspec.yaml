@@ -71,6 +71,9 @@ dependencies:
   # Charts and visualization
   fl_chart: ^0.70.1
 
+  # Enhanced data tables
+  data_table_2: ^2.5.15
+
   # Local storage
   shared_preferences: ^2.3.3
 
