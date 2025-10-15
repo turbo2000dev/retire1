@@ -35,16 +35,45 @@ class ProjectExportService {
     final exportData = {
       'exportVersion': '1.2', // Bumped version for expense support
       'exportedAt': DateTime.now().toIso8601String(),
-      'project': project.toJson(),
-      if (assets != null) 'assets': assets.map((a) => a.toJson()).toList(),
-      if (events != null) 'events': events.map((e) => e.toJson()).toList(),
-      if (expenses != null) 'expenses': expenses.map((e) => e.toJson()).toList(),
-      if (scenarios != null) 'scenarios': scenarios.map((s) => s.toJson()).toList(),
+      'project': _convertDateTimesToStrings(project.toJson()),
+      if (assets != null) 'assets': assets.map((a) => _convertDateTimesToStrings(a.toJson())).toList(),
+      if (events != null) 'events': events.map((e) => _convertDateTimesToStrings(e.toJson())).toList(),
+      if (expenses != null) 'expenses': expenses.map((e) => _convertDateTimesToStrings(e.toJson())).toList(),
+      if (scenarios != null) 'scenarios': scenarios.map((s) => _convertDateTimesToStrings(s.toJson())).toList(),
     };
 
     // Convert to pretty-printed JSON
     final encoder = JsonEncoder.withIndent('  ');
     return encoder.convert(exportData);
+  }
+
+  /// Convert DateTime objects to ISO 8601 strings recursively
+  /// This is needed because our custom toJson() returns DateTime objects for Firestore compatibility
+  Map<String, dynamic> _convertDateTimesToStrings(Map<String, dynamic> data) {
+    final result = <String, dynamic>{};
+
+    for (final entry in data.entries) {
+      final value = entry.value;
+
+      if (value is DateTime) {
+        result[entry.key] = value.toIso8601String();
+      } else if (value is Map<String, dynamic>) {
+        result[entry.key] = _convertDateTimesToStrings(value);
+      } else if (value is List) {
+        result[entry.key] = value.map((item) {
+          if (item is DateTime) {
+            return item.toIso8601String();
+          } else if (item is Map<String, dynamic>) {
+            return _convertDateTimesToStrings(item);
+          }
+          return item;
+        }).toList();
+      } else {
+        result[entry.key] = value;
+      }
+    }
+
+    return result;
   }
 
   /// Generate a filename for the exported project
