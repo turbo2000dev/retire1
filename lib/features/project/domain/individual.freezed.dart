@@ -23,6 +23,7 @@ Individual _$IndividualFromJson(Map<String, dynamic> json) {
 mixin _$Individual {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime get birthdate => throw _privateConstructorUsedError;
   double get employmentIncome =>
       throw _privateConstructorUsedError; // Annual salary
@@ -54,6 +55,7 @@ abstract class $IndividualCopyWith<$Res> {
   $Res call({
     String id,
     String name,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     DateTime birthdate,
     double employmentIncome,
     int rrqStartAge,
@@ -139,6 +141,7 @@ abstract class _$$IndividualImplCopyWith<$Res>
   $Res call({
     String id,
     String name,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     DateTime birthdate,
     double employmentIncome,
     int rrqStartAge,
@@ -216,6 +219,7 @@ class _$IndividualImpl extends _Individual {
   const _$IndividualImpl({
     required this.id,
     required this.name,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required this.birthdate,
     this.employmentIncome = 0.0,
     this.rrqStartAge = 65,
@@ -232,6 +236,7 @@ class _$IndividualImpl extends _Individual {
   @override
   final String name;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   final DateTime birthdate;
   @override
   @JsonKey()
@@ -311,6 +316,7 @@ abstract class _Individual extends Individual {
   const factory _Individual({
     required final String id,
     required final String name,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required final DateTime birthdate,
     final double employmentIncome,
     final int rrqStartAge,
@@ -328,6 +334,7 @@ abstract class _Individual extends Individual {
   @override
   String get name;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime get birthdate;
   @override
   double get employmentIncome; // Annual salary

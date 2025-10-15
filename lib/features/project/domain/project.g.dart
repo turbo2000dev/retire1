@@ -12,8 +12,8 @@ _$ProjectImpl _$$ProjectImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       ownerId: json['ownerId'] as String,
       description: json['description'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: _dateTimeFromJson(json['createdAt']),
+      updatedAt: _dateTimeFromJson(json['updatedAt']),
       individuals:
           (json['individuals'] as List<dynamic>?)
               ?.map((e) => Individual.fromJson(e as Map<String, dynamic>))
@@ -32,8 +32,8 @@ Map<String, dynamic> _$$ProjectImplToJson(_$ProjectImpl instance) =>
       'name': instance.name,
       'ownerId': instance.ownerId,
       'description': instance.description,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
+      'createdAt': _dateTimeToJson(instance.createdAt),
+      'updatedAt': _dateTimeToJson(instance.updatedAt),
       'individuals': instance.individuals.map((e) => e.toJson()).toList(),
       'inflationRate': instance.inflationRate,
       'reerReturnRate': instance.reerReturnRate,

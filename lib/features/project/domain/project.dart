@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 
@@ -13,7 +14,15 @@ class Project with _$Project {
     required String name,
     required String ownerId,
     String? description,
+    @JsonKey(
+      fromJson: _dateTimeFromJson,
+      toJson: _dateTimeToJson,
+    )
     required DateTime createdAt,
+    @JsonKey(
+      fromJson: _dateTimeFromJson,
+      toJson: _dateTimeToJson,
+    )
     required DateTime updatedAt,
     @Default([]) List<Individual> individuals,
     // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)
@@ -27,3 +36,18 @@ class Project with _$Project {
   factory Project.fromJson(Map<String, dynamic> json) =>
       _$ProjectFromJson(json);
 }
+
+/// Custom DateTime serialization that handles both Timestamp and String
+DateTime _dateTimeFromJson(dynamic value) {
+  if (value is Timestamp) {
+    return value.toDate();
+  } else if (value is String) {
+    return DateTime.parse(value);
+  } else if (value is DateTime) {
+    return value;
+  }
+  throw ArgumentError('Cannot convert $value to DateTime');
+}
+
+/// Custom DateTime deserialization - return as DateTime for repository to convert
+dynamic _dateTimeToJson(DateTime dateTime) => dateTime;

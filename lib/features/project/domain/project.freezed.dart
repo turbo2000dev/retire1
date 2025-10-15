@@ -25,7 +25,9 @@ mixin _$Project {
   String get name => throw _privateConstructorUsedError;
   String get ownerId => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime get updatedAt => throw _privateConstructorUsedError;
   List<Individual> get individuals =>
       throw _privateConstructorUsedError; // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)
@@ -54,7 +56,9 @@ abstract class $ProjectCopyWith<$Res> {
     String name,
     String ownerId,
     String? description,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     DateTime createdAt,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     DateTime updatedAt,
     List<Individual> individuals,
     double inflationRate,
@@ -162,7 +166,9 @@ abstract class _$$ProjectImplCopyWith<$Res> implements $ProjectCopyWith<$Res> {
     String name,
     String ownerId,
     String? description,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     DateTime createdAt,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     DateTime updatedAt,
     List<Individual> individuals,
     double inflationRate,
@@ -263,7 +269,9 @@ class _$ProjectImpl implements _Project {
     required this.name,
     required this.ownerId,
     this.description,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required this.createdAt,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required this.updatedAt,
     final List<Individual> individuals = const [],
     this.inflationRate = 0.02,
@@ -285,8 +293,10 @@ class _$ProjectImpl implements _Project {
   @override
   final String? description;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   final DateTime createdAt;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   final DateTime updatedAt;
   final List<Individual> _individuals;
   @override
@@ -387,7 +397,9 @@ abstract class _Project implements Project {
     required final String name,
     required final String ownerId,
     final String? description,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required final DateTime createdAt,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required final DateTime updatedAt,
     final List<Individual> individuals,
     final double inflationRate,
@@ -408,8 +420,10 @@ abstract class _Project implements Project {
   @override
   String? get description;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime get createdAt;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime get updatedAt;
   @override
   List<Individual> get individuals; // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)

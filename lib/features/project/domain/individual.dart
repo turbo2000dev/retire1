@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'individual.freezed.dart';
@@ -11,6 +12,10 @@ class Individual with _$Individual {
   const factory Individual({
     required String id,
     required String name,
+    @JsonKey(
+      fromJson: _dateTimeFromJson,
+      toJson: _dateTimeToJson,
+    )
     required DateTime birthdate,
     @Default(0.0) double employmentIncome, // Annual salary
     @Default(65) int rrqStartAge, // RRQ start age (60-70)
@@ -33,3 +38,18 @@ class Individual with _$Individual {
     return age;
   }
 }
+
+/// Custom DateTime serialization that handles both Timestamp and String
+DateTime _dateTimeFromJson(dynamic value) {
+  if (value is Timestamp) {
+    return value.toDate();
+  } else if (value is String) {
+    return DateTime.parse(value);
+  } else if (value is DateTime) {
+    return value;
+  }
+  throw ArgumentError('Cannot convert $value to DateTime');
+}
+
+/// Custom DateTime deserialization - return as DateTime for repository to convert
+dynamic _dateTimeToJson(DateTime dateTime) => dateTime;
