@@ -13,6 +13,8 @@ import 'package:retire1/features/projection/presentation/providers/projection_pr
 import 'package:retire1/features/projection/presentation/widgets/projection_kpi_card.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_warnings_section.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
+import 'package:retire1/features/dashboard/presentation/widgets/scenario_selector.dart';
+import 'package:retire1/features/dashboard/presentation/widgets/kpi_comparison_card.dart';
 
 /// Dashboard screen - shows KPIs and scenario comparison for current project
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -25,6 +27,7 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  Set<String> _selectedScenarioIds = {};
 
   @override
   void initState() {
@@ -330,6 +333,274 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   Widget _buildComparisonTab(BuildContext context, ThemeData theme) {
+    final scenariosAsync = ref.watch(scenariosProvider);
+
+    return scenariosAsync.when(
+      data: (scenarios) {
+        if (scenarios.isEmpty) {
+          return _buildNoScenariosState(context, theme);
+        }
+
+        // Base scenario is always first
+        final baseScenario = scenarios.firstWhere((s) => s.isBase);
+        final alternativeScenarios = scenarios.where((s) => !s.isBase).toList();
+
+        // Initialize selected scenarios if empty (include base + first alternative if available)
+        if (_selectedScenarioIds.isEmpty) {
+          _selectedScenarioIds = {
+            baseScenario.id,
+            if (alternativeScenarios.isNotEmpty) alternativeScenarios.first.id,
+          };
+        }
+
+        // Get selected scenarios in order (base first, then alternatives)
+        final selectedScenarios = [
+          baseScenario,
+          ...alternativeScenarios.where((s) => _selectedScenarioIds.contains(s.id)),
+        ];
+
+        // If only 1 scenario exists, show message
+        if (scenarios.length == 1) {
+          return _buildSingleScenarioState(context, theme);
+        }
+
+        return CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Text(
+                      'Scenario Comparison',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Compare KPIs across different scenarios',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Scenario selector
+                    ScenarioSelector(
+                      baseScenario: baseScenario,
+                      alternativeScenarios: alternativeScenarios,
+                      selectedScenarioIds: _selectedScenarioIds,
+                      onScenarioToggled: (scenarioId) {
+                        setState(() {
+                          if (_selectedScenarioIds.contains(scenarioId)) {
+                            _selectedScenarioIds.remove(scenarioId);
+                          } else {
+                            _selectedScenarioIds.add(scenarioId);
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // KPI comparison cards
+                    _buildKpiComparisonGrid(
+                      context,
+                      theme,
+                      selectedScenarios,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text('Error loading scenarios: $error'),
+      ),
+    );
+  }
+
+  Widget _buildKpiComparisonGrid(
+    BuildContext context,
+    ThemeData theme,
+    List<dynamic> selectedScenarios,
+  ) {
+    // Create a Consumer widget to watch projections
+    return Consumer(
+      builder: (context, ref, child) {
+        // Load projections for all selected scenarios
+        final projectionAsyncValues = selectedScenarios.map((scenario) {
+          return ref.watch(projectionProvider(scenario.id));
+        }).toList();
+
+        // Check if all projections are loaded
+        final allLoaded = projectionAsyncValues.every((async) => async.hasValue);
+        final anyError = projectionAsyncValues.any((async) => async.hasError);
+
+        if (anyError) {
+          return const Center(child: Text('Error loading projections'));
+        }
+
+        if (!allLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Calculate KPIs for each scenario
+        final scenarioKpis = projectionAsyncValues
+            .map((async) => async.value?.calculateKpis())
+            .toList();
+
+        return _buildComparisonCardsGrid(
+          context,
+          theme,
+          selectedScenarios,
+          scenarioKpis,
+        );
+      },
+    );
+  }
+
+  Widget _buildComparisonCardsGrid(
+    BuildContext context,
+    ThemeData theme,
+    List<dynamic> selectedScenarios,
+    List<dynamic> scenarioKpis,
+  ) {
+
+    // Build comparison cards
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = constraints.maxWidth > 1024
+            ? 2
+            : constraints.maxWidth > 600
+                ? 2
+                : 1;
+
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 1.8,
+          children: [
+            // Final Net Worth
+            KpiComparisonCard(
+              label: 'Final Net Worth',
+              icon: Icons.account_balance_wallet,
+              type: KpiComparisonType.currency,
+              scenariosData: List.generate(
+                selectedScenarios.length,
+                (i) => ScenarioKpiData(
+                  scenarioName: selectedScenarios[i].name,
+                  value: scenarioKpis[i]?.finalNetWorth,
+                ),
+              ),
+            ),
+            // Lowest Net Worth
+            KpiComparisonCard(
+              label: 'Lowest Net Worth',
+              icon: Icons.trending_down,
+              type: KpiComparisonType.currency,
+              scenariosData: List.generate(
+                selectedScenarios.length,
+                (i) => ScenarioKpiData(
+                  scenarioName: selectedScenarios[i].name,
+                  value: scenarioKpis[i]?.lowestNetWorth,
+                ),
+              ),
+            ),
+            // Money Runs Out
+            KpiComparisonCard(
+              label: 'Money Runs Out',
+              icon: Icons.warning_amber,
+              type: KpiComparisonType.year,
+              scenariosData: List.generate(
+                selectedScenarios.length,
+                (i) => ScenarioKpiData(
+                  scenarioName: selectedScenarios[i].name,
+                  value: scenarioKpis[i]?.yearMoneyRunsOut?.toDouble(),
+                ),
+              ),
+            ),
+            // Total Taxes Paid
+            KpiComparisonCard(
+              label: 'Total Taxes Paid',
+              icon: Icons.account_balance,
+              type: KpiComparisonType.currency,
+              scenariosData: List.generate(
+                selectedScenarios.length,
+                (i) => ScenarioKpiData(
+                  scenarioName: selectedScenarios[i].name,
+                  value: scenarioKpis[i]?.totalTaxesPaid,
+                ),
+              ),
+            ),
+            // Total Withdrawals
+            KpiComparisonCard(
+              label: 'Total Withdrawals',
+              icon: Icons.attach_money,
+              type: KpiComparisonType.currency,
+              scenariosData: List.generate(
+                selectedScenarios.length,
+                (i) => ScenarioKpiData(
+                  scenarioName: selectedScenarios[i].name,
+                  value: scenarioKpis[i]?.totalWithdrawals,
+                ),
+              ),
+            ),
+            // Average Tax Rate
+            KpiComparisonCard(
+              label: 'Average Tax Rate',
+              icon: Icons.percent,
+              type: KpiComparisonType.percentage,
+              scenariosData: List.generate(
+                selectedScenarios.length,
+                (i) => ScenarioKpiData(
+                  scenarioName: selectedScenarios[i].name,
+                  value: scenarioKpis[i]?.averageTaxRate,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildNoScenariosState(BuildContext context, ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.folder_open,
+            size: 64,
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No scenarios available',
+            style: theme.textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Create scenarios to compare them',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleScenarioState(BuildContext context, ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -341,15 +612,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'Scenario Comparison',
+            'Only one scenario exists',
             style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Coming in Phase 35C',
+            'Create alternative scenarios to compare',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
