@@ -68,12 +68,14 @@ class IncomeCalculator {
     final rrq = _calculateRRQ(
       individual: individual,
       age: age,
+      inflationRate: inflationRate,
     );
 
     final psv = _calculatePSV(
       individual: individual,
       age: age,
       totalOtherIncome: employment + rrq, // PSV clawback based on total income
+      inflationRate: inflationRate,
     );
 
     final rrpe = _calculateRRPE(
@@ -87,6 +89,7 @@ class IncomeCalculator {
       allIndividuals: allIndividuals,
       events: events,
       year: year,
+      inflationRate: inflationRate,
     );
 
     final income = AnnualIncome(
@@ -133,6 +136,7 @@ class IncomeCalculator {
     required List<Individual> allIndividuals,
     required List<Event> events,
     required int year,
+    required double inflationRate,
   }) {
     double totalSurvivorBenefits = 0.0;
 
@@ -158,6 +162,7 @@ class IncomeCalculator {
         deceasedRRQ = _calculateRRQ(
           individual: otherIndividual,
           age: deceasedAge,
+          inflationRate: inflationRate,
         );
       }
 
@@ -165,8 +170,13 @@ class IncomeCalculator {
       double deceasedPSV = 0.0;
       if (deceasedAge >= otherIndividual.psvStartAge) {
         // For survivor benefit calculation, assume no clawback on deceased's PSV
-        // (simplified model)
-        deceasedPSV = kPSVBaseAmount2025;
+        // (simplified model) but still apply inflation indexing
+        final yearsSinceStart = deceasedAge - otherIndividual.psvStartAge;
+        double inflationMultiplier = 1.0;
+        for (int i = 0; i < yearsSinceStart; i++) {
+          inflationMultiplier *= (1 + inflationRate);
+        }
+        deceasedPSV = kPSVBaseAmount2025 * inflationMultiplier;
       }
 
       // Survivor receives 60% of RRQ and PSV
@@ -252,9 +262,11 @@ class IncomeCalculator {
   /// - User provides projected amounts at age 60 and 65
   /// - For ages between 60-65: linear interpolation
   /// - For ages > 65: apply 0.7% per month bonus from age 65 amount
+  /// - Benefits are indexed to inflation each year after starting
   double _calculateRRQ({
     required Individual individual,
     required int age,
+    required double inflationRate,
   }) {
     // No RRQ if not yet at start age
     if (age < individual.rrqStartAge) {
@@ -262,34 +274,42 @@ class IncomeCalculator {
     }
 
     final startAge = individual.rrqStartAge;
-    double benefit = 0.0;
+    double baseBenefit = 0.0;
 
     if (startAge <= 60) {
       // Starting at 60 or before: use projected amount at 60
-      benefit = individual.projectedRrqAt60;
+      baseBenefit = individual.projectedRrqAt60;
     } else if (startAge >= 65) {
       // Starting at 65 or later: use projected amount at 65 plus late bonus
-      benefit = individual.projectedRrqAt65;
+      baseBenefit = individual.projectedRrqAt65;
 
       if (startAge > 65) {
         // Apply late start bonus: 0.7% per month after 65
         final monthsLate = (startAge - 65) * 12;
         final bonusRate = monthsLate * kRRQLateBonusPerMonth;
-        benefit = benefit * (1.0 + bonusRate);
+        baseBenefit = baseBenefit * (1.0 + bonusRate);
       }
     } else {
       // Starting between 60 and 65: linear interpolation
       final progressRatio = (startAge - 60) / 5.0; // 0.0 at 60, 1.0 at 65
-      benefit = individual.projectedRrqAt60 +
+      baseBenefit = individual.projectedRrqAt60 +
                 (individual.projectedRrqAt65 - individual.projectedRrqAt60) * progressRatio;
     }
 
+    // Apply inflation indexing for years since benefit started
+    final yearsSinceStart = age - startAge;
+    double inflationMultiplier = 1.0;
+    for (int i = 0; i < yearsSinceStart; i++) {
+      inflationMultiplier *= (1 + inflationRate);
+    }
+    final indexedBenefit = baseBenefit * inflationMultiplier;
+
     log('IncomeCalculator._calculateRRQ: age=$age, startAge=$startAge, '
-        'projectedAt60=\$${individual.projectedRrqAt60}, projectedAt65=\$${individual.projectedRrqAt65}, '
-        'benefit=\$$benefit',
+        'baseBenefit=\$$baseBenefit, yearsSinceStart=$yearsSinceStart, '
+        'inflationMultiplier=$inflationMultiplier, indexedBenefit=\$$indexedBenefit',
         name: 'IncomeCalculator');
 
-    return benefit;
+    return indexedBenefit;
   }
 
   /// Calculate PSV (Pension de la Sécurité de la vieillesse / Old Age Security) benefit
@@ -298,23 +318,38 @@ class IncomeCalculator {
   /// - Starts at age specified in individual.psvStartAge (typically 65-70)
   /// - Base amount is ~$8,500/year (2025)
   /// - Clawback: 15% of income over $90,000 threshold
+  /// - Benefits are indexed to inflation each year after starting
   /// - Benefit cannot go negative
   double _calculatePSV({
     required Individual individual,
     required int age,
     required double totalOtherIncome,
+    required double inflationRate,
   }) {
     // No PSV if not yet at start age
     if (age < individual.psvStartAge) {
       return 0.0;
     }
 
-    // Base PSV amount
-    double psvAmount = kPSVBaseAmount2025;
+    final startAge = individual.psvStartAge;
 
-    // Apply clawback if income exceeds threshold
-    if (totalOtherIncome > kPSVClawbackThreshold2025) {
-      final excessIncome = totalOtherIncome - kPSVClawbackThreshold2025;
+    // Base PSV amount (indexed for inflation)
+    double basePsvAmount = kPSVBaseAmount2025;
+
+    // Apply inflation indexing for years since benefit started
+    final yearsSinceStart = age - startAge;
+    double inflationMultiplier = 1.0;
+    for (int i = 0; i < yearsSinceStart; i++) {
+      inflationMultiplier *= (1 + inflationRate);
+    }
+    basePsvAmount = basePsvAmount * inflationMultiplier;
+
+    // Apply clawback if income exceeds threshold (threshold also indexed)
+    double indexedThreshold = kPSVClawbackThreshold2025 * inflationMultiplier;
+    double psvAmount = basePsvAmount;
+
+    if (totalOtherIncome > indexedThreshold) {
+      final excessIncome = totalOtherIncome - indexedThreshold;
       final clawback = excessIncome * kPSVClawbackRate;
       psvAmount -= clawback;
     }
@@ -322,8 +357,9 @@ class IncomeCalculator {
     // PSV cannot go negative
     final finalAmount = psvAmount.clamp(0.0, double.infinity);
 
-    log('IncomeCalculator._calculatePSV: age=$age, startAge=${individual.psvStartAge}, '
-        'baseAmount=$kPSVBaseAmount2025, otherIncome=$totalOtherIncome, '
+    log('IncomeCalculator._calculatePSV: age=$age, startAge=$startAge, '
+        'basePsvAmount=\$$basePsvAmount, yearsSinceStart=$yearsSinceStart, '
+        'inflationMultiplier=$inflationMultiplier, otherIncome=$totalOtherIncome, '
         'finalAmount=$finalAmount',
         name: 'IncomeCalculator');
 
