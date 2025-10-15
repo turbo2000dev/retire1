@@ -78,6 +78,16 @@ class IndividualCard extends StatelessWidget {
                         Icons.calendar_today,
                         'PSV: ${individual.psvStartAge}',
                       ),
+                      _buildInfoChip(
+                        context,
+                        Icons.trending_up,
+                        'RRQ@60: ${NumberFormat.currency(symbol: '\$', decimalDigits: 0).format(individual.projectedRrqAt60)}',
+                      ),
+                      _buildInfoChip(
+                        context,
+                        Icons.trending_up,
+                        'RRQ@65: ${NumberFormat.currency(symbol: '\$', decimalDigits: 0).format(individual.projectedRrqAt65)}',
+                      ),
                     ],
                   ),
                 ],

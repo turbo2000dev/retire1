@@ -8,12 +8,7 @@ class RealEstateForm extends StatefulWidget {
   final void Function(Asset asset, {bool createAnother}) onSave;
   final VoidCallback? onCancel;
 
-  const RealEstateForm({
-    super.key,
-    this.asset,
-    required this.onSave,
-    this.onCancel,
-  });
+  const RealEstateForm({super.key, this.asset, required this.onSave, this.onCancel});
 
   @override
   State<RealEstateForm> createState() => _RealEstateFormState();
@@ -30,14 +25,10 @@ class _RealEstateFormState extends State<RealEstateForm> {
   void initState() {
     super.initState();
     _selectedType = widget.asset?.type ?? RealEstateType.house;
-    _valueController = TextEditingController(
-      text: widget.asset?.value.toStringAsFixed(0) ?? '',
-    );
+    _valueController = TextEditingController(text: widget.asset?.value.toStringAsFixed(0) ?? '');
     _setAtStart = widget.asset?.setAtStart ?? false;
     _customReturnRateController = TextEditingController(
-      text: widget.asset?.customReturnRate != null
-          ? (widget.asset!.customReturnRate! * 100).toStringAsFixed(2)
-          : '',
+      text: widget.asset?.customReturnRate != null ? (widget.asset!.customReturnRate! * 100).toStringAsFixed(2) : '',
     );
   }
 
@@ -58,13 +49,15 @@ class _RealEstateFormState extends State<RealEstateForm> {
       customReturnRate = percentage / 100;
     }
 
-    final asset = Asset.realEstate(
-      id: widget.asset?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      type: _selectedType,
-      value: double.parse(_valueController.text.replaceAll(',', '')),
-      setAtStart: _setAtStart,
-      customReturnRate: customReturnRate,
-    ) as RealEstateAsset;
+    final asset =
+        Asset.realEstate(
+              id: widget.asset?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+              type: _selectedType,
+              value: double.parse(_valueController.text.replaceAll(',', '')),
+              setAtStart: _setAtStart,
+              customReturnRate: customReturnRate,
+            )
+            as RealEstateAsset;
 
     widget.onSave(asset, createAnother: createAnother);
   }
@@ -80,15 +73,9 @@ class _RealEstateFormState extends State<RealEstateForm> {
           // Type dropdown
           DropdownButtonFormField<RealEstateType>(
             initialValue: _selectedType,
-            decoration: const InputDecoration(
-              labelText: 'Property Type',
-              border: OutlineInputBorder(),
-            ),
+            decoration: const InputDecoration(labelText: 'Property Type', border: OutlineInputBorder()),
             items: RealEstateType.values.map((type) {
-              return DropdownMenuItem(
-                value: type,
-                child: Text(_getRealEstateTypeName(type)),
-              );
+              return DropdownMenuItem(value: type, child: Text(_getRealEstateTypeName(type)));
             }).toList(),
             onChanged: (value) {
               if (value != null) {
@@ -102,15 +89,9 @@ class _RealEstateFormState extends State<RealEstateForm> {
           // Value field
           TextFormField(
             controller: _valueController,
-            decoration: const InputDecoration(
-              labelText: 'Value',
-              border: OutlineInputBorder(),
-              prefixText: '\$ ',
-            ),
+            decoration: const InputDecoration(labelText: 'Value', border: OutlineInputBorder(), prefixText: '\$ '),
             keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter a value';
@@ -133,9 +114,7 @@ class _RealEstateFormState extends State<RealEstateForm> {
               helperText: 'Leave empty to use inflation rate',
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-            ],
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return null; // Optional field
@@ -153,10 +132,8 @@ class _RealEstateFormState extends State<RealEstateForm> {
           const SizedBox(height: 16),
           // Set at start checkbox
           CheckboxListTile(
-            title: const Text('Set at start of planning period'),
-            subtitle: const Text(
-              'Will be sold/acquired at the beginning of the projection',
-            ),
+            title: const Text('Set value at start of planning period'),
+            subtitle: const Text('This real estatle property is currently owned.'),
             value: _setAtStart,
             onChanged: (value) {
               setState(() {
@@ -170,11 +147,7 @@ class _RealEstateFormState extends State<RealEstateForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (widget.onCancel != null)
-                TextButton(
-                  onPressed: widget.onCancel,
-                  child: const Text('Cancel'),
-                ),
+              if (widget.onCancel != null) TextButton(onPressed: widget.onCancel, child: const Text('Cancel')),
               if (widget.onCancel != null) const SizedBox(width: 8),
               // Show "Save and create another" only when creating new asset
               if (widget.asset == null) ...[
@@ -184,10 +157,7 @@ class _RealEstateFormState extends State<RealEstateForm> {
                 ),
                 const SizedBox(width: 8),
               ],
-              FilledButton(
-                onPressed: _submit,
-                child: const Text('Save'),
-              ),
+              FilledButton(onPressed: _submit, child: const Text('Save')),
             ],
           ),
         ],

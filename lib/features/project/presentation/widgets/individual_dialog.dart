@@ -52,6 +52,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
   late final TextEditingController _employmentIncomeController;
   late final TextEditingController _rrqStartAgeController;
   late final TextEditingController _psvStartAgeController;
+  late final TextEditingController _projectedRrqAt60Controller;
+  late final TextEditingController _projectedRrqAt65Controller;
   late DateTime _selectedDate;
 
   @override
@@ -67,6 +69,12 @@ class _IndividualDialogState extends State<IndividualDialog> {
     _psvStartAgeController = TextEditingController(
       text: widget.individual?.psvStartAge.toString() ?? '65',
     );
+    _projectedRrqAt60Controller = TextEditingController(
+      text: widget.individual?.projectedRrqAt60.toStringAsFixed(0) ?? '12000',
+    );
+    _projectedRrqAt65Controller = TextEditingController(
+      text: widget.individual?.projectedRrqAt65.toStringAsFixed(0) ?? '16000',
+    );
     _selectedDate = widget.individual?.birthdate ?? DateTime(1970, 1, 1);
   }
 
@@ -76,6 +84,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
     _employmentIncomeController.dispose();
     _rrqStartAgeController.dispose();
     _psvStartAgeController.dispose();
+    _projectedRrqAt60Controller.dispose();
+    _projectedRrqAt65Controller.dispose();
     super.dispose();
   }
 
@@ -103,6 +113,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
     final employmentIncome = double.tryParse(_employmentIncomeController.text) ?? 0.0;
     final rrqStartAge = int.tryParse(_rrqStartAgeController.text) ?? 65;
     final psvStartAge = int.tryParse(_psvStartAgeController.text) ?? 65;
+    final projectedRrqAt60 = double.tryParse(_projectedRrqAt60Controller.text) ?? 12000.0;
+    final projectedRrqAt65 = double.tryParse(_projectedRrqAt65Controller.text) ?? 16000.0;
 
     final individual = Individual(
       id: widget.individual?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
@@ -111,6 +123,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
       employmentIncome: employmentIncome,
       rrqStartAge: rrqStartAge,
       psvStartAge: psvStartAge,
+      projectedRrqAt60: projectedRrqAt60,
+      projectedRrqAt65: projectedRrqAt65,
     );
 
     Navigator.of(context).pop(
@@ -250,6 +264,56 @@ class _IndividualDialogState extends State<IndividualDialog> {
                   final age = int.tryParse(value);
                   if (age == null || age < 60 || age > 70) {
                     return 'Must be between 60 and 70';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _projectedRrqAt60Controller,
+                decoration: const InputDecoration(
+                  labelText: 'Projected RRQ Amount at 60',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money),
+                  prefixText: '\$ ',
+                  helperText: 'Annual RRQ benefit if starting at age 60',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Required';
+                  }
+                  final amount = double.tryParse(value);
+                  if (amount == null || amount < 0) {
+                    return 'Must be a valid amount';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _projectedRrqAt65Controller,
+                decoration: const InputDecoration(
+                  labelText: 'Projected RRQ Amount at 65',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money),
+                  prefixText: '\$ ',
+                  helperText: 'Annual RRQ benefit if starting at age 65',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Required';
+                  }
+                  final amount = double.tryParse(value);
+                  if (amount == null || amount < 0) {
+                    return 'Must be a valid amount';
                   }
                   return null;
                 },

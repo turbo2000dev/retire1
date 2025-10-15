@@ -20,7 +20,9 @@ class Individual with _$Individual {
     @Default(0.0) double employmentIncome, // Annual salary
     @Default(65) int rrqStartAge, // RRQ start age (60-70)
     @Default(65) int psvStartAge, // PSV start age (65-70, OAS age)
-    @Default(16000.0) double rrqAnnualBenefit, // Expected annual RRQ benefit at 65
+    @Default(16000.0) double rrqAnnualBenefit, // Expected annual RRQ benefit at 65 (deprecated, kept for backward compatibility)
+    @Default(12000.0) double projectedRrqAt60, // Projected annual RRQ benefit if starting at age 60
+    @Default(16000.0) double projectedRrqAt65, // Projected annual RRQ benefit if starting at age 65
     @Default(0.0) double initialCeliRoom, // Initial CELI contribution room available
   }) = _Individual;
 

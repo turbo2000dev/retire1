@@ -32,7 +32,11 @@ mixin _$Individual {
   int get psvStartAge =>
       throw _privateConstructorUsedError; // PSV start age (65-70, OAS age)
   double get rrqAnnualBenefit =>
-      throw _privateConstructorUsedError; // Expected annual RRQ benefit at 65
+      throw _privateConstructorUsedError; // Expected annual RRQ benefit at 65 (deprecated, kept for backward compatibility)
+  double get projectedRrqAt60 =>
+      throw _privateConstructorUsedError; // Projected annual RRQ benefit if starting at age 60
+  double get projectedRrqAt65 =>
+      throw _privateConstructorUsedError; // Projected annual RRQ benefit if starting at age 65
   double get initialCeliRoom => throw _privateConstructorUsedError;
 
   /// Serializes this Individual to a JSON map.
@@ -61,6 +65,8 @@ abstract class $IndividualCopyWith<$Res> {
     int rrqStartAge,
     int psvStartAge,
     double rrqAnnualBenefit,
+    double projectedRrqAt60,
+    double projectedRrqAt65,
     double initialCeliRoom,
   });
 }
@@ -87,6 +93,8 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
     Object? rrqStartAge = null,
     Object? psvStartAge = null,
     Object? rrqAnnualBenefit = null,
+    Object? projectedRrqAt60 = null,
+    Object? projectedRrqAt65 = null,
     Object? initialCeliRoom = null,
   }) {
     return _then(
@@ -119,6 +127,14 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
                 ? _value.rrqAnnualBenefit
                 : rrqAnnualBenefit // ignore: cast_nullable_to_non_nullable
                       as double,
+            projectedRrqAt60: null == projectedRrqAt60
+                ? _value.projectedRrqAt60
+                : projectedRrqAt60 // ignore: cast_nullable_to_non_nullable
+                      as double,
+            projectedRrqAt65: null == projectedRrqAt65
+                ? _value.projectedRrqAt65
+                : projectedRrqAt65 // ignore: cast_nullable_to_non_nullable
+                      as double,
             initialCeliRoom: null == initialCeliRoom
                 ? _value.initialCeliRoom
                 : initialCeliRoom // ignore: cast_nullable_to_non_nullable
@@ -147,6 +163,8 @@ abstract class _$$IndividualImplCopyWith<$Res>
     int rrqStartAge,
     int psvStartAge,
     double rrqAnnualBenefit,
+    double projectedRrqAt60,
+    double projectedRrqAt65,
     double initialCeliRoom,
   });
 }
@@ -172,6 +190,8 @@ class __$$IndividualImplCopyWithImpl<$Res>
     Object? rrqStartAge = null,
     Object? psvStartAge = null,
     Object? rrqAnnualBenefit = null,
+    Object? projectedRrqAt60 = null,
+    Object? projectedRrqAt65 = null,
     Object? initialCeliRoom = null,
   }) {
     return _then(
@@ -204,6 +224,14 @@ class __$$IndividualImplCopyWithImpl<$Res>
             ? _value.rrqAnnualBenefit
             : rrqAnnualBenefit // ignore: cast_nullable_to_non_nullable
                   as double,
+        projectedRrqAt60: null == projectedRrqAt60
+            ? _value.projectedRrqAt60
+            : projectedRrqAt60 // ignore: cast_nullable_to_non_nullable
+                  as double,
+        projectedRrqAt65: null == projectedRrqAt65
+            ? _value.projectedRrqAt65
+            : projectedRrqAt65 // ignore: cast_nullable_to_non_nullable
+                  as double,
         initialCeliRoom: null == initialCeliRoom
             ? _value.initialCeliRoom
             : initialCeliRoom // ignore: cast_nullable_to_non_nullable
@@ -225,6 +253,8 @@ class _$IndividualImpl extends _Individual {
     this.rrqStartAge = 65,
     this.psvStartAge = 65,
     this.rrqAnnualBenefit = 16000.0,
+    this.projectedRrqAt60 = 12000.0,
+    this.projectedRrqAt65 = 16000.0,
     this.initialCeliRoom = 0.0,
   }) : super._();
 
@@ -253,14 +283,22 @@ class _$IndividualImpl extends _Individual {
   @override
   @JsonKey()
   final double rrqAnnualBenefit;
-  // Expected annual RRQ benefit at 65
+  // Expected annual RRQ benefit at 65 (deprecated, kept for backward compatibility)
+  @override
+  @JsonKey()
+  final double projectedRrqAt60;
+  // Projected annual RRQ benefit if starting at age 60
+  @override
+  @JsonKey()
+  final double projectedRrqAt65;
+  // Projected annual RRQ benefit if starting at age 65
   @override
   @JsonKey()
   final double initialCeliRoom;
 
   @override
   String toString() {
-    return 'Individual(id: $id, name: $name, birthdate: $birthdate, employmentIncome: $employmentIncome, rrqStartAge: $rrqStartAge, psvStartAge: $psvStartAge, rrqAnnualBenefit: $rrqAnnualBenefit, initialCeliRoom: $initialCeliRoom)';
+    return 'Individual(id: $id, name: $name, birthdate: $birthdate, employmentIncome: $employmentIncome, rrqStartAge: $rrqStartAge, psvStartAge: $psvStartAge, rrqAnnualBenefit: $rrqAnnualBenefit, projectedRrqAt60: $projectedRrqAt60, projectedRrqAt65: $projectedRrqAt65, initialCeliRoom: $initialCeliRoom)';
   }
 
   @override
@@ -280,6 +318,10 @@ class _$IndividualImpl extends _Individual {
                 other.psvStartAge == psvStartAge) &&
             (identical(other.rrqAnnualBenefit, rrqAnnualBenefit) ||
                 other.rrqAnnualBenefit == rrqAnnualBenefit) &&
+            (identical(other.projectedRrqAt60, projectedRrqAt60) ||
+                other.projectedRrqAt60 == projectedRrqAt60) &&
+            (identical(other.projectedRrqAt65, projectedRrqAt65) ||
+                other.projectedRrqAt65 == projectedRrqAt65) &&
             (identical(other.initialCeliRoom, initialCeliRoom) ||
                 other.initialCeliRoom == initialCeliRoom));
   }
@@ -295,6 +337,8 @@ class _$IndividualImpl extends _Individual {
     rrqStartAge,
     psvStartAge,
     rrqAnnualBenefit,
+    projectedRrqAt60,
+    projectedRrqAt65,
     initialCeliRoom,
   );
 
@@ -322,6 +366,8 @@ abstract class _Individual extends Individual {
     final int rrqStartAge,
     final int psvStartAge,
     final double rrqAnnualBenefit,
+    final double projectedRrqAt60,
+    final double projectedRrqAt65,
     final double initialCeliRoom,
   }) = _$IndividualImpl;
   const _Individual._() : super._();
@@ -343,7 +389,11 @@ abstract class _Individual extends Individual {
   @override
   int get psvStartAge; // PSV start age (65-70, OAS age)
   @override
-  double get rrqAnnualBenefit; // Expected annual RRQ benefit at 65
+  double get rrqAnnualBenefit; // Expected annual RRQ benefit at 65 (deprecated, kept for backward compatibility)
+  @override
+  double get projectedRrqAt60; // Projected annual RRQ benefit if starting at age 60
+  @override
+  double get projectedRrqAt65; // Projected annual RRQ benefit if starting at age 65
   @override
   double get initialCeliRoom;
 

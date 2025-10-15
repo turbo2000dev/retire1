@@ -6,18 +6,20 @@ part of 'individual.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$IndividualImpl _$$IndividualImplFromJson(Map<String, dynamic> json) =>
-    _$IndividualImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      birthdate: _dateTimeFromJson(json['birthdate']),
-      employmentIncome: (json['employmentIncome'] as num?)?.toDouble() ?? 0.0,
-      rrqStartAge: (json['rrqStartAge'] as num?)?.toInt() ?? 65,
-      psvStartAge: (json['psvStartAge'] as num?)?.toInt() ?? 65,
-      rrqAnnualBenefit:
-          (json['rrqAnnualBenefit'] as num?)?.toDouble() ?? 16000.0,
-      initialCeliRoom: (json['initialCeliRoom'] as num?)?.toDouble() ?? 0.0,
-    );
+_$IndividualImpl _$$IndividualImplFromJson(
+  Map<String, dynamic> json,
+) => _$IndividualImpl(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  birthdate: _dateTimeFromJson(json['birthdate']),
+  employmentIncome: (json['employmentIncome'] as num?)?.toDouble() ?? 0.0,
+  rrqStartAge: (json['rrqStartAge'] as num?)?.toInt() ?? 65,
+  psvStartAge: (json['psvStartAge'] as num?)?.toInt() ?? 65,
+  rrqAnnualBenefit: (json['rrqAnnualBenefit'] as num?)?.toDouble() ?? 16000.0,
+  projectedRrqAt60: (json['projectedRrqAt60'] as num?)?.toDouble() ?? 12000.0,
+  projectedRrqAt65: (json['projectedRrqAt65'] as num?)?.toDouble() ?? 16000.0,
+  initialCeliRoom: (json['initialCeliRoom'] as num?)?.toDouble() ?? 0.0,
+);
 
 Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
     <String, dynamic>{
@@ -28,5 +30,7 @@ Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
       'rrqStartAge': instance.rrqStartAge,
       'psvStartAge': instance.psvStartAge,
       'rrqAnnualBenefit': instance.rrqAnnualBenefit,
+      'projectedRrqAt60': instance.projectedRrqAt60,
+      'projectedRrqAt65': instance.projectedRrqAt65,
       'initialCeliRoom': instance.initialCeliRoom,
     };

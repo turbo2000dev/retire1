@@ -29,6 +29,16 @@ Projection Loop Flow:
   7. Update CELI room for next year
   8. Store all data in YearlyProjection
 
-# General
-- Cannot modify the Project Details. Should allow it.
+# Onboarding and default values
 
+- There should be a default retirement at age 65
+- There should be a cash account set
+
+# Validation
+
+- There should be a retirement for all individuals
+- There should be a cash account set
+
+# General
+
+In Assets creation, for real estate transaction, if there is no sell, there is no need to have a cash account for deposit,  if there is no buy, there is no need to have a cash account for retiring
