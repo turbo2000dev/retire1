@@ -1058,22 +1058,97 @@
 
 **Ready for Sub-Phase 35B:** Enhanced warnings system (optional) or proceed directly to Sub-Phase 35C (Scenario Comparison)
 
-### Sub-Phase 35B: Enhanced Warnings (Optional)
+### Sub-Phase 35B: Enhanced Warnings ✅
 
-- [ ] Implement scroll-to-year functionality when warning clicked
-- [ ] Add more warning types (e.g., AccountDepleted, NoSurvivorIncome)
-- [ ] Enhanced warning UI with more detail
+**Tasks:**
+1. **Enhanced ProjectionWarningsSection:**
+   - [x] Added optional `Projection` parameter for detailed analysis
+   - [x] Enhanced existing 4 warnings with more detail and specific recommendations
+   - [x] Added 3 NEW warning types:
+     - High spending years (cash flow < -$50k)
+     - Account depletion (specific accounts running out)
+     - Low survivor income after death events
+   - [x] Currency formatting for better readability
+   - [x] Actionable suggestions based on projection data
 
-### Sub-Phase 35C: Scenario Comparison Tab
+2. **Wire up Projection data:**
+   - [x] Updated dashboard_screen.dart to pass full Projection to warnings widget
+   - [x] Warnings now analyze year-by-year data for enhanced insights
 
-- [ ] Create scenario comparison view
-- [ ] Select 2-3 scenarios to compare
-- [ ] Show KPIs side-by-side
-- [ ] Show overlaid charts
-- [ ] Highlight differences
-- [ ] Replace placeholder in Comparison tab
+**Completion Notes:**
+- Enhanced warning system provides actionable insights:
+  - Money runs out: Shows count of shortfall years and total amount
+  - High tax rate: Detects high REER withdrawals, suggests CELI withdrawals
+  - Account depletion: Tracks when specific accounts (CELI, REER, CRI, Cash) run out
+  - High spending years: Identifies years with cash flow below -$50k
+  - Low survivor income: Warns if income after death events is below $20k/year
+- All warnings include specific dollar amounts, year references, and recommendations
+- Scroll-to-year navigation deferred (requires ProjectionScreen state management changes)
+- Tested successfully: app compiles and runs without errors
 
-**Deliverable:** KPIs, warnings, and scenario comparison for better decision-making
+**Files Modified:**
+- `lib/features/projection/presentation/widgets/projection_warnings_section.dart` (enhanced warnings)
+- `lib/features/dashboard/presentation/dashboard_screen.dart` (wire up Projection data)
+
+### Sub-Phase 35C: Scenario Comparison Tab ✅
+
+**Tasks:**
+1. **Create ScenarioSelector widget:**
+   - [x] Filter chips for selecting up to 3 scenarios (base + 2 alternatives)
+   - [x] Base scenario always selected and locked
+   - [x] Visual indication of selection state
+   - [x] Tooltips for user guidance
+
+2. **Create KpiComparisonCard widget:**
+   - [x] Show KPI values side-by-side for all selected scenarios
+   - [x] Calculate delta (percentage difference) from base scenario
+   - [x] Color-code deltas (green for better, red for worse)
+   - [x] Support currency, percentage, and year formatting
+   - [x] Smart delta direction (e.g., later year for "Money Runs Out" is better)
+
+3. **Create MultiScenarioProjectionChart widget:**
+   - [x] Line chart overlaying multiple scenario projections
+   - [x] Different line styles for each scenario (solid, dashed, dotted)
+   - [x] Different colors for each scenario (primary, secondary, tertiary)
+   - [x] Clickable legend to show/hide scenarios
+   - [x] Tooltips showing scenario name, year, and net worth
+   - [x] Custom line painter for legend indicators
+
+4. **Integrate into Comparison tab:**
+   - [x] Scenario selector at top
+   - [x] Grid of 6 KPI comparison cards (2 columns on desktop/tablet)
+   - [x] Net worth projection chart below KPIs
+   - [x] Handle empty states (no scenarios, single scenario)
+   - [x] Load projections for all selected scenarios
+
+**Completion Notes:**
+- All widgets were already implemented in a previous session
+- Comparison tab provides comprehensive scenario analysis:
+  - **ScenarioSelector**: Max 3 scenarios with FilterChip UI
+  - **KPI Comparison**: 6 metrics (Final Net Worth, Lowest Net Worth, Money Runs Out, Total Taxes, Total Withdrawals, Avg Tax Rate)
+  - **Chart Overlay**: Multi-line chart with toggleable scenarios
+- Delta calculation shows percentage difference from base scenario
+- Smart color coding: green arrows for improvements, red for worse outcomes
+- Line styles: solid (base), dashed (1st alternative), dotted (2nd alternative)
+- Responsive grid layout: 2 columns (desktop/tablet), 1 column (mobile)
+- All comparison data updates reactively when scenarios are toggled
+
+**Files Created:**
+- `lib/features/dashboard/presentation/widgets/scenario_selector.dart` (137 lines)
+- `lib/features/dashboard/presentation/widgets/kpi_comparison_card.dart` (213 lines)
+- `lib/features/projection/presentation/widgets/multi_scenario_projection_chart.dart` (410 lines)
+
+**Files Modified:**
+- `lib/features/dashboard/presentation/dashboard_screen.dart` (already includes Comparison tab implementation)
+
+**Design Decisions:**
+- Maximum 3 scenarios to avoid chart clutter and maintain clarity
+- Base scenario always included (cannot be deselected)
+- Percentage deltas more intuitive than absolute differences for comparison
+- Line chart preferred over bar chart for better trend visualization
+- FilterChips provide better UX than checkboxes for scenario selection
+
+**Deliverable:** KPIs, warnings, and scenario comparison for better decision-making ✅
 
 ---
 

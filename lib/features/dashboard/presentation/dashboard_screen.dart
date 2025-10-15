@@ -314,6 +314,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     // Warnings section
                     ProjectionWarningsSection(
                       kpis: kpis,
+                      projection: projection,
                       onMoneyRunsOutTap: () => _navigateToProjection(
                         context,
                         scrollToYear: kpis.yearMoneyRunsOut,
