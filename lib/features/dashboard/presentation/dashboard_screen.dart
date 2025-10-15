@@ -15,6 +15,7 @@ import 'package:retire1/features/projection/presentation/widgets/projection_warn
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 import 'package:retire1/features/dashboard/presentation/widgets/scenario_selector.dart';
 import 'package:retire1/features/dashboard/presentation/widgets/kpi_comparison_card.dart';
+import 'package:retire1/features/projection/presentation/widgets/multi_scenario_projection_chart.dart';
 
 /// Dashboard screen - shows KPIs and scenario comparison for current project
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -471,24 +472,36 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     List<dynamic> selectedScenarios,
     List<dynamic> scenarioKpis,
   ) {
+    return Consumer(
+      builder: (context, ref, child) {
+        // Get projections for chart
+        final projectionAsyncValues = selectedScenarios.map((scenario) {
+          return ref.watch(projectionProvider(scenario.id));
+        }).toList();
 
-    // Build comparison cards
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final crossAxisCount = constraints.maxWidth > 1024
-            ? 2
-            : constraints.maxWidth > 600
-                ? 2
-                : 1;
+        final allProjectionsLoaded = projectionAsyncValues.every((async) => async.hasValue);
 
-        return GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: crossAxisCount,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1.8,
+        // Build comparison cards and chart
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // KPI comparison cards grid
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final crossAxisCount = constraints.maxWidth > 1024
+                    ? 2
+                    : constraints.maxWidth > 600
+                        ? 2
+                        : 1;
+
+                return GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.8,
+                  children: [
             // Final Net Worth
             KpiComparisonCard(
               label: 'Final Net Worth',
@@ -567,6 +580,40 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 ),
               ),
             ),
+          ],
+                );
+              },
+            ),
+            // Chart section
+            if (allProjectionsLoaded) ...[
+              const SizedBox(height: 32),
+              Text(
+                'Net Worth Projection',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: MultiScenarioProjectionChart(
+                    scenarioProjections: projectionAsyncValues
+                        .asMap()
+                        .entries
+                        .where((entry) => entry.value.hasValue && entry.value.value != null)
+                        .map((entry) {
+                      final index = entry.key;
+                      final projection = entry.value.value!;
+                      return ScenarioProjectionData(
+                        scenarioName: selectedScenarios[index].name,
+                        projection: projection,
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
           ],
         );
       },
