@@ -19,7 +19,8 @@ void main() {
           birthdate: DateTime(1960, 1, 1),
           employmentIncome: 50000,
           rrqStartAge: 65,
-          rrqAnnualBenefit: 16000,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -40,7 +41,8 @@ void main() {
           birthdate: DateTime(1960, 1, 1),
           employmentIncome: 50000,
           rrqStartAge: 65,
-          rrqAnnualBenefit: 16000,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -55,14 +57,15 @@ void main() {
         expect(income.rrq, 16000.0);
       });
 
-      test('applies early start penalty at age 60', () {
+      test('uses projected amount at age 60', () {
         final individual = Individual(
           id: 'test-1',
           name: 'Test Person',
           birthdate: DateTime(1960, 1, 1),
           employmentIncome: 50000,
-          rrqStartAge: 60, // 5 years early
-          rrqAnnualBenefit: 16000,
+          rrqStartAge: 60,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -73,9 +76,8 @@ void main() {
           events: [],
         );
 
-        // 5 years early = 60 months × 0.6% = 36% penalty
-        // Benefit = 16000 × (1 - 0.36) = 16000 × 0.64 = 10,240
-        expect(income.rrq, closeTo(10240, 0.01));
+        // Starting at 60: use projectedRrqAt60
+        expect(income.rrq, 12000.0);
       });
 
       test('applies late start bonus at age 70', () {
@@ -85,7 +87,8 @@ void main() {
           birthdate: DateTime(1960, 1, 1),
           employmentIncome: 50000,
           rrqStartAge: 70, // 5 years late
-          rrqAnnualBenefit: 16000,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -101,14 +104,15 @@ void main() {
         expect(income.rrq, closeTo(22720, 0.01));
       });
 
-      test('applies early start penalty at age 62', () {
+      test('interpolates benefit between ages 60 and 65', () {
         final individual = Individual(
           id: 'test-1',
           name: 'Test Person',
           birthdate: DateTime(1960, 1, 1),
           employmentIncome: 50000,
-          rrqStartAge: 62, // 3 years early
-          rrqAnnualBenefit: 16000,
+          rrqStartAge: 62, // Between 60 and 65
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -119,9 +123,9 @@ void main() {
           events: [],
         );
 
-        // 3 years early = 36 months × 0.6% = 21.6% penalty
-        // Benefit = 16000 × (1 - 0.216) = 16000 × 0.784 = 12,544
-        expect(income.rrq, closeTo(12544, 0.01));
+        // Linear interpolation: (62-60)/5 = 0.4 progress
+        // Benefit = 12000 + (16000 - 12000) × 0.4 = 12000 + 1600 = 13,600
+        expect(income.rrq, closeTo(13600, 0.01));
       });
     });
 
@@ -154,7 +158,8 @@ void main() {
           employmentIncome: 0, // No employment income
           rrqStartAge: 65,
           psvStartAge: 65,
-          rrqAnnualBenefit: 16000, // Only RRQ income
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000, // Only RRQ income
         );
 
         final income = calculator.calculateIncome(
@@ -178,7 +183,8 @@ void main() {
           employmentIncome: 100000, // High employment income
           rrqStartAge: 65,
           psvStartAge: 65,
-          rrqAnnualBenefit: 16000,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -204,7 +210,8 @@ void main() {
           employmentIncome: 150000, // Very high employment income
           rrqStartAge: 65,
           psvStartAge: 65,
-          rrqAnnualBenefit: 16000,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -230,7 +237,8 @@ void main() {
           employmentIncome: 74000, // Exactly at threshold with RRQ
           rrqStartAge: 65,
           psvStartAge: 65,
-          rrqAnnualBenefit: 16000,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(
@@ -404,7 +412,8 @@ void main() {
           employmentIncome: 50000,
           rrqStartAge: 65,
           psvStartAge: 65,
-          rrqAnnualBenefit: 16000,
+          projectedRrqAt60: 12000,
+          projectedRrqAt65: 16000,
         );
 
         final income = calculator.calculateIncome(

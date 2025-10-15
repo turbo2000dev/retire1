@@ -249,9 +249,9 @@ class IncomeCalculator {
   ///
   /// RRQ benefits:
   /// - Start at the age specified in individual.rrqStartAge (60-70)
-  /// - Base benefit is individual.rrqAnnualBenefit (at age 65)
-  /// - Early start (before 65): penalty of 0.6% per month
-  /// - Late start (after 65): bonus of 0.7% per month
+  /// - User provides projected amounts at age 60 and 65
+  /// - For ages between 60-65: linear interpolation
+  /// - For ages > 65: apply 0.7% per month bonus from age 65 amount
   double _calculateRRQ({
     required Individual individual,
     required int age,
@@ -261,33 +261,35 @@ class IncomeCalculator {
       return 0.0;
     }
 
-    // Base benefit (specified by user, represents benefit at age 65)
-    final baseBenefit = individual.rrqAnnualBenefit;
-
-    // Calculate adjustment factor based on start age
     final startAge = individual.rrqStartAge;
-    double adjustmentFactor = 1.0;
+    double benefit = 0.0;
 
-    if (startAge < 65) {
-      // Early start penalty: 0.6% per month before 65
-      final monthsEarly = (65 - startAge) * 12;
-      final penaltyRate = monthsEarly * kRRQEarlyPenaltyPerMonth;
-      adjustmentFactor = 1.0 - penaltyRate;
-    } else if (startAge > 65) {
-      // Late start bonus: 0.7% per month after 65
-      final monthsLate = (startAge - 65) * 12;
-      final bonusRate = monthsLate * kRRQLateBonusPerMonth;
-      adjustmentFactor = 1.0 + bonusRate;
+    if (startAge <= 60) {
+      // Starting at 60 or before: use projected amount at 60
+      benefit = individual.projectedRrqAt60;
+    } else if (startAge >= 65) {
+      // Starting at 65 or later: use projected amount at 65 plus late bonus
+      benefit = individual.projectedRrqAt65;
+
+      if (startAge > 65) {
+        // Apply late start bonus: 0.7% per month after 65
+        final monthsLate = (startAge - 65) * 12;
+        final bonusRate = monthsLate * kRRQLateBonusPerMonth;
+        benefit = benefit * (1.0 + bonusRate);
+      }
+    } else {
+      // Starting between 60 and 65: linear interpolation
+      final progressRatio = (startAge - 60) / 5.0; // 0.0 at 60, 1.0 at 65
+      benefit = individual.projectedRrqAt60 +
+                (individual.projectedRrqAt65 - individual.projectedRrqAt60) * progressRatio;
     }
 
-    final adjustedBenefit = baseBenefit * adjustmentFactor;
-
     log('IncomeCalculator._calculateRRQ: age=$age, startAge=$startAge, '
-        'baseBenefit=$baseBenefit, adjustment=$adjustmentFactor, '
-        'benefit=$adjustedBenefit',
+        'projectedAt60=\$${individual.projectedRrqAt60}, projectedAt65=\$${individual.projectedRrqAt65}, '
+        'benefit=\$$benefit',
         name: 'IncomeCalculator');
 
-    return adjustedBenefit;
+    return benefit;
   }
 
   /// Calculate PSV (Pension de la Sécurité de la vieillesse / Old Age Security) benefit
