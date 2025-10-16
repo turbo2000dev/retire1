@@ -3,7 +3,7 @@
 ## Overview
 Migrate from client-side CSV export to server-side Excel (.xlsx) generation using Python XlsxWriter on Firebase Cloud Functions.
 
-## Status: Phase 2 Complete ✅ | Phase 3 Ready
+## Status: Phase 3 Complete ✅ | Ready for Testing
 
 ---
 
@@ -61,27 +61,29 @@ Migrate from client-side CSV export to server-side Excel (.xlsx) generation usin
 
 ---
 
-## Phase 3: Flutter Integration (Download Only) 📱
+## Phase 3: Flutter Integration (Download Only) ✅
 **Objective**: Connect Flutter app to Cloud Function
 
-### Step 3.1: Create Excel Export Service
-- [ ] Create `ExcelExportService` in Flutter
-- [ ] Add `cloud_functions` package dependency
-- [ ] Implement `exportToExcel()` method that calls Cloud Function
-- [ ] Serialize Projection + Assets + Project data to JSON
+### Step 3.1: Create Excel Export Service ✅
+- [x] Create `ExcelExportService` in Flutter
+- [x] Add `cloud_functions` package dependency
+- [x] Implement `exportToExcel()` method that calls Cloud Function
+- [x] Serialize Projection + Assets + Project data to JSON
 
-### Step 3.2: Update UI
-- [ ] Replace CSV export button with Excel export option
-- [ ] Add loading indicator during generation
-- [ ] Handle errors gracefully
-- [ ] Download file using platform-specific approach
+### Step 3.2: Update UI ✅
+- [x] Add Excel export button to projection screen (kept CSV as fallback)
+- [x] Add loading indicator during generation
+- [x] Handle errors gracefully
+- [x] Download file using platform-specific approach (dart:html for web)
 
-**Design Decision Point**:
-- Should we keep CSV export as fallback?
-- Loading UX (progress indicator, estimated time)
-- Error handling strategy
+**Design Decisions Made**:
+- **Keep CSV export**: Yes, as OutlinedButton (secondary style), Excel as FilledButton (primary)
+- **Loading UX**: SnackBar with CircularProgressIndicator and "Generating Excel file..." message (30s duration)
+- **Error handling**: Try-catch with SnackBar showing error message
+- **Download approach**: Direct HTTP POST to Cloud Function URL, receive blob response, trigger download via anchor element
+- **Button placement**: Both buttons in Detailed tab action bar
 
-**Testing**: Export from app, verify file downloads correctly on Web/Mobile/Desktop
+**Testing**: Ready to test from Flutter web app - click "Export Excel" button in Detailed view
 
 ---
 
@@ -306,8 +308,13 @@ functions/
 - **Asset categorization**: Build asset type map from assets array for withdrawal/balance categorization
 - **Error handling**: Comprehensive try-catch with detailed logging
 
-### Phase 3 Decisions
-*To be filled in as decisions are made*
+### Phase 3 Decisions ✅
+- **Package**: cloud_functions v5.6.2 added to dependencies
+- **Service location**: Created `lib/features/projection/service/projection_excel_export.dart`
+- **HTTP approach**: Direct HTTP call using dart:html HttpRequest (not httpsCallable) for blob response
+- **Function URL**: Hardcoded Cloud Run URL (https://generate-projection-excel-zljvaxltlq-uc.a.run.app)
+- **Response handling**: Blob response type, create object URL, trigger anchor download, revoke URL
+- **Button styling**: Excel = primary (FilledButton), CSV = secondary (OutlinedButton)
 
 ---
 
@@ -317,7 +324,7 @@ functions/
 |-------|--------|---------|-----------|-------|
 | Phase 1 | ✅ Complete | 2025-10-16 | 2025-10-16 | Firebase setup complete, function deployed |
 | Phase 2 | ✅ Complete | 2025-10-16 | 2025-10-16 | Excel generator working, ready to integrate with Flutter |
-| Phase 3 | 📋 Pending | - | - | - |
+| Phase 3 | ✅ Complete | 2025-10-16 | 2025-10-16 | Flutter integration complete, ready to test |
 | Phase 4 | 📋 Pending | - | - | - |
 | Phase 5 | 📋 Pending | - | - | - |
 | Phase 6 | 📋 Pending | - | - | - |
