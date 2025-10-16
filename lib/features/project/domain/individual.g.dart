@@ -18,6 +18,10 @@ _$IndividualImpl _$$IndividualImplFromJson(
   projectedRrqAt60: (json['projectedRrqAt60'] as num?)?.toDouble() ?? 12000.0,
   projectedRrqAt65: (json['projectedRrqAt65'] as num?)?.toDouble() ?? 16000.0,
   initialCeliRoom: (json['initialCeliRoom'] as num?)?.toDouble() ?? 0.0,
+  hasRrpe: json['hasRrpe'] as bool? ?? false,
+  rrpeParticipationStartDate: _dateTimeFromJsonNullable(
+    json['rrpeParticipationStartDate'],
+  ),
 );
 
 Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
@@ -31,4 +35,8 @@ Map<String, dynamic> _$$IndividualImplToJson(_$IndividualImpl instance) =>
       'projectedRrqAt60': instance.projectedRrqAt60,
       'projectedRrqAt65': instance.projectedRrqAt65,
       'initialCeliRoom': instance.initialCeliRoom,
+      'hasRrpe': instance.hasRrpe,
+      'rrpeParticipationStartDate': _dateTimeToJsonNullable(
+        instance.rrpeParticipationStartDate,
+      ),
     };

@@ -1,7 +1,8 @@
 /// Income calculation constants for 2025
 ///
 /// This file contains hardcoded 2025 values for RRQ (Quebec Pension Plan),
-/// PSV (Old Age Security), and RRPE (RRIF/CRI minimum withdrawal percentages).
+/// PSV (Old Age Security), RRIF/CRI minimum withdrawals, and RRPE
+/// (Régime de retraite du personnel d'encadrement).
 library;
 
 /// 2025 Maximum RRQ (Régime de rentes du Québec) annual benefit
@@ -91,3 +92,29 @@ double getRRIFMinimumWithdrawalRate(int age) {
   if (age >= 95) return 0.20;
   return kRRIFMinimumWithdrawalRates[age] ?? 0.0;
 }
+
+/// RRPE (Régime de retraite du personnel d'encadrement) constants
+
+/// 2024 MGA (Maximum pensionable earnings / Maximum des gains admissibles)
+///
+/// This is the income ceiling for RRPE calculations. The MGA is used
+/// in the reduction formula for RRPE pensions at age 65+.
+/// The MGA is indexed to inflation annually.
+const double kRRPEMGA2024 = 68500.0;
+
+/// RRPE pension accrual rate
+///
+/// The annual pension is calculated as:
+/// years of service × average salary of last 5 years × 2%
+const double kRRPEPensionAccrualRate = 0.02; // 2%
+
+/// RRPE reduction rate at age 65
+///
+/// Starting at age 65, RRPE pension is reduced by:
+/// 7% × number of service years (max 35) × MGA
+const double kRRPEReductionRate = 0.07; // 7%
+
+/// RRPE maximum service years for reduction calculation
+///
+/// The reduction at age 65 is capped at 35 years of service.
+const int kRRPEMaxServiceYearsForReduction = 35;

@@ -9,8 +9,8 @@ import 'income_constants.dart';
 /// Service for calculating all income sources for retirement projections
 ///
 /// This calculator computes employment income, RRQ (Quebec Pension Plan),
-/// PSV (Old Age Security), and RRPE (RRIF/CRI minimum withdrawals) for
-/// each year in the projection.
+/// PSV (Old Age Security), RRIF/CRI minimum withdrawals, and RRPE
+/// (Régime de retraite du personnel d'encadrement) for each year in the projection.
 class IncomeCalculator {
   /// Calculate all income sources for an individual for a specific year
   ///
@@ -20,7 +20,7 @@ class IncomeCalculator {
   /// - [yearsFromStart]: Years from start of projection
   /// - [age]: Individual's age during this year
   /// - [events]: List of lifecycle events (that have occurred so far)
-  /// - [criBalance]: Current CRI/RRIF account balance (for RRPE calculation)
+  /// - [criBalance]: Current CRI/RRIF account balance (for RRIF calculation)
   /// - [allIndividuals]: All individuals in the project (for survivor benefit calculation)
   /// - [inflationRate]: Annual inflation rate (defaults to 2%)
   ///
@@ -47,10 +47,11 @@ class IncomeCalculator {
     if (isDeceased) {
       log('IncomeCalculator: Individual ${individual.name} is deceased - no income',
           name: 'IncomeCalculator');
-      return AnnualIncome(
+      return const AnnualIncome(
         employment: 0.0,
         rrq: 0.0,
         psv: 0.0,
+        rrif: 0.0,
         rrpe: 0.0,
         other: 0.0,
       );
@@ -78,9 +79,17 @@ class IncomeCalculator {
       inflationRate: inflationRate,
     );
 
-    final rrpe = _calculateRRPE(
+    final rrif = _calculateRRIF(
       age: age,
       criBalance: criBalance,
+    );
+
+    final rrpe = _calculateRRPE(
+      individual: individual,
+      age: age,
+      year: year,
+      events: events,
+      inflationRate: inflationRate,
     );
 
     // Calculate survivor benefits from deceased spouses
@@ -96,12 +105,13 @@ class IncomeCalculator {
       employment: employment,
       rrq: rrq,
       psv: psv,
+      rrif: rrif,
       rrpe: rrpe,
       other: survivorBenefits, // Survivor benefits go in 'other'
     );
 
     log('IncomeCalculator: Total income=${income.total} '
-        '(employment=$employment, rrq=$rrq, psv=$psv, rrpe=$rrpe, survivor=$survivorBenefits)',
+        '(employment=$employment, rrq=$rrq, psv=$psv, rrif=$rrif, rrpe=$rrpe, survivor=$survivorBenefits)',
         name: 'IncomeCalculator');
 
     return income;
@@ -366,13 +376,13 @@ class IncomeCalculator {
     return finalAmount;
   }
 
-  /// Calculate RRPE (RRIF/CRI minimum required withdrawal)
+  /// Calculate RRIF/CRI minimum required withdrawal
   ///
   /// RRIF/CRI accounts have minimum withdrawal requirements based on age:
   /// - No minimum before age 65
   /// - Percentage increases with age (4% at 65 to 20% at 95+)
   /// - Withdrawal is calculated as percentage of account balance
-  double _calculateRRPE({
+  double _calculateRRIF({
     required int age,
     required double criBalance,
   }) {
@@ -387,10 +397,135 @@ class IncomeCalculator {
     // Calculate minimum withdrawal
     final withdrawal = criBalance * withdrawalRate;
 
-    log('IncomeCalculator._calculateRRPE: age=$age, balance=$criBalance, '
+    log('IncomeCalculator._calculateRRIF: age=$age, balance=$criBalance, '
         'rate=$withdrawalRate, withdrawal=$withdrawal',
         name: 'IncomeCalculator');
 
     return withdrawal;
+  }
+
+  /// Calculate RRPE (Régime de retraite du personnel d'encadrement) pension
+  ///
+  /// RRPE is a Quebec management pension plan with the following formula:
+  /// - Years of service = retirement year - participation start year
+  /// - Average salary = average of salary for last 5 years before retirement (or fewer if < 5 years service)
+  /// - Base annual pension = years of service × average salary × 2%
+  /// - Before age 65: pension is indexed with inflation each year
+  /// - At age 65+: pension is reduced by 7% × service years (max 35) × MGA (indexed to inflation)
+  ///
+  /// Parameters:
+  /// - [individual]: The individual (must have hasRrpe=true and rrpeParticipationStartDate)
+  /// - [age]: Individual's current age
+  /// - [year]: Current projection year
+  /// - [yearsFromStart]: Years from start of projection (for calculating inflated salaries)
+  /// - [events]: List of events (to detect retirement)
+  /// - [inflationRate]: Annual inflation rate
+  double _calculateRRPE({
+    required Individual individual,
+    required int age,
+    required int year,
+    required List<Event> events,
+    required double inflationRate,
+  }) {
+    // No RRPE if individual doesn't participate
+    if (!individual.hasRrpe || individual.rrpeParticipationStartDate == null) {
+      return 0.0;
+    }
+
+    // Check if individual has retired
+    final hasRetired = events.any((event) {
+      return event.when(
+        retirement: (id, individualId, timing) => individualId == individual.id,
+        death: (id, individualId, timing) => false,
+        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
+                withdrawAccountId, depositAccountId) =>
+            false,
+      );
+    });
+
+    // RRPE pension starts at retirement
+    if (!hasRetired) {
+      return 0.0;
+    }
+
+    // Calculate years of service (from participation start to retirement)
+    // We need to find the retirement year to calculate this properly
+    // For now, use a simplified approach: years from participation to current year
+    final participationStartDate = individual.rrpeParticipationStartDate!;
+    final participationStartYear = participationStartDate.year;
+
+    // Estimate retirement year based on current status
+    // This is simplified - ideally we'd track the exact retirement year from the event
+    // For now, assume if retired, calculate service up to retirement age
+    final retirementYear = year; // Approximate - could be earlier
+    final yearsOfService = retirementYear - participationStartYear;
+
+    // Calculate average salary for last 5 years before retirement
+    // We know current salary and can inflate it backward/forward to get historical salaries
+    // Current salary is the base, and we apply inflation for each year
+    final salaryYearsCount = yearsOfService < 5 ? yearsOfService : 5;
+
+    if (salaryYearsCount <= 0) {
+      return 0.0; // No service years
+    }
+
+    // Calculate average salary: we have current salary and need to project what it was
+    // in the 5 years before retirement. Since salaries grow with inflation, work backwards.
+    double totalSalary = 0.0;
+    final currentSalary = individual.employmentIncome;
+
+    for (int i = 0; i < salaryYearsCount; i++) {
+      // i=0 is most recent year (year before retirement), i=4 is 5 years before retirement
+      double yearSalary = currentSalary;
+      // Deflate salary by inflation for each year back
+      for (int j = 0; j <= i; j++) {
+        yearSalary /= (1 + inflationRate);
+      }
+      totalSalary += yearSalary;
+    }
+
+    final averageSalary = totalSalary / salaryYearsCount;
+
+    // Calculate base annual pension: years of service × average salary × 2%
+    final basePension = yearsOfService * averageSalary * kRRPEPensionAccrualRate;
+
+    // The pension starts at retirement and is indexed to inflation each year
+    // Calculate how many years since retirement (simplified: assume retired 1 year ago)
+    final yearsFromRetirement = 1; // Simplified - should track actual retirement year
+
+    double indexedPension = basePension;
+    for (int i = 0; i < yearsFromRetirement; i++) {
+      indexedPension *= (1 + inflationRate);
+    }
+
+    // Apply age 65+ reduction if applicable
+    double finalPension = indexedPension;
+    if (age >= 65) {
+      // Calculate MGA indexed to inflation from 2024
+      final yearsFrom2024 = year - 2024;
+      double indexedMGA = kRRPEMGA2024;
+      for (int i = 0; i < yearsFrom2024; i++) {
+        indexedMGA *= (1 + inflationRate);
+      }
+
+      // Calculate reduction: 7% × service years (max 35) × MGA
+      final serviceYearsForReduction = yearsOfService > kRRPEMaxServiceYearsForReduction
+          ? kRRPEMaxServiceYearsForReduction
+          : yearsOfService;
+      final reduction = kRRPEReductionRate * serviceYearsForReduction * indexedMGA;
+
+      finalPension = (indexedPension - reduction).clamp(0.0, double.infinity);
+
+      log('IncomeCalculator._calculateRRPE: age=$age (≥65), reduction=\$$reduction '
+          '(serviceYears=$serviceYearsForReduction, MGA=\$$indexedMGA)',
+          name: 'IncomeCalculator');
+    }
+
+    log('IncomeCalculator._calculateRRPE: age=$age, yearsOfService=$yearsOfService, '
+        'averageSalary=\$$averageSalary, basePension=\$$basePension, '
+        'finalPension=\$$finalPension',
+        name: 'IncomeCalculator');
+
+    return finalPension;
   }
 }

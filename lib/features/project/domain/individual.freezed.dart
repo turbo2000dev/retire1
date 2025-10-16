@@ -35,7 +35,13 @@ mixin _$Individual {
       throw _privateConstructorUsedError; // Projected annual RRQ benefit if starting at age 60
   double get projectedRrqAt65 =>
       throw _privateConstructorUsedError; // Projected annual RRQ benefit if starting at age 65
-  double get initialCeliRoom => throw _privateConstructorUsedError;
+  double get initialCeliRoom =>
+      throw _privateConstructorUsedError; // Initial CELI contribution room available
+  bool get hasRrpe =>
+      throw _privateConstructorUsedError; // Participates in RRPE (Régime de retraite du personnel d'encadrement)
+  @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)
+  DateTime? get rrpeParticipationStartDate =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this Individual to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -65,6 +71,12 @@ abstract class $IndividualCopyWith<$Res> {
     double projectedRrqAt60,
     double projectedRrqAt65,
     double initialCeliRoom,
+    bool hasRrpe,
+    @JsonKey(
+      fromJson: _dateTimeFromJsonNullable,
+      toJson: _dateTimeToJsonNullable,
+    )
+    DateTime? rrpeParticipationStartDate,
   });
 }
 
@@ -92,6 +104,8 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
     Object? projectedRrqAt60 = null,
     Object? projectedRrqAt65 = null,
     Object? initialCeliRoom = null,
+    Object? hasRrpe = null,
+    Object? rrpeParticipationStartDate = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -131,6 +145,14 @@ class _$IndividualCopyWithImpl<$Res, $Val extends Individual>
                 ? _value.initialCeliRoom
                 : initialCeliRoom // ignore: cast_nullable_to_non_nullable
                       as double,
+            hasRrpe: null == hasRrpe
+                ? _value.hasRrpe
+                : hasRrpe // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            rrpeParticipationStartDate: freezed == rrpeParticipationStartDate
+                ? _value.rrpeParticipationStartDate
+                : rrpeParticipationStartDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -157,6 +179,12 @@ abstract class _$$IndividualImplCopyWith<$Res>
     double projectedRrqAt60,
     double projectedRrqAt65,
     double initialCeliRoom,
+    bool hasRrpe,
+    @JsonKey(
+      fromJson: _dateTimeFromJsonNullable,
+      toJson: _dateTimeToJsonNullable,
+    )
+    DateTime? rrpeParticipationStartDate,
   });
 }
 
@@ -183,6 +211,8 @@ class __$$IndividualImplCopyWithImpl<$Res>
     Object? projectedRrqAt60 = null,
     Object? projectedRrqAt65 = null,
     Object? initialCeliRoom = null,
+    Object? hasRrpe = null,
+    Object? rrpeParticipationStartDate = freezed,
   }) {
     return _then(
       _$IndividualImpl(
@@ -222,6 +252,14 @@ class __$$IndividualImplCopyWithImpl<$Res>
             ? _value.initialCeliRoom
             : initialCeliRoom // ignore: cast_nullable_to_non_nullable
                   as double,
+        hasRrpe: null == hasRrpe
+            ? _value.hasRrpe
+            : hasRrpe // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        rrpeParticipationStartDate: freezed == rrpeParticipationStartDate
+            ? _value.rrpeParticipationStartDate
+            : rrpeParticipationStartDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -241,6 +279,12 @@ class _$IndividualImpl extends _Individual {
     this.projectedRrqAt60 = 12000.0,
     this.projectedRrqAt65 = 16000.0,
     this.initialCeliRoom = 0.0,
+    this.hasRrpe = false,
+    @JsonKey(
+      fromJson: _dateTimeFromJsonNullable,
+      toJson: _dateTimeToJsonNullable,
+    )
+    this.rrpeParticipationStartDate,
   }) : super._();
 
   factory _$IndividualImpl.fromJson(Map<String, dynamic> json) =>
@@ -276,10 +320,18 @@ class _$IndividualImpl extends _Individual {
   @override
   @JsonKey()
   final double initialCeliRoom;
+  // Initial CELI contribution room available
+  @override
+  @JsonKey()
+  final bool hasRrpe;
+  // Participates in RRPE (Régime de retraite du personnel d'encadrement)
+  @override
+  @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)
+  final DateTime? rrpeParticipationStartDate;
 
   @override
   String toString() {
-    return 'Individual(id: $id, name: $name, birthdate: $birthdate, employmentIncome: $employmentIncome, rrqStartAge: $rrqStartAge, psvStartAge: $psvStartAge, projectedRrqAt60: $projectedRrqAt60, projectedRrqAt65: $projectedRrqAt65, initialCeliRoom: $initialCeliRoom)';
+    return 'Individual(id: $id, name: $name, birthdate: $birthdate, employmentIncome: $employmentIncome, rrqStartAge: $rrqStartAge, psvStartAge: $psvStartAge, projectedRrqAt60: $projectedRrqAt60, projectedRrqAt65: $projectedRrqAt65, initialCeliRoom: $initialCeliRoom, hasRrpe: $hasRrpe, rrpeParticipationStartDate: $rrpeParticipationStartDate)';
   }
 
   @override
@@ -302,7 +354,14 @@ class _$IndividualImpl extends _Individual {
             (identical(other.projectedRrqAt65, projectedRrqAt65) ||
                 other.projectedRrqAt65 == projectedRrqAt65) &&
             (identical(other.initialCeliRoom, initialCeliRoom) ||
-                other.initialCeliRoom == initialCeliRoom));
+                other.initialCeliRoom == initialCeliRoom) &&
+            (identical(other.hasRrpe, hasRrpe) || other.hasRrpe == hasRrpe) &&
+            (identical(
+                  other.rrpeParticipationStartDate,
+                  rrpeParticipationStartDate,
+                ) ||
+                other.rrpeParticipationStartDate ==
+                    rrpeParticipationStartDate));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -318,6 +377,8 @@ class _$IndividualImpl extends _Individual {
     projectedRrqAt60,
     projectedRrqAt65,
     initialCeliRoom,
+    hasRrpe,
+    rrpeParticipationStartDate,
   );
 
   /// Create a copy of Individual
@@ -346,6 +407,12 @@ abstract class _Individual extends Individual {
     final double projectedRrqAt60,
     final double projectedRrqAt65,
     final double initialCeliRoom,
+    final bool hasRrpe,
+    @JsonKey(
+      fromJson: _dateTimeFromJsonNullable,
+      toJson: _dateTimeToJsonNullable,
+    )
+    final DateTime? rrpeParticipationStartDate,
   }) = _$IndividualImpl;
   const _Individual._() : super._();
 
@@ -370,7 +437,12 @@ abstract class _Individual extends Individual {
   @override
   double get projectedRrqAt65; // Projected annual RRQ benefit if starting at age 65
   @override
-  double get initialCeliRoom;
+  double get initialCeliRoom; // Initial CELI contribution room available
+  @override
+  bool get hasRrpe; // Participates in RRPE (Régime de retraite du personnel d'encadrement)
+  @override
+  @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)
+  DateTime? get rrpeParticipationStartDate;
 
   /// Create a copy of Individual
   /// with the given fields replaced by the non-null parameter values.

@@ -88,6 +88,12 @@ class IndividualCard extends StatelessWidget {
                         Icons.trending_up,
                         'RRQ@65: ${NumberFormat.currency(symbol: '\$', decimalDigits: 0).format(individual.projectedRrqAt65)}',
                       ),
+                      if (individual.hasRrpe)
+                        _buildInfoChip(
+                          context,
+                          Icons.account_balance,
+                          'RRPE: ${individual.rrpeParticipationStartDate != null ? dateFormat.format(individual.rrpeParticipationStartDate!) : 'Yes'}',
+                        ),
                     ],
                   ),
                 ],

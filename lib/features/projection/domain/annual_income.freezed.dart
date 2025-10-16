@@ -30,10 +30,13 @@ mixin _$AnnualIncome {
   /// PSV (Pension de la Sécurité de la vieillesse / Old Age Security) benefit
   double get psv => throw _privateConstructorUsedError;
 
-  /// RRPE (RRIF/CRI minimum withdrawal)
+  /// RRIF/CRI minimum withdrawal (formerly called rrpe)
+  double get rrif => throw _privateConstructorUsedError;
+
+  /// RRPE (Régime de retraite du personnel d'encadrement) pension
   double get rrpe => throw _privateConstructorUsedError;
 
-  /// Other income sources (dividends, rental income, etc.)
+  /// Other income sources (dividends, rental income, survivor benefits, etc.)
   double get other => throw _privateConstructorUsedError;
 
   /// Serializes this AnnualIncome to a JSON map.
@@ -57,6 +60,7 @@ abstract class $AnnualIncomeCopyWith<$Res> {
     double employment,
     double rrq,
     double psv,
+    double rrif,
     double rrpe,
     double other,
   });
@@ -80,6 +84,7 @@ class _$AnnualIncomeCopyWithImpl<$Res, $Val extends AnnualIncome>
     Object? employment = null,
     Object? rrq = null,
     Object? psv = null,
+    Object? rrif = null,
     Object? rrpe = null,
     Object? other = null,
   }) {
@@ -96,6 +101,10 @@ class _$AnnualIncomeCopyWithImpl<$Res, $Val extends AnnualIncome>
             psv: null == psv
                 ? _value.psv
                 : psv // ignore: cast_nullable_to_non_nullable
+                      as double,
+            rrif: null == rrif
+                ? _value.rrif
+                : rrif // ignore: cast_nullable_to_non_nullable
                       as double,
             rrpe: null == rrpe
                 ? _value.rrpe
@@ -124,6 +133,7 @@ abstract class _$$AnnualIncomeImplCopyWith<$Res>
     double employment,
     double rrq,
     double psv,
+    double rrif,
     double rrpe,
     double other,
   });
@@ -146,6 +156,7 @@ class __$$AnnualIncomeImplCopyWithImpl<$Res>
     Object? employment = null,
     Object? rrq = null,
     Object? psv = null,
+    Object? rrif = null,
     Object? rrpe = null,
     Object? other = null,
   }) {
@@ -162,6 +173,10 @@ class __$$AnnualIncomeImplCopyWithImpl<$Res>
         psv: null == psv
             ? _value.psv
             : psv // ignore: cast_nullable_to_non_nullable
+                  as double,
+        rrif: null == rrif
+            ? _value.rrif
+            : rrif // ignore: cast_nullable_to_non_nullable
                   as double,
         rrpe: null == rrpe
             ? _value.rrpe
@@ -183,6 +198,7 @@ class _$AnnualIncomeImpl extends _AnnualIncome {
     this.employment = 0.0,
     this.rrq = 0.0,
     this.psv = 0.0,
+    this.rrif = 0.0,
     this.rrpe = 0.0,
     this.other = 0.0,
   }) : super._();
@@ -205,19 +221,24 @@ class _$AnnualIncomeImpl extends _AnnualIncome {
   @JsonKey()
   final double psv;
 
-  /// RRPE (RRIF/CRI minimum withdrawal)
+  /// RRIF/CRI minimum withdrawal (formerly called rrpe)
+  @override
+  @JsonKey()
+  final double rrif;
+
+  /// RRPE (Régime de retraite du personnel d'encadrement) pension
   @override
   @JsonKey()
   final double rrpe;
 
-  /// Other income sources (dividends, rental income, etc.)
+  /// Other income sources (dividends, rental income, survivor benefits, etc.)
   @override
   @JsonKey()
   final double other;
 
   @override
   String toString() {
-    return 'AnnualIncome(employment: $employment, rrq: $rrq, psv: $psv, rrpe: $rrpe, other: $other)';
+    return 'AnnualIncome(employment: $employment, rrq: $rrq, psv: $psv, rrif: $rrif, rrpe: $rrpe, other: $other)';
   }
 
   @override
@@ -229,6 +250,7 @@ class _$AnnualIncomeImpl extends _AnnualIncome {
                 other.employment == employment) &&
             (identical(other.rrq, rrq) || other.rrq == rrq) &&
             (identical(other.psv, psv) || other.psv == psv) &&
+            (identical(other.rrif, rrif) || other.rrif == rrif) &&
             (identical(other.rrpe, rrpe) || other.rrpe == rrpe) &&
             (identical(other.other, this.other) || other.other == this.other));
   }
@@ -236,7 +258,7 @@ class _$AnnualIncomeImpl extends _AnnualIncome {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, employment, rrq, psv, rrpe, other);
+      Object.hash(runtimeType, employment, rrq, psv, rrif, rrpe, other);
 
   /// Create a copy of AnnualIncome
   /// with the given fields replaced by the non-null parameter values.
@@ -257,6 +279,7 @@ abstract class _AnnualIncome extends AnnualIncome {
     final double employment,
     final double rrq,
     final double psv,
+    final double rrif,
     final double rrpe,
     final double other,
   }) = _$AnnualIncomeImpl;
@@ -277,11 +300,15 @@ abstract class _AnnualIncome extends AnnualIncome {
   @override
   double get psv;
 
-  /// RRPE (RRIF/CRI minimum withdrawal)
+  /// RRIF/CRI minimum withdrawal (formerly called rrpe)
+  @override
+  double get rrif;
+
+  /// RRPE (Régime de retraite du personnel d'encadrement) pension
   @override
   double get rrpe;
 
-  /// Other income sources (dividends, rental income, etc.)
+  /// Other income sources (dividends, rental income, survivor benefits, etc.)
   @override
   double get other;
 

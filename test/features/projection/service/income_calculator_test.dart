@@ -255,7 +255,7 @@ void main() {
       });
     });
 
-    group('RRPE (RRIF Withdrawal) Calculation', () {
+    group('RRIF (RRIF/CRI Withdrawal) Calculation', () {
       test('returns zero with no CRI balance', () {
         final individual = Individual(
           id: 'test-1',
@@ -272,7 +272,7 @@ void main() {
           criBalance: 0.0, // No CRI balance
         );
 
-        expect(income.rrpe, 0.0);
+        expect(income.rrif, 0.0);
       });
 
       test('returns zero before age 65', () {
@@ -292,7 +292,7 @@ void main() {
         );
 
         // No minimum withdrawal required before age 65
-        expect(income.rrpe, 0.0);
+        expect(income.rrif, 0.0);
       });
 
       test('calculates minimum withdrawal at age 65', () {
@@ -313,7 +313,7 @@ void main() {
 
         // At age 65: 4% minimum withdrawal
         // Withdrawal = 100000 × 0.04 = 4000
-        expect(income.rrpe, closeTo(4000, 0.01));
+        expect(income.rrif, closeTo(4000, 0.01));
       });
 
       test('calculates minimum withdrawal at age 70', () {
@@ -334,7 +334,7 @@ void main() {
 
         // At age 70: 5% minimum withdrawal
         // Withdrawal = 100000 × 0.05 = 5000
-        expect(income.rrpe, closeTo(5000, 0.01));
+        expect(income.rrif, closeTo(5000, 0.01));
       });
 
       test('calculates minimum withdrawal at age 80', () {
@@ -355,7 +355,7 @@ void main() {
 
         // At age 80: 6.82% minimum withdrawal
         // Withdrawal = 100000 × 0.0682 = 6820
-        expect(income.rrpe, closeTo(6820, 0.01));
+        expect(income.rrif, closeTo(6820, 0.01));
       });
 
       test('calculates minimum withdrawal at age 95+', () {
@@ -376,7 +376,7 @@ void main() {
 
         // At age 95+: 20% minimum withdrawal
         // Withdrawal = 100000 × 0.20 = 20000
-        expect(income.rrpe, closeTo(20000, 0.01));
+        expect(income.rrif, closeTo(20000, 0.01));
       });
     });
 
@@ -428,11 +428,13 @@ void main() {
         // Employment: 50000 (simplified for now)
         // RRQ: 16000
         // PSV: clawback on (50000 + 16000) = 66000, no clawback = 8500
-        // RRPE: 100000 × 0.04 = 4000
+        // RRIF: 100000 × 0.04 = 4000
+        // RRPE: 0 (no RRPE participation)
         expect(income.employment, 50000);
         expect(income.rrq, 16000);
         expect(income.psv, 8500);
-        expect(income.rrpe, 4000);
+        expect(income.rrif, 4000);
+        expect(income.rrpe, 0.0);
         expect(income.total, 78500);
       });
     });

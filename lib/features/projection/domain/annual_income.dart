@@ -21,10 +21,13 @@ class AnnualIncome with _$AnnualIncome {
     /// PSV (Pension de la Sécurité de la vieillesse / Old Age Security) benefit
     @Default(0.0) double psv,
 
-    /// RRPE (RRIF/CRI minimum withdrawal)
+    /// RRIF/CRI minimum withdrawal (formerly called rrpe)
+    @Default(0.0) double rrif,
+
+    /// RRPE (Régime de retraite du personnel d'encadrement) pension
     @Default(0.0) double rrpe,
 
-    /// Other income sources (dividends, rental income, etc.)
+    /// Other income sources (dividends, rental income, survivor benefits, etc.)
     @Default(0.0) double other,
   }) = _AnnualIncome;
 
@@ -32,7 +35,7 @@ class AnnualIncome with _$AnnualIncome {
       _$AnnualIncomeFromJson(json);
 
   /// Calculate total income from all sources
-  double get total => employment + rrq + psv + rrpe + other;
+  double get total => employment + rrq + psv + rrif + rrpe + other;
 
   /// Check if individual has any income this year
   bool get hasIncome => total > 0;

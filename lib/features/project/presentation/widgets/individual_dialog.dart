@@ -55,6 +55,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
   late final TextEditingController _projectedRrqAt60Controller;
   late final TextEditingController _projectedRrqAt65Controller;
   late DateTime _selectedDate;
+  late bool _hasRrpe;
+  late DateTime? _rrpeParticipationStartDate;
 
   @override
   void initState() {
@@ -76,6 +78,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
       text: widget.individual?.projectedRrqAt65.toStringAsFixed(0) ?? '16000',
     );
     _selectedDate = widget.individual?.birthdate ?? DateTime(1970, 1, 1);
+    _hasRrpe = widget.individual?.hasRrpe ?? false;
+    _rrpeParticipationStartDate = widget.individual?.rrpeParticipationStartDate;
   }
 
   @override
@@ -105,8 +109,31 @@ class _IndividualDialogState extends State<IndividualDialog> {
     }
   }
 
+  Future<void> _selectRrpeStartDate() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _rrpeParticipationStartDate ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      helpText: 'Select RRPE participation start date',
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _rrpeParticipationStartDate = pickedDate;
+      });
+    }
+  }
+
   void _submit({bool createAnother = false}) {
     if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    // Validate RRPE participation start date if RRPE is enabled
+    if (_hasRrpe && _rrpeParticipationStartDate == null) {
+      // Trigger a rebuild to show the error
+      setState(() {});
       return;
     }
 
@@ -125,6 +152,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
       psvStartAge: psvStartAge,
       projectedRrqAt60: projectedRrqAt60,
       projectedRrqAt65: projectedRrqAt65,
+      hasRrpe: _hasRrpe,
+      rrpeParticipationStartDate: _rrpeParticipationStartDate,
     );
 
     Navigator.of(context).pop(
@@ -318,6 +347,62 @@ class _IndividualDialogState extends State<IndividualDialog> {
                   return null;
                 },
               ),
+              const SizedBox(height: 24),
+              Text(
+                'RRPE (Régime de retraite du personnel d\'encadrement)',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              CheckboxListTile(
+                value: _hasRrpe,
+                onChanged: (value) {
+                  setState(() {
+                    _hasRrpe = value ?? false;
+                    if (!_hasRrpe) {
+                      _rrpeParticipationStartDate = null;
+                    }
+                  });
+                },
+                title: const Text('Participates in RRPE'),
+                subtitle: const Text('Quebec management pension plan'),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+              ),
+              if (_hasRrpe) ...[
+                const SizedBox(height: 16),
+                InkWell(
+                  onTap: _selectRrpeStartDate,
+                  borderRadius: BorderRadius.circular(4),
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: 'RRPE Participation Start Date',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.calendar_today),
+                      errorText: _hasRrpe && _rrpeParticipationStartDate == null
+                          ? 'Required when RRPE is enabled'
+                          : null,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _rrpeParticipationStartDate != null
+                              ? dateFormat.format(_rrpeParticipationStartDate!)
+                              : 'Select date',
+                          style: _rrpeParticipationStartDate != null
+                              ? theme.textTheme.bodyLarge
+                              : theme.textTheme.bodyLarge?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                        ),
+                        const Icon(Icons.calendar_today),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

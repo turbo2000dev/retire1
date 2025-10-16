@@ -23,6 +23,12 @@ class Individual with _$Individual {
     @Default(12000.0) double projectedRrqAt60, // Projected annual RRQ benefit if starting at age 60
     @Default(16000.0) double projectedRrqAt65, // Projected annual RRQ benefit if starting at age 65
     @Default(0.0) double initialCeliRoom, // Initial CELI contribution room available
+    @Default(false) bool hasRrpe, // Participates in RRPE (Régime de retraite du personnel d'encadrement)
+    @JsonKey(
+      fromJson: _dateTimeFromJsonNullable,
+      toJson: _dateTimeToJsonNullable,
+    )
+    DateTime? rrpeParticipationStartDate, // Date when RRPE participation started
   }) = _Individual;
 
   factory Individual.fromJson(Map<String, dynamic> json) =>
@@ -54,3 +60,12 @@ DateTime _dateTimeFromJson(dynamic value) {
 
 /// Custom DateTime deserialization - return as DateTime for repository to convert
 dynamic _dateTimeToJson(DateTime dateTime) => dateTime;
+
+/// Custom nullable DateTime serialization
+DateTime? _dateTimeFromJsonNullable(dynamic value) {
+  if (value == null) return null;
+  return _dateTimeFromJson(value);
+}
+
+/// Custom nullable DateTime deserialization
+dynamic _dateTimeToJsonNullable(DateTime? dateTime) => dateTime;
