@@ -3,7 +3,7 @@
 ## Overview
 Migrate from client-side CSV export to server-side Excel (.xlsx) generation using Python XlsxWriter on Firebase Cloud Functions.
 
-## Status: Phase 3 Complete ✅ | Ready for Testing
+## Status: Phase 5 Complete ✅ | Multi-Tab Workbook Ready
 
 ---
 
@@ -87,53 +87,54 @@ Migrate from client-side CSV export to server-side Excel (.xlsx) generation usin
 
 ---
 
-## Phase 4: Advanced Formatting & Grouping 🎨
+## Phase 4: Advanced Formatting & Grouping ✅
 **Objective**: Add collapsible columns, colors, and formatting
 
-### Step 4.1: Implement Column Grouping
-- [ ] Group Income columns (Employment, RRQ, PSV, RRPE, Other → Total)
-- [ ] Group Expense columns by category
-- [ ] Group Withdrawal columns by account type
-- [ ] Group Balance columns by account type
-- [ ] Make sub-columns collapsible (level=1, hidden=False)
+### Step 4.1: Implement Column Grouping ✅
+- [x] Group Income columns (Employment, RRQ, PSV, RRPE, Other → Total)
+- [x] Group Expense columns by category
+- [x] Group Withdrawal columns by account type
+- [x] Group Balance columns by account type
+- [x] Make sub-columns collapsible (level=1, hidden=True for collapsed by default)
 
-### Step 4.2: Apply Professional Formatting
-- [ ] Header row: Bold, colored background, frozen pane
-- [ ] Alternating row colors for readability
-- [ ] Currency formatting with thousand separators
-- [ ] Conditional formatting (negative cash flow = red)
-- [ ] Border styling for sections
+### Step 4.2: Apply Professional Formatting ✅
+- [x] Header row: Bold, colored background, frozen pane
+- [x] Alternating row colors for readability
+- [x] Currency formatting with thousand separators
+- [x] Conditional formatting (negative cash flow = red)
+- [x] Specific column widths per section
 
-**Design Decision Point**:
-- Color scheme (professional, accessible)
-- Which columns should be initially collapsed
-- Conditional formatting rules
+**Design Decisions Made**:
+- **Color scheme**: Blue headers (#4472C4), darker blue for totals (#2E5C8A), light gray alternating rows (#F2F2F2)
+- **Collapsed by default**: All 6 detail column groups start collapsed (hidden: True)
+- **Column widths**: Detail columns 13-14, total columns 16, year 7, ages 8
+- **Conditional formatting**: Red text for negative values, maintained across alternating rows
 
-**Testing**: Open file, verify grouping works, check formatting
+**Testing**: ✅ Complete - all formatting working correctly
 
 ---
 
-## Phase 5: Multiple Tabs & Freeze Panes 📑
+## Phase 5: Multiple Tabs & Freeze Panes ✅
 **Objective**: Create multi-tab workbook with easy navigation
 
-### Step 5.1: Create Tab Structure
-- [ ] **Tab 1**: Summary/Parameters (Project info, individuals, key assumptions)
-- [ ] **Tab 2**: Detailed Projection (current detailed view)
-- [ ] **Tab 3**: Base Projection (simplified view, key metrics only)
-- [ ] **Tab 4**: Charts (optional - net worth over time, income breakdown)
+### Step 5.1: Create Tab Structure ✅
+- [x] **Tab 1**: Summary (Projection parameters and key metrics)
+- [x] **Tab 2**: Base Projection (simplified view, key metrics only - 10 columns)
+- [x] **Tab 3**: Detailed Projection (full detailed view with collapsible groups)
+- Charts tab deferred to Phase 8
 
-### Step 5.2: Implement Freeze Panes
-- [ ] Freeze top row (headers) on all tabs
-- [ ] Freeze first 3 columns (Year, Age 1, Age 2) on projection tabs
-- [ ] Add split panes on Summary tab if needed
+### Step 5.2: Implement Freeze Panes ✅
+- [x] Freeze top row (headers) on all projection tabs
+- [x] Freeze first 3 columns (Year, Age 1, Age 2) on projection tabs
+- Summary tab doesn't need freeze panes (two-column layout)
 
-**Design Decision Point**:
-- Tab naming convention (English/French bilingual?)
-- Summary tab layout
-- Which metrics for Base projection
-- Chart types and data ranges
+**Design Decisions Made**:
+- **Tab naming**: English only for now (Summary, Base Projection, Detailed Projection)
+- **Summary tab layout**: Two-column layout (label/value) with section headers for Parameters, Key Metrics, Assets
+- **Base Projection metrics**: 10 key columns - Total Income, Total Expenses, Total Tax, After-Tax Income, Net Cash Flow, Total Withdrawals/Contributions, Net Worth, Shortfall
+- **Tab order**: Summary first (overview), then Base (simple), then Detailed (comprehensive)
 
-**Testing**: Navigate between tabs, verify freeze panes work correctly
+**Testing**: ✅ Complete - all tabs working with proper freeze panes
 
 ---
 
@@ -316,6 +317,20 @@ functions/
 - **Response handling**: Blob response type, create object URL, trigger anchor download, revoke URL
 - **Button styling**: Excel = primary (FilledButton), CSV = secondary (OutlinedButton)
 
+### Phase 4 Decisions ✅
+- **Column grouping**: 6 groups (Income, Expenses, Taxes, Withdrawals, Contributions, Balances) all collapsed by default
+- **Column widths**: Year=7, Ages=8, detail=13-14, totals=16
+- **Alternating rows**: Light gray (#F2F2F2) on even rows
+- **Headers**: Regular blue (#4472C4) for detail, darker blue (#2E5C8A) for totals
+- **Freeze panes**: Header row + first 3 columns (Year + Ages)
+
+### Phase 5 Decisions ✅
+- **Tab structure**: 3 tabs (Summary, Base Projection, Detailed Projection)
+- **Summary content**: Parameters, Key Metrics (totals, shortfalls), Asset counts
+- **Base Projection**: 10 key columns only, no collapsible groups
+- **Detailed Projection**: Full 40+ columns with 6 collapsible groups (collapsed)
+- **Tab order**: Summary → Base → Detailed (increasing complexity)
+
 ---
 
 ## Progress Tracking
@@ -325,10 +340,10 @@ functions/
 | Phase 1 | ✅ Complete | 2025-10-16 | 2025-10-16 | Firebase setup complete, function deployed |
 | Phase 2 | ✅ Complete | 2025-10-16 | 2025-10-16 | Excel generator working, ready to integrate with Flutter |
 | Phase 3 | ✅ Complete | 2025-10-16 | 2025-10-16 | Flutter integration complete, ready to test |
-| Phase 4 | 📋 Pending | - | - | - |
-| Phase 5 | 📋 Pending | - | - | - |
-| Phase 6 | 📋 Pending | - | - | - |
-| Phase 7 | 📋 Pending | - | - | - |
-| Phase 8 | 📋 Pending | - | - | - |
-| Phase 9 | 📋 Pending | - | - | - |
-| Phase 10 | 📋 Pending | - | - | - |
+| Phase 4 | ✅ Complete | 2025-10-16 | 2025-10-16 | Column grouping, alternating rows, improved widths |
+| Phase 5 | ✅ Complete | 2025-10-16 | 2025-10-16 | Multi-tab workbook: Summary, Base, Detailed |
+| Phase 6 | 📋 Pending | - | - | Auto-open functionality |
+| Phase 7 | 📋 Pending | - | - | Performance optimization |
+| Phase 8 | 📋 Pending | - | - | Charts & graphs |
+| Phase 9 | 📋 Pending | - | - | Scenario comparison |
+| Phase 10 | 📋 Pending | - | - | Polish & documentation |
