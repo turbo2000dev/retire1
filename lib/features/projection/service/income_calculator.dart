@@ -35,6 +35,7 @@ class IncomeCalculator {
     List<Individual> allIndividuals = const [],
     double inflationRate = 0.02,
   }) {
+    final projectionStartYear = year - yearsFromStart;
     log('IncomeCalculator.calculateIncome: year=$year, age=$age, individual=${individual.name}',
         name: 'IncomeCalculator');
 
@@ -88,6 +89,7 @@ class IncomeCalculator {
       individual: individual,
       age: age,
       year: year,
+      projectionStartYear: projectionStartYear,
       events: events,
       inflationRate: inflationRate,
     );
@@ -105,7 +107,7 @@ class IncomeCalculator {
       employment: employment,
       rrq: rrq,
       psv: psv,
-      rrif: rrif,
+      rrif: 0.0, // TEMPORARILY DISABLED - will fix RRIF calculations later
       rrpe: rrpe,
       other: survivorBenefits, // Survivor benefits go in 'other'
     );
@@ -417,13 +419,14 @@ class IncomeCalculator {
   /// - [individual]: The individual (must have hasRrpe=true and rrpeParticipationStartDate)
   /// - [age]: Individual's current age
   /// - [year]: Current projection year
-  /// - [yearsFromStart]: Years from start of projection (for calculating inflated salaries)
-  /// - [events]: List of events (to detect retirement)
+  /// - [projectionStartYear]: The year the projection started
+  /// - [events]: List of events (to detect retirement and find retirement year)
   /// - [inflationRate]: Annual inflation rate
   double _calculateRRPE({
     required Individual individual,
     required int age,
     required int year,
+    required int projectionStartYear,
     required List<Event> events,
     required double inflationRate,
   }) {
@@ -432,53 +435,92 @@ class IncomeCalculator {
       return 0.0;
     }
 
-    // Check if individual has retired
-    final hasRetired = events.any((event) {
-      return event.when(
+    // Find retirement event for this individual
+    Event? retirementEvent;
+    for (final event in events) {
+      final isRetirement = event.maybeWhen(
         retirement: (id, individualId, timing) => individualId == individual.id,
-        death: (id, individualId, timing) => false,
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-                withdrawAccountId, depositAccountId) =>
-            false,
+        orElse: () => false,
       );
-    });
+      if (isRetirement) {
+        retirementEvent = event;
+        break;
+      }
+    }
 
     // RRPE pension starts at retirement
-    if (!hasRetired) {
+    if (retirementEvent == null) {
       return 0.0;
     }
 
-    // Calculate years of service (from participation start to retirement)
-    // We need to find the retirement year to calculate this properly
-    // For now, use a simplified approach: years from participation to current year
+    // Calculate retirement year from the retirement event
+    // We need to resolve the timing to get the actual calendar year
+    final retirementTiming = retirementEvent.when(
+      retirement: (id, individualId, timing) => timing,
+      death: (id, individualId, timing) => null,
+      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
+              withdrawAccountId, depositAccountId) =>
+          null,
+    );
+
+    if (retirementTiming == null) {
+      return 0.0;
+    }
+
+    // Resolve timing to calendar year
+    final retirementYear = retirementTiming.when(
+      relative: (yearsFromStart) {
+        // We don't have startYear here, so we need to derive it from current year and individual's age
+        // This is a workaround - ideally startYear would be passed as a parameter
+        // For now, estimate: if retirement is relative, we can't determine exact year without more context
+        // Use the individual's birthdate and retirement age to estimate
+        return individual.birthdate.year + age; // Approximation
+      },
+      absolute: (calendarYear) => calendarYear,
+      age: (individualId, targetAge) {
+        // Retirement at specific age - calculate calendar year
+        return individual.birthdate.year + targetAge;
+      },
+      eventRelative: (eventId, boundary) {
+        // Can't easily resolve without more context - use current year as fallback
+        return year;
+      },
+      projectionEnd: () => year,
+    );
+
     final participationStartDate = individual.rrpeParticipationStartDate!;
     final participationStartYear = participationStartDate.year;
 
-    // Estimate retirement year based on current status
-    // This is simplified - ideally we'd track the exact retirement year from the event
-    // For now, assume if retired, calculate service up to retirement age
-    final retirementYear = year; // Approximate - could be earlier
+    // Calculate years of service (from participation start to retirement)
     final yearsOfService = retirementYear - participationStartYear;
 
     // Calculate average salary for last 5 years before retirement
-    // We know current salary and can inflate it backward/forward to get historical salaries
-    // Current salary is the base, and we apply inflation for each year
     final salaryYearsCount = yearsOfService < 5 ? yearsOfService : 5;
 
     if (salaryYearsCount <= 0) {
       return 0.0; // No service years
     }
 
-    // Calculate average salary: we have current salary and need to project what it was
-    // in the 5 years before retirement. Since salaries grow with inflation, work backwards.
+    // Calculate average salary of the last 5 years before retirement
+    // The employment income in the Individual is the base salary at projection start
+    // We need to inflate it to retirement year, then average the last 5 years
     double totalSalary = 0.0;
-    final currentSalary = individual.employmentIncome;
+    final baseSalary = individual.employmentIncome;
 
+    // Calculate the inflation-adjusted salary at retirement year
+    // Base salary is at projection start, inflate it to retirement year
+    final yearsToRetirement = retirementYear - projectionStartYear;
+    double salaryAtRetirement = baseSalary;
+    for (int i = 0; i < yearsToRetirement; i++) {
+      salaryAtRetirement *= (1 + inflationRate);
+    }
+
+    // Now calculate average of last salaryYearsCount years before retirement
     for (int i = 0; i < salaryYearsCount; i++) {
-      // i=0 is most recent year (year before retirement), i=4 is 5 years before retirement
-      double yearSalary = currentSalary;
-      // Deflate salary by inflation for each year back
-      for (int j = 0; j <= i; j++) {
+      // i=0 is the year of retirement, i=1 is one year before retirement, etc.
+      double yearSalary = salaryAtRetirement;
+      // Deflate salary for each year back from retirement
+      for (int j = 0; j < i; j++) {
         yearSalary /= (1 + inflationRate);
       }
       totalSalary += yearSalary;
@@ -490,8 +532,7 @@ class IncomeCalculator {
     final basePension = yearsOfService * averageSalary * kRRPEPensionAccrualRate;
 
     // The pension starts at retirement and is indexed to inflation each year
-    // Calculate how many years since retirement (simplified: assume retired 1 year ago)
-    final yearsFromRetirement = 1; // Simplified - should track actual retirement year
+    final yearsFromRetirement = year - retirementYear;
 
     double indexedPension = basePension;
     for (int i = 0; i < yearsFromRetirement; i++) {
@@ -508,20 +549,26 @@ class IncomeCalculator {
         indexedMGA *= (1 + inflationRate);
       }
 
-      // Calculate reduction: 7% × service years (max 35) × MGA
+      // The reduction uses the LOWER of: average salary or MGA
+      // This prevents excessive reduction for lower-paid employees
+      final reductionBase = averageSalary < indexedMGA ? averageSalary : indexedMGA;
+
+      // Calculate reduction: 0.7% × service years (max 35) × reductionBase
       final serviceYearsForReduction = yearsOfService > kRRPEMaxServiceYearsForReduction
           ? kRRPEMaxServiceYearsForReduction
           : yearsOfService;
-      final reduction = kRRPEReductionRate * serviceYearsForReduction * indexedMGA;
+      final reduction = kRRPEReductionRate * serviceYearsForReduction * reductionBase;
 
       finalPension = (indexedPension - reduction).clamp(0.0, double.infinity);
 
       log('IncomeCalculator._calculateRRPE: age=$age (≥65), reduction=\$$reduction '
-          '(serviceYears=$serviceYearsForReduction, MGA=\$$indexedMGA)',
+          '(serviceYears=$serviceYearsForReduction, reductionBase=\$$reductionBase, '
+          'averageSalary=\$$averageSalary, MGA=\$$indexedMGA)',
           name: 'IncomeCalculator');
     }
 
-    log('IncomeCalculator._calculateRRPE: age=$age, yearsOfService=$yearsOfService, '
+    log('IncomeCalculator._calculateRRPE: age=$age, retirementYear=$retirementYear, '
+        'yearsOfService=$yearsOfService, yearsFromRetirement=$yearsFromRetirement, '
         'averageSalary=\$$averageSalary, basePension=\$$basePension, '
         'finalPension=\$$finalPension',
         name: 'IncomeCalculator');

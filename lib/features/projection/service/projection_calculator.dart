@@ -139,8 +139,17 @@ class ProjectionCalculator {
       final totalExpenses = eventExpenses + expenseAmount;
 
       // STEP 5: Iteratively calculate taxes and withdrawals
+      if (year == 2032) {
+        log('DEBUG 2032: incomeFromWork=$incomeFromWork');
+        log('DEBUG 2032: criMinimumIncome=$criMinimumIncome');
+        log('DEBUG 2032: baseIncome=$baseIncome');
+        log('DEBUG 2032: eventIncome=$eventIncome');
+        log('DEBUG 2032: baseIncome+eventIncome=${baseIncome + eventIncome}');
+      }
+
       final cashFlowResults = _calculateCashFlowWithWithdrawals(
         baseIncome: baseIncome + eventIncome,
+        baseIncomeWithoutEvents: baseIncome, // Track base income separately for reporting
         totalExpenses: totalExpenses,
         project: project,
         year: year,
@@ -151,6 +160,9 @@ class ProjectionCalculator {
       );
 
       final totalIncome = cashFlowResults['totalIncome'] as double;
+      if (year == 2032) {
+        log('DEBUG 2032: totalIncome returned from cashFlowResults=$totalIncome');
+      }
       final taxableIncome = cashFlowResults['taxableIncome'] as double;
       final federalTax = cashFlowResults['federalTax'] as double;
       final quebecTax = cashFlowResults['quebecTax'] as double;
@@ -1189,12 +1201,13 @@ class ProjectionCalculator {
     return total;
   }
 
-  /// Iteratively calculate taxes and withdrawals until convergence
+  /// Iteratively calculate taxes and withdrawals until convergence.
   ///
   /// This handles the circular dependency: we need taxes to know shortfall,
   /// but REER withdrawals affect taxes, which changes the shortfall.
   Map<String, dynamic> _calculateCashFlowWithWithdrawals({
     required double baseIncome,
+    required double baseIncomeWithoutEvents,
     required double totalExpenses,
     required Project project,
     required int year,
@@ -1205,6 +1218,11 @@ class ProjectionCalculator {
   }) {
     const maxIterations = 5;
     const convergenceThreshold = 1.0; // $1 difference is acceptable
+
+    if (year == 2032) {
+      log('DEBUG 2032 _calculateCashFlowWithWithdrawals: baseIncome=$baseIncome');
+      log('DEBUG 2032 _calculateCashFlowWithWithdrawals: baseIncomeWithoutEvents=$baseIncomeWithoutEvents');
+    }
 
     double currentIncome = baseIncome;
     double reerWithdrawalsThisIteration = 0.0;
@@ -1231,8 +1249,12 @@ class ProjectionCalculator {
         // No shortfall - done!
         log('No shortfall, converged at iteration $iteration');
         return {
-          'totalIncome': currentIncome,
-          ...taxResults,
+          'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
+          'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
+          'federalTax': taxResults['federalTax'],
+          'quebecTax': taxResults['quebecTax'],
+          'totalTax': taxResults['totalTax'],
+          'afterTaxIncome': taxResults['afterTaxIncome'],
           'withdrawalsByAccount': finalWithdrawals,
           'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
           'hasShortfall': false,
@@ -1281,8 +1303,12 @@ class ProjectionCalculator {
         );
 
         return {
-          'totalIncome': currentIncome,
-          ...finalTaxResults,
+          'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
+          'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
+          'federalTax': finalTaxResults['federalTax'],
+          'quebecTax': finalTaxResults['quebecTax'],
+          'totalTax': finalTaxResults['totalTax'],
+          'afterTaxIncome': finalTaxResults['afterTaxIncome'],
           'withdrawalsByAccount': finalWithdrawals,
           'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
           'hasShortfall': hasShortfall,
@@ -1317,8 +1343,12 @@ class ProjectionCalculator {
 
     // Return best approximation
     return {
-      'totalIncome': currentIncome,
-      ...finalTaxes,
+      'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
+      'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
+      'federalTax': finalTaxes['federalTax'],
+      'quebecTax': finalTaxes['quebecTax'],
+      'totalTax': finalTaxes['totalTax'],
+      'afterTaxIncome': finalTaxes['afterTaxIncome'],
       'withdrawalsByAccount': finalWithdrawals,
       'totalWithdrawals': totalActualWithdrawals,
       'hasShortfall': hasShortfall,

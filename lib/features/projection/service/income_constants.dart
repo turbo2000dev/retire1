@@ -111,8 +111,8 @@ const double kRRPEPensionAccrualRate = 0.02; // 2%
 /// RRPE reduction rate at age 65
 ///
 /// Starting at age 65, RRPE pension is reduced by:
-/// 7% × number of service years (max 35) × MGA
-const double kRRPEReductionRate = 0.07; // 7%
+/// 0.7% × number of service years (max 35) × lower of (average salary, MGA)
+const double kRRPEReductionRate = 0.007; // 0.7%
 
 /// RRPE maximum service years for reduction calculation
 ///
