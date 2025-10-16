@@ -4,6 +4,10 @@
 from firebase_functions import https_fn
 from firebase_admin import initialize_app
 import json
+from datetime import datetime
+
+from models import Projection, Asset
+from excel_generator import ExcelGenerator
 
 # Initialize Firebase Admin SDK
 initialize_app()
@@ -54,23 +58,50 @@ def generate_projection_excel(req: https_fn.Request) -> https_fn.Response:
                 headers={**headers, 'Content-Type': 'application/json'}
             )
 
-        # For Phase 1.2 - just return a test response
-        response_data = {
-            'message': 'Hello from Firebase Cloud Functions!',
-            'received': {
-                'hasProjection': 'projection' in request_json,
-                'scenarioName': request_json.get('scenarioName', 'unknown'),
-                'assetCount': len(request_json.get('assets', []))
-            }
-        }
+        # Validate required fields
+        if 'projection' not in request_json:
+            return https_fn.Response(
+                json.dumps({'error': 'Missing required field: projection'}),
+                status=400,
+                headers={**headers, 'Content-Type': 'application/json'}
+            )
 
+        # Parse data models
+        projection = Projection.from_dict(request_json['projection'])
+        scenario_name = request_json.get('scenarioName', 'Projection')
+        assets = [Asset.from_dict(asset_data) for asset_data in request_json.get('assets', [])]
+
+        # Generate Excel file
+        generator = ExcelGenerator(projection, scenario_name, assets)
+        excel_bytes = generator.generate()
+
+        # Generate filename
+        today = datetime.now().strftime('%Y-%m-%d')
+        filename = f'projection_{scenario_name.replace(" ", "-")}_{today}.xlsx'
+
+        # Return Excel file
         return https_fn.Response(
-            json.dumps(response_data),
+            excel_bytes,
             status=200,
-            headers={**headers, 'Content-Type': 'application/json'}
+            headers={
+                **headers,
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': f'attachment; filename="{filename}"',
+            }
         )
 
+    except KeyError as e:
+        return https_fn.Response(
+            json.dumps({'error': f'Missing required field: {str(e)}'}),
+            status=400,
+            headers={**headers, 'Content-Type': 'application/json'}
+        )
     except Exception as e:
+        # Log the full error for debugging
+        print(f'Error generating Excel: {str(e)}')
+        import traceback
+        traceback.print_exc()
+
         return https_fn.Response(
             json.dumps({'error': f'Internal server error: {str(e)}'}),
             status=500,

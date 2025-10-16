@@ -3,7 +3,7 @@
 ## Overview
 Migrate from client-side CSV export to server-side Excel (.xlsx) generation using Python XlsxWriter on Firebase Cloud Functions.
 
-## Status: Phase 1 Complete ✅ | Phase 2 Ready
+## Status: Phase 2 Complete ✅ | Phase 3 Ready
 
 ---
 
@@ -34,27 +34,30 @@ Migrate from client-side CSV export to server-side Excel (.xlsx) generation usin
 
 ---
 
-## Phase 2: Simple Excel Generation (Single Tab) 📋
+## Phase 2: Simple Excel Generation (Single Tab) ✅
 **Objective**: Generate basic Excel file with projection data
 
-### Step 2.1: Create Data Models
-- [ ] Define Python dataclasses for Projection, YearlyProjection, etc.
-- [ ] Create JSON-to-model deserialization logic
-- [ ] Validate incoming data structure
+### Step 2.1: Create Data Models ✅
+- [x] Define Python dataclasses for Projection, YearlyProjection, etc.
+- [x] Create JSON-to-model deserialization logic
+- [x] Validate incoming data structure
 
-### Step 2.2: Implement Basic Excel Generator
-- [ ] Create single "Projection" worksheet
-- [ ] Add headers (Year, Ages, Income, Expenses, etc.)
-- [ ] Populate data rows
-- [ ] Apply basic number formatting (currency, percentages)
-- [ ] Return Excel file as HTTP response
+### Step 2.2: Implement Basic Excel Generator ✅
+- [x] Create single "Projection" worksheet
+- [x] Add headers (Year, Ages, Income, Expenses, etc.)
+- [x] Populate data rows
+- [x] Apply basic number formatting (currency, percentages)
+- [x] Return Excel file as HTTP response
 
-**Design Decision Point**:
-- Column order and grouping
-- Number format patterns
-- File size limits and pagination strategy
+**Design Decisions Made**:
+- **Column order**: Matches CSV export exactly (Year, Ages, Income sources, Expenses, Taxes, Cash flow, Withdrawals, Contributions, Balances, Net worth, Shortfall)
+- **Number format**: `#,##0` for currency (no decimals), `0` for years/ages
+- **Negative numbers**: Red font color for negative cash flow values
+- **Headers**: Blue background (#4472C4), white text, bold, centered
+- **Column widths**: Year=6, Ages=8, all others=16 characters
+- **Freeze panes**: Top row (headers) frozen for scrolling
 
-**Testing**: Call from Flutter, download file, verify data accuracy
+**Testing**: Deployed successfully - ready to test from Flutter (Phase 3)
 
 ---
 
@@ -294,8 +297,14 @@ functions/
 - **Deployment region**: us-central1 (Firebase default)
 - **Function name**: `generate_projection_excel`
 
-### Phase 2 Decisions
-*To be filled in as decisions are made*
+### Phase 2 Decisions ✅
+- **Data models**: Created Python dataclasses mirroring Dart/Freezed models
+- **Deserialization**: `from_dict()` class methods for JSON parsing
+- **Excel library**: XlsxWriter with in-memory BytesIO buffer
+- **Response format**: Direct binary response with proper MIME type (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+- **Filename**: `projection_{scenario-name}_{date}.xlsx` with Content-Disposition header
+- **Asset categorization**: Build asset type map from assets array for withdrawal/balance categorization
+- **Error handling**: Comprehensive try-catch with detailed logging
 
 ### Phase 3 Decisions
 *To be filled in as decisions are made*
@@ -307,7 +316,7 @@ functions/
 | Phase | Status | Started | Completed | Notes |
 |-------|--------|---------|-----------|-------|
 | Phase 1 | ✅ Complete | 2025-10-16 | 2025-10-16 | Firebase setup complete, function deployed |
-| Phase 2 | 📋 Pending | - | - | - |
+| Phase 2 | ✅ Complete | 2025-10-16 | 2025-10-16 | Excel generator working, ready to integrate with Flutter |
 | Phase 3 | 📋 Pending | - | - | - |
 | Phase 4 | 📋 Pending | - | - | - |
 | Phase 5 | 📋 Pending | - | - | - |
