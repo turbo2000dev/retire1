@@ -1,0 +1,6 @@
+# Firebase Cloud Functions dependencies
+firebase-functions>=0.4.0
+firebase-admin>=6.0.0
+
+# Excel generation
+XlsxWriter>=3.1.0
