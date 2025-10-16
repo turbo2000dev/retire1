@@ -1,15 +1,12 @@
 import 'dart:convert';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:intl/intl.dart';
 
 /// Service for exporting projection data to Excel via Firebase Cloud Functions
 class ProjectionExcelExport {
-  static final _functions = FirebaseFunctions.instance;
-
   /// Export projection to Excel and trigger download
   static Future<void> exportToExcel(
     Projection projection,
@@ -24,13 +21,7 @@ class ProjectionExcelExport {
         'assets': assets.map((asset) => asset.toJson()).toList(),
       };
 
-      // Call Cloud Function
-      final callable = _functions.httpsCallable('generate_projection_excel');
-      final response = await callable.call(requestData);
-
-      // The Cloud Function returns the file as base64 encoded data
-      // But since we're using HTTP callable, we need to use the HTTP endpoint directly
-      // Let's use a direct HTTP call instead
+      // Use direct HTTP call to Cloud Function
       await _downloadExcelViaHttp(requestData, scenarioName);
     } catch (e) {
       print('Error exporting to Excel: $e');
