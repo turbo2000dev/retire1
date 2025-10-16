@@ -1248,13 +1248,15 @@ class ProjectionCalculator {
       if (shortfall <= 0) {
         // No shortfall - done!
         log('No shortfall, converged at iteration $iteration');
+        // After-tax income = actual income sources (not withdrawals) - taxes
+        final afterTaxIncome = baseIncomeWithoutEvents - totalTax;
         return {
           'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
           'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
           'federalTax': taxResults['federalTax'],
           'quebecTax': taxResults['quebecTax'],
           'totalTax': taxResults['totalTax'],
-          'afterTaxIncome': taxResults['afterTaxIncome'],
+          'afterTaxIncome': afterTaxIncome,
           'withdrawalsByAccount': finalWithdrawals,
           'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
           'hasShortfall': false,
@@ -1302,13 +1304,16 @@ class ProjectionCalculator {
           totalIncome: currentIncome,
         );
 
+        // After-tax income = actual income sources (not withdrawals) - taxes
+        final afterTaxIncome = baseIncomeWithoutEvents - (finalTaxResults['totalTax'] as double);
+
         return {
           'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
           'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
           'federalTax': finalTaxResults['federalTax'],
           'quebecTax': finalTaxResults['quebecTax'],
           'totalTax': finalTaxResults['totalTax'],
-          'afterTaxIncome': finalTaxResults['afterTaxIncome'],
+          'afterTaxIncome': afterTaxIncome,
           'withdrawalsByAccount': finalWithdrawals,
           'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
           'hasShortfall': hasShortfall,
@@ -1341,6 +1346,9 @@ class ProjectionCalculator {
     final remainingShortfall = finalShortfall - totalActualWithdrawals;
     final hasShortfall = remainingShortfall > 0.01;
 
+    // After-tax income = actual income sources (not withdrawals) - taxes
+    final afterTaxIncome = baseIncomeWithoutEvents - (finalTaxes['totalTax'] as double);
+
     // Return best approximation
     return {
       'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
@@ -1348,7 +1356,7 @@ class ProjectionCalculator {
       'federalTax': finalTaxes['federalTax'],
       'quebecTax': finalTaxes['quebecTax'],
       'totalTax': finalTaxes['totalTax'],
-      'afterTaxIncome': finalTaxes['afterTaxIncome'],
+      'afterTaxIncome': afterTaxIncome,
       'withdrawalsByAccount': finalWithdrawals,
       'totalWithdrawals': totalActualWithdrawals,
       'hasShortfall': hasShortfall,

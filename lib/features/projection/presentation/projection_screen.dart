@@ -430,10 +430,15 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                     orElse: () => scenarios.first,
                                   );
 
+                                  // Get assets for CSV export
+                                  final assetsAsync = ref.read(assetsProvider);
+                                  final assets = assetsAsync.value ?? [];
+
                                   // Export to CSV
                                   ProjectionCsvExport.exportToCSV(
                                     projection,
                                     scenario.name,
+                                    assets,
                                   );
 
                                   // Show success message

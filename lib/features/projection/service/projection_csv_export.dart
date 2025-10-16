@@ -2,13 +2,14 @@ import 'dart:convert';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:retire1/features/projection/domain/projection.dart';
+import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:intl/intl.dart';
 
 /// Service for exporting projection data to CSV
 class ProjectionCsvExport {
   /// Export projection to CSV and trigger download
-  static void exportToCSV(Projection projection, String scenarioName) {
-    final csv = _generateCSV(projection);
+  static void exportToCSV(Projection projection, String scenarioName, List<Asset> assets) {
+    final csv = _generateCSV(projection, assets);
     final fileName =
         'projection_${scenarioName.replaceAll(' ', '-')}_${DateFormat('yyyy-MM-dd').format(DateTime.now())}.csv';
 
@@ -16,7 +17,26 @@ class ProjectionCsvExport {
   }
 
   /// Generate CSV content from projection data
-  static String _generateCSV(Projection projection) {
+  static String _generateCSV(Projection projection, List<Asset> assets) {
+    // Create asset type map for quick lookup
+    final assetTypeMap = <String, String>{};
+    for (final asset in assets) {
+      final id = asset.when(
+        realEstate: (id, type, value, setAtStart, customReturnRate) => id,
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
+        celi: (id, individualId, value, customReturnRate, annualContribution) => id,
+        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
+        cash: (id, individualId, value, customReturnRate, annualContribution) => id,
+      );
+      final type = asset.when(
+        realEstate: (id, type, value, setAtStart, customReturnRate) => 'realEstate',
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) => 'rrsp',
+        celi: (id, individualId, value, customReturnRate, annualContribution) => 'celi',
+        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => 'cri',
+        cash: (id, individualId, value, customReturnRate, annualContribution) => 'cash',
+      );
+      assetTypeMap[id] = type;
+    }
     final buffer = StringBuffer();
     final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
@@ -90,43 +110,43 @@ class ProjectionCsvExport {
       final totalOther = year.incomeByIndividual.values
           .fold(0.0, (sum, income) => sum + income.other);
 
-      // Calculate totals for withdrawals by account type
+      // Calculate totals for withdrawals by account type using asset type map
       final celiWithdrawals = year.withdrawalsByAccount.entries
-          .where((e) => e.key.contains('celi'))
+          .where((e) => assetTypeMap[e.key] == 'celi')
           .fold(0.0, (sum, e) => sum + e.value);
       final cashWithdrawals = year.withdrawalsByAccount.entries
-          .where((e) => e.key.contains('cash'))
+          .where((e) => assetTypeMap[e.key] == 'cash')
           .fold(0.0, (sum, e) => sum + e.value);
       final criWithdrawals = year.withdrawalsByAccount.entries
-          .where((e) => e.key.contains('cri'))
+          .where((e) => assetTypeMap[e.key] == 'cri')
           .fold(0.0, (sum, e) => sum + e.value);
       final reerWithdrawals = year.withdrawalsByAccount.entries
-          .where((e) => e.key.contains('rrsp') || e.key.contains('reer'))
+          .where((e) => assetTypeMap[e.key] == 'rrsp')
           .fold(0.0, (sum, e) => sum + e.value);
 
-      // Calculate totals for contributions by account type
+      // Calculate totals for contributions by account type using asset type map
       final celiContributions = year.contributionsByAccount.entries
-          .where((e) => e.key.contains('celi'))
+          .where((e) => assetTypeMap[e.key] == 'celi')
           .fold(0.0, (sum, e) => sum + e.value);
       final cashContributions = year.contributionsByAccount.entries
-          .where((e) => e.key.contains('cash'))
+          .where((e) => assetTypeMap[e.key] == 'cash')
           .fold(0.0, (sum, e) => sum + e.value);
 
-      // Calculate asset balances by type
+      // Calculate asset balances by type using asset type map
       final realEstateBalance = year.assetsEndOfYear.entries
-          .where((e) => e.key.contains('realEstate'))
+          .where((e) => assetTypeMap[e.key] == 'realEstate')
           .fold(0.0, (sum, e) => sum + e.value);
       final reerBalance = year.assetsEndOfYear.entries
-          .where((e) => e.key.contains('rrsp') || e.key.contains('reer'))
+          .where((e) => assetTypeMap[e.key] == 'rrsp')
           .fold(0.0, (sum, e) => sum + e.value);
       final celiBalance = year.assetsEndOfYear.entries
-          .where((e) => e.key.contains('celi'))
+          .where((e) => assetTypeMap[e.key] == 'celi')
           .fold(0.0, (sum, e) => sum + e.value);
       final criBalance = year.assetsEndOfYear.entries
-          .where((e) => e.key.contains('cri'))
+          .where((e) => assetTypeMap[e.key] == 'cri')
           .fold(0.0, (sum, e) => sum + e.value);
       final cashBalance = year.assetsEndOfYear.entries
-          .where((e) => e.key.contains('cash'))
+          .where((e) => assetTypeMap[e.key] == 'cash')
           .fold(0.0, (sum, e) => sum + e.value);
       final totalReturns =
           year.assetReturns.values.fold(0.0, (sum, val) => sum + val);
