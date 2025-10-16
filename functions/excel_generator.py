@@ -36,8 +36,10 @@ class ExcelGenerator:
         # Define formats
         formats = self._create_formats(workbook)
 
-        # Create projection worksheet
-        self._create_projection_sheet(workbook, formats)
+        # Create tabs in order
+        self._create_summary_sheet(workbook, formats)
+        self._create_base_projection_sheet(workbook, formats)
+        self._create_detailed_projection_sheet(workbook, formats)
 
         # Close workbook to finalize
         workbook.close()
@@ -94,11 +96,221 @@ class ExcelGenerator:
                 'align': 'center',
                 'bg_color': '#F2F2F2',
             }),
+            'label': workbook.add_format({
+                'bold': True,
+                'align': 'left',
+            }),
+            'value': workbook.add_format({
+                'align': 'left',
+            }),
+            'section_header': workbook.add_format({
+                'bold': True,
+                'font_size': 12,
+                'bg_color': '#D9E1F2',
+                'border': 1,
+            }),
         }
 
-    def _create_projection_sheet(self, workbook: xlsxwriter.Workbook, formats: Dict):
-        """Create the main projection worksheet with advanced formatting and grouping."""
-        worksheet = workbook.add_worksheet('Projection')
+    def _create_summary_sheet(self, workbook: xlsxwriter.Workbook, formats: Dict):
+        """Create summary sheet with projection parameters and key metrics."""
+        worksheet = workbook.add_worksheet('Summary')
+
+        # Set column widths
+        worksheet.set_column(0, 0, 25)  # Label column
+        worksheet.set_column(1, 1, 30)  # Value column
+
+        row = 0
+
+        # Title
+        worksheet.merge_range(row, 0, row, 1, 'Projection Summary', formats['section_header'])
+        row += 2
+
+        # Projection Parameters
+        worksheet.write(row, 0, 'Scenario Name:', formats['label'])
+        worksheet.write(row, 1, self.scenario_name, formats['value'])
+        row += 1
+
+        worksheet.write(row, 0, 'Start Year:', formats['label'])
+        worksheet.write(row, 1, self.projection.start_year, formats['value'])
+        row += 1
+
+        worksheet.write(row, 0, 'End Year:', formats['label'])
+        worksheet.write(row, 1, self.projection.end_year, formats['value'])
+        row += 1
+
+        worksheet.write(row, 0, 'Planning Period:', formats['label'])
+        worksheet.write(row, 1, f"{len(self.projection.years)} years", formats['value'])
+        row += 1
+
+        worksheet.write(row, 0, 'Inflation Rate:', formats['label'])
+        worksheet.write(row, 1, f"{self.projection.inflation_rate * 100:.2f}%", formats['value'])
+        row += 1
+
+        worksheet.write(row, 0, 'Dollar Type:', formats['label'])
+        dollar_type = 'Constant Dollars' if self.projection.use_constant_dollars else 'Current Dollars'
+        worksheet.write(row, 1, dollar_type, formats['value'])
+        row += 2
+
+        # Key Metrics section
+        worksheet.merge_range(row, 0, row, 1, 'Key Metrics', formats['section_header'])
+        row += 2
+
+        # Calculate summary metrics
+        first_year = self.projection.years[0] if self.projection.years else None
+        last_year = self.projection.years[-1] if self.projection.years else None
+
+        if first_year:
+            worksheet.write(row, 0, 'Initial Net Worth:', formats['label'])
+            worksheet.write_number(row, 1, first_year.net_worth_start_of_year, formats['currency'])
+            row += 1
+
+        if last_year:
+            worksheet.write(row, 0, 'Final Net Worth:', formats['label'])
+            worksheet.write_number(row, 1, last_year.net_worth_end_of_year, formats['currency'])
+            row += 1
+
+        # Calculate total income and expenses over planning period
+        total_income = sum(year.total_income for year in self.projection.years)
+        total_expenses = sum(year.total_expenses for year in self.projection.years)
+        total_tax = sum(year.total_tax for year in self.projection.years)
+
+        worksheet.write(row, 0, 'Total Income (All Years):', formats['label'])
+        worksheet.write_number(row, 1, total_income, formats['currency'])
+        row += 1
+
+        worksheet.write(row, 0, 'Total Expenses (All Years):', formats['label'])
+        worksheet.write_number(row, 1, total_expenses, formats['currency'])
+        row += 1
+
+        worksheet.write(row, 0, 'Total Taxes (All Years):', formats['label'])
+        worksheet.write_number(row, 1, total_tax, formats['currency'])
+        row += 1
+
+        # Check for shortfalls
+        years_with_shortfall = [year for year in self.projection.years if year.has_shortfall]
+        worksheet.write(row, 0, 'Years with Shortfall:', formats['label'])
+        worksheet.write(row, 1, len(years_with_shortfall), formats['value'])
+        row += 1
+
+        if years_with_shortfall:
+            total_shortfall = sum(year.shortfall_amount for year in years_with_shortfall)
+            worksheet.write(row, 0, 'Total Shortfall Amount:', formats['label'])
+            worksheet.write_number(row, 1, total_shortfall, formats['currency_negative'])
+            row += 1
+
+        row += 1
+
+        # Assets section
+        worksheet.merge_range(row, 0, row, 1, 'Assets', formats['section_header'])
+        row += 2
+
+        # Count assets by type
+        asset_counts = {}
+        for asset in self.assets:
+            asset_type = asset.type
+            asset_counts[asset_type] = asset_counts.get(asset_type, 0) + 1
+
+        type_names = {
+            'realEstate': 'Real Estate',
+            'rrsp': 'RRSP/REER',
+            'celi': 'CELI/TFSA',
+            'cri': 'CRI',
+            'cash': 'Cash',
+        }
+
+        for asset_type, count in asset_counts.items():
+            display_name = type_names.get(asset_type, asset_type)
+            worksheet.write(row, 0, f'{display_name} Accounts:', formats['label'])
+            worksheet.write(row, 1, count, formats['value'])
+            row += 1
+
+        worksheet.write(row, 0, 'Total Assets:', formats['label'])
+        worksheet.write(row, 1, len(self.assets), formats['value'])
+
+    def _create_base_projection_sheet(self, workbook: xlsxwriter.Workbook, formats: Dict):
+        """Create simplified base projection sheet with key metrics only."""
+        worksheet = workbook.add_worksheet('Base Projection')
+
+        # Check if we have couples
+        has_couples = any(year.spouse_age is not None for year in self.projection.years)
+
+        # Define simplified headers
+        headers = ['Year', 'Age 1']
+        if has_couples:
+            headers.append('Age 2')
+
+        headers.extend([
+            'Total Income',
+            'Total Expenses',
+            'Total Tax',
+            'After-Tax Income',
+            'Net Cash Flow',
+            'Total Withdrawals',
+            'Total Contributions',
+            'Net Worth (Start)',
+            'Net Worth (End)',
+            'Shortfall Amount',
+        ])
+
+        # Write headers
+        for col_idx, header in enumerate(headers):
+            worksheet.write(0, col_idx, header, formats['header_group'])
+
+        # Set column widths
+        worksheet.set_column(0, 0, 7)  # Year
+        worksheet.set_column(1, 2 if has_couples else 1, 8)  # Ages
+        worksheet.set_column(2 if has_couples else 1, len(headers) - 1, 16)  # All other columns
+
+        # Freeze header row and first columns
+        freeze_col = 3 if has_couples else 2
+        worksheet.freeze_panes(1, freeze_col)
+
+        # Write data rows
+        for row_idx, year in enumerate(self.projection.years, start=1):
+            is_alt_row = row_idx % 2 == 0
+            col = 0
+
+            # Year
+            self._write_value(worksheet, row_idx, col, year.year, 'integer', is_alt_row, formats)
+            col += 1
+
+            # Ages
+            self._write_value(worksheet, row_idx, col, year.primary_age or '', 'integer', is_alt_row, formats)
+            col += 1
+            if has_couples:
+                self._write_value(worksheet, row_idx, col, year.spouse_age or '', 'integer', is_alt_row, formats)
+                col += 1
+
+            # Key financial metrics
+            self._write_currency(worksheet, row_idx, col, year.total_income, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.total_expenses, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.total_tax, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.after_tax_income, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.net_cash_flow, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.total_withdrawals, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.total_contributions, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.net_worth_start_of_year, is_alt_row, formats)
+            col += 1
+            self._write_currency(worksheet, row_idx, col, year.net_worth_end_of_year, is_alt_row, formats)
+            col += 1
+
+            # Shortfall
+            if year.has_shortfall:
+                self._write_currency(worksheet, row_idx, col, year.shortfall_amount, is_alt_row, formats)
+            else:
+                format_key = 'currency_alt' if is_alt_row else 'currency'
+                worksheet.write(row_idx, col, '', formats[format_key])
+
+    def _create_detailed_projection_sheet(self, workbook: xlsxwriter.Workbook, formats: Dict):
+        """Create the detailed projection worksheet with advanced formatting and grouping."""
+        worksheet = workbook.add_worksheet('Detailed Projection')
 
         # Check if we have couples
         has_couples = any(year.spouse_age is not None for year in self.projection.years)
