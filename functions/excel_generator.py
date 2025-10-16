@@ -438,23 +438,24 @@ class ExcelGenerator:
         worksheet.freeze_panes(1, freeze_col)
 
         # Set up column groups (collapsible and collapsed by default)
+        # Width must be specified in grouping calls to maintain 114 pixels (16.5 chars)
         # Income sources group
-        worksheet.set_column(income_start_col, income_end_col, None, None, {'level': 1, 'hidden': True})
+        worksheet.set_column(income_start_col, income_end_col, 16.5, None, {'level': 1, 'hidden': True})
 
         # Expenses group
-        worksheet.set_column(expense_start_col, expense_end_col, None, None, {'level': 1, 'hidden': True})
+        worksheet.set_column(expense_start_col, expense_end_col, 16.5, None, {'level': 1, 'hidden': True})
 
         # Taxes group
-        worksheet.set_column(tax_start_col, tax_end_col, None, None, {'level': 1, 'hidden': True})
+        worksheet.set_column(tax_start_col, tax_end_col, 16.5, None, {'level': 1, 'hidden': True})
 
         # Withdrawals group
-        worksheet.set_column(withdrawal_start_col, withdrawal_end_col, None, None, {'level': 1, 'hidden': True})
+        worksheet.set_column(withdrawal_start_col, withdrawal_end_col, 16.5, None, {'level': 1, 'hidden': True})
 
         # Contributions group
-        worksheet.set_column(contribution_start_col, contribution_end_col, None, None, {'level': 1, 'hidden': True})
+        worksheet.set_column(contribution_start_col, contribution_end_col, 16.5, None, {'level': 1, 'hidden': True})
 
         # Balances group
-        worksheet.set_column(balance_start_col, balance_end_col, None, None, {'level': 1, 'hidden': True})
+        worksheet.set_column(balance_start_col, balance_end_col, 16.5, None, {'level': 1, 'hidden': True})
 
         # Write data rows with alternating colors
         for row_idx, year in enumerate(self.projection.years, start=1):
