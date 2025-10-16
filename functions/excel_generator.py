@@ -523,23 +523,45 @@ class ExcelGenerator:
 
         # Set up column groups (collapsible and collapsed by default)
         # Width must be specified in grouping calls to maintain 114 pixels (16.5 chars)
+        # Important: Total columns between groups must have level: 0 to break the grouping
+
         # Income sources group
         worksheet.set_column(income_start_col, income_end_col, 16.5, None, {'level': 1, 'hidden': True})
+        # Total Income column - level 0 to break grouping
+        worksheet.set_column(income_end_col + 1, income_end_col + 1, 16.5, None, {'level': 0})
 
         # Expenses group
         worksheet.set_column(expense_start_col, expense_end_col, 16.5, None, {'level': 1, 'hidden': True})
+        # Total Expenses column - level 0 to break grouping
+        worksheet.set_column(expense_end_col + 1, expense_end_col + 1, 16.5, None, {'level': 0})
 
         # Taxes group
         worksheet.set_column(tax_start_col, tax_end_col, 16.5, None, {'level': 1, 'hidden': True})
+        # Total Tax column - level 0 to break grouping
+        worksheet.set_column(tax_end_col + 1, tax_end_col + 1, 16.5, None, {'level': 0})
+
+        # After-Tax Income and Net Cash Flow - level 0 (not grouped)
+        after_tax_col = tax_end_col + 2
+        worksheet.set_column(after_tax_col, after_tax_col + 1, 16.5, None, {'level': 0})
 
         # Withdrawals group
         worksheet.set_column(withdrawal_start_col, withdrawal_end_col, 16.5, None, {'level': 1, 'hidden': True})
+        # Total Withdrawals column - level 0 to break grouping
+        worksheet.set_column(withdrawal_end_col + 1, withdrawal_end_col + 1, 16.5, None, {'level': 0})
 
         # Contributions group
         worksheet.set_column(contribution_start_col, contribution_end_col, 16.5, None, {'level': 1, 'hidden': True})
+        # Total Contributions column - level 0 to break grouping
+        worksheet.set_column(contribution_end_col + 1, contribution_end_col + 1, 16.5, None, {'level': 0})
 
         # Balances group
         worksheet.set_column(balance_start_col, balance_end_col, 16.5, None, {'level': 1, 'hidden': True})
+        # Total Asset Returns column - level 0 to break grouping
+        worksheet.set_column(balance_end_col + 1, balance_end_col + 1, 16.5, None, {'level': 0})
+
+        # Net worth and shortfall columns - level 0 (not grouped)
+        net_worth_start_col = balance_end_col + 2
+        worksheet.set_column(net_worth_start_col, len(headers) - 1, 16.5, None, {'level': 0})
 
         # Write data rows with alternating colors (starting at row 2 after 2 header rows)
         for row_idx, year in enumerate(self.projection.years, start=2):
