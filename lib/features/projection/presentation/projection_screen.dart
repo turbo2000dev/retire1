@@ -20,6 +20,7 @@ import 'package:retire1/features/projection/presentation/widgets/income_sources_
 import 'package:retire1/features/projection/presentation/widgets/projection_chart.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_table_v2.dart';
 import 'package:retire1/features/projection/service/projection_csv_export.dart';
+import 'package:retire1/features/projection/service/projection_excel_export.dart';
 import 'package:retire1/features/projection/service/projection_export_service.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
 
@@ -419,8 +420,83 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                 label: const Text('Column Visibility'),
                               ),
                               const SizedBox(width: 12),
-                              // CSV export button
+                              // Excel export button
                               FilledButton.icon(
+                                onPressed: () async {
+                                  try {
+                                    // Get scenario name
+                                    final scenariosAsync = ref.read(scenariosProvider);
+                                    final scenarios = scenariosAsync.value ?? [];
+                                    final scenario = scenarios.firstWhere(
+                                      (s) => s.id == widget.scenarioId,
+                                      orElse: () => scenarios.first,
+                                    );
+
+                                    // Get assets for Excel export
+                                    final assetsAsync = ref.read(assetsProvider);
+                                    final assets = assetsAsync.value ?? [];
+
+                                    // Show loading indicator
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                                    Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 12),
+                                              Text('Generating Excel file...'),
+                                            ],
+                                          ),
+                                          duration: Duration(seconds: 30),
+                                        ),
+                                      );
+                                    }
+
+                                    // Export to Excel
+                                    await ProjectionExcelExport.exportToExcel(
+                                      projection,
+                                      scenario.name,
+                                      assets,
+                                    );
+
+                                    // Show success message
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).clearSnackBars();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Excel file downloaded successfully'),
+                                          backgroundColor: Colors.green,
+                                          duration: Duration(seconds: 3),
+                                        ),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).clearSnackBars();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Excel export failed: $e'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                                icon: const Icon(Icons.table_chart),
+                                label: const Text('Export Excel'),
+                              ),
+                              const SizedBox(width: 8),
+                              // CSV export button
+                              OutlinedButton.icon(
                                 onPressed: () {
                                   // Get scenario name
                                   final scenariosAsync = ref.read(scenariosProvider);
