@@ -87,6 +87,32 @@ class ExcelGenerator:
                 'font_color': 'red',
                 'bg_color': '#F2F2F2',
             }),
+            'currency_total': workbook.add_format({
+                'num_format': '#,##0',
+                'align': 'right',
+                'bg_color': '#E7E6E6',  # Slightly darker gray for total columns
+                'bold': True,
+            }),
+            'currency_total_alt': workbook.add_format({
+                'num_format': '#,##0',
+                'align': 'right',
+                'bg_color': '#D9D9D9',  # Darker gray for alternating rows in total columns
+                'bold': True,
+            }),
+            'currency_total_negative': workbook.add_format({
+                'num_format': '#,##0',
+                'align': 'right',
+                'font_color': 'red',
+                'bg_color': '#E7E6E6',
+                'bold': True,
+            }),
+            'currency_total_negative_alt': workbook.add_format({
+                'num_format': '#,##0',
+                'align': 'right',
+                'font_color': 'red',
+                'bg_color': '#D9D9D9',
+                'bold': True,
+            }),
             'integer': workbook.add_format({
                 'num_format': '0',
                 'align': 'center',
@@ -107,6 +133,14 @@ class ExcelGenerator:
                 'bold': True,
                 'font_size': 12,
                 'bg_color': '#D9E1F2',
+                'border': 1,
+            }),
+            'group_header': workbook.add_format({
+                'bold': True,
+                'bg_color': '#8FAADC',  # Lighter blue for group headers
+                'font_color': 'white',
+                'align': 'center',
+                'valign': 'vcenter',
                 'border': 1,
             }),
         }
@@ -417,13 +451,63 @@ class ExcelGenerator:
         # Warnings
         headers.append('Shortfall Amount')
 
-        # Write headers
+        # Write group headers in row 0 (merged cells for each group)
+        # Year and Ages span both rows
+        worksheet.write(0, 0, 'Year', formats['header_group'])
+        worksheet.write(0, 1, 'Age 1', formats['header_group'])
+        if has_couples:
+            worksheet.write(0, 2, 'Age 2', formats['header_group'])
+
+        # Income group header
+        if income_end_col > income_start_col:  # Only if there are detail columns
+            worksheet.merge_range(0, income_start_col, 0, income_end_col, 'Income Sources', formats['group_header'])
+        worksheet.write(0, income_end_col + 1, '', formats['header_group'])  # Total Income column
+
+        # Expenses group header
+        if expense_end_col > expense_start_col:
+            worksheet.merge_range(0, expense_start_col, 0, expense_end_col, 'Expenses', formats['group_header'])
+        worksheet.write(0, expense_end_col + 1, '', formats['header_group'])  # Total Expenses column
+
+        # Taxes group header
+        if tax_end_col > tax_start_col:
+            worksheet.merge_range(0, tax_start_col, 0, tax_end_col, 'Taxes', formats['group_header'])
+        worksheet.write(0, tax_end_col + 1, '', formats['header_group'])  # Total Tax column
+
+        # Cash flow - no group header
+        after_tax_col = tax_end_col + 2
+        worksheet.write(0, after_tax_col, '', formats['header_group'])
+        worksheet.write(0, after_tax_col + 1, '', formats['header_group'])
+
+        # Withdrawals group header
+        if withdrawal_end_col > withdrawal_start_col:
+            worksheet.merge_range(0, withdrawal_start_col, 0, withdrawal_end_col, 'Withdrawals', formats['group_header'])
+        worksheet.write(0, withdrawal_end_col + 1, '', formats['header_group'])  # Total Withdrawals column
+
+        # Contributions group header
+        if contribution_end_col > contribution_start_col:
+            worksheet.merge_range(0, contribution_start_col, 0, contribution_end_col, 'Contributions', formats['group_header'])
+        worksheet.write(0, contribution_end_col + 1, '', formats['header_group'])  # Total Contributions column
+
+        # Balances group header
+        if balance_end_col > balance_start_col:
+            worksheet.merge_range(0, balance_start_col, 0, balance_end_col, 'Asset Balances', formats['group_header'])
+        worksheet.write(0, balance_end_col + 1, '', formats['header_group'])  # Total Asset Returns column
+
+        # Net worth - no group header
+        net_worth_start_col = balance_end_col + 2
+        worksheet.write(0, net_worth_start_col, '', formats['header_group'])
+        worksheet.write(0, net_worth_start_col + 1, '', formats['header_group'])
+
+        # Shortfall - no group header
+        worksheet.write(0, len(headers) - 1, '', formats['header_group'])
+
+        # Write column headers in row 1
         for col_idx, header in enumerate(headers):
             # Use darker blue for total columns
             if 'Total' in header or 'Net Worth' in header or 'After-Tax' in header:
-                worksheet.write(0, col_idx, header, formats['header_group'])
+                worksheet.write(1, col_idx, header, formats['header_group'])
             else:
-                worksheet.write(0, col_idx, header, formats['header'])
+                worksheet.write(1, col_idx, header, formats['header'])
 
         # Set column widths - consistent width for all currency columns (114 pixels = ~16.5 chars)
         worksheet.set_column(0, 0, 7)  # Year
@@ -433,9 +517,9 @@ class ExcelGenerator:
         first_currency_col = 3 if has_couples else 2
         worksheet.set_column(first_currency_col, len(headers) - 1, 16.5)
 
-        # Freeze header row and first 3 columns (Year + Ages)
+        # Freeze header rows (2 rows) and first 3 columns (Year + Ages)
         freeze_col = 3 if has_couples else 2
-        worksheet.freeze_panes(1, freeze_col)
+        worksheet.freeze_panes(2, freeze_col)
 
         # Set up column groups (collapsible and collapsed by default)
         # Width must be specified in grouping calls to maintain 114 pixels (16.5 chars)
@@ -457,8 +541,8 @@ class ExcelGenerator:
         # Balances group
         worksheet.set_column(balance_start_col, balance_end_col, 16.5, None, {'level': 1, 'hidden': True})
 
-        # Write data rows with alternating colors
-        for row_idx, year in enumerate(self.projection.years, start=1):
+        # Write data rows with alternating colors (starting at row 2 after 2 header rows)
+        for row_idx, year in enumerate(self.projection.years, start=2):
             # Determine if this is an alternating row (even row number)
             is_alt_row = row_idx % 2 == 0
 
@@ -493,7 +577,7 @@ class ExcelGenerator:
             col += 1
             self._write_currency(worksheet, row_idx, col, total_other, is_alt_row, formats)
             col += 1
-            self._write_currency(worksheet, row_idx, col, year.total_income, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.total_income, is_alt_row, formats, is_total=True)
             col += 1
 
             # Expenses by category
@@ -509,7 +593,7 @@ class ExcelGenerator:
             col += 1
             self._write_currency(worksheet, row_idx, col, year.expenses_by_category.get('family', 0.0), is_alt_row, formats)
             col += 1
-            self._write_currency(worksheet, row_idx, col, year.total_expenses, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.total_expenses, is_alt_row, formats, is_total=True)
             col += 1
 
             # Taxes
@@ -517,13 +601,13 @@ class ExcelGenerator:
             col += 1
             self._write_currency(worksheet, row_idx, col, year.quebec_tax, is_alt_row, formats)
             col += 1
-            self._write_currency(worksheet, row_idx, col, year.total_tax, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.total_tax, is_alt_row, formats, is_total=True)
             col += 1
 
             # Cash flow
-            self._write_currency(worksheet, row_idx, col, year.after_tax_income, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.after_tax_income, is_alt_row, formats, is_total=True)
             col += 1
-            self._write_currency(worksheet, row_idx, col, year.net_cash_flow, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.net_cash_flow, is_alt_row, formats, is_total=True)
             col += 1
 
             # Calculate withdrawals by account type
@@ -553,7 +637,7 @@ class ExcelGenerator:
             col += 1
             self._write_currency(worksheet, row_idx, col, reer_withdrawals, is_alt_row, formats)
             col += 1
-            self._write_currency(worksheet, row_idx, col, year.total_withdrawals, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.total_withdrawals, is_alt_row, formats, is_total=True)
             col += 1
 
             # Calculate contributions by account type
@@ -571,7 +655,7 @@ class ExcelGenerator:
             col += 1
             self._write_currency(worksheet, row_idx, col, cash_contributions, is_alt_row, formats)
             col += 1
-            self._write_currency(worksheet, row_idx, col, year.total_contributions, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.total_contributions, is_alt_row, formats, is_total=True)
             col += 1
 
             # Calculate asset balances by type
@@ -608,18 +692,18 @@ class ExcelGenerator:
             col += 1
             self._write_currency(worksheet, row_idx, col, cash_balance, is_alt_row, formats)
             col += 1
-            self._write_currency(worksheet, row_idx, col, total_returns, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, total_returns, is_alt_row, formats, is_total=True)
             col += 1
 
             # Net worth
-            self._write_currency(worksheet, row_idx, col, year.net_worth_start_of_year, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.net_worth_start_of_year, is_alt_row, formats, is_total=True)
             col += 1
-            self._write_currency(worksheet, row_idx, col, year.net_worth_end_of_year, is_alt_row, formats)
+            self._write_currency(worksheet, row_idx, col, year.net_worth_end_of_year, is_alt_row, formats, is_total=True)
             col += 1
 
             # Shortfall
             if year.has_shortfall:
-                self._write_currency(worksheet, row_idx, col, year.shortfall_amount, is_alt_row, formats)
+                self._write_currency(worksheet, row_idx, col, year.shortfall_amount, is_alt_row, formats, is_total=True)
             else:
                 format_key = 'currency_alt' if is_alt_row else 'currency'
                 worksheet.write(row_idx, col, '', formats[format_key])
@@ -633,10 +717,16 @@ class ExcelGenerator:
         else:
             worksheet.write(row, col, value, formats[format_key])
 
-    def _write_currency(self, worksheet, row: int, col: int, value: float, is_alt_row: bool, formats: Dict):
-        """Write a currency value with appropriate formatting based on sign and row."""
-        if value < 0:
-            format_key = 'currency_negative_alt' if is_alt_row else 'currency_negative'
+    def _write_currency(self, worksheet, row: int, col: int, value: float, is_alt_row: bool, formats: Dict, is_total: bool = False):
+        """Write a currency value with appropriate formatting based on sign, row, and whether it's a total column."""
+        if is_total:
+            if value < 0:
+                format_key = 'currency_total_negative_alt' if is_alt_row else 'currency_total_negative'
+            else:
+                format_key = 'currency_total_alt' if is_alt_row else 'currency_total'
         else:
-            format_key = 'currency_alt' if is_alt_row else 'currency'
+            if value < 0:
+                format_key = 'currency_negative_alt' if is_alt_row else 'currency_negative'
+            else:
+                format_key = 'currency_alt' if is_alt_row else 'currency'
         worksheet.write_number(row, col, value, formats[format_key])
