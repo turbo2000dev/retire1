@@ -256,12 +256,12 @@ class ExcelGenerator:
         for col_idx, header in enumerate(headers):
             worksheet.write(0, col_idx, header, formats['header_group'])
 
-        # Set column widths - consistent width for all currency columns
+        # Set column widths - consistent width for all currency columns (114 pixels = ~16.5 chars)
         worksheet.set_column(0, 0, 7)  # Year
         worksheet.set_column(1, 2 if has_couples else 1, 8)  # Ages
-        # All currency columns get same width (based on longest header "Daily Living Expenses")
+        # All currency columns get same width (114 pixels)
         first_currency_col = 3 if has_couples else 2
-        worksheet.set_column(first_currency_col, len(headers) - 1, 22)
+        worksheet.set_column(first_currency_col, len(headers) - 1, 16.5)
 
         # Freeze header row and first columns
         freeze_col = 3 if has_couples else 2
@@ -425,13 +425,13 @@ class ExcelGenerator:
             else:
                 worksheet.write(0, col_idx, header, formats['header'])
 
-        # Set column widths - consistent width for all currency columns
+        # Set column widths - consistent width for all currency columns (114 pixels = ~16.5 chars)
         worksheet.set_column(0, 0, 7)  # Year
         worksheet.set_column(1, 2 if has_couples else 1, 8)  # Ages
 
-        # All currency columns get same width (based on longest header "Daily Living Expenses" = 21 chars)
+        # All currency columns get same width (114 pixels)
         first_currency_col = 3 if has_couples else 2
-        worksheet.set_column(first_currency_col, len(headers) - 1, 22)
+        worksheet.set_column(first_currency_col, len(headers) - 1, 16.5)
 
         # Freeze header row and first 3 columns (Year + Ages)
         freeze_col = 3 if has_couples else 2
