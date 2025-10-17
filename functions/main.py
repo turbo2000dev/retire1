@@ -5,6 +5,7 @@ from firebase_functions import https_fn
 from firebase_admin import initialize_app
 import json
 from datetime import datetime
+import time
 
 from models import Projection, Asset
 from excel_generator import ExcelGenerator
@@ -66,14 +67,33 @@ def generate_projection_excel(req: https_fn.Request) -> https_fn.Response:
                 headers={**headers, 'Content-Type': 'application/json'}
             )
 
+        # Start performance monitoring
+        start_time = time.time()
+
         # Parse data models
+        parse_start = time.time()
         projection = Projection.from_dict(request_json['projection'])
         scenario_name = request_json.get('scenarioName', 'Projection')
         assets = [Asset.from_dict(asset_data) for asset_data in request_json.get('assets', [])]
+        parse_time = time.time() - parse_start
 
         # Generate Excel file
+        gen_start = time.time()
         generator = ExcelGenerator(projection, scenario_name, assets)
         excel_bytes = generator.generate()
+        gen_time = time.time() - gen_start
+
+        # Total time
+        total_time = time.time() - start_time
+
+        # Log performance metrics
+        print(f'Excel generation performance:')
+        print(f'  - Projection years: {len(projection.years)}')
+        print(f'  - Assets count: {len(assets)}')
+        print(f'  - Parse time: {parse_time*1000:.1f}ms')
+        print(f'  - Generation time: {gen_time*1000:.1f}ms')
+        print(f'  - Total time: {total_time*1000:.1f}ms')
+        print(f'  - File size: {len(excel_bytes):,} bytes')
 
         # Generate filename
         today = datetime.now().strftime('%Y-%m-%d')
