@@ -173,6 +173,34 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
 
+                // Excel export preferences
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Excel Export',
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        SwitchListTile(
+                          title: const Text('Auto-open Excel files'),
+                          subtitle: const Text('Automatically open Excel files after export'),
+                          value: ref.watch(settingsProvider).value?.autoOpenExcelFiles ?? true,
+                          onChanged: (bool value) {
+                            ref.read(settingsProvider.notifier).updateAutoOpenExcelFiles(value);
+                          },
+                          secondary: const Icon(Icons.table_chart),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 // Logout button
                 FilledButton.icon(
                   onPressed: () => _showLogoutConfirmation(context, ref),

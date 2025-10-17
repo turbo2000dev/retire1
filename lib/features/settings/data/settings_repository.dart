@@ -82,6 +82,24 @@ class SettingsRepository {
       throw SettingsException('Failed to update language: $e');
     }
   }
+
+  /// Update only the auto-open Excel files setting
+  Future<void> updateAutoOpenExcelFiles(String userId, bool autoOpen) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('settings')
+          .doc('preferences')
+          .set({
+        'userId': userId,
+        'autoOpenExcelFiles': autoOpen,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      throw SettingsException('Failed to update auto-open setting: $e');
+    }
+  }
 }
 
 /// Custom exception for settings errors

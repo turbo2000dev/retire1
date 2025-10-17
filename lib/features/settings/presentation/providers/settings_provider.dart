@@ -81,6 +81,38 @@ class SettingsNotifier extends StateNotifier<AsyncValue<AppSettings>> {
     }
   }
 
+  /// Update auto-open Excel files setting
+  Future<void> updateAutoOpenExcelFiles(bool autoOpen) async {
+    if (!mounted || _userId == null) {
+      log('Cannot update auto-open setting: user not logged in or notifier disposed');
+      return;
+    }
+
+    final currentSettings = state.value;
+    if (currentSettings == null) return;
+
+    // Optimistically update the state
+    if (mounted) {
+      state = AsyncValue.data(
+        currentSettings.copyWith(
+          autoOpenExcelFiles: autoOpen,
+          lastUpdated: DateTime.now(),
+        ),
+      );
+    }
+
+    try {
+      await _repository.updateAutoOpenExcelFiles(_userId, autoOpen);
+    } catch (e, stack) {
+      log('Failed to update auto-open setting', error: e, stackTrace: stack);
+      // Revert to previous settings on error
+      if (mounted) {
+        state = AsyncValue.data(currentSettings);
+        state = AsyncValue.error(e, stack);
+      }
+    }
+  }
+
   /// Reload settings from Firestore
   Future<void> reload() async {
     await _loadSettings();

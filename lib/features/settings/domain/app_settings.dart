@@ -13,6 +13,9 @@ class AppSettings with _$AppSettings {
     /// Selected language code (e.g., 'en', 'fr')
     required String languageCode,
 
+    /// Auto-open Excel files after export (default: true)
+    @Default(true) bool autoOpenExcelFiles,
+
     /// Timestamp of last update
     DateTime? lastUpdated,
   }) = _AppSettings;
@@ -25,6 +28,7 @@ class AppSettings with _$AppSettings {
     return AppSettings(
       userId: userId,
       languageCode: 'en', // Default to English
+      autoOpenExcelFiles: true, // Auto-open by default
       lastUpdated: DateTime.now(),
     );
   }

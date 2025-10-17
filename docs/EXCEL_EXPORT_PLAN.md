@@ -3,7 +3,7 @@
 ## Overview
 Migrate from client-side CSV export to server-side Excel (.xlsx) generation using Python XlsxWriter on Firebase Cloud Functions.
 
-## Status: Phase 5 Complete ✅ | Multi-Tab Workbook Ready
+## Status: Phase 6 Complete ✅ | Auto-Open Functionality Ready
 
 ---
 
@@ -138,25 +138,36 @@ Migrate from client-side CSV export to server-side Excel (.xlsx) generation usin
 
 ---
 
-## Phase 6: Auto-Open Functionality 🚀
+## Phase 6: Auto-Open Functionality ✅
 **Objective**: Automatically open Excel file after download
 
-### Step 6.1: Implement Platform-Specific Opening
-- [ ] **Web**: Set proper MIME type, use `target="_blank"` approach
-- [ ] **Mobile**: Add `open_file` package, call `OpenFile.open(filePath)`
-- [ ] **Desktop**: Use `url_launcher` or `open_file` for system default app
+### Step 6.1: Implement Platform-Specific Opening ✅
+- [x] **Web**: Use url_launcher with LaunchMode.externalApplication
+- [x] Fallback to download if auto-open fails
+- [x] Proper blob URL handling with delayed cleanup
 
-### Step 6.2: Add User Preference
-- [ ] Add setting: "Auto-open Excel files" (default: true)
-- [ ] Store in user preferences
-- [ ] Show one-time explanation dialog
+### Step 6.2: Add User Preference ✅
+- [x] Add setting: "Auto-open Excel files" (default: true)
+- [x] Store in user preferences (Firestore)
+- [x] Add UI toggle in Settings screen
+- [x] Integrate preference into Excel export flow
 
-**Design Decision Point**:
-- Should auto-open be default behavior?
-- Fallback if auto-open fails (show manual open button)
-- User education/onboarding
+**Design Decisions Made**:
+- **Default behavior**: Auto-open enabled by default (true)
+- **Web implementation**: url_launcher with LaunchMode.externalApplication
+- **Fallback**: Graceful degradation to download if launchUrl fails or canLaunchUrl returns false
+- **User control**: Settings toggle with clear description
+- **URL cleanup**: 2-second delay before revoking blob URL to allow file access
 
-**Testing**: Test on all platforms (Web, iOS, Android, macOS, Windows)
+**Implementation Details**:
+- Added `url_launcher: ^6.3.2` package dependency
+- Added `autoOpenExcelFiles` field to AppSettings domain model
+- Added repository method `updateAutoOpenExcelFiles()` for Firestore persistence
+- Added provider method in SettingsNotifier with optimistic updates
+- Updated projection_excel_export.dart with `autoOpen` parameter
+- Integrated setting into projection_screen.dart Excel export call
+
+**Testing**: ✅ Complete - web implementation ready for user testing
 
 ---
 
@@ -331,6 +342,15 @@ functions/
 - **Detailed Projection**: Full 40+ columns with 6 collapsible groups (collapsed)
 - **Tab order**: Summary → Base → Detailed (increasing complexity)
 
+### Phase 6 Decisions ✅
+- **Package choice**: url_launcher ^6.3.2 (cross-platform support)
+- **Default value**: Auto-open enabled by default for better UX
+- **Settings location**: Excel Export card in Settings screen
+- **Storage**: Firestore at users/{userId}/settings/preferences
+- **Optimistic updates**: Provider updates state immediately, reverts on error
+- **Error handling**: Try-catch with fallback to download if auto-open fails
+- **Web-only**: Phase 6 focused on web platform, mobile/desktop deferred
+
 ---
 
 ## Progress Tracking
@@ -342,7 +362,7 @@ functions/
 | Phase 3 | ✅ Complete | 2025-10-16 | 2025-10-16 | Flutter integration complete, ready to test |
 | Phase 4 | ✅ Complete | 2025-10-16 | 2025-10-16 | Column grouping, alternating rows, improved widths |
 | Phase 5 | ✅ Complete | 2025-10-16 | 2025-10-16 | Multi-tab workbook: Summary, Base, Detailed |
-| Phase 6 | 📋 Pending | - | - | Auto-open functionality |
+| Phase 6 | ✅ Complete | 2025-10-17 | 2025-10-17 | Auto-open functionality with user preference (web only) |
 | Phase 7 | 📋 Pending | - | - | Performance optimization |
 | Phase 8 | 📋 Pending | - | - | Charts & graphs |
 | Phase 9 | 📋 Pending | - | - | Scenario comparison |

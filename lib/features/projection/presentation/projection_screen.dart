@@ -23,6 +23,7 @@ import 'package:retire1/features/projection/service/projection_csv_export.dart';
 import 'package:retire1/features/projection/service/projection_excel_export.dart';
 import 'package:retire1/features/projection/service/projection_export_service.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
+import 'package:retire1/features/settings/presentation/providers/settings_provider.dart';
 
 /// Apply dollar mode conversion to a monetary value
 ///
@@ -461,11 +462,15 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                       );
                                     }
 
+                                    // Get auto-open preference from settings
+                                    final autoOpen = ref.read(settingsProvider).value?.autoOpenExcelFiles ?? true;
+
                                     // Export to Excel
                                     await ProjectionExcelExport.exportToExcel(
                                       projection,
                                       scenario.name,
                                       assets,
+                                      autoOpen: autoOpen,
                                     );
 
                                     // Show success message

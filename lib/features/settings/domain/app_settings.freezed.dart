@@ -27,6 +27,9 @@ mixin _$AppSettings {
   /// Selected language code (e.g., 'en', 'fr')
   String get languageCode => throw _privateConstructorUsedError;
 
+  /// Auto-open Excel files after export (default: true)
+  bool get autoOpenExcelFiles => throw _privateConstructorUsedError;
+
   /// Timestamp of last update
   DateTime? get lastUpdated => throw _privateConstructorUsedError;
 
@@ -47,7 +50,12 @@ abstract class $AppSettingsCopyWith<$Res> {
     $Res Function(AppSettings) then,
   ) = _$AppSettingsCopyWithImpl<$Res, AppSettings>;
   @useResult
-  $Res call({String userId, String languageCode, DateTime? lastUpdated});
+  $Res call({
+    String userId,
+    String languageCode,
+    bool autoOpenExcelFiles,
+    DateTime? lastUpdated,
+  });
 }
 
 /// @nodoc
@@ -67,6 +75,7 @@ class _$AppSettingsCopyWithImpl<$Res, $Val extends AppSettings>
   $Res call({
     Object? userId = null,
     Object? languageCode = null,
+    Object? autoOpenExcelFiles = null,
     Object? lastUpdated = freezed,
   }) {
     return _then(
@@ -79,6 +88,10 @@ class _$AppSettingsCopyWithImpl<$Res, $Val extends AppSettings>
                 ? _value.languageCode
                 : languageCode // ignore: cast_nullable_to_non_nullable
                       as String,
+            autoOpenExcelFiles: null == autoOpenExcelFiles
+                ? _value.autoOpenExcelFiles
+                : autoOpenExcelFiles // ignore: cast_nullable_to_non_nullable
+                      as bool,
             lastUpdated: freezed == lastUpdated
                 ? _value.lastUpdated
                 : lastUpdated // ignore: cast_nullable_to_non_nullable
@@ -98,7 +111,12 @@ abstract class _$$AppSettingsImplCopyWith<$Res>
   ) = __$$AppSettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String userId, String languageCode, DateTime? lastUpdated});
+  $Res call({
+    String userId,
+    String languageCode,
+    bool autoOpenExcelFiles,
+    DateTime? lastUpdated,
+  });
 }
 
 /// @nodoc
@@ -117,6 +135,7 @@ class __$$AppSettingsImplCopyWithImpl<$Res>
   $Res call({
     Object? userId = null,
     Object? languageCode = null,
+    Object? autoOpenExcelFiles = null,
     Object? lastUpdated = freezed,
   }) {
     return _then(
@@ -129,6 +148,10 @@ class __$$AppSettingsImplCopyWithImpl<$Res>
             ? _value.languageCode
             : languageCode // ignore: cast_nullable_to_non_nullable
                   as String,
+        autoOpenExcelFiles: null == autoOpenExcelFiles
+            ? _value.autoOpenExcelFiles
+            : autoOpenExcelFiles // ignore: cast_nullable_to_non_nullable
+                  as bool,
         lastUpdated: freezed == lastUpdated
             ? _value.lastUpdated
             : lastUpdated // ignore: cast_nullable_to_non_nullable
@@ -144,6 +167,7 @@ class _$AppSettingsImpl implements _AppSettings {
   const _$AppSettingsImpl({
     required this.userId,
     required this.languageCode,
+    this.autoOpenExcelFiles = true,
     this.lastUpdated,
   });
 
@@ -158,13 +182,18 @@ class _$AppSettingsImpl implements _AppSettings {
   @override
   final String languageCode;
 
+  /// Auto-open Excel files after export (default: true)
+  @override
+  @JsonKey()
+  final bool autoOpenExcelFiles;
+
   /// Timestamp of last update
   @override
   final DateTime? lastUpdated;
 
   @override
   String toString() {
-    return 'AppSettings(userId: $userId, languageCode: $languageCode, lastUpdated: $lastUpdated)';
+    return 'AppSettings(userId: $userId, languageCode: $languageCode, autoOpenExcelFiles: $autoOpenExcelFiles, lastUpdated: $lastUpdated)';
   }
 
   @override
@@ -175,14 +204,21 @@ class _$AppSettingsImpl implements _AppSettings {
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.languageCode, languageCode) ||
                 other.languageCode == languageCode) &&
+            (identical(other.autoOpenExcelFiles, autoOpenExcelFiles) ||
+                other.autoOpenExcelFiles == autoOpenExcelFiles) &&
             (identical(other.lastUpdated, lastUpdated) ||
                 other.lastUpdated == lastUpdated));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, userId, languageCode, lastUpdated);
+  int get hashCode => Object.hash(
+    runtimeType,
+    userId,
+    languageCode,
+    autoOpenExcelFiles,
+    lastUpdated,
+  );
 
   /// Create a copy of AppSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -202,6 +238,7 @@ abstract class _AppSettings implements AppSettings {
   const factory _AppSettings({
     required final String userId,
     required final String languageCode,
+    final bool autoOpenExcelFiles,
     final DateTime? lastUpdated,
   }) = _$AppSettingsImpl;
 
@@ -215,6 +252,10 @@ abstract class _AppSettings implements AppSettings {
   /// Selected language code (e.g., 'en', 'fr')
   @override
   String get languageCode;
+
+  /// Auto-open Excel files after export (default: true)
+  @override
+  bool get autoOpenExcelFiles;
 
   /// Timestamp of last update
   @override

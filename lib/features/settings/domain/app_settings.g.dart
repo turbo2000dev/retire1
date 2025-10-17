@@ -10,6 +10,7 @@ _$AppSettingsImpl _$$AppSettingsImplFromJson(Map<String, dynamic> json) =>
     _$AppSettingsImpl(
       userId: json['userId'] as String,
       languageCode: json['languageCode'] as String,
+      autoOpenExcelFiles: json['autoOpenExcelFiles'] as bool? ?? true,
       lastUpdated: json['lastUpdated'] == null
           ? null
           : DateTime.parse(json['lastUpdated'] as String),
@@ -19,5 +20,6 @@ Map<String, dynamic> _$$AppSettingsImplToJson(_$AppSettingsImpl instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'languageCode': instance.languageCode,
+      'autoOpenExcelFiles': instance.autoOpenExcelFiles,
       'lastUpdated': instance.lastUpdated?.toIso8601String(),
     };
