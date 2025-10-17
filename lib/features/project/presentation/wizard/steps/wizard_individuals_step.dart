@@ -207,10 +207,21 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
               children: [
                 Icon(Icons.person_outline, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
-                Text(
-                  'Individual 1',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Individual 1',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: theme.textTheme.bodySmall!.fontSize! * 1.2,
+                        child: const SizedBox.shrink(), // Spacer to match Individual 2
+                      ),
+                    ],
                   ),
                 ),
               ],
