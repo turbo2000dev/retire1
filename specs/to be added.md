@@ -49,3 +49,5 @@ Fix problems
 
 Fix the bufg that appears in Terminal when going to detailed projection
 
+If a new user, should be directed to the wizard.
+
