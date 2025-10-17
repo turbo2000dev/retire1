@@ -28,6 +28,8 @@ import 'package:retire1/features/project/presentation/providers/projects_provide
 import 'package:retire1/features/project/presentation/widgets/individual_card.dart';
 import 'package:retire1/features/project/presentation/widgets/individual_dialog.dart';
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
+import 'package:retire1/features/project/presentation/wizard/project_wizard_screen.dart';
+import 'package:retire1/features/project/presentation/wizard/wizard_launch_dialog.dart';
 import 'package:retire1/features/scenarios/data/scenario_repository.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
@@ -76,15 +78,32 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       if (mounted) {
         // Get the newly created project (should be first in list)
         final projectsAsync = ref.read(projectsProvider);
+        String? newProjectId;
         projectsAsync.whenData((projects) {
           if (projects.isNotEmpty) {
-            ref.read(currentProjectProvider.notifier).selectProject(projects.first.id);
+            newProjectId = projects.first.id;
+            ref.read(currentProjectProvider.notifier).selectProject(newProjectId!);
           }
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Project created')),
-        );
+        // Show wizard launch dialog
+        final wizardChoice = await WizardLaunchDialog.show(context);
+        if (wizardChoice == WizardLaunchChoice.startWizard && mounted && newProjectId != null) {
+          // Launch wizard
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ProjectWizardScreen(projectId: newProjectId!),
+              fullscreenDialog: true,
+            ),
+          );
+        } else {
+          // User chose manual setup or cancelled
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Project created')),
+            );
+          }
+        }
       }
     }
   }
