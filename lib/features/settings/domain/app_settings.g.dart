@@ -9,7 +9,7 @@ part of 'app_settings.dart';
 _$AppSettingsImpl _$$AppSettingsImplFromJson(Map<String, dynamic> json) =>
     _$AppSettingsImpl(
       userId: json['userId'] as String,
-      languageCode: json['languageCode'] as String,
+      languageCode: json['languageCode'] as String? ?? 'en',
       autoOpenExcelFiles: json['autoOpenExcelFiles'] as bool? ?? true,
       lastUpdated: json['lastUpdated'] == null
           ? null

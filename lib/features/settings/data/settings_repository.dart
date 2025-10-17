@@ -21,7 +21,8 @@ class SettingsRepository {
           .get();
 
       if (doc.exists && doc.data() != null) {
-        return AppSettings.fromJson(doc.data()!);
+        final data = _convertTimestampsToStrings(doc.data()!);
+        return AppSettings.fromJson(data);
       }
 
       // Return default settings if none exist
@@ -59,10 +60,24 @@ class SettingsRepository {
         .snapshots()
         .map((doc) {
       if (doc.exists && doc.data() != null) {
-        return AppSettings.fromJson(doc.data()!);
+        final data = _convertTimestampsToStrings(doc.data()!);
+        return AppSettings.fromJson(data);
       }
       return AppSettings.defaultSettings(userId);
     });
+  }
+
+  /// Convert Firestore Timestamps to ISO8601 strings for JSON deserialization
+  Map<String, dynamic> _convertTimestampsToStrings(Map<String, dynamic> data) {
+    final result = Map<String, dynamic>.from(data);
+
+    // Convert lastUpdated Timestamp to ISO8601 string
+    if (result['lastUpdated'] is Timestamp) {
+      final timestamp = result['lastUpdated'] as Timestamp;
+      result['lastUpdated'] = timestamp.toDate().toIso8601String();
+    }
+
+    return result;
   }
 
   /// Update only the language setting

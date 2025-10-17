@@ -40,6 +40,7 @@ class ExcelGenerator:
         self._create_summary_sheet(workbook, formats)
         self._create_base_projection_sheet(workbook, formats)
         self._create_detailed_projection_sheet(workbook, formats)
+        self._create_charts_sheet(workbook, formats)
 
         # Close workbook to finalize
         workbook.close()
@@ -525,12 +526,12 @@ class ExcelGenerator:
         # Width must be specified in grouping calls to maintain 114 pixels (16.5 chars)
         # Important: Total columns between groups must have level: 0 to break the grouping
 
-        # Income sources group
+        # Income sources group (collapsible and hidden by default)
         worksheet.set_column(income_start_col, income_end_col, 16.5, None, {'level': 1, 'hidden': True})
         # Total Income column - level 0 to break grouping
         worksheet.set_column(income_end_col + 1, income_end_col + 1, 16.5, None, {'level': 0})
 
-        # Expenses group
+        # Expenses group (collapsible and hidden by default)
         worksheet.set_column(expense_start_col, expense_end_col, 16.5, None, {'level': 1, 'hidden': True})
         # Total Expenses column - level 0 to break grouping
         worksheet.set_column(expense_end_col + 1, expense_end_col + 1, 16.5, None, {'level': 0})
@@ -752,3 +753,405 @@ class ExcelGenerator:
             else:
                 format_key = 'currency_alt' if is_alt_row else 'currency'
         worksheet.write_number(row, col, value, formats[format_key])
+
+    def _create_charts_sheet(self, workbook: xlsxwriter.Workbook, formats: Dict):
+        """Create charts worksheet with visual representations of projection data."""
+        worksheet = workbook.add_worksheet('Charts')
+
+        # Reference sheets and calculate positions
+        has_couples = any(year.spouse_age is not None for year in self.projection.years)
+        num_years = len(self.projection.years)
+
+        # For Detailed Projection sheet, we need to know column positions
+        # Year is always column A (0), ages start at column B (1)
+        # If couples: Age1=B(1), Age2=C(2), first data column = D(3)
+        # If single: Age1=B(1), first data column = C(2)
+        first_data_col_num = 3 if has_couples else 2
+
+        # Calculate all column positions exactly as in _create_detailed_projection_sheet
+        col = 0
+        col += 2  # Year, Age 1
+        if has_couples:
+            col += 1  # Age 2
+
+        # Income sources: Employment, RRQ, PSV, RRPE, Other, Total Income (6 columns)
+        employment_col = col
+        rrq_col = col + 1
+        psv_col = col + 2
+        rrpe_col = col + 3
+        other_col = col + 4
+        total_income_col = col + 5
+        col += 6
+
+        # Expenses: Housing, Transport, Daily Living, Recreation, Health, Family, Total Expenses (7 columns)
+        housing_col = col
+        transport_col = col + 1
+        daily_col = col + 2
+        recreation_col = col + 3
+        health_col = col + 4
+        family_col = col + 5
+        total_expenses_col = col + 6
+        col += 7
+
+        # Taxes: Federal Tax, Quebec Tax, Total Tax (3 columns)
+        col += 3
+
+        # Cash flow: After-Tax Income, Net Cash Flow (2 columns)
+        after_tax_income_col = col
+        net_cashflow_col = col + 1
+        col += 2
+
+        # Withdrawals: CELI, Cash, CRI, REER, Total (5 columns)
+        col += 5
+
+        # Contributions: CELI, Cash, Total (3 columns)
+        col += 3
+
+        # Balances: Real Estate, REER, CELI, CRI, Cash, Total Asset Returns (6 columns)
+        col += 6
+
+        # Net worth: Start, End (2 columns)
+        net_worth_start_col = col
+        net_worth_end_col = col + 1
+        col += 2
+
+        # Shortfall (1 column)
+        col += 1
+
+        # Convert column numbers to Excel letters
+        def col_letter(col_num):
+            """Convert 0-based column number to Excel letter (A, B, C...)."""
+            result = ''
+            while col_num >= 0:
+                result = chr(65 + (col_num % 26)) + result
+                col_num = col_num // 26 - 1
+            return result
+
+        # Chart 1: Net Worth Over Time (Line Chart)
+        chart_net_worth = workbook.add_chart({'type': 'line'})
+        chart_net_worth.add_series({
+            'name': 'Net Worth',
+            'categories': f"='Detailed Projection'!$A$3:$A${num_years + 2}",  # Years (starts row 3)
+            'values': f"='Detailed Projection'!${col_letter(net_worth_end_col)}$3:${col_letter(net_worth_end_col)}${num_years + 2}",  # Net Worth End
+            'line': {'color': '#4472C4', 'width': 2.5},
+        })
+        chart_net_worth.set_title({'name': 'Net Worth Over Time'})
+        chart_net_worth.set_x_axis({'name': 'Year'})
+        chart_net_worth.set_y_axis({'name': 'Net Worth ($)', 'num_format': '#,##0'})
+        chart_net_worth.set_size({'width': 720, 'height': 400})
+        chart_net_worth.set_legend({'position': 'bottom'})
+        chart_net_worth.show_hidden_data()  # Show data in hidden/collapsed columns
+        worksheet.insert_chart('B2', chart_net_worth)
+
+        # Chart 2: Income Breakdown by Source (Stacked Area Chart)
+        chart_income = workbook.add_chart({'type': 'area', 'subtype': 'stacked'})
+
+        # Add each income source as a series
+        income_sources = [
+            ('Employment', employment_col, '#70AD47'),
+            ('RRQ', rrq_col, '#5B9BD5'),
+            ('PSV', psv_col, '#FFC000'),
+            ('RRPE', rrpe_col, '#C55A11'),
+            ('Other', other_col, '#A5A5A5'),
+        ]
+
+        # Use same formula approach as working charts
+        for name, col_num, color in income_sources:
+            chart_income.add_series({
+                'name': name,
+                'categories': f"='Detailed Projection'!$A$3:$A${num_years + 2}",
+                'values': f"='Detailed Projection'!${col_letter(col_num)}$3:${col_letter(col_num)}${num_years + 2}",
+                'fill': {'color': color},
+                'line': {'none': True},
+            })
+
+        chart_income.set_title({'name': 'Income Breakdown by Source'})
+        chart_income.set_x_axis({'name': 'Year'})
+        chart_income.set_y_axis({'name': 'Income ($)', 'num_format': '#,##0'})
+        chart_income.set_size({'width': 720, 'height': 400})
+        chart_income.set_legend({'position': 'bottom'})
+        chart_income.show_hidden_data()  # Show data in hidden/collapsed columns
+        worksheet.insert_chart('B23', chart_income)
+
+        # Chart 3: Expense Breakdown (Pie Chart - final year)
+        chart_expenses = workbook.add_chart({'type': 'pie'})
+
+        expense_categories = [
+            ('Housing', housing_col, '#4472C4'),
+            ('Transport', transport_col, '#ED7D31'),
+            ('Daily Living', daily_col, '#A5A5A5'),
+            ('Recreation', recreation_col, '#FFC000'),
+            ('Health', health_col, '#5B9BD5'),
+            ('Family', family_col, '#70AD47'),
+        ]
+
+        # Use last year's expenses for pie chart
+        if num_years > 0:
+            last_row = num_years + 2  # Excel row number (1-indexed)
+            colors = [cat[2] for cat in expense_categories]
+
+            # Use same formula approach as working charts
+            chart_expenses.add_series({
+                'name': 'Expenses',
+                'categories': f"='Detailed Projection'!${col_letter(housing_col)}$2:${col_letter(family_col)}$2",  # Headers row 2
+                'values': f"='Detailed Projection'!${col_letter(housing_col)}${last_row}:${col_letter(family_col)}${last_row}",  # Last year data
+                'points': [{'fill': {'color': color}} for color in colors],
+            })
+
+        chart_expenses.set_title({'name': f'Expense Distribution (Final Year)'})
+        chart_expenses.set_size({'width': 720, 'height': 400})
+        chart_expenses.set_legend({'position': 'right'})
+        chart_expenses.show_hidden_data()  # Show data in hidden/collapsed columns
+        worksheet.insert_chart('N2', chart_expenses)
+
+        # Chart 4: Cash Flow Over Time (Column Chart)
+        chart_cashflow = workbook.add_chart({'type': 'column'})
+
+        chart_cashflow.add_series({
+            'name': 'Net Cash Flow',
+            'categories': f"='Detailed Projection'!$A$3:$A${num_years + 2}",
+            'values': f"='Detailed Projection'!${col_letter(net_cashflow_col)}$3:${col_letter(net_cashflow_col)}${num_years + 2}",
+            'fill': {'color': '#70AD47'},
+        })
+
+        chart_cashflow.set_title({'name': 'Net Cash Flow Over Time'})
+        chart_cashflow.set_x_axis({'name': 'Year'})
+        chart_cashflow.set_y_axis({'name': 'Cash Flow ($)', 'num_format': '#,##0'})
+        chart_cashflow.set_size({'width': 720, 'height': 400})
+        chart_cashflow.set_legend({'position': 'bottom'})
+        chart_cashflow.show_hidden_data()  # Show data in hidden/collapsed columns
+        worksheet.insert_chart('N23', chart_cashflow)
+
+
+class MultiScenarioExcelGenerator:
+    """Generates Excel files comparing multiple scenarios."""
+
+    def __init__(self, scenarios: List[Dict]):
+        """
+        Initialize with list of scenarios.
+        
+        Each scenario dict contains:
+        - 'projection': Projection object
+        - 'scenario_name': str
+        - 'assets': List[Asset]
+        """
+        self.scenarios = scenarios
+
+    def generate(self) -> bytes:
+        """
+        Generate multi-scenario comparison Excel file.
+        
+        Returns:
+            bytes: Excel file content
+        """
+        # Create workbook in memory
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+
+        # Create formats
+        formats = self._create_formats(workbook)
+
+        # Create comparison summary tab (first tab)
+        self._create_comparison_summary(workbook, formats)
+
+        # Create individual scenario tabs
+        for idx, scenario in enumerate(self.scenarios):
+            prefix = f"{idx + 1}. {scenario['scenario_name']}"
+            generator = ExcelGenerator(
+                scenario['projection'],
+                scenario['scenario_name'],
+                scenario['assets']
+            )
+            
+            # Create tabs with scenario prefix
+            self._create_scenario_tabs(workbook, generator, prefix, formats)
+
+        # Close workbook
+        workbook.close()
+
+        # Return bytes
+        output.seek(0)
+        return output.read()
+
+    def _create_formats(self, workbook: xlsxwriter.Workbook) -> Dict:
+        """Create reusable cell formats."""
+        return {
+            'header': workbook.add_format({
+                'bold': True,
+                'bg_color': '#4472C4',
+                'font_color': 'white',
+                'align': 'center',
+                'valign': 'vcenter',
+                'border': 1,
+            }),
+            'currency': workbook.add_format({
+                'num_format': '#,##0',
+                'align': 'right',
+            }),
+            'currency_positive': workbook.add_format({
+                'num_format': '#,##0',
+                'align': 'right',
+                'font_color': '#008000',  # Green
+            }),
+            'currency_negative': workbook.add_format({
+                'num_format': '#,##0',
+                'align': 'right',
+                'font_color': 'red',
+            }),
+            'label': workbook.add_format({
+                'bold': True,
+                'align': 'left',
+            }),
+            'value': workbook.add_format({
+                'align': 'left',
+            }),
+            'section_header': workbook.add_format({
+                'bold': True,
+                'font_size': 12,
+                'bg_color': '#D9E1F2',
+                'border': 1,
+            }),
+        }
+
+    def _create_comparison_summary(self, workbook: xlsxwriter.Workbook, formats: Dict):
+        """Create comparison summary tab with side-by-side KPIs."""
+        worksheet = workbook.add_worksheet('Comparison Summary')
+
+        # Set column widths
+        worksheet.set_column(0, 0, 25)  # Metric name column
+        for i in range(len(self.scenarios)):
+            worksheet.set_column(i + 1, i + 1, 18)  # Scenario columns
+
+        row = 0
+
+        # Title
+        worksheet.merge_range(row, 0, row, len(self.scenarios), 
+                            'Scenario Comparison', formats['section_header'])
+        row += 2
+
+        # Write scenario headers
+        worksheet.write(row, 0, 'Metric', formats['header'])
+        for idx, scenario in enumerate(self.scenarios):
+            worksheet.write(row, idx + 1, scenario['scenario_name'], formats['header'])
+        row += 1
+
+        # Calculate KPIs for each scenario
+        kpis_list = []
+        for scenario in self.scenarios:
+            projection = scenario['projection']
+            first_year = projection.years[0] if projection.years else None
+            last_year = projection.years[-1] if projection.years else None
+            
+            kpis = {
+                'Initial Net Worth': first_year.net_worth_start_of_year if first_year else 0,
+                'Final Net Worth': last_year.net_worth_end_of_year if last_year else 0,
+                'Total Income': sum(y.total_income for y in projection.years),
+                'Total Expenses': sum(y.total_expenses for y in projection.years),
+                'Total Tax': sum(y.total_tax for y in projection.years),
+                'Years with Shortfall': len([y for y in projection.years if y.has_shortfall]),
+                'Total Shortfall': sum(y.shortfall_amount for y in projection.years if y.has_shortfall),
+            }
+            kpis_list.append(kpis)
+
+        # Write KPI rows
+        metric_names = [
+            'Initial Net Worth',
+            'Final Net Worth',
+            'Total Income',
+            'Total Expenses',
+            'Total Tax',
+            'Years with Shortfall',
+            'Total Shortfall',
+        ]
+
+        for metric in metric_names:
+            worksheet.write(row, 0, metric, formats['label'])
+            
+            # Write values for each scenario
+            for idx, kpis in enumerate(kpis_list):
+                value = kpis[metric]
+                
+                # Special handling for Years with Shortfall (integer)
+                if metric == 'Years with Shortfall':
+                    worksheet.write(row, idx + 1, value, formats['value'])
+                else:
+                    # Currency values
+                    if idx == 0:
+                        # First scenario (baseline) - no color
+                        worksheet.write_number(row, idx + 1, value, formats['currency'])
+                    else:
+                        # Compare to first scenario
+                        baseline_value = kpis_list[0][metric]
+                        diff = value - baseline_value
+                        
+                        if diff > 0:
+                            worksheet.write_number(row, idx + 1, value, formats['currency_positive'])
+                        elif diff < 0:
+                            worksheet.write_number(row, idx + 1, value, formats['currency_negative'])
+                        else:
+                            worksheet.write_number(row, idx + 1, value, formats['currency'])
+            
+            row += 1
+
+        # Add difference row for Final Net Worth
+        row += 1
+        worksheet.merge_range(row, 0, row, len(self.scenarios), 
+                            'Differences vs First Scenario', formats['section_header'])
+        row += 1
+
+        worksheet.write(row, 0, 'Final Net Worth Diff', formats['label'])
+        baseline_final = kpis_list[0]['Final Net Worth']
+        
+        for idx, kpis in enumerate(kpis_list):
+            if idx == 0:
+                worksheet.write(row, idx + 1, 'Baseline', formats['value'])
+            else:
+                diff = kpis['Final Net Worth'] - baseline_final
+                if diff > 0:
+                    worksheet.write_number(row, idx + 1, diff, formats['currency_positive'])
+                elif diff < 0:
+                    worksheet.write_number(row, idx + 1, diff, formats['currency_negative'])
+                else:
+                    worksheet.write_number(row, idx + 1, diff, formats['currency'])
+
+    def _create_scenario_tabs(self, workbook: xlsxwriter.Workbook,
+                             generator: ExcelGenerator, prefix: str, formats: Dict):
+        """Create tabs for a single scenario - simplified for Phase 9."""
+        # For Phase 9, we'll just create the base projection tab for each scenario
+        # Users can export individual scenarios for full details (Summary, Detailed, Charts)
+
+        # Reuse the ExcelGenerator's base projection logic
+        # This creates a simple tab with key metrics for comparison
+        worksheet = workbook.add_worksheet(f"{prefix}")
+
+        # Use the generator's methods directly
+        # We'll create a simplified version - just the projection data
+        formats_full = generator._create_formats(workbook)
+
+        # Set column widths
+        worksheet.set_column(0, 0, 7)  # Year
+        worksheet.set_column(1, 1, 8)  # Age
+        worksheet.set_column(2, 10, 16.5)  # Data columns
+
+        # Write headers
+        headers = ['Year', 'Age', 'Total Income', 'Total Expenses', 'Total Tax',
+                  'Net Cash Flow', 'Net Worth', 'Shortfall']
+        for col_idx, header in enumerate(headers):
+            worksheet.write(0, col_idx, header, formats['header'])
+
+        # Write data rows (simplified)
+        for row_idx, year in enumerate(generator.projection.years, start=1):
+            worksheet.write(row_idx, 0, year.year, formats['value'])
+            worksheet.write(row_idx, 1, year.primary_age or '', formats['value'])
+            worksheet.write_number(row_idx, 2, year.total_income, formats['currency'])
+            worksheet.write_number(row_idx, 3, year.total_expenses, formats['currency'])
+            worksheet.write_number(row_idx, 4, year.total_tax, formats['currency'])
+            worksheet.write_number(row_idx, 5, year.net_cash_flow, formats['currency'])
+            worksheet.write_number(row_idx, 6, year.net_worth_end_of_year, formats['currency'])
+            if year.has_shortfall:
+                worksheet.write_number(row_idx, 7, year.shortfall_amount, formats['currency_negative'])
+            else:
+                worksheet.write(row_idx, 7, '', formats['value'])
+
+        # Freeze panes
+        worksheet.freeze_panes(1, 2)

@@ -11,7 +11,7 @@ class AppSettings with _$AppSettings {
     required String userId,
 
     /// Selected language code (e.g., 'en', 'fr')
-    required String languageCode,
+    @Default('en') String languageCode,
 
     /// Auto-open Excel files after export (default: true)
     @Default(true) bool autoOpenExcelFiles,

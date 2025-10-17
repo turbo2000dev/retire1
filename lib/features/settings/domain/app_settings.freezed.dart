@@ -166,7 +166,7 @@ class __$$AppSettingsImplCopyWithImpl<$Res>
 class _$AppSettingsImpl implements _AppSettings {
   const _$AppSettingsImpl({
     required this.userId,
-    required this.languageCode,
+    this.languageCode = 'en',
     this.autoOpenExcelFiles = true,
     this.lastUpdated,
   });
@@ -180,6 +180,7 @@ class _$AppSettingsImpl implements _AppSettings {
 
   /// Selected language code (e.g., 'en', 'fr')
   @override
+  @JsonKey()
   final String languageCode;
 
   /// Auto-open Excel files after export (default: true)
@@ -237,7 +238,7 @@ class _$AppSettingsImpl implements _AppSettings {
 abstract class _AppSettings implements AppSettings {
   const factory _AppSettings({
     required final String userId,
-    required final String languageCode,
+    final String languageCode,
     final bool autoOpenExcelFiles,
     final DateTime? lastUpdated,
   }) = _$AppSettingsImpl;
