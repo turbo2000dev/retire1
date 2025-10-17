@@ -24,8 +24,7 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
   final _lifeExpectancy1Controller = TextEditingController(text: '85');
   DateTime _birthdate1 = DateTime(1970, 1, 1);
 
-  // Individual 2 (optional)
-  bool _hasIndividual2 = false;
+  // Individual 2 (optional - always visible)
   final _name2Controller = TextEditingController();
   final _income2Controller = TextEditingController();
   final _retirementAge2Controller = TextEditingController(text: '65');
@@ -58,7 +57,6 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
 
     // Load Individual 2 if exists
     if (wizardState.individual2 != null) {
-      _hasIndividual2 = true;
       final ind2 = wizardState.individual2!;
       _name2Controller.text = ind2.name;
       _income2Controller.text = ind2.employmentIncome.toStringAsFixed(0);
@@ -96,8 +94,8 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
 
     ref.read(wizardProvider.notifier).updateIndividual1(individual1);
 
-    // Create Individual 2 if applicable
-    if (_hasIndividual2 && _name2Controller.text.trim().isNotEmpty) {
+    // Create Individual 2 if name is provided
+    if (_name2Controller.text.trim().isNotEmpty) {
       final individual2 = Individual(
         id: ref.read(wizardProvider)?.individual2?.id ?? const Uuid().v4(),
         name: _name2Controller.text.trim(),
@@ -106,7 +104,7 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
       );
       ref.read(wizardProvider.notifier).updateIndividual2(individual2);
     } else {
-      // Remove Individual 2 if unchecked or empty
+      // Remove Individual 2 if name is empty
       ref.read(wizardProvider.notifier).removeIndividual2();
     }
   }
@@ -135,20 +133,6 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
     if (picked != null) {
       setState(() => _birthdate2 = picked);
     }
-  }
-
-  void _toggleIndividual2() {
-    setState(() {
-      _hasIndividual2 = !_hasIndividual2;
-      if (!_hasIndividual2) {
-        // Clear Individual 2 data
-        _name2Controller.clear();
-        _income2Controller.clear();
-        _retirementAge2Controller.text = '65';
-        _lifeExpectancy2Controller.text = '85';
-        _birthdate2 = DateTime(1970, 1, 1);
-      }
-    });
   }
 
   @override
@@ -196,10 +180,7 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
     return [
       _buildIndividual1Card(theme),
       const SizedBox(height: 24),
-      if (_hasIndividual2)
-        _buildIndividual2Card(theme)
-      else
-        _buildAddIndividual2Button(theme),
+      _buildIndividual2Card(theme),
     ];
   }
 
@@ -209,11 +190,7 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
       children: [
         Expanded(child: _buildIndividual1Card(theme)),
         const SizedBox(width: 24),
-        Expanded(
-          child: _hasIndividual2
-              ? _buildIndividual2Card(theme)
-              : _buildAddIndividual2Button(theme),
-        ),
+        Expanded(child: _buildIndividual2Card(theme)),
       ],
     );
   }
@@ -263,25 +240,28 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.people_outline,
-                        color: theme.colorScheme.secondary),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Partner/Spouse',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                Icon(Icons.people_outline, color: theme.colorScheme.secondary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Partner/Spouse',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: _toggleIndividual2,
-                  tooltip: 'Remove',
+                      Text(
+                        'Optional - enter if applicable',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -296,43 +276,6 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
               required: false,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddIndividual2Button(ThemeData theme) {
-    return Card(
-      elevation: 1,
-      child: InkWell(
-        onTap: _toggleIndividual2,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.person_add_outlined,
-                size: 64,
-                color: theme.colorScheme.primary.withValues(alpha: 0.5),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Add Partner/Spouse',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Optional',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
