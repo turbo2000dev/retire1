@@ -42,3 +42,10 @@ Projection Loop Flow:
 # General
 
 In Assets creation, for real estate transaction, if there is no sell, there is no need to have a cash account for deposit,  if there is no buy, there is no need to have a cash account for retiring. Maybe just one account for both purposes?
+
+Translate to French
+
+Fix problems
+
+Fix the bufg that appears in Terminal when going to detailed projection
+
