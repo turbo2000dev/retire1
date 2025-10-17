@@ -13,8 +13,9 @@ class ProjectDialog extends StatefulWidget {
   });
 
   /// Show create project dialog
-  static Future<Map<String, String>?> showCreate(BuildContext context) {
-    return showDialog<Map<String, String>>(
+  /// Returns a map with 'name', 'description', and 'useWizard' keys
+  static Future<Map<String, dynamic>?> showCreate(BuildContext context) {
+    return showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => const ProjectDialog(),
     );
@@ -40,6 +41,7 @@ class _ProjectDialogState extends State<ProjectDialog> {
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
   bool _isLoading = false;
+  bool _useWizard = true; // Default to wizard for new projects
 
   @override
   void initState() {
@@ -69,6 +71,7 @@ class _ProjectDialogState extends State<ProjectDialog> {
     final result = {
       'name': _nameController.text.trim(),
       'description': _descriptionController.text.trim(),
+      'useWizard': _isEditing ? false : _useWizard, // Only for new projects
     };
 
     Navigator.of(context).pop(result);
@@ -115,6 +118,166 @@ class _ProjectDialogState extends State<ProjectDialog> {
                 maxLines: 3,
                 onSubmitted: (_) => _handleSave(),
               ),
+
+              // Setup method choice (only for new projects)
+              if (!_isEditing) ...[
+                const SizedBox(height: 24),
+                Text(
+                  'How would you like to set up your project?',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const SizedBox(height: 12),
+
+                // Wizard option (recommended)
+                InkWell(
+                  onTap: _isLoading ? null : () {
+                    setState(() => _useWizard = true);
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _useWizard
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.outline,
+                        width: _useWizard ? 2 : 1,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      color: _useWizard
+                          ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Radio<bool>(
+                          value: true,
+                          groupValue: _useWizard,
+                          onChanged: _isLoading ? null : (value) {
+                            setState(() => _useWizard = value!);
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.auto_awesome,
+                                    size: 18,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Quick Setup Wizard',
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      'RECOMMENDED',
+                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Guided steps to quickly configure your project',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Manual setup option
+                InkWell(
+                  onTap: _isLoading ? null : () {
+                    setState(() => _useWizard = false);
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: !_useWizard
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.outline,
+                        width: !_useWizard ? 2 : 1,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      color: !_useWizard
+                          ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Radio<bool>(
+                          value: false,
+                          groupValue: _useWizard,
+                          onChanged: _isLoading ? null : (value) {
+                            setState(() => _useWizard = value!);
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.tune,
+                                    size: 18,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Manual Setup',
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Configure everything yourself at your own pace',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

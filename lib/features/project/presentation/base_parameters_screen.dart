@@ -29,7 +29,6 @@ import 'package:retire1/features/project/presentation/widgets/individual_card.da
 import 'package:retire1/features/project/presentation/widgets/individual_dialog.dart';
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
 import 'package:retire1/features/project/presentation/wizard/project_wizard_screen.dart';
-import 'package:retire1/features/project/presentation/wizard/wizard_launch_dialog.dart';
 import 'package:retire1/features/scenarios/data/scenario_repository.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
@@ -86,9 +85,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           }
         });
 
-        // Show wizard launch dialog
-        final wizardChoice = await WizardLaunchDialog.show(context);
-        if (wizardChoice == WizardLaunchChoice.startWizard && mounted && newProjectId != null) {
+        // Check if user chose wizard setup
+        final useWizard = result['useWizard'] as bool? ?? false;
+        if (useWizard && mounted && newProjectId != null) {
           // Launch wizard
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -97,7 +96,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
             ),
           );
         } else {
-          // User chose manual setup or cancelled
+          // User chose manual setup
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Project created')),
