@@ -98,11 +98,8 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
 
     // Show loading if wizard not initialized
     if (wizardState == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Project Setup Wizard'),
-        ),
-        body: const Center(
+      return const Scaffold(
+        body: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -119,13 +116,6 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: _handleCancel,
-            tooltip: 'Cancel',
-          ),
-        ),
         body: ResponsiveBuilder(
           builder: (context, screenSize) {
             return Column(
