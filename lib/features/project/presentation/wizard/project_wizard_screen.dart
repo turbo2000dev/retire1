@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retire1/core/ui/responsive/responsive_builder.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/ui/responsive/screen_size.dart';
+import 'package:retire1/features/project/presentation/wizard/steps/wizard_individuals_step.dart';
 import 'package:retire1/features/project/presentation/wizard/wizard_provider.dart';
 
 /// Main wizard screen with stepper navigation
@@ -249,45 +250,61 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
   }
 
   Widget _buildStepContent(int currentStep) {
-    // Placeholder content for each step
-    // These will be replaced with actual step widgets in subsequent phases
-    final stepTitles = [
-      'Step 1: Individuals',
-      'Step 2: Income Sources',
-      'Step 3: Assets',
-      'Step 4: Expenses',
-      'Step 5: Scenarios',
-      'Step 6: Summary',
-    ];
+    switch (currentStep) {
+      case 0:
+        // Step 1: Individuals (Phase 2 - Implemented)
+        return const WizardIndividualsStep();
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction,
-              size: 64,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+        // Placeholder content for remaining steps
+        final stepTitles = [
+          'Step 1: Individuals',
+          'Step 2: Income Sources',
+          'Step 3: Assets',
+          'Step 4: Expenses',
+          'Step 5: Scenarios',
+          'Step 6: Summary',
+        ];
+
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.construction,
+                  size: 64,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  stepTitles[currentStep],
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'This step will be implemented in Phase ${currentStep + 2}',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
-            Text(
-              stepTitles[currentStep],
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'This step will be implemented in Phase ${currentStep + 2}',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
+
+      default:
+        return const SizedBox.shrink();
+    }
   }
 
   Widget _buildNavigationButtons(int currentStep, ScreenSize screenSize) {
