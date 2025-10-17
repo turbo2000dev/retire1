@@ -372,7 +372,7 @@ class ExcelGenerator:
             'Other Income',
             'Total Income',
         ])
-        income_end_col = col + 5  # Before Total Income
+        income_end_col = col + 4  # Last detail column (Other Income), before Total Income
         col += 6
 
         # Expenses by category (will be grouped)
@@ -386,7 +386,7 @@ class ExcelGenerator:
             'Family Expenses',
             'Total Expenses',
         ])
-        expense_end_col = col + 5  # Before Total Expenses
+        expense_end_col = col + 5  # Last detail column (Family Expenses), before Total Expenses
         col += 7
 
         # Taxes (will be grouped)
@@ -396,7 +396,7 @@ class ExcelGenerator:
             'Quebec Tax',
             'Total Tax',
         ])
-        tax_end_col = col + 1  # Before Total Tax
+        tax_end_col = col + 1  # Last detail column (Quebec Tax), before Total Tax
         col += 3
 
         # Cash flow
@@ -415,7 +415,7 @@ class ExcelGenerator:
             'REER Withdrawals',
             'Total Withdrawals',
         ])
-        withdrawal_end_col = col + 3  # Before Total Withdrawals
+        withdrawal_end_col = col + 3  # Last detail column (REER Withdrawals), before Total Withdrawals
         col += 5
 
         # Contributions (will be grouped)
@@ -425,7 +425,7 @@ class ExcelGenerator:
             'Cash Contributions',
             'Total Contributions',
         ])
-        contribution_end_col = col + 1  # Before Total Contributions
+        contribution_end_col = col + 1  # Last detail column (Cash Contributions), before Total Contributions
         col += 3
 
         # Asset balances (will be grouped)
@@ -438,7 +438,7 @@ class ExcelGenerator:
             'Cash Balance',
             'Total Asset Returns',
         ])
-        balance_end_col = col + 4  # Before Total Asset Returns
+        balance_end_col = col + 4  # Last detail column (Cash Balance), before Total Asset Returns
         col += 6
 
         # Net worth
