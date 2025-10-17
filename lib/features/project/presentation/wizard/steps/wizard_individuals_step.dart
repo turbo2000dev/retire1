@@ -142,26 +142,21 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
     return ResponsiveBuilder(
       builder: (context, screenSize) {
         return SingleChildScrollView(
-          padding: EdgeInsets.all(screenSize.isPhone ? 16 : 24),
+          padding: EdgeInsets.all(screenSize.isPhone ? 12 : 16),
           child: Form(
             key: _formKey,
             onChanged: _saveData,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
+                // Brief step description
                 Text(
-                  'Tell us about the people in this retirement plan',
-                  style: theme.textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'You can refine these details later in Base Parameters',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  'Enter information about the people in this retirement plan',
+                  style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
 
                 // Layout: stacked on phone, side-by-side on tablet/desktop
                 if (screenSize.isPhone)

@@ -120,7 +120,6 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Project Setup Wizard'),
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed: _handleCancel,
@@ -165,7 +164,57 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
     if (screenSize.isPhone) {
       // Compact progress for phone
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          border: Border(
+            bottom: BorderSide(
+              color: theme.colorScheme.outlineVariant,
+              width: 1,
+            ),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Project Setup',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Step ${currentStep + 1}/${steps.length}: ${steps[currentStep]}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            LinearProgressIndicator(
+              value: (currentStep + 1) / steps.length,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'You can refine all details later',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Full stepper for tablet/desktop
+      return Container(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest,
           border: Border(
@@ -181,69 +230,51 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Step ${currentStep + 1} of ${steps.length}',
+                  'Project Setup Wizard',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  steps[currentStep],
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.primary,
+                  'You can refine all details later',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            LinearProgressIndicator(
-              value: (currentStep + 1) / steps.length,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(steps.length, (index) {
+                final isActive = index == currentStep;
+                final isCompleted = index < currentStep;
+
+                return Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _StepIndicator(
+                          stepNumber: index + 1,
+                          label: steps[index],
+                          isActive: isActive,
+                          isCompleted: isCompleted,
+                        ),
+                      ),
+                      if (index < steps.length - 1)
+                        Container(
+                          height: 2,
+                          width: 20,
+                          color: isCompleted
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.outlineVariant,
+                        ),
+                    ],
+                  ),
+                );
+              }),
             ),
           ],
-        ),
-      );
-    } else {
-      // Full stepper for tablet/desktop
-      return Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          border: Border(
-            bottom: BorderSide(
-              color: theme.colorScheme.outlineVariant,
-              width: 1,
-            ),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(steps.length, (index) {
-            final isActive = index == currentStep;
-            final isCompleted = index < currentStep;
-
-            return Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _StepIndicator(
-                      stepNumber: index + 1,
-                      label: steps[index],
-                      isActive: isActive,
-                      isCompleted: isCompleted,
-                    ),
-                  ),
-                  if (index < steps.length - 1)
-                    Container(
-                      height: 2,
-                      width: 24,
-                      color: isCompleted
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.outlineVariant,
-                    ),
-                ],
-              ),
-            );
-          }),
         ),
       );
     }
@@ -407,38 +438,40 @@ class _StepIndicator extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 40,
-          height: 40,
+          width: 32,
+          height: 32,
           decoration: BoxDecoration(
             color: circleColor,
             shape: BoxShape.circle,
             border: isActive && !isCompleted
                 ? Border.all(
                     color: theme.colorScheme.primary,
-                    width: 3,
+                    width: 2,
                   )
                 : null,
           ),
           child: Center(
             child: icon != null
-                ? Icon(icon, color: textColor, size: 20)
+                ? Icon(icon, color: textColor, size: 16)
                 : Text(
                     stepNumber.toString(),
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       color: textColor,
                       fontWeight: FontWeight.bold,
+                      fontSize: 13,
                     ),
                   ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
             color: isActive
                 ? theme.colorScheme.primary
                 : theme.colorScheme.onSurfaceVariant,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            fontSize: 11,
           ),
           textAlign: TextAlign.center,
           maxLines: 2,
