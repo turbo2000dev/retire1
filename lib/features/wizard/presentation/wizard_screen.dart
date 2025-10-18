@@ -10,6 +10,8 @@ import 'package:retire1/features/wizard/presentation/widgets/wizard_mobile_layou
 import 'package:retire1/features/wizard/presentation/widgets/wizard_progress_bar.dart';
 import 'package:retire1/features/wizard/presentation/widgets/wizard_nav_buttons.dart';
 import 'package:retire1/features/wizard/presentation/sections/welcome_section_screen.dart';
+import 'package:retire1/features/wizard/presentation/sections/project_basics_section_screen.dart';
+import 'package:retire1/features/wizard/presentation/sections/primary_individual_section_screen.dart';
 
 /// Main wizard screen that adapts to different screen sizes
 class WizardScreen extends ConsumerStatefulWidget {
@@ -74,9 +76,15 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   }
 
   Widget _buildSectionContent() {
-    // For now, just show welcome section
-    // Later phases will add all 12 sections
-    return const WelcomeSectionScreen();
+    // Route to appropriate section based on current section ID
+    return switch (_currentSectionId) {
+      'welcome' => const WelcomeSectionScreen(),
+      'project-basics' => const ProjectBasicsSectionScreen(),
+      'primary-individual' => const PrimaryIndividualSectionScreen(),
+      _ => Center(
+          child: Text('Section $_currentSectionId - Coming Soon'),
+        ),
+    };
   }
 
   String _getSectionTitle(AppLocalizations l10n, String? titleKey) {
