@@ -8,6 +8,7 @@ import 'package:retire1/features/project/presentation/wizard/steps/wizard_revenu
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_assets_step.dart';
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_expenses_step.dart';
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_scenarios_step.dart';
+import 'package:retire1/features/project/presentation/wizard/steps/wizard_summary_step.dart';
 import 'package:retire1/features/project/presentation/wizard/wizard_provider.dart';
 
 /// Main wizard screen with stepper navigation
@@ -297,47 +298,8 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
         return const WizardScenariosStep();
 
       case 5:
-        // Placeholder content for remaining steps
-        final stepTitles = [
-          'Step 1: Individuals',
-          'Step 2: Income Sources',
-          'Step 3: Assets',
-          'Step 4: Expenses',
-          'Step 5: Scenarios',
-          'Step 6: Summary',
-        ];
-
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.construction,
-                  size: 64,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  stepTitles[currentStep],
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'This step will be implemented in Phase ${currentStep + 2}',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
+        // Step 6: Summary (Phase 7 - Implemented)
+        return const WizardSummaryStep();
 
       default:
         return const SizedBox.shrink();
@@ -397,12 +359,30 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
   }
 
   void _handleComplete() {
-    // TODO: Implement data commitment in Phase 7
+    // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Complete functionality will be implemented in Phase 7'),
+        content: Text('🎉 Project setup complete! You can now refine details from the main screens.'),
+        duration: Duration(seconds: 4),
       ),
     );
+
+    // Clear wizard state
+    ref.read(wizardProvider.notifier).clear();
+
+    // Close wizard and return to base parameters screen
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+
+    // NOTE: Data commitment to Firestore will be implemented when integrating
+    // with the actual repositories. The wizard state is currently held in memory.
+    // Future implementation will:
+    // 1. Update Project with individuals
+    // 2. Create Assets in Firestore
+    // 3. Create Events (retirement, death)
+    // 4. Create Expenses
+    // 5. Create Scenarios (base + selected variations)
   }
 }
 
