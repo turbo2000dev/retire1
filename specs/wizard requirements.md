@@ -31,19 +31,12 @@ A dual-panel interface where:
 
 1. **FIRST: Create an Implementation Plan**
    - Analyze these requirements
-   - Propose a technical stack with justifications
-   - Define the project architecture
-   - Break down implementation into testable phases
-   - Identify key technical decisions that need discussion
-   - Create a milestone-based development approach
+   - Propose the overall wizard steps (from the user standpoint)
 
 2. **Present the Plan**
    Show me:
-   - Recommended tech stack and why
-   - Project structure
    - Development phases (with testing points)
    - Data model design
-   - State management approach
    - Key architectural decisions to discuss
 
 3. **Wait for Approval**
@@ -57,4 +50,3 @@ A dual-panel interface where:
 - Follow best practices in @"specs/Design Best Practices.md" and in @"specs/UI Guidelines.md"
 - The architecture is described in @"docs/ARCHITECTURE.md"
 - Reuse data layer services to ensure consistency and maintainability
-- 
