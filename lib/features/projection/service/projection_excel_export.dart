@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' show log;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:retire1/features/projection/domain/projection.dart';
@@ -31,7 +32,7 @@ class ProjectionExcelExport {
         autoOpen: autoOpen,
       );
     } catch (e) {
-      print('Error exporting to Excel: $e');
+      log('Error exporting to Excel: $e');
       rethrow;
     }
   }
@@ -76,7 +77,7 @@ class ProjectionExcelExport {
               _triggerDownload(url, filename);
             }
           } catch (e) {
-            print('Error auto-opening file: $e. Falling back to download.');
+            log('Error auto-opening file: $e. Falling back to download.');
             _triggerDownload(url, filename);
           }
         } else {
@@ -94,14 +95,14 @@ class ProjectionExcelExport {
         );
       }
     } catch (e) {
-      print('Error downloading Excel via HTTP: $e');
+      log('Error downloading Excel via HTTP: $e');
       rethrow;
     }
   }
 
   /// Trigger download using anchor element
   static void _triggerDownload(String url, String filename) {
-    final anchor = html.AnchorElement(href: url)
+    html.AnchorElement(href: url)
       ..setAttribute('download', filename)
       ..click();
   }

@@ -8,7 +8,6 @@ import 'package:retire1/features/project/presentation/providers/projects_provide
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
 import 'package:retire1/features/projection/domain/projection.dart';
 import 'package:retire1/features/projection/domain/projection_kpis_calculator.dart';
-import 'package:retire1/features/projection/presentation/providers/dollar_mode_provider.dart';
 import 'package:retire1/features/projection/presentation/providers/projection_provider.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_kpi_card.dart';
 import 'package:retire1/features/projection/presentation/widgets/projection_warnings_section.dart';
@@ -92,7 +91,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           NoProjectSelected() => _buildEmptyState(context, ref),
           ProjectLoading() => const Center(child: CircularProgressIndicator()),
           ProjectError(:final message) => _buildErrorState(context, message),
-          ProjectSelected(:final project) => _buildDashboard(context, theme),
+          ProjectSelected() => _buildDashboard(context, theme),
         },
       ),
     );
@@ -198,11 +197,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
         // Calculate KPIs using extension method
         final kpis = projection.calculateKpis();
-        final useConstantDollars = ref.watch(dollarModeProvider);
 
         // Apply dollar mode conversion if needed
         // For simplicity in Phase 35A, we'll show current dollars
         // TODO: Add dollar mode conversion in future iteration
+        // final useConstantDollars = ref.watch(dollarModeProvider);
 
         return CustomScrollView(
           slivers: [

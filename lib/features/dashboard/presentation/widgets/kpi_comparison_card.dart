@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:retire1/features/projection/domain/projection_kpis.dart';
 
 /// Displays a single KPI metric compared across multiple scenarios
 class KpiComparisonCard extends StatelessWidget {

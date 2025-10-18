@@ -3,7 +3,6 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:retire1/features/project/data/project_repository.dart';
 import 'package:retire1/features/project/domain/individual.dart';
-import 'package:retire1/features/project/domain/project.dart';
 
 void main() {
   group('ProjectRepository', () {

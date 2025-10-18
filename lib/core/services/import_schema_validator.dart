@@ -18,26 +18,10 @@ class ImportSchemaValidator {
     'cri',
     'cash',
   };
-  static const Set<String> _validEventTypes = {
-    'retirement',
-    'death',
-    'realEstateTransaction',
-  };
-  static const Set<String> _validExpenseTypes = {
-    'housing',
-    'transport',
-    'dailyLiving',
-    'recreation',
-    'health',
-    'family',
-  };
-  static const Set<String> _validTimingTypes = {
-    'relative',
-    'absolute',
-    'age',
-    'eventRelative',
-    'projectionEnd',
-  };
+  // TODO: Add validation for event types, expense types, and timing types
+  // static const Set<String> _validEventTypes = {...};
+  // static const Set<String> _validExpenseTypes = {...};
+  // static const Set<String> _validTimingTypes = {...};
 
   /// Validate the entire import JSON structure
   ///

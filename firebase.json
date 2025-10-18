@@ -1,0 +1,89 @@
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=7200"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=3600"
+          }
+        ]
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "retire1-1a558",
+          "appId": "1:455240536437:android:522867207db9b7a1fc433c",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "retire1-1a558",
+          "appId": "1:455240536437:ios:b16acfb6d5fa3908fc433c",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "retire1-1a558",
+          "appId": "1:455240536437:ios:b16acfb6d5fa3908fc433c",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "retire1-1a558",
+          "configurations": {
+            "android": "1:455240536437:android:522867207db9b7a1fc433c",
+            "ios": "1:455240536437:ios:b16acfb6d5fa3908fc433c",
+            "macos": "1:455240536437:ios:b16acfb6d5fa3908fc433c",
+            "web": "1:455240536437:web:ba1d5f0b5af4175dfc433c"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "runtime": "python311",
+      "ignore": [
+        "venv",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.pyc",
+        "__pycache__"
+      ]
+    }
+  ]
+}
