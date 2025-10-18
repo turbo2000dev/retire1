@@ -174,14 +174,17 @@ class WizardProgressRepository {
 
       if (value is DateTime) {
         result[entry.key] = Timestamp.fromDate(value);
-      } else if (value is Map<String, dynamic>) {
-        result[entry.key] = _convertDateTimesToTimestamps(value);
+      } else if (value is Map) {
+        // Handle both Map<String, dynamic> and Map<String, Object>
+        final map = Map<String, dynamic>.from(value);
+        result[entry.key] = _convertDateTimesToTimestamps(map);
       } else if (value is List) {
         result[entry.key] = value.map((item) {
           if (item is DateTime) {
             return Timestamp.fromDate(item);
-          } else if (item is Map<String, dynamic>) {
-            return _convertDateTimesToTimestamps(item);
+          } else if (item is Map) {
+            final map = Map<String, dynamic>.from(item);
+            return _convertDateTimesToTimestamps(map);
           } else {
             return item;
           }
@@ -201,22 +204,27 @@ class WizardProgressRepository {
     final result = <String, dynamic>{};
 
     for (final entry in data.entries) {
-      if (entry.value is Timestamp) {
-        result[entry.key] = (entry.value as Timestamp).toDate();
-      } else if (entry.value is Map<String, dynamic>) {
-        result[entry.key] = _convertTimestampsToDateTimes(entry.value);
-      } else if (entry.value is List) {
-        result[entry.key] = (entry.value as List).map((item) {
+      final value = entry.value;
+
+      if (value is Timestamp) {
+        result[entry.key] = value.toDate();
+      } else if (value is Map) {
+        // Handle both Map<String, dynamic> and other Map types
+        final map = Map<String, dynamic>.from(value);
+        result[entry.key] = _convertTimestampsToDateTimes(map);
+      } else if (value is List) {
+        result[entry.key] = value.map((item) {
           if (item is Timestamp) {
             return item.toDate();
-          } else if (item is Map<String, dynamic>) {
-            return _convertTimestampsToDateTimes(item);
+          } else if (item is Map) {
+            final map = Map<String, dynamic>.from(item);
+            return _convertTimestampsToDateTimes(map);
           } else {
             return item;
           }
         }).toList();
       } else {
-        result[entry.key] = entry.value;
+        result[entry.key] = value;
       }
     }
 
