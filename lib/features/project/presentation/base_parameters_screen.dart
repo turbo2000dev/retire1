@@ -28,7 +28,6 @@ import 'package:retire1/features/project/presentation/providers/projects_provide
 import 'package:retire1/features/project/presentation/widgets/individual_card.dart';
 import 'package:retire1/features/project/presentation/widgets/individual_dialog.dart';
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
-import 'package:retire1/features/project/presentation/wizard/project_wizard_screen.dart';
 import 'package:retire1/features/scenarios/data/scenario_repository.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';
 import 'package:retire1/features/scenarios/presentation/providers/scenarios_provider.dart';
@@ -90,14 +89,17 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         // Check if user chose wizard setup
         final useWizard = result['useWizard'] as bool? ?? false;
         if (useWizard && mounted && newProjectId != null) {
-          // Launch wizard
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) =>
-                  ProjectWizardScreen(projectId: newProjectId!),
-              fullscreenDialog: true,
-            ),
-          );
+          // TODO: Launch new wizard when implemented
+          // For now, just show success message
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(
+              const SnackBar(
+                content: Text('Project created. Wizard coming soon!'),
+              ),
+            );
+          }
         } else {
           // User chose manual setup
           if (mounted) {
