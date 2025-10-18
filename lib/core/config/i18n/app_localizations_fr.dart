@@ -204,4 +204,146 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noScenarios => 'Aucune variation de scénario. Créez un scénario!';
+
+  // Wizard - UI strings
+  @override
+  String get wizard => 'Assistant de configuration';
+
+  @override
+  String get loadingWizard => 'Chargement de l\'assistant...';
+
+  @override
+  String get failedToLoadWizard => 'Échec du chargement de l\'assistant';
+
+  @override
+  String get retry => 'Réessayer';
+
+  @override
+  String get previous => 'Précédent';
+
+  @override
+  String get next => 'Suivant';
+
+  @override
+  String get skip => 'Passer';
+
+  @override
+  String get finish => 'Terminer';
+
+  @override
+  String get required => 'Requis';
+
+  @override
+  String get optional => 'Optionnel';
+
+  @override
+  String get errorLoadingSections => 'Erreur lors du chargement des sections';
+
+  @override
+  String get sections => 'Sections';
+
+  // Wizard - Section titles
+  @override
+  String get section1Title => 'Bienvenue';
+
+  @override
+  String get section2Title => 'Informations de base';
+
+  @override
+  String get section3Title => 'Vos informations';
+
+  @override
+  String get section4Title => 'Informations sur le conjoint';
+
+  @override
+  String get section5Title => 'Actifs';
+
+  @override
+  String get section6Title => 'Emploi';
+
+  @override
+  String get section7Title => 'Prestations du Québec';
+
+  @override
+  String get section8Title => 'Prestations gouvernementales';
+
+  @override
+  String get section9Title => 'Dépenses';
+
+  @override
+  String get section10Title => 'Moment de la retraite';
+
+  @override
+  String get section11Title => 'Événements de vie';
+
+  @override
+  String get section12Title => 'Sommaire';
+
+  // Wizard - Section descriptions
+  @override
+  String get section1Description =>
+      'Découvrez le processus de planification de la retraite et à quoi vous attendre';
+
+  @override
+  String get section2Description =>
+      'Configurez le nom de votre projet et les informations de base';
+
+  @override
+  String get section3Description =>
+      'Entrez vos informations personnelles, y compris votre date de naissance';
+
+  @override
+  String get section4Description =>
+      'Ajoutez les informations de votre conjoint si vous planifiez ensemble';
+
+  @override
+  String get section5Description =>
+      'Ajoutez vos biens immobiliers, comptes REER, CELI et autres actifs';
+
+  @override
+  String get section6Description =>
+      'Entrez vos revenus d\'emploi actuels et les détails';
+
+  @override
+  String get section7Description =>
+      'Découvrez le Régime de rentes du Québec et autres prestations provinciales';
+
+  @override
+  String get section8Description =>
+      'Configurez le Régime de pensions du Canada, la Sécurité de la vieillesse et autres prestations';
+
+  @override
+  String get section9Description =>
+      'Estimez vos dépenses de vie avant et après la retraite';
+
+  @override
+  String get section10Description =>
+      'Planifiez quand vous et votre conjoint prendrez votre retraite';
+
+  @override
+  String get section11Description =>
+      'Ajoutez des événements majeurs comme la vente d\'une maison ou de grandes dépenses';
+
+  @override
+  String get section12Description =>
+      'Révisez vos informations et complétez la configuration';
+
+  // Wizard - Category titles
+  @override
+  String get categoryGettingStarted => 'Pour commencer';
+
+  @override
+  String get categoryIndividuals => 'Individus';
+
+  @override
+  String get categoryFinancialSituation => 'Situation financière';
+
+  @override
+  String get categoryRetirementIncome => 'Revenu de retraite';
+
+  @override
+  String get categoryKeyEvents => 'Événements clés';
+
+  @override
+  String get categoryScenariosReview => 'Révision et sommaire';
 }

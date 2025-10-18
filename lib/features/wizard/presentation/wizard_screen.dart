@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_builder.dart';
 import 'package:retire1/features/wizard/domain/wizard_section_status.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_progress_provider.dart';
@@ -78,15 +79,36 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     return const WelcomeSectionScreen();
   }
 
+  String _getSectionTitle(AppLocalizations l10n, String? titleKey) {
+    if (titleKey == null) return l10n.wizard;
+
+    return switch (titleKey) {
+      'section1Title' => l10n.section1Title,
+      'section2Title' => l10n.section2Title,
+      'section3Title' => l10n.section3Title,
+      'section4Title' => l10n.section4Title,
+      'section5Title' => l10n.section5Title,
+      'section6Title' => l10n.section6Title,
+      'section7Title' => l10n.section7Title,
+      'section8Title' => l10n.section8Title,
+      'section9Title' => l10n.section9Title,
+      'section10Title' => l10n.section10Title,
+      'section11Title' => l10n.section11Title,
+      'section12Title' => l10n.section12Title,
+      _ => titleKey,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     // Loading state
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Loading Wizard...'),
+          title: Text(l10n.loadingWizard),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -98,7 +120,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     if (_error != null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Error'),
+          title: Text(l10n.wizard),
         ),
         body: Center(
           child: Column(
@@ -111,7 +133,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Failed to load wizard',
+                l10n.failedToLoadWizard,
                 style: theme.textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
@@ -127,7 +149,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
               FilledButton.icon(
                 onPressed: _initializeWizard,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: Text(l10n.retry),
               ),
             ],
           ),
@@ -144,7 +166,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(currentSection?.titleKey ?? 'Wizard'),
+            Text(_getSectionTitle(l10n, currentSection?.titleKey)),
             const SizedBox(height: 4),
             const WizardProgressBar(),
           ],

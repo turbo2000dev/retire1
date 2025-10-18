@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_progress_provider.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_sections_config.dart';
 
@@ -18,6 +19,7 @@ class WizardNavButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final currentSection = WizardSectionsConfig.getSectionById(currentSectionId);
     final previousSection = WizardSectionsConfig.getPreviousSection(currentSectionId);
     final nextSection = WizardSectionsConfig.getNextSection(currentSectionId);
@@ -34,7 +36,7 @@ class WizardNavButtons extends ConsumerWidget {
           TextButton.icon(
             onPressed: () => onNavigate(previousSection.id),
             icon: const Icon(Icons.chevron_left),
-            label: const Text('Previous'),
+            label: Text(l10n.previous),
           ),
 
         const SizedBox(width: 8),
@@ -48,7 +50,7 @@ class WizardNavButtons extends ConsumerWidget {
                 onNavigate(nextSection.id);
               }
             },
-            child: const Text('Skip'),
+            child: Text(l10n.skip),
           ),
 
         const SizedBox(width: 8),
@@ -57,14 +59,14 @@ class WizardNavButtons extends ConsumerWidget {
         if (nextSection != null)
           FilledButton.icon(
             onPressed: () => onNavigate(nextSection.id),
-            label: const Text('Next'),
+            label: Text(l10n.next),
             icon: const Icon(Icons.chevron_right),
           )
         else
           // Finish button on last section
           FilledButton.icon(
             onPressed: () => _handleFinish(context, ref),
-            label: const Text('Finish'),
+            label: Text(l10n.finish),
             icon: const Icon(Icons.check),
           ),
       ],

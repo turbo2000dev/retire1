@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/domain/wizard_section.dart';
 import 'package:retire1/features/wizard/domain/wizard_section_status.dart';
 
@@ -19,9 +20,46 @@ class WizardSectionCard extends StatelessWidget {
     required this.onTap,
   });
 
+  String _getLocalizedTitle(AppLocalizations l10n) {
+    return switch (section.titleKey) {
+      'section1Title' => l10n.section1Title,
+      'section2Title' => l10n.section2Title,
+      'section3Title' => l10n.section3Title,
+      'section4Title' => l10n.section4Title,
+      'section5Title' => l10n.section5Title,
+      'section6Title' => l10n.section6Title,
+      'section7Title' => l10n.section7Title,
+      'section8Title' => l10n.section8Title,
+      'section9Title' => l10n.section9Title,
+      'section10Title' => l10n.section10Title,
+      'section11Title' => l10n.section11Title,
+      'section12Title' => l10n.section12Title,
+      _ => section.titleKey,
+    };
+  }
+
+  String _getLocalizedDescription(AppLocalizations l10n) {
+    return switch (section.descriptionKey) {
+      'section1Description' => l10n.section1Description,
+      'section2Description' => l10n.section2Description,
+      'section3Description' => l10n.section3Description,
+      'section4Description' => l10n.section4Description,
+      'section5Description' => l10n.section5Description,
+      'section6Description' => l10n.section6Description,
+      'section7Description' => l10n.section7Description,
+      'section8Description' => l10n.section8Description,
+      'section9Description' => l10n.section9Description,
+      'section10Description' => l10n.section10Description,
+      'section11Description' => l10n.section11Description,
+      'section12Description' => l10n.section12Description,
+      _ => section.descriptionKey,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final effectiveStatus = status ?? WizardSectionStatus.notStarted();
 
     // Determine card styling based on state
@@ -70,7 +108,7 @@ class WizardSectionCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              section.titleKey,
+                              _getLocalizedTitle(l10n),
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontWeight: isCurrentSection
                                     ? FontWeight.bold
@@ -91,7 +129,7 @@ class WizardSectionCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                'Required',
+                                l10n.required,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: theme.colorScheme.error,
                                   fontSize: 10,
@@ -112,7 +150,7 @@ class WizardSectionCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                'Optional',
+                                l10n.optional,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: theme.colorScheme.tertiary,
                                   fontSize: 10,
@@ -126,7 +164,7 @@ class WizardSectionCard extends StatelessWidget {
 
                       // Description
                       Text(
-                        section.descriptionKey,
+                        _getLocalizedDescription(l10n),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
@@ -150,7 +188,7 @@ class WizardSectionCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      'Next',
+                      l10n.next,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.onSecondary,
                         fontWeight: FontWeight.bold,

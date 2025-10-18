@@ -97,6 +97,56 @@ abstract class AppLocalizations {
   String get noEvents;
   String get noScenarios;
 
+  // Wizard - UI strings
+  String get wizard;
+  String get loadingWizard;
+  String get failedToLoadWizard;
+  String get retry;
+  String get previous;
+  String get next;
+  String get skip;
+  String get finish;
+  String get required;
+  String get optional;
+  String get errorLoadingSections;
+  String get sections;
+
+  // Wizard - Section titles
+  String get section1Title;
+  String get section2Title;
+  String get section3Title;
+  String get section4Title;
+  String get section5Title;
+  String get section6Title;
+  String get section7Title;
+  String get section8Title;
+  String get section9Title;
+  String get section10Title;
+  String get section11Title;
+  String get section12Title;
+
+  // Wizard - Section descriptions
+  String get section1Description;
+  String get section2Description;
+  String get section3Description;
+  String get section4Description;
+  String get section5Description;
+  String get section6Description;
+  String get section7Description;
+  String get section8Description;
+  String get section9Description;
+  String get section10Description;
+  String get section11Description;
+  String get section12Description;
+
+  // Wizard - Category titles
+  String get categoryGettingStarted;
+  String get categoryIndividuals;
+  String get categoryFinancialSituation;
+  String get categoryRetirementIncome;
+  String get categoryKeyEvents;
+  String get categoryScenariosReview;
+
   // Get the appropriate localizations based on locale
   static AppLocalizations of(BuildContext context) {
     final locale = Localizations.localeOf(context);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/domain/wizard_section.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_progress_provider.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_sections_config.dart';
@@ -18,10 +19,25 @@ class WizardSectionList extends ConsumerWidget {
     required this.onSectionSelected,
   });
 
+  String _getCategoryTitle(AppLocalizations l10n, String? titleKey) {
+    if (titleKey == null) return '';
+
+    return switch (titleKey) {
+      'categoryGettingStarted' => l10n.categoryGettingStarted,
+      'categoryIndividuals' => l10n.categoryIndividuals,
+      'categoryFinancialSituation' => l10n.categoryFinancialSituation,
+      'categoryRetirementIncome' => l10n.categoryRetirementIncome,
+      'categoryKeyEvents' => l10n.categoryKeyEvents,
+      'categoryScenariosReview' => l10n.categoryScenariosReview,
+      _ => titleKey,
+    };
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progressAsync = ref.watch(wizardProgressProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return progressAsync.when(
       data: (progress) {
@@ -64,7 +80,10 @@ class WizardSectionList extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          WizardSectionsConfig.categoryTitleKeys[category] ?? '',
+                          _getCategoryTitle(
+                            l10n,
+                            WizardSectionsConfig.categoryTitleKeys[category],
+                          ),
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             fontWeight: FontWeight.bold,
@@ -91,7 +110,7 @@ class WizardSectionList extends ConsumerWidget {
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
-        child: Text('Error loading sections: $error'),
+        child: Text('${l10n.errorLoadingSections}: $error'),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/domain/wizard_section.dart';
 import 'package:retire1/features/wizard/presentation/widgets/wizard_section_list.dart';
 
@@ -51,7 +52,7 @@ class WizardMobileLayout extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Sections',
+                    AppLocalizations.of(context).sections,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),

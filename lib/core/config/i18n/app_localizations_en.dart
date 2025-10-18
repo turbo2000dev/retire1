@@ -203,4 +203,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noScenarios => 'No scenario variations yet. Create a scenario!';
+
+  // Wizard - UI strings
+  @override
+  String get wizard => 'Setup Wizard';
+
+  @override
+  String get loadingWizard => 'Loading Wizard...';
+
+  @override
+  String get failedToLoadWizard => 'Failed to load wizard';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get finish => 'Finish';
+
+  @override
+  String get required => 'Required';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get errorLoadingSections => 'Error loading sections';
+
+  @override
+  String get sections => 'Sections';
+
+  // Wizard - Section titles
+  @override
+  String get section1Title => 'Welcome';
+
+  @override
+  String get section2Title => 'Project Basics';
+
+  @override
+  String get section3Title => 'Your Information';
+
+  @override
+  String get section4Title => 'Partner Information';
+
+  @override
+  String get section5Title => 'Assets';
+
+  @override
+  String get section6Title => 'Employment';
+
+  @override
+  String get section7Title => 'Quebec Benefits';
+
+  @override
+  String get section8Title => 'Government Benefits';
+
+  @override
+  String get section9Title => 'Expenses';
+
+  @override
+  String get section10Title => 'Retirement Timing';
+
+  @override
+  String get section11Title => 'Life Events';
+
+  @override
+  String get section12Title => 'Summary';
+
+  // Wizard - Section descriptions
+  @override
+  String get section1Description =>
+      'Learn about the retirement planning process and what to expect';
+
+  @override
+  String get section2Description =>
+      'Set up your project name and basic information';
+
+  @override
+  String get section3Description =>
+      'Enter your personal information including birth date';
+
+  @override
+  String get section4Description =>
+      'Add your partner\'s information if planning together';
+
+  @override
+  String get section5Description =>
+      'Add your real estate, RRSP, CELI, and other assets';
+
+  @override
+  String get section6Description =>
+      'Enter your current employment income and details';
+
+  @override
+  String get section7Description =>
+      'Learn about Quebec Pension Plan and other provincial benefits';
+
+  @override
+  String get section8Description =>
+      'Configure Canada Pension Plan, Old Age Security, and other benefits';
+
+  @override
+  String get section9Description =>
+      'Estimate your living expenses before and after retirement';
+
+  @override
+  String get section10Description =>
+      'Plan when you and your partner will retire';
+
+  @override
+  String get section11Description =>
+      'Add major life events like selling a home or large expenses';
+
+  @override
+  String get section12Description =>
+      'Review your information and complete the setup';
+
+  // Wizard - Category titles
+  @override
+  String get categoryGettingStarted => 'Getting Started';
+
+  @override
+  String get categoryIndividuals => 'Individuals';
+
+  @override
+  String get categoryFinancialSituation => 'Financial Situation';
+
+  @override
+  String get categoryRetirementIncome => 'Retirement Income';
+
+  @override
+  String get categoryKeyEvents => 'Key Events';
+
+  @override
+  String get categoryScenariosReview => 'Review & Summary';
 }
