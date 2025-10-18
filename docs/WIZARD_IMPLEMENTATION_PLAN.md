@@ -440,22 +440,33 @@ Primary Individual (3) [Required]
 
 ## 5. Development Phases
 
-### Phase 1: Foundation (Days 1-2)
+**IMPORTANT**: Each phase MUST include comprehensive unit tests written and passing BEFORE moving to the next phase. Tests are not optional - they are required deliverables.
+
+### Phase 1: Foundation (Days 1-2) ✅ COMPLETED
 **Goal**: Set up core wizard infrastructure
 
 **Tasks**:
-1. Create domain models (WizardSection, WizardProgress, WizardSectionStatus)
-2. Implement WizardProgressRepository with Firestore persistence
-3. Create wizard providers (progress, navigation)
-4. Define section configuration (all 12 sections with metadata)
-5. Run build_runner for Freezed code generation
+1. ✅ Create domain models (WizardSection, WizardProgress, WizardSectionStatus)
+2. ✅ Implement WizardProgressRepository with Firestore persistence
+3. ✅ Create wizard providers (progress, navigation)
+4. ✅ Define section configuration (all 12 sections with metadata)
+5. ✅ Run build_runner for Freezed code generation
 
-**Testing**:
-- Unit tests for domain models
-- Repository tests with fake Firestore
-- Provider tests for state management
+**Testing** ✅ COMPLETED (91 tests):
+- ✅ Unit tests for domain models (27 tests)
+- ✅ Repository tests with FakeFirebaseFirestore (21 tests)
+- ✅ Configuration tests for all 12 sections (43 tests)
+- ✅ All 308 tests passing (217 existing + 91 new)
 
-**Deliverable**: Core wizard data layer working
+**Test Requirements Met**:
+- Factory constructors validated
+- JSON serialization round-trip tested
+- Repository CRUD operations covered
+- Stream handling verified
+- Navigation helpers tested
+- Edge cases covered (null, empty, large datasets)
+
+**Deliverable**: ✅ Core wizard data layer working with full test coverage
 
 ---
 
@@ -471,19 +482,29 @@ Primary Individual (3) [Required]
 6. Implement WizardNavButtons (Next/Previous/Skip)
 7. Add WizardProgressBar
 
-**Testing**:
-- Widget tests for layout components
-- Responsive tests (phone/tablet/desktop)
-- Navigation flow tests
+**Testing Requirements** (MUST complete before Phase 3):
+- Widget tests for all layout components
+  - WizardScreen with pumpWidget
+  - WizardDesktopLayout rendering
+  - WizardMobileLayout rendering
+  - WizardSectionList item rendering
+  - WizardSectionCard states (notStarted, inProgress, complete, skipped, needsAttention)
+  - WizardNavButtons enabled/disabled states
+  - WizardProgressBar percentage calculation
+- Responsive tests (verify layouts at phone/tablet/desktop breakpoints)
+- Navigation flow tests (next, previous, skip, direct navigation)
+- Golden tests for visual regression (optional but recommended)
 
-**Deliverable**: Empty wizard shell with working navigation
+**Test Coverage Target**: Minimum 80% coverage for all new widgets
+
+**Deliverable**: Empty wizard shell with working navigation + comprehensive widget tests
 
 ---
 
 ### Phase 3: Core Sections Implementation (Days 5-9)
 **Goal**: Implement required data collection sections
 
-**Priority Order**:
+**Priority Order** (each day includes implementation + tests):
 1. **Day 5**: Section 2 (Project Basics) + Section 3 (Primary Individual)
 2. **Day 6**: Section 4 (Partner) + Section 8 (Government Benefits)
 3. **Day 7**: Section 9 (Expenses) + Section 10 (Retirement Timing)
@@ -496,39 +517,64 @@ Primary Individual (3) [Required]
 - Integration with existing repositories
 - Progress tracking
 - i18n strings (French + English)
+- **Complete test suite (REQUIRED)**
 
-**Testing**:
-- Widget tests for each section
-- Integration tests with repositories
-- Validation tests
-- i18n string completeness
+**Testing Requirements** (MANDATORY for each section):
+- Widget tests:
+  - Form field rendering
+  - Initial state loading from repository
+  - User input handling
+  - Validation error display
+  - Save functionality
+- Integration tests:
+  - Data persistence to repository
+  - Data retrieval on section re-entry
+  - Progress status updates
+- Validation tests:
+  - Required field validation
+  - Format validation (dates, numbers, etc.)
+  - Cross-field validation
+- i18n tests:
+  - String completeness (EN + FR)
+  - Missing translation detection
 
-**Deliverable**: All required sections working end-to-end
+**Test-First Approach**:
+- Write tests FIRST for each section
+- Implement section to make tests pass
+- Run full test suite before committing
+- Minimum 85% coverage for each section
+
+**Deliverable**: All required sections working end-to-end + comprehensive test suite
 
 ---
 
 ### Phase 4: Optional Sections (Days 10-11)
 **Goal**: Implement optional and educational sections
 
-**Tasks**:
+**Tasks** (each with complete test suite):
 1. Section 1 (Welcome & Overview) - Educational
 2. Section 6 (Employment & Income) - Optional data
 3. Section 7 (Benefits Education) - Educational
 4. Section 11 (Major Life Events) - Optional data
 
-**Testing**:
-- Widget tests
-- Skip functionality tests
-- Educational content rendering
+**Testing Requirements** (MANDATORY):
+- Widget tests for each section
+- Skip functionality tests (verify sections can be skipped and progress updated)
+- Educational content rendering tests
+- Navigation from/to optional sections
+- Progress calculation with skipped sections
+- i18n completeness tests
 
-**Deliverable**: Complete wizard with all 12 sections
+**Test Coverage Target**: Minimum 80% coverage for optional sections
+
+**Deliverable**: Complete wizard with all 12 sections + full test coverage
 
 ---
 
 ### Phase 5: Completion & Polish (Days 12-13)
 **Goal**: Finalize wizard and handle edge cases
 
-**Tasks**:
+**Tasks** (each with comprehensive tests):
 1. Implement WizardCompletionService (orchestrates final setup)
 2. Add scenario template creation
 3. Handle wizard resume/restore
@@ -537,13 +583,34 @@ Primary Individual (3) [Required]
 6. Add loading states and error handling
 7. Test stop/resume flow thoroughly
 
-**Testing**:
-- End-to-end wizard completion tests
-- Stop/resume tests
-- Error handling tests
-- Cross-browser testing
+**Testing Requirements** (CRITICAL):
+- End-to-end tests:
+  - Complete wizard flow from start to finish
+  - All 12 sections in sequence
+  - Data persistence verification
+  - Final project state validation
+- Stop/resume tests:
+  - Stop at each section, verify progress saved
+  - Resume from each section, verify state restored
+  - Multiple stop/resume cycles
+  - Progress tracking across sessions
+- Error handling tests:
+  - Network failures during save
+  - Invalid data handling
+  - Concurrent modification scenarios
+  - Recovery from errors
+- Cross-browser/platform testing:
+  - Chrome, Firefox, Safari
+  - Mobile browsers (iOS Safari, Chrome Mobile)
+  - Desktop app (macOS)
+- Performance tests:
+  - Large datasets (many assets, events)
+  - Navigation speed
+  - Memory usage
 
-**Deliverable**: Production-ready wizard
+**Test Coverage Target**: Minimum 90% coverage for completion logic
+
+**Deliverable**: Production-ready wizard with comprehensive test suite
 
 ---
 
@@ -558,15 +625,123 @@ Primary Individual (3) [Required]
 5. Write user documentation
 6. Write developer documentation
 
-**Testing**:
-- Integration tests with app navigation
-- User acceptance testing
+**Testing Requirements** (FINAL VALIDATION):
+- Integration tests:
+  - Router navigation to/from wizard
+  - Deep linking to specific sections
+  - Back button handling
+  - Wizard entry points from multiple screens
+- State handling tests:
+  - In-progress wizard detection
+  - Completed wizard state
+  - Re-run wizard flow
+- User acceptance testing:
+  - Complete user flows with real data
+  - French and English language testing
+  - All platforms (web, iOS, macOS)
+- Regression testing:
+  - Run ALL existing tests (308 + new wizard tests)
+  - Verify no existing functionality broken
+  - Performance benchmarks maintained
 
-**Deliverable**: Fully integrated wizard
+**Final Test Report Requirements**:
+- Total test count (must be > 400)
+- Coverage percentage (target: >85% for wizard feature)
+- All tests passing on CI/CD
+- No analyzer warnings
+- Performance metrics documented
+
+**Deliverable**: Fully integrated wizard with complete test coverage and documentation
 
 ---
 
-## 6. Key Architectural Decisions
+## 6. Testing Strategy
+
+### Test-Driven Development (TDD) Approach
+**MANDATORY**: All phases must follow this workflow:
+1. Write tests FIRST (define expected behavior)
+2. Run tests (verify they fail)
+3. Implement code to make tests pass
+4. Refactor while keeping tests green
+5. Commit only when all tests pass
+
+### Test Categories
+
+**Unit Tests** (Primary focus):
+- Domain models (Freezed classes, factory methods, getters)
+- Repositories (CRUD operations with FakeFirebaseFirestore)
+- Providers (state management, AsyncNotifiers)
+- Configuration (section definitions, validation rules)
+- Utilities (helpers, formatters, converters)
+
+**Widget Tests** (Secondary focus):
+- Layout components (responsive breakpoints)
+- Form widgets (input handling, validation display)
+- Navigation components (buttons, progress bars)
+- Section screens (rendering, user interaction)
+- Error states and loading indicators
+
+**Integration Tests** (Tertiary focus):
+- Data flow (widget → provider → repository → Firestore)
+- Navigation flow (section-to-section transitions)
+- Stop/resume scenarios
+- Complete wizard flows
+
+### Coverage Targets
+- **Overall**: Minimum 85% code coverage for wizard feature
+- **Domain layer**: 100% coverage (models, business logic)
+- **Data layer**: 95% coverage (repositories)
+- **Presentation layer**: 80% coverage (widgets, providers)
+
+### Test Quality Standards
+Every test must:
+- Have a clear, descriptive name
+- Test one specific behavior
+- Be independent (no shared state between tests)
+- Be deterministic (same input = same output)
+- Run quickly (<100ms for unit tests)
+- Clean up resources (dispose streams, controllers)
+
+### Test File Organization
+```
+test/
+└── features/
+    └── wizard/
+        ├── domain/
+        │   ├── wizard_section_test.dart
+        │   ├── wizard_progress_test.dart
+        │   └── wizard_section_status_test.dart
+        ├── data/
+        │   └── wizard_progress_repository_test.dart
+        └── presentation/
+            ├── providers/
+            │   ├── wizard_progress_provider_test.dart
+            │   └── wizard_sections_config_test.dart
+            ├── widgets/
+            │   ├── wizard_screen_test.dart
+            │   ├── wizard_section_list_test.dart
+            │   └── wizard_nav_buttons_test.dart
+            └── sections/
+                ├── welcome_section_test.dart
+                ├── project_basics_section_test.dart
+                └── ... (all 12 sections)
+```
+
+### Continuous Integration
+- All tests run on every commit
+- Pull requests blocked if tests fail
+- Coverage reports generated automatically
+- Analyzer must pass with zero issues
+
+### Test Maintenance
+- Update tests when requirements change
+- Remove obsolete tests
+- Refactor tests with production code
+- Document complex test scenarios
+
+---
+
+## 7. Key Architectural Decisions
 
 ### Decision 1: Immediate Persistence vs. Draft Mode
 **Choice**: ✅ Immediate Persistence
