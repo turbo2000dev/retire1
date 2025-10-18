@@ -6,6 +6,7 @@ import 'package:retire1/core/ui/responsive/screen_size.dart';
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_individuals_step.dart';
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_revenue_sources_step.dart';
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_assets_step.dart';
+import 'package:retire1/features/project/presentation/wizard/steps/wizard_expenses_step.dart';
 import 'package:retire1/features/project/presentation/wizard/wizard_provider.dart';
 
 /// Main wizard screen with stepper navigation
@@ -287,6 +288,9 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
         return const WizardAssetsStep();
 
       case 3:
+        // Step 4: Expenses (Phase 5 - Implemented)
+        return const WizardExpensesStep();
+
       case 4:
       case 5:
         // Placeholder content for remaining steps
