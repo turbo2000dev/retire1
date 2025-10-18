@@ -90,6 +90,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+  # Testing utilities
+  fake_cloud_firestore: ^3.0.3
+
   # Code generation
   build_runner: ^2.4.13
   freezed: ^2.5.7
