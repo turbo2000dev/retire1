@@ -57,3 +57,4 @@ A dual-panel interface where:
 - Follow best practices in @"specs/Design Best Practices.md" and in @"specs/UI Guidelines.md"
 - The architecture is described in @"docs/ARCHITECTURE.md"
 - Reuse data layer services to ensure consistency and maintainability
+- 
