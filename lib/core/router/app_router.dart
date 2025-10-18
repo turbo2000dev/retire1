@@ -55,12 +55,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.login,
         name: 'login',
-        pageBuilder: (context, state) => MaterialPage(key: state.pageKey, child: const LoginScreen()),
+        pageBuilder: (context, state) =>
+            MaterialPage(key: state.pageKey, child: const LoginScreen()),
       ),
       GoRoute(
         path: AppRoutes.register,
         name: 'register',
-        pageBuilder: (context, state) => MaterialPage(key: state.pageKey, child: const RegisterScreen()),
+        pageBuilder: (context, state) =>
+            MaterialPage(key: state.pageKey, child: const RegisterScreen()),
       ),
 
       // Protected routes (with shell)
@@ -70,40 +72,61 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.dashboard,
             name: 'dashboard',
-            pageBuilder: (context, state) => NoTransitionPage(key: state.pageKey, child: const DashboardScreen()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const DashboardScreen(),
+            ),
           ),
           GoRoute(
             path: AppRoutes.baseParameters,
             name: 'baseParameters',
-            pageBuilder: (context, state) => NoTransitionPage(key: state.pageKey, child: const BaseParametersScreen()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const BaseParametersScreen(),
+            ),
           ),
           GoRoute(
             path: AppRoutes.assetsEvents,
             name: 'assetsEvents',
-            pageBuilder: (context, state) => NoTransitionPage(key: state.pageKey, child: const AssetsEventsScreen()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const AssetsEventsScreen(),
+            ),
           ),
           GoRoute(
             path: AppRoutes.scenarios,
             name: 'scenarios',
-            pageBuilder: (context, state) => NoTransitionPage(key: state.pageKey, child: const ScenariosScreen()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const ScenariosScreen(),
+            ),
           ),
           GoRoute(
             path: '/scenarios/editor/:id',
             name: 'scenarioEditor',
             pageBuilder: (context, state) {
               final scenarioId = state.pathParameters['id']!;
-              return NoTransitionPage(key: state.pageKey, child: ScenarioEditorScreen(scenarioId: scenarioId));
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: ScenarioEditorScreen(scenarioId: scenarioId),
+              );
             },
           ),
           GoRoute(
             path: AppRoutes.projection,
             name: 'projection',
-            pageBuilder: (context, state) => NoTransitionPage(key: state.pageKey, child: const ProjectionScreen()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const ProjectionScreen(),
+            ),
           ),
           GoRoute(
             path: AppRoutes.settings,
             name: 'settings',
-            pageBuilder: (context, state) => NoTransitionPage(key: state.pageKey, child: const SettingsScreen()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const SettingsScreen(),
+            ),
           ),
         ],
       ),

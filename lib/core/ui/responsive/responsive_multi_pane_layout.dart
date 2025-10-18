@@ -73,7 +73,10 @@ class ResponsiveMultiPaneLayout extends StatelessWidget {
             const VerticalDivider(width: 1),
           ],
           Expanded(child: centerPane),
-          if (endPane != null) ...[const VerticalDivider(width: 1), SizedBox(width: endPaneWidth, child: endPane)],
+          if (endPane != null) ...[
+            const VerticalDivider(width: 1),
+            SizedBox(width: endPaneWidth, child: endPane),
+          ],
         ],
       );
     }
@@ -132,7 +135,9 @@ class _CollapsiblePaneState extends State<_CollapsiblePane> {
             bottom: 0,
             child: Center(
               child: IconButton(
-                icon: Icon(_isCollapsed ? Icons.chevron_right : Icons.chevron_left),
+                icon: Icon(
+                  _isCollapsed ? Icons.chevron_right : Icons.chevron_left,
+                ),
                 onPressed: _toggleCollapsed,
               ),
             ),

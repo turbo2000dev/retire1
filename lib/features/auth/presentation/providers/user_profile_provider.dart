@@ -17,7 +17,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<User?>> {
   final String? _userId;
 
   UserProfileNotifier(this._repository, this._userId)
-      : super(const AsyncValue.loading()) {
+    : super(const AsyncValue.loading()) {
     _loadProfile();
   }
 
@@ -48,9 +48,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<User?>> {
     if (currentProfile == null) return;
 
     // Optimistically update the state
-    state = AsyncValue.data(
-      currentProfile.copyWith(displayName: displayName),
-    );
+    state = AsyncValue.data(currentProfile.copyWith(displayName: displayName));
 
     try {
       await _repository.updateDisplayName(_userId, displayName);
@@ -73,12 +71,13 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<User?>> {
     if (currentProfile == null) return;
 
     try {
-      final photoUrl = await _repository.uploadProfilePicture(_userId, imageFile);
+      final photoUrl = await _repository.uploadProfilePicture(
+        _userId,
+        imageFile,
+      );
 
       // Update state with new photo URL
-      state = AsyncValue.data(
-        currentProfile.copyWith(photoUrl: photoUrl),
-      );
+      state = AsyncValue.data(currentProfile.copyWith(photoUrl: photoUrl));
     } catch (e, stack) {
       log('Failed to upload profile picture', error: e, stackTrace: stack);
       state = AsyncValue.error(e, stack);
@@ -100,9 +99,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<User?>> {
     if (currentProfile == null) return;
 
     // Optimistically update the state
-    state = AsyncValue.data(
-      currentProfile.copyWith(photoUrl: photoUrl),
-    );
+    state = AsyncValue.data(currentProfile.copyWith(photoUrl: photoUrl));
 
     try {
       await _repository.updatePhotoUrl(_userId, photoUrl);
@@ -134,14 +131,14 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<User?>> {
 /// Provider for user profile state
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, AsyncValue<User?>>((ref) {
-  final repository = ref.watch(userProfileRepositoryProvider);
-  final authState = ref.watch(authNotifierProvider);
+      final repository = ref.watch(userProfileRepositoryProvider);
+      final authState = ref.watch(authNotifierProvider);
 
-  // Get user ID from auth state
-  final userId = authState is Authenticated ? authState.user.id : null;
+      // Get user ID from auth state
+      final userId = authState is Authenticated ? authState.user.id : null;
 
-  return UserProfileNotifier(repository, userId);
-});
+      return UserProfileNotifier(repository, userId);
+    });
 
 /// Provider for current user (merged from auth and profile)
 final currentUserProvider = Provider<User?>((ref) {

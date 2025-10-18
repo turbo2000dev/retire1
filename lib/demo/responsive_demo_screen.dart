@@ -19,13 +19,19 @@ class ResponsiveDemoScreen extends ConsumerWidget {
         title: const Text('Responsive Layout Demo'),
         actions: [
           IconButton(
-            icon: Icon(themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode),
+            icon: Icon(
+              themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode,
+            ),
             onPressed: () {
-              ref.read(themeModeProvider.notifier).state = themeMode == ThemeMode.light
+              ref
+                  .read(themeModeProvider.notifier)
+                  .state = themeMode == ThemeMode.light
                   ? ThemeMode.dark
                   : ThemeMode.light;
             },
-            tooltip: themeMode == ThemeMode.light ? 'Switch to Dark Mode' : 'Switch to Light Mode',
+            tooltip: themeMode == ThemeMode.light
+                ? 'Switch to Dark Mode'
+                : 'Switch to Light Mode',
           ),
         ],
       ),
@@ -41,13 +47,32 @@ class ResponsiveDemoScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Device Information', style: theme.textTheme.titleLarge),
+                    Text(
+                      'Device Information',
+                      style: theme.textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 16),
-                    _InfoRow(label: 'Device Type', value: screenSize.deviceType, icon: _getDeviceIcon(screenSize)),
-                    _InfoRow(label: 'Screen Width', value: '${screenSize.width.toStringAsFixed(1)} px'),
-                    _InfoRow(label: 'Screen Height', value: '${screenSize.height.toStringAsFixed(1)} px'),
-                    _InfoRow(label: 'Orientation', value: screenSize.isPortrait ? 'Portrait' : 'Landscape'),
-                    _InfoRow(label: 'Spacing', value: '${screenSize.spacing.toStringAsFixed(1)} px'),
+                    _InfoRow(
+                      label: 'Device Type',
+                      value: screenSize.deviceType,
+                      icon: _getDeviceIcon(screenSize),
+                    ),
+                    _InfoRow(
+                      label: 'Screen Width',
+                      value: '${screenSize.width.toStringAsFixed(1)} px',
+                    ),
+                    _InfoRow(
+                      label: 'Screen Height',
+                      value: '${screenSize.height.toStringAsFixed(1)} px',
+                    ),
+                    _InfoRow(
+                      label: 'Orientation',
+                      value: screenSize.isPortrait ? 'Portrait' : 'Landscape',
+                    ),
+                    _InfoRow(
+                      label: 'Spacing',
+                      value: '${screenSize.spacing.toStringAsFixed(1)} px',
+                    ),
                   ],
                 ),
               ),
@@ -61,7 +86,10 @@ class ResponsiveDemoScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Layout Breakpoints', style: theme.textTheme.titleLarge),
+                    Text(
+                      'Layout Breakpoints',
+                      style: theme.textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 16),
                     _BreakpointIndicator(
                       label: 'Phone',
@@ -70,7 +98,8 @@ class ResponsiveDemoScreen extends ConsumerWidget {
                     ),
                     _BreakpointIndicator(
                       label: 'Tablet',
-                      range: '${LayoutBreakpoints.phoneMax} - ${LayoutBreakpoints.tabletMax} px',
+                      range:
+                          '${LayoutBreakpoints.phoneMax} - ${LayoutBreakpoints.tabletMax} px',
                       isActive: screenSize.isTablet,
                     ),
                     _BreakpointIndicator(
@@ -107,7 +136,10 @@ class ResponsiveDemoScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Testing Instructions', style: theme.textTheme.titleLarge),
+                    Text(
+                      'Testing Instructions',
+                      style: theme.textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       '1. Resize the window to see values update\n'
@@ -148,11 +180,18 @@ class _InfoRow extends StatelessWidget {
         children: [
           if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
           Expanded(
-            child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+            child: Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+            ),
           ),
           Text(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ],
       ),
@@ -165,7 +204,11 @@ class _BreakpointIndicator extends StatelessWidget {
   final String range;
   final bool isActive;
 
-  const _BreakpointIndicator({required this.label, required this.range, required this.isActive});
+  const _BreakpointIndicator({
+    required this.label,
+    required this.range,
+    required this.isActive,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -175,10 +218,14 @@ class _BreakpointIndicator extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8.0),
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        color: isActive ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest,
+        color: isActive
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isActive ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.2),
+          color: isActive
+              ? theme.colorScheme.primary
+              : theme.colorScheme.outline.withValues(alpha: 0.2),
           width: isActive ? 2 : 1,
         ),
       ),
@@ -186,7 +233,9 @@ class _BreakpointIndicator extends StatelessWidget {
         children: [
           Icon(
             isActive ? Icons.check_circle : Icons.circle_outlined,
-            color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+            color: isActive
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurfaceVariant,
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -198,13 +247,17 @@ class _BreakpointIndicator extends StatelessWidget {
                   label,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                    color: isActive ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurface,
+                    color: isActive
+                        ? theme.colorScheme.onPrimaryContainer
+                        : theme.colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   range,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: isActive ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurfaceVariant,
+                    color: isActive
+                        ? theme.colorScheme.onPrimaryContainer
+                        : theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -252,9 +305,9 @@ class _ResponsiveGrid extends StatelessWidget {
           child: Center(
             child: Text(
               '${index + 1}',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onSecondaryContainer),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
             ),
           ),
         );

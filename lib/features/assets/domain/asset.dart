@@ -4,14 +4,7 @@ part 'asset.freezed.dart';
 part 'asset.g.dart';
 
 /// Asset type for real estate properties
-enum RealEstateType {
-  house,
-  condo,
-  cottage,
-  land,
-  commercial,
-  other,
-}
+enum RealEstateType { house, condo, cottage, land, commercial, other }
 
 /// Asset domain model using Freezed unions for different asset types
 @freezed

@@ -36,8 +36,10 @@ class IncomeCalculator {
     double inflationRate = 0.02,
   }) {
     final projectionStartYear = year - yearsFromStart;
-    log('IncomeCalculator.calculateIncome: year=$year, age=$age, individual=${individual.name}',
-        name: 'IncomeCalculator');
+    log(
+      'IncomeCalculator.calculateIncome: year=$year, age=$age, individual=${individual.name}',
+      name: 'IncomeCalculator',
+    );
 
     // Check if individual is deceased (death event occurred)
     final isDeceased = _isIndividualDeceased(
@@ -46,8 +48,10 @@ class IncomeCalculator {
     );
 
     if (isDeceased) {
-      log('IncomeCalculator: Individual ${individual.name} is deceased - no income',
-          name: 'IncomeCalculator');
+      log(
+        'IncomeCalculator: Individual ${individual.name} is deceased - no income',
+        name: 'IncomeCalculator',
+      );
       return const AnnualIncome(
         employment: 0.0,
         rrq: 0.0,
@@ -80,10 +84,7 @@ class IncomeCalculator {
       inflationRate: inflationRate,
     );
 
-    final rrif = _calculateRRIF(
-      age: age,
-      criBalance: criBalance,
-    );
+    final rrif = _calculateRRIF(age: age, criBalance: criBalance);
 
     final rrpe = _calculateRRPE(
       individual: individual,
@@ -112,9 +113,11 @@ class IncomeCalculator {
       other: survivorBenefits, // Survivor benefits go in 'other'
     );
 
-    log('IncomeCalculator: Total income=${income.total} '
-        '(employment=$employment, rrq=$rrq, psv=$psv, rrif=$rrif, rrpe=$rrpe, survivor=$survivorBenefits)',
-        name: 'IncomeCalculator');
+    log(
+      'IncomeCalculator: Total income=${income.total} '
+      '(employment=$employment, rrq=$rrq, psv=$psv, rrif=$rrif, rrpe=$rrpe, survivor=$survivorBenefits)',
+      name: 'IncomeCalculator',
+    );
 
     return income;
   }
@@ -129,9 +132,15 @@ class IncomeCalculator {
       return event.when(
         death: (id, individualId, timing) => individualId == individual.id,
         retirement: (id, individualId, timing) => false,
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-                withdrawAccountId, depositAccountId) =>
-            false,
+        realEstateTransaction:
+            (
+              id,
+              timing,
+              assetSoldId,
+              assetPurchasedId,
+              withdrawAccountId,
+              depositAccountId,
+            ) => false,
       );
     }).firstOrNull;
 
@@ -195,10 +204,12 @@ class IncomeCalculator {
       const survivorBenefitRate = 0.60;
       final survivorBenefit = (deceasedRRQ + deceasedPSV) * survivorBenefitRate;
 
-      log('IncomeCalculator._calculateSurvivorBenefits: ${individual.name} receives '
-          '\$$survivorBenefit from deceased ${otherIndividual.name} '
-          '(RRQ: \$$deceasedRRQ, PSV: \$$deceasedPSV)',
-          name: 'IncomeCalculator');
+      log(
+        'IncomeCalculator._calculateSurvivorBenefits: ${individual.name} receives '
+        '\$$survivorBenefit from deceased ${otherIndividual.name} '
+        '(RRQ: \$$deceasedRRQ, PSV: \$$deceasedPSV)',
+        name: 'IncomeCalculator',
+      );
 
       totalSurvivorBenefits += survivorBenefit;
     }
@@ -230,16 +241,24 @@ class IncomeCalculator {
       return event.when(
         retirement: (id, individualId, timing) => individualId == individual.id,
         death: (id, individualId, timing) => false,
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-                withdrawAccountId, depositAccountId) =>
-            false,
+        realEstateTransaction:
+            (
+              id,
+              timing,
+              assetSoldId,
+              assetPurchasedId,
+              withdrawAccountId,
+              depositAccountId,
+            ) => false,
       );
     });
 
     if (hasRetired) {
       // Retirement event has occurred - no more employment income
-      log('IncomeCalculator._calculateEmploymentIncome: ${individual.name} is retired - no employment income',
-          name: 'IncomeCalculator');
+      log(
+        'IncomeCalculator._calculateEmploymentIncome: ${individual.name} is retired - no employment income',
+        name: 'IncomeCalculator',
+      );
       return 0.0;
     }
 
@@ -259,10 +278,12 @@ class IncomeCalculator {
 
     final adjustedIncome = baseIncome * inflationMultiplier;
 
-    log('IncomeCalculator._calculateEmploymentIncome: ${individual.name} '
-        'baseIncome=\$$baseIncome, yearsFromStart=$yearsFromStart, '
-        'inflationRate=$inflationRate, adjustedIncome=\$$adjustedIncome',
-        name: 'IncomeCalculator');
+    log(
+      'IncomeCalculator._calculateEmploymentIncome: ${individual.name} '
+      'baseIncome=\$$baseIncome, yearsFromStart=$yearsFromStart, '
+      'inflationRate=$inflationRate, adjustedIncome=\$$adjustedIncome',
+      name: 'IncomeCalculator',
+    );
 
     return adjustedIncome;
   }
@@ -304,8 +325,10 @@ class IncomeCalculator {
     } else {
       // Starting between 60 and 65: linear interpolation
       final progressRatio = (startAge - 60) / 5.0; // 0.0 at 60, 1.0 at 65
-      baseBenefit = individual.projectedRrqAt60 +
-                (individual.projectedRrqAt65 - individual.projectedRrqAt60) * progressRatio;
+      baseBenefit =
+          individual.projectedRrqAt60 +
+          (individual.projectedRrqAt65 - individual.projectedRrqAt60) *
+              progressRatio;
     }
 
     // Apply inflation indexing for years since benefit started
@@ -316,10 +339,12 @@ class IncomeCalculator {
     }
     final indexedBenefit = baseBenefit * inflationMultiplier;
 
-    log('IncomeCalculator._calculateRRQ: age=$age, startAge=$startAge, '
-        'baseBenefit=\$$baseBenefit, yearsSinceStart=$yearsSinceStart, '
-        'inflationMultiplier=$inflationMultiplier, indexedBenefit=\$$indexedBenefit',
-        name: 'IncomeCalculator');
+    log(
+      'IncomeCalculator._calculateRRQ: age=$age, startAge=$startAge, '
+      'baseBenefit=\$$baseBenefit, yearsSinceStart=$yearsSinceStart, '
+      'inflationMultiplier=$inflationMultiplier, indexedBenefit=\$$indexedBenefit',
+      name: 'IncomeCalculator',
+    );
 
     return indexedBenefit;
   }
@@ -369,11 +394,13 @@ class IncomeCalculator {
     // PSV cannot go negative
     final finalAmount = psvAmount.clamp(0.0, double.infinity);
 
-    log('IncomeCalculator._calculatePSV: age=$age, startAge=$startAge, '
-        'basePsvAmount=\$$basePsvAmount, yearsSinceStart=$yearsSinceStart, '
-        'inflationMultiplier=$inflationMultiplier, otherIncome=$totalOtherIncome, '
-        'finalAmount=$finalAmount',
-        name: 'IncomeCalculator');
+    log(
+      'IncomeCalculator._calculatePSV: age=$age, startAge=$startAge, '
+      'basePsvAmount=\$$basePsvAmount, yearsSinceStart=$yearsSinceStart, '
+      'inflationMultiplier=$inflationMultiplier, otherIncome=$totalOtherIncome, '
+      'finalAmount=$finalAmount',
+      name: 'IncomeCalculator',
+    );
 
     return finalAmount;
   }
@@ -384,10 +411,7 @@ class IncomeCalculator {
   /// - No minimum before age 65
   /// - Percentage increases with age (4% at 65 to 20% at 95+)
   /// - Withdrawal is calculated as percentage of account balance
-  double _calculateRRIF({
-    required int age,
-    required double criBalance,
-  }) {
+  double _calculateRRIF({required int age, required double criBalance}) {
     // No CRI balance means no withdrawal
     if (criBalance <= 0) {
       return 0.0;
@@ -399,9 +423,11 @@ class IncomeCalculator {
     // Calculate minimum withdrawal
     final withdrawal = criBalance * withdrawalRate;
 
-    log('IncomeCalculator._calculateRRIF: age=$age, balance=$criBalance, '
-        'rate=$withdrawalRate, withdrawal=$withdrawal',
-        name: 'IncomeCalculator');
+    log(
+      'IncomeCalculator._calculateRRIF: age=$age, balance=$criBalance, '
+      'rate=$withdrawalRate, withdrawal=$withdrawal',
+      name: 'IncomeCalculator',
+    );
 
     return withdrawal;
   }
@@ -458,9 +484,15 @@ class IncomeCalculator {
     final retirementTiming = retirementEvent.when(
       retirement: (id, individualId, timing) => timing,
       death: (id, individualId, timing) => null,
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-              withdrawAccountId, depositAccountId) =>
-          null,
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => null,
     );
 
     if (retirementTiming == null) {
@@ -529,7 +561,8 @@ class IncomeCalculator {
     final averageSalary = totalSalary / salaryYearsCount;
 
     // Calculate base annual pension: years of service × average salary × 2%
-    final basePension = yearsOfService * averageSalary * kRRPEPensionAccrualRate;
+    final basePension =
+        yearsOfService * averageSalary * kRRPEPensionAccrualRate;
 
     // The pension starts at retirement and is indexed to inflation each year
     final yearsFromRetirement = year - retirementYear;
@@ -551,27 +584,35 @@ class IncomeCalculator {
 
       // The reduction uses the LOWER of: average salary or MGA
       // This prevents excessive reduction for lower-paid employees
-      final reductionBase = averageSalary < indexedMGA ? averageSalary : indexedMGA;
+      final reductionBase = averageSalary < indexedMGA
+          ? averageSalary
+          : indexedMGA;
 
       // Calculate reduction: 0.7% × service years (max 35) × reductionBase
-      final serviceYearsForReduction = yearsOfService > kRRPEMaxServiceYearsForReduction
+      final serviceYearsForReduction =
+          yearsOfService > kRRPEMaxServiceYearsForReduction
           ? kRRPEMaxServiceYearsForReduction
           : yearsOfService;
-      final reduction = kRRPEReductionRate * serviceYearsForReduction * reductionBase;
+      final reduction =
+          kRRPEReductionRate * serviceYearsForReduction * reductionBase;
 
       finalPension = (indexedPension - reduction).clamp(0.0, double.infinity);
 
-      log('IncomeCalculator._calculateRRPE: age=$age (≥65), reduction=\$$reduction '
-          '(serviceYears=$serviceYearsForReduction, reductionBase=\$$reductionBase, '
-          'averageSalary=\$$averageSalary, MGA=\$$indexedMGA)',
-          name: 'IncomeCalculator');
+      log(
+        'IncomeCalculator._calculateRRPE: age=$age (≥65), reduction=\$$reduction '
+        '(serviceYears=$serviceYearsForReduction, reductionBase=\$$reductionBase, '
+        'averageSalary=\$$averageSalary, MGA=\$$indexedMGA)',
+        name: 'IncomeCalculator',
+      );
     }
 
-    log('IncomeCalculator._calculateRRPE: age=$age, retirementYear=$retirementYear, '
-        'yearsOfService=$yearsOfService, yearsFromRetirement=$yearsFromRetirement, '
-        'averageSalary=\$$averageSalary, basePension=\$$basePension, '
-        'finalPension=\$$finalPension',
-        name: 'IncomeCalculator');
+    log(
+      'IncomeCalculator._calculateRRPE: age=$age, retirementYear=$retirementYear, '
+      'yearsOfService=$yearsOfService, yearsFromRetirement=$yearsFromRetirement, '
+      'averageSalary=\$$averageSalary, basePension=\$$basePension, '
+      'finalPension=\$$finalPension',
+      name: 'IncomeCalculator',
+    );
 
     return finalPension;
   }

@@ -14,7 +14,10 @@ import 'package:retire1/features/settings/presentation/providers/settings_provid
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  Future<void> _showLogoutConfirmation(BuildContext context, WidgetRef ref) async {
+  Future<void> _showLogoutConfirmation(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -41,10 +44,14 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _showEditDisplayNameDialog(BuildContext context, String currentName) async {
+  Future<void> _showEditDisplayNameDialog(
+    BuildContext context,
+    String currentName,
+  ) async {
     await showDialog(
       context: context,
-      builder: (context) => EditDisplayNameDialog(currentDisplayName: currentName),
+      builder: (context) =>
+          EditDisplayNameDialog(currentDisplayName: currentName),
     );
   }
 
@@ -91,10 +98,7 @@ class SettingsScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Profile',
-                            style: theme.textTheme.titleMedium,
-                          ),
+                          Text('Profile', style: theme.textTheme.titleMedium),
                           const SizedBox(height: 24),
                           // Profile picture
                           Center(
@@ -141,10 +145,7 @@ class SettingsScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Language',
-                          style: theme.textTheme.titleMedium,
-                        ),
+                        Text('Language', style: theme.textTheme.titleMedium),
                         const SizedBox(height: 16),
                         SegmentedButton<AppLanguage>(
                           segments: const [
@@ -187,10 +188,19 @@ class SettingsScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         SwitchListTile(
                           title: const Text('Auto-open Excel files'),
-                          subtitle: const Text('Automatically open Excel files after export'),
-                          value: ref.watch(settingsProvider).value?.autoOpenExcelFiles ?? true,
+                          subtitle: const Text(
+                            'Automatically open Excel files after export',
+                          ),
+                          value:
+                              ref
+                                  .watch(settingsProvider)
+                                  .value
+                                  ?.autoOpenExcelFiles ??
+                              true,
                           onChanged: (bool value) {
-                            ref.read(settingsProvider.notifier).updateAutoOpenExcelFiles(value);
+                            ref
+                                .read(settingsProvider.notifier)
+                                .updateAutoOpenExcelFiles(value);
                           },
                           secondary: const Icon(Icons.table_chart),
                           contentPadding: EdgeInsets.zero,

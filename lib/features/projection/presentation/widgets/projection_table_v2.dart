@@ -41,7 +41,10 @@ class ProjectionTableV2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     final hasPrimary = projection.years.any((y) => y.primaryAge != null);
     final hasSpouse = projection.years.any((y) => y.spouseAge != null);
@@ -55,10 +58,7 @@ class ProjectionTableV2 extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Row(
               children: [
-                Icon(
-                  Icons.table_chart,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.table_chart, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   'Yearly Breakdown ${useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
@@ -222,18 +222,42 @@ class ProjectionTableV2 extends StatelessWidget {
               ],
               rows: projection.years.map((year) {
                 // Apply dollar mode conversion
-                final totalIncome = _applyDollarMode(year.totalIncome, year.yearsFromStart);
-                final totalTax = _applyDollarMode(year.totalTax, year.yearsFromStart);
-                final afterTaxIncome = _applyDollarMode(year.afterTaxIncome, year.yearsFromStart);
-                final totalExpenses = _applyDollarMode(year.totalExpenses, year.yearsFromStart);
-                final netCashFlow = _applyDollarMode(year.netCashFlow, year.yearsFromStart);
+                final totalIncome = _applyDollarMode(
+                  year.totalIncome,
+                  year.yearsFromStart,
+                );
+                final totalTax = _applyDollarMode(
+                  year.totalTax,
+                  year.yearsFromStart,
+                );
+                final afterTaxIncome = _applyDollarMode(
+                  year.afterTaxIncome,
+                  year.yearsFromStart,
+                );
+                final totalExpenses = _applyDollarMode(
+                  year.totalExpenses,
+                  year.yearsFromStart,
+                );
+                final netCashFlow = _applyDollarMode(
+                  year.netCashFlow,
+                  year.yearsFromStart,
+                );
                 final assetReturns = _applyDollarMode(
                   year.assetReturns.values.fold(0.0, (sum, val) => sum + val),
                   year.yearsFromStart,
                 );
-                final netWorthStart = _applyDollarMode(year.netWorthStartOfYear, year.yearsFromStart);
-                final netWorthEnd = _applyDollarMode(year.netWorthEndOfYear, year.yearsFromStart);
-                final shortfall = _applyDollarMode(year.shortfallAmount, year.yearsFromStart);
+                final netWorthStart = _applyDollarMode(
+                  year.netWorthStartOfYear,
+                  year.yearsFromStart,
+                );
+                final netWorthEnd = _applyDollarMode(
+                  year.netWorthEndOfYear,
+                  year.yearsFromStart,
+                );
+                final shortfall = _applyDollarMode(
+                  year.shortfallAmount,
+                  year.yearsFromStart,
+                );
 
                 // Row color for shortfalls
                 final rowColor = year.hasShortfall
@@ -241,7 +265,9 @@ class ProjectionTableV2 extends StatelessWidget {
                     : null;
 
                 return DataRow2(
-                  color: rowColor != null ? WidgetStateProperty.all(rowColor) : null,
+                  color: rowColor != null
+                      ? WidgetStateProperty.all(rowColor)
+                      : null,
                   onTap: onYearTap != null ? () => onYearTap!(year.year) : null,
                   cells: [
                     // Year (fixed column)
@@ -259,7 +285,8 @@ class ProjectionTableV2 extends StatelessWidget {
                         Text(
                           year.primaryAge?.toString() ?? '-',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            decoration: _isPrimaryDeceased(projection.years, year)
+                            decoration:
+                                _isPrimaryDeceased(projection.years, year)
                                 ? TextDecoration.lineThrough
                                 : null,
                           ),
@@ -270,7 +297,8 @@ class ProjectionTableV2 extends StatelessWidget {
                         Text(
                           year.spouseAge?.toString() ?? '-',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            decoration: _isSpouseDeceased(projection.years, year)
+                            decoration:
+                                _isSpouseDeceased(projection.years, year)
                                 ? TextDecoration.lineThrough
                                 : null,
                           ),
@@ -278,7 +306,9 @@ class ProjectionTableV2 extends StatelessWidget {
                       ),
                     // Income (with survivor benefits icon)
                     DataCell(
-                      year.incomeByIndividual.values.any((income) => income.other > 0)
+                      year.incomeByIndividual.values.any(
+                            (income) => income.other > 0,
+                          )
                           ? Row(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -302,7 +332,9 @@ class ProjectionTableV2 extends StatelessWidget {
                           : Text(
                               currencyFormat.format(totalIncome),
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: totalIncome > 0 ? theme.colorScheme.tertiary : null,
+                                color: totalIncome > 0
+                                    ? theme.colorScheme.tertiary
+                                    : null,
                               ),
                             ),
                     ),
@@ -320,7 +352,9 @@ class ProjectionTableV2 extends StatelessWidget {
                       Text(
                         currencyFormat.format(afterTaxIncome),
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: afterTaxIncome > 0 ? theme.colorScheme.tertiary : null,
+                          color: afterTaxIncome > 0
+                              ? theme.colorScheme.tertiary
+                              : null,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -330,7 +364,9 @@ class ProjectionTableV2 extends StatelessWidget {
                       Text(
                         currencyFormat.format(totalExpenses),
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: totalExpenses > 0 ? theme.colorScheme.error : null,
+                          color: totalExpenses > 0
+                              ? theme.colorScheme.error
+                              : null,
                         ),
                       ),
                     ),
@@ -342,8 +378,8 @@ class ProjectionTableV2 extends StatelessWidget {
                           color: netCashFlow > 0
                               ? theme.colorScheme.tertiary
                               : netCashFlow < 0
-                                  ? theme.colorScheme.error
-                                  : null,
+                              ? theme.colorScheme.error
+                              : null,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -353,7 +389,9 @@ class ProjectionTableV2 extends StatelessWidget {
                       Text(
                         currencyFormat.format(assetReturns),
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: assetReturns > 0 ? theme.colorScheme.tertiary : null,
+                          color: assetReturns > 0
+                              ? theme.colorScheme.tertiary
+                              : null,
                         ),
                       ),
                     ),
@@ -395,10 +433,7 @@ class ProjectionTableV2 extends StatelessWidget {
                                 ),
                               ],
                             )
-                          : Text(
-                              '-',
-                              style: theme.textTheme.bodyMedium,
-                            ),
+                          : Text('-', style: theme.textTheme.bodyMedium),
                     ),
                   ],
                 );
@@ -411,7 +446,10 @@ class ProjectionTableV2 extends StatelessWidget {
   }
 
   /// Check if primary individual is deceased
-  bool _isPrimaryDeceased(List<YearlyProjection> years, YearlyProjection currentYear) {
+  bool _isPrimaryDeceased(
+    List<YearlyProjection> years,
+    YearlyProjection currentYear,
+  ) {
     if (individuals.isEmpty) return false;
 
     final primaryIndividual = individuals.first;
@@ -420,11 +458,15 @@ class ProjectionTableV2 extends StatelessWidget {
     for (int i = 0; i <= currentIndex; i++) {
       final year = years[i];
       final hasDeath = year.eventsOccurred.any((eventId) {
-        final event = events.where((e) => e.map(
-          retirement: (e) => e.id == eventId,
-          death: (e) => e.id == eventId,
-          realEstateTransaction: (e) => e.id == eventId,
-        )).firstOrNull;
+        final event = events
+            .where(
+              (e) => e.map(
+                retirement: (e) => e.id == eventId,
+                death: (e) => e.id == eventId,
+                realEstateTransaction: (e) => e.id == eventId,
+              ),
+            )
+            .firstOrNull;
 
         if (event == null) return false;
 
@@ -442,7 +484,10 @@ class ProjectionTableV2 extends StatelessWidget {
   }
 
   /// Check if spouse is deceased
-  bool _isSpouseDeceased(List<YearlyProjection> years, YearlyProjection currentYear) {
+  bool _isSpouseDeceased(
+    List<YearlyProjection> years,
+    YearlyProjection currentYear,
+  ) {
     if (individuals.length < 2) return false;
 
     final spouseIndividual = individuals[1];
@@ -451,11 +496,15 @@ class ProjectionTableV2 extends StatelessWidget {
     for (int i = 0; i <= currentIndex; i++) {
       final year = years[i];
       final hasDeath = year.eventsOccurred.any((eventId) {
-        final event = events.where((e) => e.map(
-          retirement: (e) => e.id == eventId,
-          death: (e) => e.id == eventId,
-          realEstateTransaction: (e) => e.id == eventId,
-        )).firstOrNull;
+        final event = events
+            .where(
+              (e) => e.map(
+                retirement: (e) => e.id == eventId,
+                death: (e) => e.id == eventId,
+                realEstateTransaction: (e) => e.id == eventId,
+              ),
+            )
+            .firstOrNull;
 
         if (event == null) return false;
 

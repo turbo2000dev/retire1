@@ -19,10 +19,7 @@ class DollarModeExplanationDialog extends StatelessWidget {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(
-            Icons.help_outline,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(Icons.help_outline, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           const Text('Dollar Display Modes'),
         ],

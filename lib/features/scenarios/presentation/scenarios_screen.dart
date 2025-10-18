@@ -17,9 +17,8 @@ class ScenariosScreen extends ConsumerWidget {
     final scenariosAsync = ref.watch(scenariosProvider);
 
     return scenariosAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (error, stack) => Scaffold(
         body: Center(
           child: ResponsiveContainer(
@@ -216,24 +215,21 @@ class ScenariosScreen extends ConsumerWidget {
             )
           else
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final scenario = variationScenarios[index];
-                  return ResponsiveContainer(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                      child: ScenarioCard(
-                        scenario: scenario,
-                        onEdit: () {
-                          context.go('/scenarios/editor/${scenario.id}');
-                        },
-                        onDelete: () => _deleteScenario(context, ref, scenario),
-                      ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final scenario = variationScenarios[index];
+                return ResponsiveContainer(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                    child: ScenarioCard(
+                      scenario: scenario,
+                      onEdit: () {
+                        context.go('/scenarios/editor/${scenario.id}');
+                      },
+                      onDelete: () => _deleteScenario(context, ref, scenario),
                     ),
-                  );
-                },
-                childCount: variationScenarios.length,
-              ),
+                  ),
+                );
+              }, childCount: variationScenarios.length),
             ),
           const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],

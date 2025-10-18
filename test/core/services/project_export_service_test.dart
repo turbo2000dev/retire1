@@ -33,7 +33,7 @@ void main() {
             name: 'John Doe',
             birthdate: DateTime(1965, 1, 1),
             employmentIncome: 80000,
-            
+
             rrqStartAge: 65,
             psvStartAge: 65,
             initialCeliRoom: 95000,
@@ -228,8 +228,9 @@ void main() {
         expect(assetsList.length, 5);
 
         // Check each asset type is preserved
-        final assetTypes =
-            assetsList.map((a) => (a as Map<String, dynamic>)['runtimeType']).toList();
+        final assetTypes = assetsList
+            .map((a) => (a as Map<String, dynamic>)['runtimeType'])
+            .toList();
         expect(assetTypes, contains('realEstate'));
         expect(assetTypes, contains('rrsp'));
         expect(assetTypes, contains('celi'));
@@ -267,8 +268,9 @@ void main() {
 
         expect(eventsList.length, 3);
 
-        final eventTypes =
-            eventsList.map((e) => (e as Map<String, dynamic>)['runtimeType']).toList();
+        final eventTypes = eventsList
+            .map((e) => (e as Map<String, dynamic>)['runtimeType'])
+            .toList();
         expect(eventTypes, contains('retirement'));
         expect(eventTypes, contains('death'));
         expect(eventTypes, contains('realEstateTransaction'));
@@ -322,8 +324,9 @@ void main() {
 
         expect(expensesList.length, 6);
 
-        final expenseCategories =
-            expensesList.map((e) => (e as Map<String, dynamic>)['runtimeType']).toList();
+        final expenseCategories = expensesList
+            .map((e) => (e as Map<String, dynamic>)['runtimeType'])
+            .toList();
         expect(expenseCategories, contains('housing'));
         expect(expenseCategories, contains('transport'));
         expect(expenseCategories, contains('dailyLiving'));
@@ -438,7 +441,10 @@ void main() {
         final filename = service.generateFilename(project);
 
         // Should only contain alphanumeric and hyphens
-        expect(filename, matches(RegExp(r'^project_[a-z0-9-]+_\d{4}-\d{2}-\d{2}\.json$')));
+        expect(
+          filename,
+          matches(RegExp(r'^project_[a-z0-9-]+_\d{4}-\d{2}-\d{2}\.json$')),
+        );
         expect(filename, isNot(contains('!')));
         expect(filename, isNot(contains('@')));
       });
@@ -502,7 +508,10 @@ void main() {
         final filename = service.generateFilename(project);
 
         // Should only contain ASCII alphanumeric and hyphens
-        expect(filename, matches(RegExp(r'^project_[a-z0-9-]+_\d{4}-\d{2}-\d{2}\.json$')));
+        expect(
+          filename,
+          matches(RegExp(r'^project_[a-z0-9-]+_\d{4}-\d{2}-\d{2}\.json$')),
+        );
       });
 
       test('should strip leading and trailing hyphens', () {

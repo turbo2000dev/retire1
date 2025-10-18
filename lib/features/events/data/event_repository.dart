@@ -8,14 +8,15 @@ class EventRepository {
   final FirebaseFirestore _firestore;
   final String projectId;
 
-  EventRepository({
-    required this.projectId,
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  EventRepository({required this.projectId, FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Get the events collection reference
   CollectionReference<Map<String, dynamic>> get _eventsCollection {
-    return _firestore.collection('projects').doc(projectId).collection('events');
+    return _firestore
+        .collection('projects')
+        .doc(projectId)
+        .collection('events');
   }
 
   /// Create a new event

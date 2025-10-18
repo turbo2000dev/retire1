@@ -51,7 +51,10 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     // Filter years to show every 5 years
     final filteredYears = widget.projection.years
@@ -124,7 +127,10 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
       celi = _applyDollarMode(celi, year.yearsFromStart);
       cri = _applyDollarMode(cri, year.yearsFromStart);
       cash = _applyDollarMode(cash, year.yearsFromStart);
-      final netWorth = _applyDollarMode(year.netWorthEndOfYear, year.yearsFromStart);
+      final netWorth = _applyDollarMode(
+        year.netWorthEndOfYear,
+        year.yearsFromStart,
+      );
 
       realEstateData.add(FlSpot(x, realEstate));
       rrspData.add(FlSpot(x, rrsp));
@@ -137,7 +143,10 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
     // Calculate max Y for scaling (using converted values)
     double maxY = 0;
     for (final year in filteredYears) {
-      final convertedNetWorth = _applyDollarMode(year.netWorthEndOfYear, year.yearsFromStart);
+      final convertedNetWorth = _applyDollarMode(
+        year.netWorthEndOfYear,
+        year.yearsFromStart,
+      );
       if (convertedNetWorth > maxY) maxY = convertedNetWorth;
     }
 
@@ -167,10 +176,7 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.pie_chart,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.pie_chart, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   'Asset Allocation Over Time ${widget.useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
@@ -225,8 +231,9 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
                           decoration: _assetTypeVisibility[assetType]!
                               ? null
                               : TextDecoration.lineThrough,
-                          fontWeight:
-                              isNetWorth ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: isNetWorth
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ],
@@ -270,7 +277,8 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
                         interval: 5,
                         getTitlesWidget: (value, meta) {
                           final index = filteredYears.indexWhere(
-                              (y) => y.yearsFromStart.toDouble() == value);
+                            (y) => y.yearsFromStart.toDouble() == value,
+                          );
                           if (index == -1) return const Text('');
 
                           final year = filteredYears[index].year;
@@ -416,14 +424,19 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
 
                         final spot = touchedSpots.first;
                         final yearIndex = filteredYears.indexWhere(
-                            (y) => y.yearsFromStart.toDouble() == spot.x);
+                          (y) => y.yearsFromStart.toDouble() == spot.x,
+                        );
 
                         if (yearIndex == -1) return [];
 
                         final year = filteredYears[yearIndex];
 
                         // Aggregate balances by type
-                        double realEstate = 0, rrsp = 0, celi = 0, cri = 0, cash = 0;
+                        double realEstate = 0,
+                            rrsp = 0,
+                            celi = 0,
+                            cri = 0,
+                            cash = 0;
 
                         for (final entry in year.assetsEndOfYear.entries) {
                           final assetId = entry.key;
@@ -449,7 +462,8 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
                           }
                         }
 
-                        final tooltipText = 'Year ${year.year}\n'
+                        final tooltipText =
+                            'Year ${year.year}\n'
                             '${realEstate > 0 ? 'Real Estate: ${currencyFormat.format(realEstate)}\n' : ''}'
                             '${rrsp > 0 ? 'RRSP: ${currencyFormat.format(rrsp)}\n' : ''}'
                             '${celi > 0 ? 'CELI: ${currencyFormat.format(celi)}\n' : ''}'
@@ -457,9 +471,8 @@ class _AssetAllocationChartState extends State<AssetAllocationChart> {
                             '${cash > 0 ? 'Cash: ${currencyFormat.format(cash)}\n' : ''}'
                             'Net Worth: ${currencyFormat.format(year.netWorthEndOfYear)}';
 
-                        final tooltipStyle = theme.textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                        );
+                        final tooltipStyle = theme.textTheme.bodySmall!
+                            .copyWith(color: Colors.white);
 
                         // Return one tooltip item per touched spot
                         return touchedSpots.map((spot) {

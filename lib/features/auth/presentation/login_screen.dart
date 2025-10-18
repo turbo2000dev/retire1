@@ -52,10 +52,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      await ref.read(authNotifierProvider.notifier).login(
-            _emailController.text,
-            _passwordController.text,
-          );
+      await ref
+          .read(authNotifierProvider.notifier)
+          .login(_emailController.text, _passwordController.text);
     }
   }
 
@@ -77,7 +76,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: SingleChildScrollView(
             child: ResponsiveContainer(
               maxWidth: 500, // Constrain form width for better UX
-              padding: const EdgeInsets.all(LayoutBreakpoints.spacingComfortable),
+              padding: const EdgeInsets.all(
+                LayoutBreakpoints.spacingComfortable,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -123,7 +124,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       prefixIcon: const Icon(Icons.lock_outlined),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -149,7 +152,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Login button
                     Center(
                       child: ResponsiveButton(
-                        onPressed: authState is AuthLoading ? null : _handleLogin,
+                        onPressed: authState is AuthLoading
+                            ? null
+                            : _handleLogin,
                         isLoading: authState is AuthLoading,
                         size: ResponsiveButtonSize.large,
                         child: const Padding(
@@ -193,8 +198,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onPressed: authState is AuthLoading
                               ? null
                               : () => ref
-                                  .read(authNotifierProvider.notifier)
-                                  .signInWithGoogle(),
+                                    .read(authNotifierProvider.notifier)
+                                    .signInWithGoogle(),
                           icon: const Icon(Icons.g_mobiledata),
                           label: const Text('Google'),
                         ),

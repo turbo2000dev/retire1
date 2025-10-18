@@ -45,7 +45,9 @@ class ResponsiveContainer extends StatelessWidget {
     return Align(
       alignment: alignment,
       child: Container(
-        constraints: BoxConstraints(maxWidth: maxWidth ?? LayoutBreakpoints.maxContentWidth),
+        constraints: BoxConstraints(
+          maxWidth: maxWidth ?? LayoutBreakpoints.maxContentWidth,
+        ),
         padding: effectivePadding,
         child: child,
       ),

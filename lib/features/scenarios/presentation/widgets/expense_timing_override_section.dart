@@ -16,10 +16,7 @@ import 'package:retire1/features/scenarios/presentation/providers/scenarios_prov
 class ExpenseTimingOverrideSection extends ConsumerWidget {
   final Scenario scenario;
 
-  const ExpenseTimingOverrideSection({
-    super.key,
-    required this.scenario,
-  });
+  const ExpenseTimingOverrideSection({super.key, required this.scenario});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -236,11 +233,12 @@ class _ExpenseTimingOverrideCardState
 
     // Check if there's an override for this expense
     final override = widget.scenario.overrides
-        .where((o) => o.maybeWhen(
-              expenseTiming: (id, overrideStart, overrideEnd) =>
-                  id == expenseId,
-              orElse: () => false,
-            ))
+        .where(
+          (o) => o.maybeWhen(
+            expenseTiming: (id, overrideStart, overrideEnd) => id == expenseId,
+            orElse: () => false,
+          ),
+        )
         .firstOrNull;
 
     final overrideStartTiming = override?.maybeWhen(
@@ -253,7 +251,8 @@ class _ExpenseTimingOverrideCardState
       orElse: () => null,
     );
 
-    final isOverridden = overrideStartTiming != null || overrideEndTiming != null;
+    final isOverridden =
+        overrideStartTiming != null || overrideEndTiming != null;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -478,11 +477,13 @@ class _ExpenseTimingOverrideCardState
 
       // Remove existing timing override if present
       final existingOverride = widget.scenario.overrides
-          .where((o) => o.maybeWhen(
-                expenseTiming: (id, overrideStart, overrideEnd) =>
-                    id == expenseId,
-                orElse: () => false,
-              ))
+          .where(
+            (o) => o.maybeWhen(
+              expenseTiming: (id, overrideStart, overrideEnd) =>
+                  id == expenseId,
+              orElse: () => false,
+            ),
+          )
           .firstOrNull;
 
       if (existingOverride != null) {
@@ -502,10 +503,12 @@ class _ExpenseTimingOverrideCardState
         orElse: () => null,
       );
 
-      final finalStartTiming =
-          _isEditingStart ? _newStartTiming : existingStartOverride;
-      final finalEndTiming =
-          _isEditingEnd ? _newEndTiming : existingEndOverride;
+      final finalStartTiming = _isEditingStart
+          ? _newStartTiming
+          : existingStartOverride;
+      final finalEndTiming = _isEditingEnd
+          ? _newEndTiming
+          : existingEndOverride;
 
       // Only create override if at least one timing is specified
       if (finalStartTiming != null || finalEndTiming != null) {
@@ -553,7 +556,9 @@ class _ExpenseTimingOverrideCardState
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Remove Override'),
-        content: const Text('Remove this timing override and use the base timing?'),
+        content: const Text(
+          'Remove this timing override and use the base timing?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -580,11 +585,13 @@ class _ExpenseTimingOverrideCardState
       );
 
       final override = widget.scenario.overrides
-          .where((o) => o.maybeWhen(
-                expenseTiming: (id, overrideStart, overrideEnd) =>
-                    id == expenseId,
-                orElse: () => false,
-              ))
+          .where(
+            (o) => o.maybeWhen(
+              expenseTiming: (id, overrideStart, overrideEnd) =>
+                  id == expenseId,
+              orElse: () => false,
+            ),
+          )
           .firstOrNull;
 
       if (override != null) {

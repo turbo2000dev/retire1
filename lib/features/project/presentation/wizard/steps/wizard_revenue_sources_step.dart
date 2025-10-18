@@ -87,12 +87,16 @@ class _WizardRevenueSourcesStepState
 
     // Load RRQ details
     _ind1RrqStartAgeController.text = data.individual1RrqStartAge.toString();
-    _ind1RrqAmountAt60Controller.text = data.individual1RrqAmountAt60.toStringAsFixed(0);
-    _ind1RrqAmountAt65Controller.text = data.individual1RrqAmountAt65.toStringAsFixed(0);
+    _ind1RrqAmountAt60Controller.text = data.individual1RrqAmountAt60
+        .toStringAsFixed(0);
+    _ind1RrqAmountAt65Controller.text = data.individual1RrqAmountAt65
+        .toStringAsFixed(0);
 
     _ind2RrqStartAgeController.text = data.individual2RrqStartAge.toString();
-    _ind2RrqAmountAt60Controller.text = data.individual2RrqAmountAt60.toStringAsFixed(0);
-    _ind2RrqAmountAt65Controller.text = data.individual2RrqAmountAt65.toStringAsFixed(0);
+    _ind2RrqAmountAt60Controller.text = data.individual2RrqAmountAt60
+        .toStringAsFixed(0);
+    _ind2RrqAmountAt65Controller.text = data.individual2RrqAmountAt65
+        .toStringAsFixed(0);
 
     // Load PSV details
     _ind1PsvStartAgeController.text = data.individual1PsvStartAge.toString();
@@ -116,20 +120,28 @@ class _WizardRevenueSourcesStepState
       individual2HasOther: _ind2Other,
 
       // RRQ details - Individual 1
-      individual1RrqStartAge: int.tryParse(_ind1RrqStartAgeController.text) ?? 65,
-      individual1RrqAmountAt60: double.tryParse(_ind1RrqAmountAt60Controller.text) ?? 12000.0,
-      individual1RrqAmountAt65: double.tryParse(_ind1RrqAmountAt65Controller.text) ?? 16000.0,
+      individual1RrqStartAge:
+          int.tryParse(_ind1RrqStartAgeController.text) ?? 65,
+      individual1RrqAmountAt60:
+          double.tryParse(_ind1RrqAmountAt60Controller.text) ?? 12000.0,
+      individual1RrqAmountAt65:
+          double.tryParse(_ind1RrqAmountAt65Controller.text) ?? 16000.0,
 
       // PSV details - Individual 1
-      individual1PsvStartAge: int.tryParse(_ind1PsvStartAgeController.text) ?? 65,
+      individual1PsvStartAge:
+          int.tryParse(_ind1PsvStartAgeController.text) ?? 65,
 
       // RRQ details - Individual 2
-      individual2RrqStartAge: int.tryParse(_ind2RrqStartAgeController.text) ?? 65,
-      individual2RrqAmountAt60: double.tryParse(_ind2RrqAmountAt60Controller.text) ?? 12000.0,
-      individual2RrqAmountAt65: double.tryParse(_ind2RrqAmountAt65Controller.text) ?? 16000.0,
+      individual2RrqStartAge:
+          int.tryParse(_ind2RrqStartAgeController.text) ?? 65,
+      individual2RrqAmountAt60:
+          double.tryParse(_ind2RrqAmountAt60Controller.text) ?? 12000.0,
+      individual2RrqAmountAt65:
+          double.tryParse(_ind2RrqAmountAt65Controller.text) ?? 16000.0,
 
       // PSV details - Individual 2
-      individual2PsvStartAge: int.tryParse(_ind2PsvStartAgeController.text) ?? 65,
+      individual2PsvStartAge:
+          int.tryParse(_ind2PsvStartAgeController.text) ?? 65,
     );
 
     ref.read(wizardProvider.notifier).updateRevenueSources(data);
@@ -442,9 +454,11 @@ class _WizardRevenueSourcesStepState
                       prefixText: '\$ ',
                       isDense: true,
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
                     onChanged: (_) => _saveData(),
                   ),
@@ -459,9 +473,11 @@ class _WizardRevenueSourcesStepState
                       prefixText: '\$ ',
                       isDense: true,
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
                     onChanged: (_) => _saveData(),
                   ),

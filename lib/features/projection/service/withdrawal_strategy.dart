@@ -6,10 +6,21 @@ import 'package:retire1/features/projection/service/income_constants.dart';
 String _getAssetIndividualId(Asset asset) {
   return asset.when(
     realEstate: (id, type, value, setAtStart, customReturnRate) => '',
-    rrsp: (id, individualId, value, customReturnRate, annualContribution) => individualId,
-    celi: (id, individualId, value, customReturnRate, annualContribution) => individualId,
-    cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => individualId,
-    cash: (id, individualId, value, customReturnRate, annualContribution) => individualId,
+    rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+        individualId,
+    celi: (id, individualId, value, customReturnRate, annualContribution) =>
+        individualId,
+    cri:
+        (
+          id,
+          individualId,
+          value,
+          contributionRoom,
+          customReturnRate,
+          annualContribution,
+        ) => individualId,
+    cash: (id, individualId, value, customReturnRate, annualContribution) =>
+        individualId,
   );
 }
 
@@ -32,7 +43,15 @@ class WithdrawalStrategy {
 
       // Only process CRI/FRV accounts
       final isCri = asset.maybeWhen(
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => true,
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) => true,
         orElse: () => false,
       );
       if (!isCri) continue;
@@ -44,7 +63,10 @@ class WithdrawalStrategy {
       final individualId = _getAssetIndividualId(asset);
       final age = individualAges[individualId];
       if (age == null) {
-        log('Warning: Could not find age for individual $individualId', level: 900);
+        log(
+          'Warning: Could not find age for individual $individualId',
+          level: 900,
+        );
         continue;
       }
 
@@ -52,7 +74,9 @@ class WithdrawalStrategy {
       final minWithdrawalRate = getRRIFMinimumWithdrawalRate(age);
       final minWithdrawal = balance * minWithdrawalRate;
 
-      log('CRI minimum withdrawal for asset $assetId: \$$minWithdrawal (age $age, rate ${(minWithdrawalRate * 100).toStringAsFixed(2)}%)');
+      log(
+        'CRI minimum withdrawal for asset $assetId: \$$minWithdrawal (age $age, rate ${(minWithdrawalRate * 100).toStringAsFixed(2)}%)',
+      );
 
       criMinimums[assetId] = minWithdrawal;
     }
@@ -85,7 +109,8 @@ class WithdrawalStrategy {
       assetBalances: assetBalances,
       withdrawals: withdrawals,
       filter: (asset) => asset.maybeWhen(
-        celi: (id, individualId, value, customReturnRate, annualContribution) => true,
+        celi: (id, individualId, value, customReturnRate, annualContribution) =>
+            true,
         orElse: () => false,
       ),
     );
@@ -100,7 +125,8 @@ class WithdrawalStrategy {
       assetBalances: assetBalances,
       withdrawals: withdrawals,
       filter: (asset) => asset.maybeWhen(
-        cash: (id, individualId, value, customReturnRate, annualContribution) => true,
+        cash: (id, individualId, value, customReturnRate, annualContribution) =>
+            true,
         orElse: () => false,
       ),
     );
@@ -115,7 +141,15 @@ class WithdrawalStrategy {
       assetBalances: assetBalances,
       withdrawals: withdrawals,
       filter: (asset) => asset.maybeWhen(
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => true,
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) => true,
         orElse: () => false,
       ),
       alreadyWithdrawn: criMinimumsAlreadyWithdrawn,
@@ -131,13 +165,17 @@ class WithdrawalStrategy {
       assetBalances: assetBalances,
       withdrawals: withdrawals,
       filter: (asset) => asset.maybeWhen(
-        rrsp: (id, individualId, value, customReturnRate, annualContribution) => true,
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+            true,
         orElse: () => false,
       ),
     );
 
     if (remaining > 0.01) {
-      log('Warning: Unable to fully cover shortfall. Remaining: \$$remaining', level: 900);
+      log(
+        'Warning: Unable to fully cover shortfall. Remaining: \$$remaining',
+        level: 900,
+      );
     }
 
     return withdrawals;
@@ -169,11 +207,15 @@ class WithdrawalStrategy {
 
       if (availableBalance <= 0) continue;
 
-      final withdrawal = remaining < availableBalance ? remaining : availableBalance;
+      final withdrawal = remaining < availableBalance
+          ? remaining
+          : availableBalance;
       withdrawals[assetId] = (withdrawals[assetId] ?? 0.0) + withdrawal;
       remaining -= withdrawal;
 
-      log('Withdrawing \$$withdrawal from $accountType account $assetId (balance: \$$balance, previously withdrawn: \$$previouslyWithdrawn)');
+      log(
+        'Withdrawing \$$withdrawal from $accountType account $assetId (balance: \$$balance, previously withdrawn: \$$previouslyWithdrawn)',
+      );
     }
 
     return remaining;
@@ -190,7 +232,9 @@ class WithdrawalStrategy {
   }) {
     if (surplus <= 0) return {};
 
-    log('Determining contributions for surplus of \$$surplus (CELI room: \$$celiRoomAvailable)');
+    log(
+      'Determining contributions for surplus of \$$surplus (CELI room: \$$celiRoomAvailable)',
+    );
 
     final contributions = <String, double>{};
     double remaining = surplus;
@@ -204,14 +248,18 @@ class WithdrawalStrategy {
         final asset = entry.value;
 
         final isCeli = asset.maybeWhen(
-          celi: (id, individualId, value, customReturnRate, annualContribution) => true,
+          celi:
+              (id, individualId, value, customReturnRate, annualContribution) =>
+                  true,
           orElse: () => false,
         );
 
         if (!isCeli) continue;
 
         // Contribute up to available room
-        final contribution = remaining < celiRoomAvailable ? remaining : celiRoomAvailable;
+        final contribution = remaining < celiRoomAvailable
+            ? remaining
+            : celiRoomAvailable;
         contributions[assetId] = contribution;
         remaining -= contribution;
 
@@ -227,7 +275,9 @@ class WithdrawalStrategy {
         final asset = entry.value;
 
         final isCash = asset.maybeWhen(
-          cash: (id, individualId, value, customReturnRate, annualContribution) => true,
+          cash:
+              (id, individualId, value, customReturnRate, annualContribution) =>
+                  true,
           orElse: () => false,
         );
 

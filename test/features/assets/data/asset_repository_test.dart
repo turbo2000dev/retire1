@@ -168,13 +168,16 @@ void main() {
         final retrieved = await repository.getAsset('asset-1');
 
         expect(retrieved, isNotNull);
-        expect(retrieved!.map(
-          realEstate: (_) => null,
-          rrsp: (a) => a.id,
-          celi: (_) => null,
-          cri: (_) => null,
-          cash: (_) => null,
-        ), 'asset-1');
+        expect(
+          retrieved!.map(
+            realEstate: (_) => null,
+            rrsp: (a) => a.id,
+            celi: (_) => null,
+            cri: (_) => null,
+            cash: (_) => null,
+          ),
+          'asset-1',
+        );
       });
 
       test('should return null for non-existent asset', () async {
@@ -183,32 +186,30 @@ void main() {
       });
 
       test('should get all assets for project', () async {
-        await repository.createAsset(Asset.rrsp(
-          id: 'asset-1',
-          individualId: 'ind-1',
-          value: 100000,
-        ));
-        await repository.createAsset(Asset.celi(
-          id: 'asset-2',
-          individualId: 'ind-1',
-          value: 50000,
-        ));
-        await repository.createAsset(Asset.cash(
-          id: 'asset-3',
-          individualId: 'ind-1',
-          value: 25000,
-        ));
+        await repository.createAsset(
+          Asset.rrsp(id: 'asset-1', individualId: 'ind-1', value: 100000),
+        );
+        await repository.createAsset(
+          Asset.celi(id: 'asset-2', individualId: 'ind-1', value: 50000),
+        );
+        await repository.createAsset(
+          Asset.cash(id: 'asset-3', individualId: 'ind-1', value: 25000),
+        );
 
         final assets = await repository.getAssetsStream().first;
 
         expect(assets.length, 3);
-        final ids = assets.map((a) => a.map(
-          realEstate: (a) => a.id,
-          rrsp: (a) => a.id,
-          celi: (a) => a.id,
-          cri: (a) => a.id,
-          cash: (a) => a.id,
-        )).toList();
+        final ids = assets
+            .map(
+              (a) => a.map(
+                realEstate: (a) => a.id,
+                rrsp: (a) => a.id,
+                celi: (a) => a.id,
+                cri: (a) => a.id,
+                cash: (a) => a.id,
+              ),
+            )
+            .toList();
         expect(ids, containsAll(['asset-1', 'asset-2', 'asset-3']));
       });
 
@@ -216,11 +217,9 @@ void main() {
         final stream = repository.getAssetsStream();
 
         // Create initial asset
-        await repository.createAsset(Asset.rrsp(
-          id: 'asset-1',
-          individualId: 'ind-1',
-          value: 100000,
-        ));
+        await repository.createAsset(
+          Asset.rrsp(id: 'asset-1', individualId: 'ind-1', value: 100000),
+        );
 
         // Get first emission
         final firstEmission = await stream.first;
@@ -309,16 +308,12 @@ void main() {
       });
 
       test('should remove asset from stream', () async {
-        await repository.createAsset(Asset.rrsp(
-          id: 'asset-1',
-          individualId: 'ind-1',
-          value: 100000,
-        ));
-        await repository.createAsset(Asset.celi(
-          id: 'asset-2',
-          individualId: 'ind-1',
-          value: 50000,
-        ));
+        await repository.createAsset(
+          Asset.rrsp(id: 'asset-1', individualId: 'ind-1', value: 100000),
+        );
+        await repository.createAsset(
+          Asset.celi(id: 'asset-2', individualId: 'ind-1', value: 50000),
+        );
 
         await repository.deleteAsset('asset-1');
 
@@ -439,63 +434,66 @@ void main() {
     });
 
     group('Data Integrity', () {
-      test('should maintain all fields through round-trip for each type', () async {
-        // Test each asset type
-        final assets = [
-          Asset.realEstate(
-            id: 'asset-re',
-            type: RealEstateType.house,
-            value: 500000,
-            setAtStart: true,
-            customReturnRate: 0.03,
-          ),
-          Asset.rrsp(
-            id: 'asset-rrsp',
-            individualId: 'ind-1',
-            value: 100000,
-            customReturnRate: 0.06,
-            annualContribution: 5000,
-          ),
-          Asset.celi(
-            id: 'asset-celi',
-            individualId: 'ind-1',
-            value: 75000,
-            customReturnRate: 0.05,
-            annualContribution: 7000,
-          ),
-          Asset.cri(
-            id: 'asset-cri',
-            individualId: 'ind-1',
-            value: 200000,
-            contributionRoom: 10000,
-            customReturnRate: 0.055,
-            annualContribution: 3000,
-          ),
-          Asset.cash(
-            id: 'asset-cash',
-            individualId: 'ind-1',
-            value: 50000,
-            customReturnRate: 0.02,
-            annualContribution: 1000,
-          ),
-        ];
-
-        for (final asset in assets) {
-          await repository.createAsset(asset);
-          final retrieved = await repository.getAsset(
-            asset.map(
-              realEstate: (a) => a.id,
-              rrsp: (a) => a.id,
-              celi: (a) => a.id,
-              cri: (a) => a.id,
-              cash: (a) => a.id,
+      test(
+        'should maintain all fields through round-trip for each type',
+        () async {
+          // Test each asset type
+          final assets = [
+            Asset.realEstate(
+              id: 'asset-re',
+              type: RealEstateType.house,
+              value: 500000,
+              setAtStart: true,
+              customReturnRate: 0.03,
             ),
-          );
+            Asset.rrsp(
+              id: 'asset-rrsp',
+              individualId: 'ind-1',
+              value: 100000,
+              customReturnRate: 0.06,
+              annualContribution: 5000,
+            ),
+            Asset.celi(
+              id: 'asset-celi',
+              individualId: 'ind-1',
+              value: 75000,
+              customReturnRate: 0.05,
+              annualContribution: 7000,
+            ),
+            Asset.cri(
+              id: 'asset-cri',
+              individualId: 'ind-1',
+              value: 200000,
+              contributionRoom: 10000,
+              customReturnRate: 0.055,
+              annualContribution: 3000,
+            ),
+            Asset.cash(
+              id: 'asset-cash',
+              individualId: 'ind-1',
+              value: 50000,
+              customReturnRate: 0.02,
+              annualContribution: 1000,
+            ),
+          ];
 
-          expect(retrieved, isNotNull);
-          expect(retrieved!.toJson(), equals(asset.toJson()));
-        }
-      });
+          for (final asset in assets) {
+            await repository.createAsset(asset);
+            final retrieved = await repository.getAsset(
+              asset.map(
+                realEstate: (a) => a.id,
+                rrsp: (a) => a.id,
+                celi: (a) => a.id,
+                cri: (a) => a.id,
+                cash: (a) => a.id,
+              ),
+            );
+
+            expect(retrieved, isNotNull);
+            expect(retrieved!.toJson(), equals(asset.toJson()));
+          }
+        },
+      );
     });
 
     group('Error Handling', () {

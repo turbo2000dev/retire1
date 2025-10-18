@@ -16,11 +16,40 @@ void main() {
         for (final asset in assets)
           asset.when(
             realEstate: (id, type, value, setAtStart, customReturnRate) => id,
-            rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
-            celi: (id, individualId, value, customReturnRate, annualContribution) => id,
-            cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
-            cash: (id, individualId, value, customReturnRate, annualContribution) => id,
-          ): asset
+            rrsp:
+                (
+                  id,
+                  individualId,
+                  value,
+                  customReturnRate,
+                  annualContribution,
+                ) => id,
+            celi:
+                (
+                  id,
+                  individualId,
+                  value,
+                  customReturnRate,
+                  annualContribution,
+                ) => id,
+            cri:
+                (
+                  id,
+                  individualId,
+                  value,
+                  contributionRoom,
+                  customReturnRate,
+                  annualContribution,
+                ) => id,
+            cash:
+                (
+                  id,
+                  individualId,
+                  value,
+                  customReturnRate,
+                  annualContribution,
+                ) => id,
+          ): asset,
       };
     }
 
@@ -120,14 +149,8 @@ void main() {
             annualContribution: null,
           ),
         };
-        final assetBalances = {
-          'asset-1': 100000.0,
-          'asset-2': 150000.0,
-        };
-        final individualAges = {
-          'ind-1': 71,
-          'ind-2': 75,
-        };
+        final assetBalances = {'asset-1': 100000.0, 'asset-2': 150000.0};
+        final individualAges = {'ind-1': 71, 'ind-2': 75};
 
         final minimums = strategy.calculateCriMinimums(
           year: 2024,
@@ -230,10 +253,7 @@ void main() {
             annualContribution: null,
           ),
         ]);
-        final assetBalances = {
-          'asset-celi': 10000.0,
-          'asset-cash': 30000.0,
-        };
+        final assetBalances = {'asset-celi': 10000.0, 'asset-cash': 30000.0};
 
         final withdrawals = strategy.determineWithdrawals(
           shortfall: 25000,
@@ -312,10 +332,7 @@ void main() {
             annualContribution: null,
           ),
         ]);
-        final assetBalances = {
-          'asset-celi': 5000.0,
-          'asset-rrsp': 100000.0,
-        };
+        final assetBalances = {'asset-celi': 5000.0, 'asset-rrsp': 100000.0};
 
         final withdrawals = strategy.determineWithdrawals(
           shortfall: 20000,

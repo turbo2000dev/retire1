@@ -98,7 +98,11 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   /// Register with email, password, and display name
-  Future<void> register(String email, String password, String displayName) async {
+  Future<void> register(
+    String email,
+    String password,
+    String displayName,
+  ) async {
     state = const AuthLoading();
 
     try {

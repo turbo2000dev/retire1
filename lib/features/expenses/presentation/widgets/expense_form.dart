@@ -15,7 +15,8 @@ class ExpenseForm extends ConsumerStatefulWidget {
   final ExpenseType? expenseType; // For creating new expenses
   final Expense? expense; // For editing existing expenses
   final List<Individual> individuals;
-  final List<Event>? events; // Optional list of events for event-relative timing
+  final List<Event>?
+  events; // Optional list of events for event-relative timing
   final void Function(Expense, {bool createAnother}) onSave;
   final VoidCallback? onCancel;
 
@@ -27,7 +28,10 @@ class ExpenseForm extends ConsumerStatefulWidget {
     this.events,
     required this.onSave,
     this.onCancel,
-  }) : assert(expenseType != null || expense != null, 'Either expenseType or expense must be provided');
+  }) : assert(
+         expenseType != null || expense != null,
+         'Either expenseType or expense must be provided',
+       );
 
   @override
   ConsumerState<ExpenseForm> createState() => _ExpenseFormState();
@@ -47,12 +51,18 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
     // Initialize from existing expense if editing
     if (widget.expense != null) {
       widget.expense!.when(
-        housing: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
-        transport: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
-        dailyLiving: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
-        recreation: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
-        health: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
-        family: (_, startTiming, endTiming, annualAmount) => _initializeFields(startTiming, endTiming, annualAmount),
+        housing: (_, startTiming, endTiming, annualAmount) =>
+            _initializeFields(startTiming, endTiming, annualAmount),
+        transport: (_, startTiming, endTiming, annualAmount) =>
+            _initializeFields(startTiming, endTiming, annualAmount),
+        dailyLiving: (_, startTiming, endTiming, annualAmount) =>
+            _initializeFields(startTiming, endTiming, annualAmount),
+        recreation: (_, startTiming, endTiming, annualAmount) =>
+            _initializeFields(startTiming, endTiming, annualAmount),
+        health: (_, startTiming, endTiming, annualAmount) =>
+            _initializeFields(startTiming, endTiming, annualAmount),
+        family: (_, startTiming, endTiming, annualAmount) =>
+            _initializeFields(startTiming, endTiming, annualAmount),
       );
     } else {
       // Default timings for new expenses
@@ -61,7 +71,11 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
     }
   }
 
-  void _initializeFields(EventTiming startTiming, EventTiming endTiming, double annualAmount) {
+  void _initializeFields(
+    EventTiming startTiming,
+    EventTiming endTiming,
+    double annualAmount,
+  ) {
     _startTiming = startTiming;
     _endTiming = endTiming;
     _annualAmountController.text = annualAmount.toStringAsFixed(0);
@@ -90,16 +104,20 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
       return;
     }
 
-    final id = widget.expense?.when(
-      housing: (id, _, __, ___) => id,
-      transport: (id, _, __, ___) => id,
-      dailyLiving: (id, _, __, ___) => id,
-      recreation: (id, _, __, ___) => id,
-      health: (id, _, __, ___) => id,
-      family: (id, _, __, ___) => id,
-    ) ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final id =
+        widget.expense?.when(
+          housing: (id, _, __, ___) => id,
+          transport: (id, _, __, ___) => id,
+          dailyLiving: (id, _, __, ___) => id,
+          recreation: (id, _, __, ___) => id,
+          health: (id, _, __, ___) => id,
+          family: (id, _, __, ___) => id,
+        ) ??
+        DateTime.now().millisecondsSinceEpoch.toString();
 
-    final annualAmount = double.parse(_annualAmountController.text.replaceAll(',', ''));
+    final annualAmount = double.parse(
+      _annualAmountController.text.replaceAll(',', ''),
+    );
 
     // Create expense with same type as existing or from expenseType (for new)
     final Expense expense;
@@ -221,9 +239,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                 helperText: 'Total amount per year in current dollars',
               ),
               keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter an annual amount';
@@ -312,7 +328,9 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                 // Show "Save and create another" only when creating new expense
                 if (widget.expense == null) ...[
                   FilledButton.tonal(
-                    onPressed: widget.individuals.isEmpty ? null : () => _submit(createAnother: true),
+                    onPressed: widget.individuals.isEmpty
+                        ? null
+                        : () => _submit(createAnother: true),
                     child: const Text('Save and create another'),
                   ),
                   const SizedBox(width: 8),

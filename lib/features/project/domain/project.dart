@@ -14,15 +14,9 @@ class Project with _$Project {
     required String name,
     required String ownerId,
     String? description,
-    @JsonKey(
-      fromJson: _dateTimeFromJson,
-      toJson: _dateTimeToJson,
-    )
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required DateTime createdAt,
-    @JsonKey(
-      fromJson: _dateTimeFromJson,
-      toJson: _dateTimeToJson,
-    )
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required DateTime updatedAt,
     @Default([]) List<Individual> individuals,
     // Economic assumptions (rates in decimal form, e.g., 0.02 = 2%)

@@ -9,10 +9,8 @@ class AssetRepository {
   final FirebaseFirestore _firestore;
   final String projectId;
 
-  AssetRepository({
-    required this.projectId,
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  AssetRepository({required this.projectId, FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Get reference to the assets collection for this project
   CollectionReference get _assetsCollection =>

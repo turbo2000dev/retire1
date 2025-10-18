@@ -6,10 +6,7 @@ library;
 
 /// Tax bracket definition with threshold and rate
 class TaxBracket {
-  const TaxBracket({
-    required this.threshold,
-    required this.rate,
-  });
+  const TaxBracket({required this.threshold, required this.rate});
 
   /// Income threshold where this bracket starts
   final double threshold;

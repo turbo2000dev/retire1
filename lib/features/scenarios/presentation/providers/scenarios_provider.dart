@@ -15,7 +15,9 @@ final scenarioRepositoryProvider = Provider<ScenarioRepository?>((ref) {
   final projectState = ref.watch(currentProjectProvider);
 
   return switch (projectState) {
-    ProjectSelected(project: final project) => ScenarioRepository(projectId: project.id),
+    ProjectSelected(project: final project) => ScenarioRepository(
+      projectId: project.id,
+    ),
     _ => null,
   };
 });
@@ -23,8 +25,8 @@ final scenarioRepositoryProvider = Provider<ScenarioRepository?>((ref) {
 /// Provider for scenarios with Firestore integration
 final scenariosProvider =
     AsyncNotifierProvider<ScenariosNotifier, List<Scenario>>(() {
-  return ScenariosNotifier();
-});
+      return ScenariosNotifier();
+    });
 
 /// Notifier for managing scenarios with Firestore
 class ScenariosNotifier extends AsyncNotifier<List<Scenario>> {
@@ -95,9 +97,7 @@ class ScenariosNotifier extends AsyncNotifier<List<Scenario>> {
     }
 
     try {
-      final updatedScenario = scenario.copyWith(
-        updatedAt: DateTime.now(),
-      );
+      final updatedScenario = scenario.copyWith(updatedAt: DateTime.now());
 
       await repository.updateScenario(updatedScenario);
     } catch (e) {
@@ -130,7 +130,9 @@ class ScenariosNotifier extends AsyncNotifier<List<Scenario>> {
 
   /// Add or update an override in a scenario
   Future<void> addOverride(
-      String scenarioId, ParameterOverride override) async {
+    String scenarioId,
+    ParameterOverride override,
+  ) async {
     final repository = ref.read(scenarioRepositoryProvider);
     if (repository == null) {
       throw Exception('No repository available');
@@ -184,7 +186,9 @@ class ScenariosNotifier extends AsyncNotifier<List<Scenario>> {
 
   /// Remove an override from a scenario
   Future<void> removeOverride(
-      String scenarioId, ParameterOverride override) async {
+    String scenarioId,
+    ParameterOverride override,
+  ) async {
     final repository = ref.read(scenarioRepositoryProvider);
     if (repository == null) {
       throw Exception('No repository available');

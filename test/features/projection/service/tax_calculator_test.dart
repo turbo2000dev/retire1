@@ -12,10 +12,7 @@ void main() {
   group('TaxCalculator', () {
     group('Federal Tax Calculation', () {
       test('calculates zero tax for zero income', () {
-        final result = calculator.calculateTax(
-          grossIncome: 0,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 0, age: 40);
 
         expect(result.federalTax, 0.0);
         expect(result.quebecTax, 0.0);
@@ -28,10 +25,7 @@ void main() {
         // Tax before credits: $20,000 × 15% = $3,000
         // Basic personal credit: $15,705 × 15% = $2,355.75
         // Federal tax: $3,000 - $2,355.75 = $644.25
-        final result = calculator.calculateTax(
-          grossIncome: 20000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 20000, age: 40);
 
         expect(result.grossIncome, 20000);
         expect(result.taxableIncome, 20000);
@@ -45,10 +39,7 @@ void main() {
         // Age credit: $8,790 × 15% = $1,318.50
         // Total credits: $3,674.25
         // Federal tax: $4,500 - $3,674.25 = $825.75
-        final result = calculator.calculateTax(
-          grossIncome: 30000,
-          age: 65,
-        );
+        final result = calculator.calculateTax(grossIncome: 30000, age: 65);
 
         expect(result.federalTax, closeTo(825.75, 0.01));
       });
@@ -60,10 +51,7 @@ void main() {
         // Tax before credits: $17,427.32
         // Basic personal credit: $15,705 × 15% = $2,355.75
         // Federal tax: $17,427.32 - $2,355.75 = $15,071.57
-        final result = calculator.calculateTax(
-          grossIncome: 100000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 100000, age: 40);
 
         expect(result.federalTax, closeTo(15071.57, 0.01));
       });
@@ -78,10 +66,7 @@ void main() {
         // Tax before credits: $74,715.77
         // Basic personal credit: $15,705 × 15% = $2,355.75
         // Federal tax: $74,715.77 - $2,355.75 = $72,360.02
-        final result = calculator.calculateTax(
-          grossIncome: 300000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 300000, age: 40);
 
         expect(result.federalTax, closeTo(72360.02, 0.01));
       });
@@ -93,10 +78,7 @@ void main() {
         // Tax before credits: $20,000 × 14% = $2,800
         // Basic personal credit: $18,056 × 14% = $2,527.84
         // Quebec tax: $2,800 - $2,527.84 = $272.16
-        final result = calculator.calculateTax(
-          grossIncome: 20000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 20000, age: 40);
 
         expect(result.quebecTax, closeTo(272.16, 0.01));
       });
@@ -108,10 +90,7 @@ void main() {
         // Age credit: $3,458 × 14% = $484.12
         // Total credits: $3,011.96
         // Quebec tax: $4,200 - $3,011.96 = $1,188.04
-        final result = calculator.calculateTax(
-          grossIncome: 30000,
-          age: 65,
-        );
+        final result = calculator.calculateTax(grossIncome: 30000, age: 65);
 
         expect(result.quebecTax, closeTo(1188.04, 0.01));
       });
@@ -123,10 +102,7 @@ void main() {
         // Tax before credits: $16,411.00
         // Basic personal credit: $18,056 × 14% = $2,527.84
         // Quebec tax: $16,411.00 - $2,527.84 = $13,883.16
-        final result = calculator.calculateTax(
-          grossIncome: 100000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 100000, age: 40);
 
         expect(result.quebecTax, closeTo(13883.16, 0.01));
       });
@@ -134,10 +110,7 @@ void main() {
 
     group('Combined Federal and Quebec Tax', () {
       test('calculates total tax correctly', () {
-        final result = calculator.calculateTax(
-          grossIncome: 100000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 100000, age: 40);
 
         // Federal: $15,071.57 (from previous test)
         // Quebec: $13,883.16 (from previous test)
@@ -146,10 +119,7 @@ void main() {
       });
 
       test('calculates effective tax rate correctly', () {
-        final result = calculator.calculateTax(
-          grossIncome: 100000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 100000, age: 40);
 
         // Total tax: $28,954.73
         // Effective rate: $28,954.73 / $100,000 × 100 = 28.95%
@@ -165,10 +135,7 @@ void main() {
         // Quebec tax before credits: $10,000 × 14% = $1,400
         // Quebec credits: $18,056 × 14% = $2,527.84 (exceeds tax)
         // Quebec tax: $0 (clamped to zero)
-        final result = calculator.calculateTax(
-          grossIncome: 10000,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 10000, age: 40);
 
         expect(result.federalTax, 0.0);
         expect(result.quebecTax, 0.0);
@@ -212,10 +179,7 @@ void main() {
     group('Edge Cases', () {
       test('handles exact bracket boundary income', () {
         // Income exactly at second bracket threshold
-        final result = calculator.calculateTax(
-          grossIncome: 55867,
-          age: 40,
-        );
+        final result = calculator.calculateTax(grossIncome: 55867, age: 40);
 
         // All income in first bracket: $55,867 × 15% = $8,380.05
         // Basic personal credit: $15,705 × 15% = $2,355.75
@@ -225,10 +189,7 @@ void main() {
 
       test('handles very high income', () {
         // Income: $1,000,000
-        final result = calculator.calculateTax(
-          grossIncome: 1000000,
-          age: 65,
-        );
+        final result = calculator.calculateTax(grossIncome: 1000000, age: 65);
 
         // Should have federal and Quebec tax calculated
         expect(result.federalTax, greaterThan(0));
@@ -239,15 +200,9 @@ void main() {
       });
 
       test('age credit only applies at 65+', () {
-        final result64 = calculator.calculateTax(
-          grossIncome: 50000,
-          age: 64,
-        );
+        final result64 = calculator.calculateTax(grossIncome: 50000, age: 64);
 
-        final result65 = calculator.calculateTax(
-          grossIncome: 50000,
-          age: 65,
-        );
+        final result65 = calculator.calculateTax(grossIncome: 50000, age: 65);
 
         // Tax at 65 should be lower due to age credit
         expect(result65.totalTax, lessThan(result64.totalTax));

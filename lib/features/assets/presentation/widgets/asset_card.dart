@@ -8,17 +8,15 @@ class AssetCard extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
-  const AssetCard({
-    super.key,
-    required this.asset,
-    this.onEdit,
-    this.onDelete,
-  });
+  const AssetCard({super.key, required this.asset, this.onEdit, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     return Card(
       child: Padding(
@@ -63,10 +61,7 @@ class AssetCard extends StatelessWidget {
     return asset.map(
       realEstate: (a) => CircleAvatar(
         backgroundColor: theme.colorScheme.primaryContainer,
-        child: Icon(
-          Icons.home,
-          color: theme.colorScheme.onPrimaryContainer,
-        ),
+        child: Icon(Icons.home, color: theme.colorScheme.onPrimaryContainer),
       ),
       rrsp: (a) => CircleAvatar(
         backgroundColor: theme.colorScheme.secondaryContainer,
@@ -84,10 +79,7 @@ class AssetCard extends StatelessWidget {
       ),
       cri: (a) => CircleAvatar(
         backgroundColor: theme.colorScheme.errorContainer,
-        child: Icon(
-          Icons.lock,
-          color: theme.colorScheme.onErrorContainer,
-        ),
+        child: Icon(Icons.lock, color: theme.colorScheme.onErrorContainer),
       ),
       cash: (a) => CircleAvatar(
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -153,15 +145,47 @@ class AssetCard extends StatelessWidget {
             ),
         ],
       ),
-      rrsp: (a) => _buildAccountSubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution),
-      celi: (a) => _buildAccountSubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution),
-      cri: (a) => _buildCRISubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution, a.contributionRoom),
-      cash: (a) => _buildAccountSubtitle(theme, currencyFormat, a.value, a.customReturnRate, a.annualContribution),
+      rrsp: (a) => _buildAccountSubtitle(
+        theme,
+        currencyFormat,
+        a.value,
+        a.customReturnRate,
+        a.annualContribution,
+      ),
+      celi: (a) => _buildAccountSubtitle(
+        theme,
+        currencyFormat,
+        a.value,
+        a.customReturnRate,
+        a.annualContribution,
+      ),
+      cri: (a) => _buildCRISubtitle(
+        theme,
+        currencyFormat,
+        a.value,
+        a.customReturnRate,
+        a.annualContribution,
+        a.contributionRoom,
+      ),
+      cash: (a) => _buildAccountSubtitle(
+        theme,
+        currencyFormat,
+        a.value,
+        a.customReturnRate,
+        a.annualContribution,
+      ),
     );
   }
 
-  Widget _buildAccountSubtitle(ThemeData theme, NumberFormat currencyFormat, double value, double? customReturnRate, double? annualContribution) {
-    final hasOptionalFields = customReturnRate != null || annualContribution != null;
+  Widget _buildAccountSubtitle(
+    ThemeData theme,
+    NumberFormat currencyFormat,
+    double value,
+    double? customReturnRate,
+    double? annualContribution,
+  ) {
+    final hasOptionalFields =
+        customReturnRate != null || annualContribution != null;
 
     if (!hasOptionalFields) {
       return Text(
@@ -195,8 +219,18 @@ class AssetCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCRISubtitle(ThemeData theme, NumberFormat currencyFormat, double value, double? customReturnRate, double? annualContribution, double? contributionRoom) {
-    final hasOptionalFields = customReturnRate != null || annualContribution != null || contributionRoom != null;
+  Widget _buildCRISubtitle(
+    ThemeData theme,
+    NumberFormat currencyFormat,
+    double value,
+    double? customReturnRate,
+    double? annualContribution,
+    double? contributionRoom,
+  ) {
+    final hasOptionalFields =
+        customReturnRate != null ||
+        annualContribution != null ||
+        contributionRoom != null;
 
     if (!hasOptionalFields) {
       return Text(

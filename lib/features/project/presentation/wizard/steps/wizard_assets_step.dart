@@ -82,14 +82,18 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       _hasRrsp = true;
       _rrspAccounts.clear();
       for (var rrsp in rrsps) {
-        _rrspAccounts.add(_RrspAccount(
-          id: rrsp.id,
-          individualId: rrsp.individualId,
-          balanceController: TextEditingController(text: rrsp.value.toStringAsFixed(0)),
-          contributionController: TextEditingController(
-            text: rrsp.annualContribution?.toStringAsFixed(0) ?? '',
+        _rrspAccounts.add(
+          _RrspAccount(
+            id: rrsp.id,
+            individualId: rrsp.individualId,
+            balanceController: TextEditingController(
+              text: rrsp.value.toStringAsFixed(0),
+            ),
+            contributionController: TextEditingController(
+              text: rrsp.annualContribution?.toStringAsFixed(0) ?? '',
+            ),
           ),
-        ));
+        );
       }
     }
 
@@ -99,14 +103,18 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       _hasCeli = true;
       _celiAccounts.clear();
       for (var celi in celis) {
-        _celiAccounts.add(_CeliAccount(
-          id: celi.id,
-          individualId: celi.individualId,
-          balanceController: TextEditingController(text: celi.value.toStringAsFixed(0)),
-          contributionController: TextEditingController(
-            text: celi.annualContribution?.toStringAsFixed(0) ?? '',
+        _celiAccounts.add(
+          _CeliAccount(
+            id: celi.id,
+            individualId: celi.individualId,
+            balanceController: TextEditingController(
+              text: celi.value.toStringAsFixed(0),
+            ),
+            contributionController: TextEditingController(
+              text: celi.annualContribution?.toStringAsFixed(0) ?? '',
+            ),
           ),
-        ));
+        );
       }
     }
 
@@ -116,11 +124,15 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       _hasCri = true;
       _criAccounts.clear();
       for (var cri in cris) {
-        _criAccounts.add(_CriAccount(
-          id: cri.id,
-          individualId: cri.individualId,
-          balanceController: TextEditingController(text: cri.value.toStringAsFixed(0)),
-        ));
+        _criAccounts.add(
+          _CriAccount(
+            id: cri.id,
+            individualId: cri.individualId,
+            balanceController: TextEditingController(
+              text: cri.value.toStringAsFixed(0),
+            ),
+          ),
+        );
       }
     }
 
@@ -130,11 +142,15 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       _hasCash = true;
       _cashAccounts.clear();
       for (var cash in cashes) {
-        _cashAccounts.add(_CashAccount(
-          id: cash.id,
-          individualId: cash.individualId,
-          balanceController: TextEditingController(text: cash.value.toStringAsFixed(0)),
-        ));
+        _cashAccounts.add(
+          _CashAccount(
+            id: cash.id,
+            individualId: cash.individualId,
+            balanceController: TextEditingController(
+              text: cash.value.toStringAsFixed(0),
+            ),
+          ),
+        );
       }
     }
   }
@@ -146,10 +162,9 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
     if (_hasRealEstate) {
       final value = double.tryParse(_realEstateValueController.text) ?? 0.0;
       if (value > 0) {
-        assets.add(WizardAssetData.realEstate(
-          id: const Uuid().v4(),
-          value: value,
-        ));
+        assets.add(
+          WizardAssetData.realEstate(id: const Uuid().v4(), value: value),
+        );
       }
     }
 
@@ -158,13 +173,17 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       for (var account in _rrspAccounts) {
         final balance = double.tryParse(account.balanceController.text) ?? 0.0;
         if (balance > 0) {
-          final contribution = double.tryParse(account.contributionController.text);
-          assets.add(WizardAssetData.rrsp(
-            id: account.id,
-            individualId: account.individualId,
-            value: balance,
-            annualContribution: contribution,
-          ));
+          final contribution = double.tryParse(
+            account.contributionController.text,
+          );
+          assets.add(
+            WizardAssetData.rrsp(
+              id: account.id,
+              individualId: account.individualId,
+              value: balance,
+              annualContribution: contribution,
+            ),
+          );
         }
       }
     }
@@ -174,13 +193,17 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       for (var account in _celiAccounts) {
         final balance = double.tryParse(account.balanceController.text) ?? 0.0;
         if (balance > 0) {
-          final contribution = double.tryParse(account.contributionController.text);
-          assets.add(WizardAssetData.celi(
-            id: account.id,
-            individualId: account.individualId,
-            value: balance,
-            annualContribution: contribution,
-          ));
+          final contribution = double.tryParse(
+            account.contributionController.text,
+          );
+          assets.add(
+            WizardAssetData.celi(
+              id: account.id,
+              individualId: account.individualId,
+              value: balance,
+              annualContribution: contribution,
+            ),
+          );
         }
       }
     }
@@ -190,11 +213,13 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       for (var account in _criAccounts) {
         final balance = double.tryParse(account.balanceController.text) ?? 0.0;
         if (balance > 0) {
-          assets.add(WizardAssetData.cri(
-            id: account.id,
-            individualId: account.individualId,
-            value: balance,
-          ));
+          assets.add(
+            WizardAssetData.cri(
+              id: account.id,
+              individualId: account.individualId,
+              value: balance,
+            ),
+          );
         }
       }
     }
@@ -204,11 +229,13 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       for (var account in _cashAccounts) {
         final balance = double.tryParse(account.balanceController.text) ?? 0.0;
         if (balance > 0) {
-          assets.add(WizardAssetData.cash(
-            id: account.id,
-            individualId: account.individualId,
-            value: balance,
-          ));
+          assets.add(
+            WizardAssetData.cash(
+              id: account.id,
+              individualId: account.individualId,
+              value: balance,
+            ),
+          );
         }
       }
     }
@@ -420,19 +447,21 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
       ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
       ],
       onChanged: (_) => _saveData(),
     );
   }
 
   void _addRrspAccount(String individualId) {
-    _rrspAccounts.add(_RrspAccount(
-      id: const Uuid().v4(),
-      individualId: individualId,
-      balanceController: TextEditingController(),
-      contributionController: TextEditingController(),
-    ));
+    _rrspAccounts.add(
+      _RrspAccount(
+        id: const Uuid().v4(),
+        individualId: individualId,
+        balanceController: TextEditingController(),
+        contributionController: TextEditingController(),
+      ),
+    );
   }
 
   void _removeRrspAccount(int index) {
@@ -483,12 +512,14 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
   }
 
   void _addCeliAccount(String individualId) {
-    _celiAccounts.add(_CeliAccount(
-      id: const Uuid().v4(),
-      individualId: individualId,
-      balanceController: TextEditingController(),
-      contributionController: TextEditingController(),
-    ));
+    _celiAccounts.add(
+      _CeliAccount(
+        id: const Uuid().v4(),
+        individualId: individualId,
+        balanceController: TextEditingController(),
+        contributionController: TextEditingController(),
+      ),
+    );
   }
 
   void _removeCeliAccount(int index) {
@@ -539,11 +570,13 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
   }
 
   void _addCriAccount(String individualId) {
-    _criAccounts.add(_CriAccount(
-      id: const Uuid().v4(),
-      individualId: individualId,
-      balanceController: TextEditingController(),
-    ));
+    _criAccounts.add(
+      _CriAccount(
+        id: const Uuid().v4(),
+        individualId: individualId,
+        balanceController: TextEditingController(),
+      ),
+    );
   }
 
   void _removeCriAccount(int index) {
@@ -592,11 +625,13 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
   }
 
   void _addCashAccount(String individualId) {
-    _cashAccounts.add(_CashAccount(
-      id: const Uuid().v4(),
-      individualId: individualId,
-      balanceController: TextEditingController(),
-    ));
+    _cashAccounts.add(
+      _CashAccount(
+        id: const Uuid().v4(),
+        individualId: individualId,
+        balanceController: TextEditingController(),
+      ),
+    );
   }
 
   void _removeCashAccount(int index) {
@@ -717,9 +752,11 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
                 prefixText: '\$ ',
                 isDense: true,
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
               ],
               onChanged: (_) => _saveData(),
             ),
@@ -736,9 +773,11 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
                   isDense: true,
                   helperText: 'Amount contributed each year',
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                 ],
                 onChanged: (_) => _saveData(),
               ),

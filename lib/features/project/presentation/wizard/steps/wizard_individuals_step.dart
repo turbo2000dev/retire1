@@ -214,7 +214,8 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
                       ),
                       SizedBox(
                         height: theme.textTheme.bodySmall!.fontSize! * 1.2,
-                        child: const SizedBox.shrink(), // Spacer to match Individual 2
+                        child:
+                            const SizedBox.shrink(), // Spacer to match Individual 2
                       ),
                     ],
                   ),
@@ -356,7 +357,7 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
         ),
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
         ],
       ),
       const SizedBox(height: 16),
@@ -371,8 +372,10 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
           suffixIcon: Tooltip(
             message:
                 'The age at which this person plans to retire from employment',
-            child: Icon(Icons.info_outline,
-                color: theme.colorScheme.onSurfaceVariant),
+            child: Icon(
+              Icons.info_outline,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
         keyboardType: TextInputType.number,
@@ -398,8 +401,10 @@ class _WizardIndividualsStepState extends ConsumerState<WizardIndividualsStep> {
           suffixIcon: Tooltip(
             message:
                 'The projection will run until this age. You can adjust this later.',
-            child: Icon(Icons.info_outline,
-                color: theme.colorScheme.onSurfaceVariant),
+            child: Icon(
+              Icons.info_outline,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
         keyboardType: TextInputType.number,

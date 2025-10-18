@@ -20,9 +20,7 @@ class FilePickerHelper {
     input.onChange.listen((event) async {
       final files = input.files;
       if (files == null || files.isEmpty) {
-        completer.completeError(
-          UnsupportedError('No file selected'),
-        );
+        completer.completeError(UnsupportedError('No file selected'));
         return;
       }
 
@@ -43,16 +41,12 @@ class FilePickerHelper {
         if (reader.result != null) {
           completer.complete(reader.result as String);
         } else {
-          completer.completeError(
-            Exception('Failed to read file'),
-          );
+          completer.completeError(Exception('Failed to read file'));
         }
       });
 
       reader.onError.listen((event) {
-        completer.completeError(
-          Exception('Error reading file'),
-        );
+        completer.completeError(Exception('Error reading file'));
       });
 
       reader.readAsText(file);

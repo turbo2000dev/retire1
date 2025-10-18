@@ -7,10 +7,7 @@ import 'package:retire1/features/project/domain/project.dart';
 class ProjectDialog extends StatefulWidget {
   final Project? project; // null for create, non-null for edit
 
-  const ProjectDialog({
-    super.key,
-    this.project,
-  });
+  const ProjectDialog({super.key, this.project});
 
   /// Show create project dialog
   /// Returns a map with 'name', 'description', and 'useWizard' keys
@@ -130,9 +127,11 @@ class _ProjectDialogState extends State<ProjectDialog> {
 
                 // Wizard option (recommended)
                 InkWell(
-                  onTap: _isLoading ? null : () {
-                    setState(() => _useWizard = true);
-                  },
+                  onTap: _isLoading
+                      ? null
+                      : () {
+                          setState(() => _useWizard = true);
+                        },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     padding: const EdgeInsets.all(12),
@@ -145,7 +144,8 @@ class _ProjectDialogState extends State<ProjectDialog> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                       color: _useWizard
-                          ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
+                          ? Theme.of(context).colorScheme.primaryContainer
+                                .withValues(alpha: 0.3)
                           : null,
                     ),
                     child: Row(
@@ -153,9 +153,11 @@ class _ProjectDialogState extends State<ProjectDialog> {
                         Radio<bool>(
                           value: true,
                           groupValue: _useWizard,
-                          onChanged: _isLoading ? null : (value) {
-                            setState(() => _useWizard = value!);
-                          },
+                          onChanged: _isLoading
+                              ? null
+                              : (value) {
+                                  setState(() => _useWizard = value!);
+                                },
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -167,14 +169,17 @@ class _ProjectDialogState extends State<ProjectDialog> {
                                   Icon(
                                     Icons.auto_awesome,
                                     size: 18,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
                                     'Quick Setup Wizard',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(width: 6),
                                   Container(
@@ -183,15 +188,22 @@ class _ProjectDialogState extends State<ProjectDialog> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       'RECOMMENDED',
-                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                        color: Theme.of(context).colorScheme.onPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -199,9 +211,12 @@ class _ProjectDialogState extends State<ProjectDialog> {
                               const SizedBox(height: 4),
                               Text(
                                 'Guided steps to quickly configure your project',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
                               ),
                             ],
                           ),
@@ -215,9 +230,11 @@ class _ProjectDialogState extends State<ProjectDialog> {
 
                 // Manual setup option
                 InkWell(
-                  onTap: _isLoading ? null : () {
-                    setState(() => _useWizard = false);
-                  },
+                  onTap: _isLoading
+                      ? null
+                      : () {
+                          setState(() => _useWizard = false);
+                        },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     padding: const EdgeInsets.all(12),
@@ -230,7 +247,8 @@ class _ProjectDialogState extends State<ProjectDialog> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                       color: !_useWizard
-                          ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
+                          ? Theme.of(context).colorScheme.primaryContainer
+                                .withValues(alpha: 0.3)
                           : null,
                     ),
                     child: Row(
@@ -238,9 +256,11 @@ class _ProjectDialogState extends State<ProjectDialog> {
                         Radio<bool>(
                           value: false,
                           groupValue: _useWizard,
-                          onChanged: _isLoading ? null : (value) {
-                            setState(() => _useWizard = value!);
-                          },
+                          onChanged: _isLoading
+                              ? null
+                              : (value) {
+                                  setState(() => _useWizard = value!);
+                                },
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -252,23 +272,29 @@ class _ProjectDialogState extends State<ProjectDialog> {
                                   Icon(
                                     Icons.tune,
                                     size: 18,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
                                     'Manual Setup',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'Configure everything yourself at your own pace',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
                               ),
                             ],
                           ),

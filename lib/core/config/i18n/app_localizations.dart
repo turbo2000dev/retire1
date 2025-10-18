@@ -107,13 +107,18 @@ abstract class AppLocalizations {
   }
 
   // Delegate for localizations
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   // Supported locales
-  static const List<Locale> supportedLocales = [Locale('en', ''), Locale('fr', '')];
+  static const List<Locale> supportedLocales = [
+    Locale('en', ''),
+    Locale('fr', ''),
+  ];
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override

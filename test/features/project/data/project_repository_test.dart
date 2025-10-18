@@ -38,9 +38,7 @@ void main() {
       });
 
       test('should store project in Firestore', () async {
-        final project = await repository.createProject(
-          name: 'Test Project',
-        );
+        final project = await repository.createProject(name: 'Test Project');
 
         final doc = await fakeFirestore
             .collection('users')
@@ -55,9 +53,7 @@ void main() {
       });
 
       test('should convert DateTime to Timestamp in Firestore', () async {
-        final project = await repository.createProject(
-          name: 'DateTime Test',
-        );
+        final project = await repository.createProject(name: 'DateTime Test');
 
         final doc = await fakeFirestore
             .collection('users')
@@ -98,7 +94,10 @@ void main() {
         final projects = await repository.getProjectsStream().first;
 
         expect(projects.length, 3);
-        expect(projects.map((p) => p.name), containsAll(['Project 1', 'Project 2', 'Project 3']));
+        expect(
+          projects.map((p) => p.name),
+          containsAll(['Project 1', 'Project 2', 'Project 3']),
+        );
       });
 
       test('should stream project updates', () async {
@@ -189,7 +188,10 @@ void main() {
         final retrieved = await repository.getProject(project.id);
         expect(retrieved!.individuals[0].birthdate, DateTime(1970, 6, 15));
         expect(retrieved.individuals[0].hasRrpe, true);
-        expect(retrieved.individuals[0].rrpeParticipationStartDate, DateTime(2020, 1, 1));
+        expect(
+          retrieved.individuals[0].rrpeParticipationStartDate,
+          DateTime(2020, 1, 1),
+        );
       });
     });
 
@@ -339,7 +341,10 @@ void main() {
         expect(retrieved!.individuals.length, 3);
         for (int i = 0; i < 3; i++) {
           expect(retrieved.individuals[i].name, 'Person $i');
-          expect(retrieved.individuals[i].employmentIncome, 50000.0 + (i * 10000));
+          expect(
+            retrieved.individuals[i].employmentIncome,
+            50000.0 + (i * 10000),
+          );
         }
       });
     });
@@ -359,9 +364,7 @@ void main() {
       });
 
       test('should handle zero return rates', () async {
-        final project = await repository.createProject(
-          name: 'Zero Rates',
-        );
+        final project = await repository.createProject(name: 'Zero Rates');
 
         final withZeroRates = project.copyWith(
           inflationRate: 0.0,

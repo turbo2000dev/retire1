@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Size variants for the responsive button
-enum ResponsiveButtonSize {
-  small,
-  medium,
-  large,
-}
+enum ResponsiveButtonSize { small, medium, large }
 
 /// A button that adapts its size based on configuration
 class ResponsiveButton extends StatelessWidget {
@@ -128,9 +124,7 @@ class ResponsiveButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final buttonStyle = ButtonStyle(
       padding: WidgetStateProperty.all(_padding),
-      textStyle: WidgetStateProperty.all(
-        TextStyle(fontSize: _fontSize),
-      ),
+      textStyle: WidgetStateProperty.all(TextStyle(fontSize: _fontSize)),
       minimumSize: fillWidth
           ? WidgetStateProperty.all(const Size(double.infinity, 0))
           : null,
@@ -162,8 +156,4 @@ class ResponsiveButton extends StatelessWidget {
   }
 }
 
-enum _ResponsiveButtonStyle {
-  elevated,
-  outlined,
-  text,
-}
+enum _ResponsiveButtonStyle { elevated, outlined, text }

@@ -22,11 +22,36 @@ class NavItem {
 
 /// Navigation items for the app
 const navigationItems = [
-  NavItem(label: 'Dashboard', shortLabel: 'Dashboard', icon: Icons.dashboard, route: AppRoutes.dashboard),
-  NavItem(label: 'Parameters', shortLabel: 'Parameters', icon: Icons.settings_applications, route: AppRoutes.baseParameters),
-  NavItem(label: 'Assets & Events', shortLabel: 'Assets', icon: Icons.account_balance_wallet, route: AppRoutes.assetsEvents),
-  NavItem(label: 'Scenarios', shortLabel: 'Scenarios', icon: Icons.compare_arrows, route: AppRoutes.scenarios),
-  NavItem(label: 'Projection', shortLabel: 'Projection', icon: Icons.show_chart, route: AppRoutes.projection),
+  NavItem(
+    label: 'Dashboard',
+    shortLabel: 'Dashboard',
+    icon: Icons.dashboard,
+    route: AppRoutes.dashboard,
+  ),
+  NavItem(
+    label: 'Parameters',
+    shortLabel: 'Parameters',
+    icon: Icons.settings_applications,
+    route: AppRoutes.baseParameters,
+  ),
+  NavItem(
+    label: 'Assets & Events',
+    shortLabel: 'Assets',
+    icon: Icons.account_balance_wallet,
+    route: AppRoutes.assetsEvents,
+  ),
+  NavItem(
+    label: 'Scenarios',
+    shortLabel: 'Scenarios',
+    icon: Icons.compare_arrows,
+    route: AppRoutes.scenarios,
+  ),
+  NavItem(
+    label: 'Projection',
+    shortLabel: 'Projection',
+    icon: Icons.show_chart,
+    route: AppRoutes.projection,
+  ),
 ];
 
 /// App shell with responsive navigation
@@ -62,13 +87,19 @@ class AppShell extends ConsumerWidget {
         actions: [
           // Theme toggle
           IconButton(
-            icon: Icon(themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode),
+            icon: Icon(
+              themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode,
+            ),
             onPressed: () {
-              ref.read(themeModeProvider.notifier).state = themeMode == ThemeMode.light
+              ref
+                  .read(themeModeProvider.notifier)
+                  .state = themeMode == ThemeMode.light
                   ? ThemeMode.dark
                   : ThemeMode.light;
             },
-            tooltip: themeMode == ThemeMode.light ? 'Switch to Dark Mode' : 'Switch to Light Mode',
+            tooltip: themeMode == ThemeMode.light
+                ? 'Switch to Dark Mode'
+                : 'Switch to Light Mode',
           ),
           // Settings button
           IconButton(
@@ -89,9 +120,16 @@ class AppShell extends ConsumerWidget {
               onDestinationSelected: (index) {
                 _onItemTapped(context, ref, index);
               },
-              labelType: screenSize.isTablet ? NavigationRailLabelType.selected : NavigationRailLabelType.all,
+              labelType: screenSize.isTablet
+                  ? NavigationRailLabelType.selected
+                  : NavigationRailLabelType.all,
               destinations: navigationItems
-                  .map((item) => NavigationRailDestination(icon: Icon(item.icon), label: Text(item.label)))
+                  .map(
+                    (item) => NavigationRailDestination(
+                      icon: Icon(item.icon),
+                      label: Text(item.label),
+                    ),
+                  )
                   .toList(),
             ),
           // Main content
@@ -106,7 +144,12 @@ class AppShell extends ConsumerWidget {
                 _onItemTapped(context, ref, index);
               },
               destinations: navigationItems
-                  .map((item) => NavigationDestination(icon: Icon(item.icon), label: item.shortLabel))
+                  .map(
+                    (item) => NavigationDestination(
+                      icon: Icon(item.icon),
+                      label: item.shortLabel,
+                    ),
+                  )
                   .toList(),
             )
           : null,

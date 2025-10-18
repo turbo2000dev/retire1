@@ -5,7 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// Persists user preference to SharedPreferences so it survives app restarts.
 /// Default: false (current dollars)
-final dollarModeProvider = StateNotifierProvider<DollarModeNotifier, bool>((ref) {
+final dollarModeProvider = StateNotifierProvider<DollarModeNotifier, bool>((
+  ref,
+) {
   return DollarModeNotifier();
 });
 

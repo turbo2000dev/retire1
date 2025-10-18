@@ -13,10 +13,7 @@ import 'package:retire1/features/scenarios/presentation/providers/scenarios_prov
 class EventOverrideSection extends ConsumerWidget {
   final Scenario scenario;
 
-  const EventOverrideSection({
-    super.key,
-    required this.scenario,
-  });
+  const EventOverrideSection({super.key, required this.scenario});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -105,10 +102,7 @@ class EventOverrideSection extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             ...events.map((event) {
-              return _EventOverrideCard(
-                event: event,
-                scenario: scenario,
-              );
+              return _EventOverrideCard(event: event, scenario: scenario);
             }),
           ],
         );
@@ -122,10 +116,7 @@ class _EventOverrideCard extends ConsumerStatefulWidget {
   final Event event;
   final Scenario scenario;
 
-  const _EventOverrideCard({
-    required this.event,
-    required this.scenario,
-  });
+  const _EventOverrideCard({required this.event, required this.scenario});
 
   @override
   ConsumerState<_EventOverrideCard> createState() => _EventOverrideCardState();
@@ -145,9 +136,15 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
     return widget.event.when(
       retirement: (id, individualId, timing) => 'Retirement',
       death: (id, individualId, timing) => 'Death',
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-              withdrawAccountId, depositAccountId) =>
-          'Real Estate Transaction',
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => 'Real Estate Transaction',
     );
   }
 
@@ -155,9 +152,15 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
     return widget.event.when(
       retirement: (id, individualId, timing) => Icons.beach_access,
       death: (id, individualId, timing) => Icons.favorite_border,
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-              withdrawAccountId, depositAccountId) =>
-          Icons.home,
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => Icons.home,
     );
   }
 
@@ -178,16 +181,23 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
           '${_getIndividualName(individualId)} retires',
       death: (id, individualId, timing) =>
           '${_getIndividualName(individualId)} passes away',
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-          withdrawAccountId, depositAccountId) {
-        if (assetSoldId != null && assetPurchasedId != null) {
-          return 'Sell and buy property';
-        } else if (assetSoldId != null) {
-          return 'Sell property';
-        } else {
-          return 'Buy property';
-        }
-      },
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) {
+            if (assetSoldId != null && assetPurchasedId != null) {
+              return 'Sell and buy property';
+            } else if (assetSoldId != null) {
+              return 'Sell property';
+            } else {
+              return 'Buy property';
+            }
+          },
     );
   }
 
@@ -195,9 +205,15 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
     final timing = widget.event.when(
       retirement: (id, individualId, timing) => timing,
       death: (id, individualId, timing) => timing,
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-              withdrawAccountId, depositAccountId) =>
-          timing,
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => timing,
     );
 
     return timing.when(
@@ -217,9 +233,15 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
     final timing = widget.event.when(
       retirement: (id, individualId, timing) => timing,
       death: (id, individualId, timing) => timing,
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-              withdrawAccountId, depositAccountId) =>
-          timing,
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => timing,
     );
 
     return timing.maybeWhen(
@@ -234,17 +256,25 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
     final eventId = widget.event.when(
       retirement: (id, individualId, timing) => id,
       death: (id, individualId, timing) => id,
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-              withdrawAccountId, depositAccountId) =>
-          id,
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => id,
     );
 
     // Check if there's an override for this event
     final override = widget.scenario.overrides
-        .where((o) => o.maybeWhen(
-              eventTiming: (id, years) => id == eventId,
-              orElse: () => false,
-            ))
+        .where(
+          (o) => o.maybeWhen(
+            eventTiming: (id, years) => id == eventId,
+            orElse: () => false,
+          ),
+        )
         .firstOrNull;
 
     final overrideYears = override?.maybeWhen(
@@ -347,9 +377,7 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
                   ),
                 ),
                 keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 autofocus: true,
               ),
               const SizedBox(height: 12),
@@ -442,9 +470,15 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
       final eventId = widget.event.when(
         retirement: (id, individualId, timing) => id,
         death: (id, individualId, timing) => id,
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-                withdrawAccountId, depositAccountId) =>
-            id,
+        realEstateTransaction:
+            (
+              id,
+              timing,
+              assetSoldId,
+              assetPurchasedId,
+              withdrawAccountId,
+              depositAccountId,
+            ) => id,
       );
 
       final override = ParameterOverride.eventTiming(
@@ -507,16 +541,24 @@ class _EventOverrideCardState extends ConsumerState<_EventOverrideCard> {
       final eventId = widget.event.when(
         retirement: (id, individualId, timing) => id,
         death: (id, individualId, timing) => id,
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-                withdrawAccountId, depositAccountId) =>
-            id,
+        realEstateTransaction:
+            (
+              id,
+              timing,
+              assetSoldId,
+              assetPurchasedId,
+              withdrawAccountId,
+              depositAccountId,
+            ) => id,
       );
 
       final override = widget.scenario.overrides
-          .where((o) => o.maybeWhen(
-                eventTiming: (id, years) => id == eventId,
-                orElse: () => false,
-              ))
+          .where(
+            (o) => o.maybeWhen(
+              eventTiming: (id, years) => id == eventId,
+              orElse: () => false,
+            ),
+          )
           .firstOrNull;
 
       if (override != null) {

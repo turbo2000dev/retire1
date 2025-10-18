@@ -21,7 +21,10 @@ class ExpenseAmountOverrideSection extends ConsumerWidget {
 
     return expensesAsync.when(
       loading: () => const Center(
-        child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: CircularProgressIndicator(),
+        ),
       ),
       error: (error, stack) => Card(
         color: theme.colorScheme.errorContainer,
@@ -29,16 +32,24 @@ class ExpenseAmountOverrideSection extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
               const SizedBox(height: 12),
               Text(
                 'Failed to load expenses',
-                style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onErrorContainer,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 error.toString(),
-                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onErrorContainer),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onErrorContainer,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -52,16 +63,24 @@ class ExpenseAmountOverrideSection extends ConsumerWidget {
               padding: const EdgeInsets.all(32),
               child: Column(
                 children: [
-                  Icon(Icons.payments_outlined, size: 48, color: theme.colorScheme.outline),
+                  Icon(
+                    Icons.payments_outlined,
+                    size: 48,
+                    color: theme.colorScheme.outline,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     'No expenses available',
-                    style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Add expenses in the Assets & Events screen to override their amounts here',
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.outline),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -76,31 +95,55 @@ class ExpenseAmountOverrideSection extends ConsumerWidget {
             Text(
               'Override expense amounts to explore different scenarios. '
               'You can set absolute amounts or use multipliers.',
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
             // Section 1: Absolute Amount Overrides
-            Text('Absolute Amount Overrides', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Absolute Amount Overrides',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               'Set specific dollar amounts for expenses',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             ...expenses.map((expense) {
-              return _ExpenseAmountOverrideCard(expense: expense, scenario: scenario, isMultiplier: false);
+              return _ExpenseAmountOverrideCard(
+                expense: expense,
+                scenario: scenario,
+                isMultiplier: false,
+              );
             }),
             const SizedBox(height: 32),
             // Section 2: Multiplier Overrides
-            Text('Multiplier Overrides', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Multiplier Overrides',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               'Scale expenses by percentage (e.g., 1.5 = 150%, 0.5 = 50%, 0.0 = eliminate)',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             ...expenses.map((expense) {
-              return _ExpenseAmountOverrideCard(expense: expense, scenario: scenario, isMultiplier: true);
+              return _ExpenseAmountOverrideCard(
+                expense: expense,
+                scenario: scenario,
+                isMultiplier: true,
+              );
             }),
           ],
         );
@@ -113,15 +156,22 @@ class ExpenseAmountOverrideSection extends ConsumerWidget {
 class _ExpenseAmountOverrideCard extends ConsumerStatefulWidget {
   final Expense expense;
   final Scenario scenario;
-  final bool isMultiplier; // true = multiplier mode, false = absolute amount mode
+  final bool
+  isMultiplier; // true = multiplier mode, false = absolute amount mode
 
-  const _ExpenseAmountOverrideCard({required this.expense, required this.scenario, required this.isMultiplier});
+  const _ExpenseAmountOverrideCard({
+    required this.expense,
+    required this.scenario,
+    required this.isMultiplier,
+  });
 
   @override
-  ConsumerState<_ExpenseAmountOverrideCard> createState() => _ExpenseAmountOverrideCardState();
+  ConsumerState<_ExpenseAmountOverrideCard> createState() =>
+      _ExpenseAmountOverrideCardState();
 }
 
-class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverrideCard> {
+class _ExpenseAmountOverrideCardState
+    extends ConsumerState<_ExpenseAmountOverrideCard> {
   final _controller = TextEditingController();
   bool _isEditing = false;
 
@@ -200,7 +250,8 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
         .firstOrNull;
 
     final overrideValue = override?.maybeWhen(
-      expenseAmount: (id, overrideAmount, amountMultiplier) => widget.isMultiplier ? amountMultiplier : overrideAmount,
+      expenseAmount: (id, overrideAmount, amountMultiplier) =>
+          widget.isMultiplier ? amountMultiplier : overrideAmount,
       orElse: () => null,
     );
 
@@ -208,7 +259,9 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      color: isOverridden ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.3) : null,
+      color: isOverridden
+          ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.3)
+          : null,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -222,7 +275,10 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
                     color: _getExpenseColor(context).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(_getExpenseIcon(), color: _getExpenseColor(context)),
+                  child: Icon(
+                    _getExpenseIcon(),
+                    color: _getExpenseColor(context),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -231,19 +287,26 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
                     children: [
                       Text(
                         widget.expense.categoryName,
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Base: ${_formatCurrency(_getBaseAmount())} / year',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 if (isOverridden)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.secondary,
                       borderRadius: BorderRadius.circular(4),
@@ -263,8 +326,12 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
               TextFormField(
                 controller: _controller,
                 decoration: InputDecoration(
-                  labelText: widget.isMultiplier ? 'Override Multiplier' : 'Override Amount (\$)',
-                  hintText: widget.isMultiplier ? 'e.g., 1.5 for 150%' : 'Enter annual amount',
+                  labelText: widget.isMultiplier
+                      ? 'Override Multiplier'
+                      : 'Override Amount (\$)',
+                  hintText: widget.isMultiplier
+                      ? 'e.g., 1.5 for 150%'
+                      : 'Enter annual amount',
                   border: const OutlineInputBorder(),
                   helperText: widget.isMultiplier
                       ? 'Multiplier: 1.0 = same, 1.5 = 150%, 0.5 = 50%, 0.0 = eliminate'
@@ -279,8 +346,12 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
                     },
                   ),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
                 autofocus: true,
               ),
               const SizedBox(height: 12),
@@ -297,7 +368,10 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 8),
-                  FilledButton(onPressed: _saveOverride, child: const Text('Save')),
+                  FilledButton(
+                    onPressed: _saveOverride,
+                    child: const Text('Save'),
+                  ),
                 ],
               ),
             ] else ...[
@@ -338,14 +412,18 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
                         if (widget.isMultiplier) {
                           _controller.text = '1.0';
                         } else {
-                          _controller.text = _getBaseAmount().toStringAsFixed(0);
+                          _controller.text = _getBaseAmount().toStringAsFixed(
+                            0,
+                          );
                         }
                         setState(() {
                           _isEditing = true;
                         });
                       },
                       icon: const Icon(Icons.add),
-                      label: Text(widget.isMultiplier ? 'Add Multiplier' : 'Add Override'),
+                      label: Text(
+                        widget.isMultiplier ? 'Add Multiplier' : 'Add Override',
+                      ),
                     ),
                   ],
                 ],
@@ -362,7 +440,10 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
     if (value == null || value < 0) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid positive number'), behavior: SnackBarBehavior.floating),
+          const SnackBar(
+            content: Text('Please enter a valid positive number'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
       return;
@@ -385,22 +466,33 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
       final existingOverrides = widget.scenario.overrides
           .where(
             (o) => o.maybeWhen(
-              expenseAmount: (id, overrideAmount, amountMultiplier) => id == expenseId,
+              expenseAmount: (id, overrideAmount, amountMultiplier) =>
+                  id == expenseId,
               orElse: () => false,
             ),
           )
           .toList();
 
       for (final existing in existingOverrides) {
-        await ref.read(scenariosProvider.notifier).removeOverride(widget.scenario.id, existing);
+        await ref
+            .read(scenariosProvider.notifier)
+            .removeOverride(widget.scenario.id, existing);
       }
 
       // Create the appropriate override
       final override = widget.isMultiplier
-          ? ParameterOverride.expenseAmount(expenseId: expenseId, amountMultiplier: value)
-          : ParameterOverride.expenseAmount(expenseId: expenseId, overrideAmount: value);
+          ? ParameterOverride.expenseAmount(
+              expenseId: expenseId,
+              amountMultiplier: value,
+            )
+          : ParameterOverride.expenseAmount(
+              expenseId: expenseId,
+              overrideAmount: value,
+            );
 
-      await ref.read(scenariosProvider.notifier).addOverride(widget.scenario.id, override);
+      await ref
+          .read(scenariosProvider.notifier)
+          .addOverride(widget.scenario.id, override);
 
       setState(() {
         _isEditing = false;
@@ -408,9 +500,12 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Override saved'), behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Override saved'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -432,8 +527,14 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
         title: const Text('Remove Override'),
         content: const Text('Remove this override and use the base amount?'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Remove')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Remove'),
+          ),
         ],
       ),
     );
@@ -467,12 +568,17 @@ class _ExpenseAmountOverrideCardState extends ConsumerState<_ExpenseAmountOverri
           .firstOrNull;
 
       if (override != null) {
-        await ref.read(scenariosProvider.notifier).removeOverride(widget.scenario.id, override);
+        await ref
+            .read(scenariosProvider.notifier)
+            .removeOverride(widget.scenario.id, override);
 
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Override removed'), behavior: SnackBarBehavior.floating));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Override removed'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       }
     } catch (e) {

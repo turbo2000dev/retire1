@@ -8,31 +8,31 @@ import 'package:intl/intl.dart';
 class ProjectionChart extends StatelessWidget {
   final Projection projection;
 
-  const ProjectionChart({
-    super.key,
-    required this.projection,
-  });
+  const ProjectionChart({super.key, required this.projection});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     // Prepare data for chart
     final spots = projection.years
-        .map((year) => FlSpot(
-              year.yearsFromStart.toDouble(),
-              year.netWorthEndOfYear,
-            ))
+        .map(
+          (year) =>
+              FlSpot(year.yearsFromStart.toDouble(), year.netWorthEndOfYear),
+        )
         .toList();
 
     // Calculate min and max for Y axis
-    final minY = projection.years.map((y) => y.netWorthEndOfYear).reduce(
-          (a, b) => a < b ? a : b,
-        );
-    final maxY = projection.years.map((y) => y.netWorthEndOfYear).reduce(
-          (a, b) => a > b ? a : b,
-        );
+    final minY = projection.years
+        .map((y) => y.netWorthEndOfYear)
+        .reduce((a, b) => a < b ? a : b);
+    final maxY = projection.years
+        .map((y) => y.netWorthEndOfYear)
+        .reduce((a, b) => a > b ? a : b);
 
     // Add some padding to the range
     final range = maxY - minY;
@@ -52,10 +52,7 @@ class ProjectionChart extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.show_chart,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.show_chart, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   'Net Worth Over Time',
@@ -150,12 +147,12 @@ class ProjectionChart extends StatelessWidget {
                       color: theme.colorScheme.primary,
                       barWidth: 3,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(
-                        show: false,
-                      ),
+                      dotData: FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                        color: theme.colorScheme.primaryContainer.withValues(
+                          alpha: 0.3,
+                        ),
                       ),
                     ),
                   ],

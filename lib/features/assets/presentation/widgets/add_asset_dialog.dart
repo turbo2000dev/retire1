@@ -9,29 +9,17 @@ class AssetDialogResult {
   final Asset asset;
   final bool createAnother;
 
-  const AssetDialogResult({
-    required this.asset,
-    required this.createAnother,
-  });
+  const AssetDialogResult({required this.asset, required this.createAnother});
 }
 
 /// Asset type selection for the dialog
-enum AssetTypeSelection {
-  realEstate,
-  rrsp,
-  celi,
-  cri,
-  cash,
-}
+enum AssetTypeSelection { realEstate, rrsp, celi, cri, cash }
 
 /// Dialog for adding a new asset with type selection
 class AddAssetDialog extends StatefulWidget {
   final Asset? asset; // For editing existing asset
 
-  const AddAssetDialog({
-    super.key,
-    this.asset,
-  });
+  const AddAssetDialog({super.key, this.asset});
 
   static Future<AssetDialogResult?> show(BuildContext context, {Asset? asset}) {
     return showDialog<AssetDialogResult>(
@@ -72,12 +60,9 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
   }
 
   void _handleSave(Asset asset, {bool createAnother = false}) {
-    Navigator.of(context).pop(
-      AssetDialogResult(
-        asset: asset,
-        createAnother: createAnother,
-      ),
-    );
+    Navigator.of(
+      context,
+    ).pop(AssetDialogResult(asset: asset, createAnother: createAnother));
   }
 
   void _handleCancel() {
@@ -106,14 +91,9 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: theme.textTheme.headlineSmall,
-            ),
+            Text(title, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 24),
-            _showForm
-                ? _buildForm()
-                : _buildTypeSelector(theme),
+            _showForm ? _buildForm() : _buildTypeSelector(theme),
           ],
         ),
       ),
@@ -125,10 +105,7 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Select asset type',
-          style: theme.textTheme.titleMedium,
-        ),
+        Text('Select asset type', style: theme.textTheme.titleMedium),
         const SizedBox(height: 16),
         _buildTypeCard(
           theme: theme,
@@ -205,10 +182,7 @@ class _AddAssetDialogState extends State<AddAssetDialog> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    Text(subtitle, style: theme.textTheme.bodySmall),
                   ],
                 ),
               ),

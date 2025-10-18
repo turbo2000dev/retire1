@@ -79,17 +79,11 @@ class EventCard extends StatelessWidget {
       ),
       death: (_) => CircleAvatar(
         backgroundColor: theme.colorScheme.errorContainer,
-        child: Icon(
-          Icons.favorite,
-          color: theme.colorScheme.onErrorContainer,
-        ),
+        child: Icon(Icons.favorite, color: theme.colorScheme.onErrorContainer),
       ),
       realEstateTransaction: (_) => CircleAvatar(
         backgroundColor: theme.colorScheme.secondaryContainer,
-        child: Icon(
-          Icons.home,
-          color: theme.colorScheme.onSecondaryContainer,
-        ),
+        child: Icon(Icons.home, color: theme.colorScheme.onSecondaryContainer),
       ),
     );
   }
@@ -182,7 +176,9 @@ class EventCard extends StatelessWidget {
         return 'When ${individual?.name ?? 'individual'} turns ${t.age}';
       },
       eventRelative: (t) {
-        final boundaryText = t.boundary == EventBoundary.start ? 'start' : 'end';
+        final boundaryText = t.boundary == EventBoundary.start
+            ? 'start'
+            : 'end';
         return 'At $boundaryText of event';
       },
       projectionEnd: (t) => 'End of projection',

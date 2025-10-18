@@ -12,23 +12,28 @@ class Individual with _$Individual {
   const factory Individual({
     required String id,
     required String name,
-    @JsonKey(
-      fromJson: _dateTimeFromJson,
-      toJson: _dateTimeToJson,
-    )
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required DateTime birthdate,
     @Default(0.0) double employmentIncome, // Annual salary
     @Default(65) int rrqStartAge, // RRQ start age (60-70)
     @Default(65) int psvStartAge, // PSV start age (65-70, OAS age)
-    @Default(12000.0) double projectedRrqAt60, // Projected annual RRQ benefit if starting at age 60
-    @Default(16000.0) double projectedRrqAt65, // Projected annual RRQ benefit if starting at age 65
-    @Default(0.0) double initialCeliRoom, // Initial CELI contribution room available
-    @Default(false) bool hasRrpe, // Participates in RRPE (Régime de retraite du personnel d'encadrement)
+    @Default(12000.0)
+    double
+    projectedRrqAt60, // Projected annual RRQ benefit if starting at age 60
+    @Default(16000.0)
+    double
+    projectedRrqAt65, // Projected annual RRQ benefit if starting at age 65
+    @Default(0.0)
+    double initialCeliRoom, // Initial CELI contribution room available
+    @Default(false)
+    bool
+    hasRrpe, // Participates in RRPE (Régime de retraite du personnel d'encadrement)
     @JsonKey(
       fromJson: _dateTimeFromJsonNullable,
       toJson: _dateTimeToJsonNullable,
     )
-    DateTime? rrpeParticipationStartDate, // Date when RRPE participation started
+    DateTime?
+    rrpeParticipationStartDate, // Date when RRPE participation started
   }) = _Individual;
 
   factory Individual.fromJson(Map<String, dynamic> json) =>

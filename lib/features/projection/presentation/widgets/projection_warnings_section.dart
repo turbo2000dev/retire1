@@ -27,11 +27,7 @@ class ProjectionWarningsSection extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Row(
             children: [
-              Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 28,
-              ),
+              Icon(Icons.check_circle, color: Colors.green, size: 28),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
@@ -56,10 +52,7 @@ class ProjectionWarningsSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.warning,
-                  color: theme.colorScheme.error,
-                ),
+                Icon(Icons.warning, color: theme.colorScheme.error),
                 const SizedBox(width: 12),
                 Text(
                   'Warnings',
@@ -140,7 +133,10 @@ class ProjectionWarningsSection extends StatelessWidget {
 
   List<_Warning> _generateWarnings() {
     final warnings = <_Warning>[];
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     // Warning: Money runs out
     if (kpis.yearMoneyRunsOut != null) {
@@ -160,13 +156,15 @@ class ProjectionWarningsSection extends StatelessWidget {
           ? '$shortfallYears years with shortfalls totaling ${currencyFormat.format(totalShortfall)}. Consider reducing expenses, delaying retirement, or increasing savings.'
           : 'Consider reducing expenses or increasing income';
 
-      warnings.add(_Warning(
-        icon: Icons.money_off,
-        title: 'Money runs out in year ${kpis.yearMoneyRunsOut}',
-        subtitle: subtitle,
-        severity: _WarningSeverity.critical,
-        onTap: onMoneyRunsOutTap,
-      ));
+      warnings.add(
+        _Warning(
+          icon: Icons.money_off,
+          title: 'Money runs out in year ${kpis.yearMoneyRunsOut}',
+          subtitle: subtitle,
+          severity: _WarningSeverity.critical,
+          onTap: onMoneyRunsOutTap,
+        ),
+      );
     }
 
     // Warning: High average tax rate
@@ -174,15 +172,22 @@ class ProjectionWarningsSection extends StatelessWidget {
       final suggestions = <String>[];
       if (projection != null && projection!.years.isNotEmpty) {
         // Check for high RRSP/REER withdrawals
-        final avgReerWithdrawals = projection!.years
-            .map((y) => y.withdrawalsByAccount.entries
-                .where((e) => e.key.contains('reer') || e.key.contains('rrsp'))
-                .fold(0.0, (sum, e) => sum + e.value))
-            .reduce((a, b) => a + b) /
+        final avgReerWithdrawals =
+            projection!.years
+                .map(
+                  (y) => y.withdrawalsByAccount.entries
+                      .where(
+                        (e) => e.key.contains('reer') || e.key.contains('rrsp'),
+                      )
+                      .fold(0.0, (sum, e) => sum + e.value),
+                )
+                .reduce((a, b) => a + b) /
             projection!.years.length;
 
         if (avgReerWithdrawals > 50000) {
-          suggestions.add('High REER withdrawals detected. Consider withdrawing from CELI first (tax-free).');
+          suggestions.add(
+            'High REER withdrawals detected. Consider withdrawing from CELI first (tax-free).',
+          );
         }
       }
 
@@ -190,12 +195,15 @@ class ProjectionWarningsSection extends StatelessWidget {
           ? suggestions.join(' ')
           : 'Consider tax optimization strategies like income splitting or adjusting withdrawal order';
 
-      warnings.add(_Warning(
-        icon: Icons.account_balance,
-        title: 'High average tax rate: ${(kpis.averageTaxRate * 100).toStringAsFixed(1)}%',
-        subtitle: subtitle,
-        severity: _WarningSeverity.warning,
-      ));
+      warnings.add(
+        _Warning(
+          icon: Icons.account_balance,
+          title:
+              'High average tax rate: ${(kpis.averageTaxRate * 100).toStringAsFixed(1)}%',
+          subtitle: subtitle,
+          severity: _WarningSeverity.warning,
+        ),
+      );
     }
 
     // Warning: Low final net worth
@@ -204,22 +212,27 @@ class ProjectionWarningsSection extends StatelessWidget {
           ? 'Ending with ${currencyFormat.format(kpis.finalNetWorth)} provides very little cushion for unexpected expenses'
           : 'Ending with less than \$100,000 may limit flexibility';
 
-      warnings.add(_Warning(
-        icon: Icons.trending_down,
-        title: 'Low final net worth',
-        subtitle: subtitle,
-        severity: _WarningSeverity.warning,
-      ));
+      warnings.add(
+        _Warning(
+          icon: Icons.trending_down,
+          title: 'Low final net worth',
+          subtitle: subtitle,
+          severity: _WarningSeverity.warning,
+        ),
+      );
     }
 
     // Warning: Negative lowest net worth
     if (kpis.lowestNetWorth < 0) {
-      warnings.add(_Warning(
-        icon: Icons.warning,
-        title: 'Net worth goes negative in year ${kpis.yearOfLowestNetWorth}',
-        subtitle: 'Projection shows a shortfall period of ${currencyFormat.format(kpis.lowestNetWorth.abs())}',
-        severity: _WarningSeverity.critical,
-      ));
+      warnings.add(
+        _Warning(
+          icon: Icons.warning,
+          title: 'Net worth goes negative in year ${kpis.yearOfLowestNetWorth}',
+          subtitle:
+              'Projection shows a shortfall period of ${currencyFormat.format(kpis.lowestNetWorth.abs())}',
+          severity: _WarningSeverity.critical,
+        ),
+      );
     }
 
     // NEW WARNING: Large negative cash flow years
@@ -232,12 +245,15 @@ class ProjectionWarningsSection extends StatelessWidget {
         final worstYear = negativeYears.reduce(
           (a, b) => a.netCashFlow < b.netCashFlow ? a : b,
         );
-        warnings.add(_Warning(
-          icon: Icons.trending_down,
-          title: 'High spending years detected',
-          subtitle: '${negativeYears.length} years with cash flow below -\$50k. Worst: ${currencyFormat.format(worstYear.netCashFlow)} in ${worstYear.year}',
-          severity: _WarningSeverity.warning,
-        ));
+        warnings.add(
+          _Warning(
+            icon: Icons.trending_down,
+            title: 'High spending years detected',
+            subtitle:
+                '${negativeYears.length} years with cash flow below -\$50k. Worst: ${currencyFormat.format(worstYear.netCashFlow)} in ${worstYear.year}',
+            severity: _WarningSeverity.warning,
+          ),
+        );
       }
     }
 
@@ -252,7 +268,8 @@ class ProjectionWarningsSection extends StatelessWidget {
         // Find accounts that had balance but now are zero
         for (final entry in prevYear.assetsEndOfYear.entries) {
           if (entry.value > 1000 && // Had meaningful balance
-              (currYear.assetsEndOfYear[entry.key] ?? 0) < 100) { // Now depleted
+              (currYear.assetsEndOfYear[entry.key] ?? 0) < 100) {
+            // Now depleted
             if (!depletedAccounts.containsKey(entry.key)) {
               depletedAccounts[entry.key] = currYear.year;
             }
@@ -262,20 +279,27 @@ class ProjectionWarningsSection extends StatelessWidget {
 
       if (depletedAccounts.isNotEmpty && kpis.yearMoneyRunsOut == null) {
         final firstDepleted = depletedAccounts.entries.first;
-        final accountType = firstDepleted.key.contains('celi') ? 'CELI'
-            : firstDepleted.key.contains('cash') ? 'Cash'
-            : firstDepleted.key.contains('reer') || firstDepleted.key.contains('rrsp') ? 'REER'
-            : firstDepleted.key.contains('cri') ? 'CRI'
+        final accountType = firstDepleted.key.contains('celi')
+            ? 'CELI'
+            : firstDepleted.key.contains('cash')
+            ? 'Cash'
+            : firstDepleted.key.contains('reer') ||
+                  firstDepleted.key.contains('rrsp')
+            ? 'REER'
+            : firstDepleted.key.contains('cri')
+            ? 'CRI'
             : 'Account';
 
-        warnings.add(_Warning(
-          icon: Icons.account_balance_wallet,
-          title: '$accountType account depletes in ${firstDepleted.value}',
-          subtitle: depletedAccounts.length > 1
-              ? '${depletedAccounts.length} accounts will be fully withdrawn during projection'
-              : 'This is normal if other accounts still have funds',
-          severity: _WarningSeverity.warning,
-        ));
+        warnings.add(
+          _Warning(
+            icon: Icons.account_balance_wallet,
+            title: '$accountType account depletes in ${firstDepleted.value}',
+            subtitle: depletedAccounts.length > 1
+                ? '${depletedAccounts.length} accounts will be fully withdrawn during projection'
+                : 'This is normal if other accounts still have funds',
+            severity: _WarningSeverity.warning,
+          ),
+        );
       }
     }
 
@@ -294,17 +318,22 @@ class ProjectionWarningsSection extends StatelessWidget {
             .toList();
 
         if (yearsAfterDeath.isNotEmpty) {
-          final avgSurvivorIncome = yearsAfterDeath
-              .map((y) => y.totalIncome)
-              .reduce((a, b) => a + b) / yearsAfterDeath.length;
+          final avgSurvivorIncome =
+              yearsAfterDeath
+                  .map((y) => y.totalIncome)
+                  .reduce((a, b) => a + b) /
+              yearsAfterDeath.length;
 
           if (avgSurvivorIncome < 20000) {
-            warnings.add(_Warning(
-              icon: Icons.favorite,
-              title: 'Low survivor income detected',
-              subtitle: 'Average income after death: ${currencyFormat.format(avgSurvivorIncome)}/year. Verify survivor benefits are configured.',
-              severity: _WarningSeverity.warning,
-            ));
+            warnings.add(
+              _Warning(
+                icon: Icons.favorite,
+                title: 'Low survivor income detected',
+                subtitle:
+                    'Average income after death: ${currencyFormat.format(avgSurvivorIncome)}/year. Verify survivor benefits are configured.',
+                severity: _WarningSeverity.warning,
+              ),
+            );
           }
         }
       }
@@ -330,7 +359,4 @@ class _Warning {
   });
 }
 
-enum _WarningSeverity {
-  warning,
-  critical,
-}
+enum _WarningSeverity { warning, critical }

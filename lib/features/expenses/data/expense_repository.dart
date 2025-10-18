@@ -8,14 +8,15 @@ class ExpenseRepository {
   final FirebaseFirestore _firestore;
   final String projectId;
 
-  ExpenseRepository({
-    required this.projectId,
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  ExpenseRepository({required this.projectId, FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Get the expenses collection reference
   CollectionReference<Map<String, dynamic>> get _expensesCollection {
-    return _firestore.collection('projects').doc(projectId).collection('expenses');
+    return _firestore
+        .collection('projects')
+        .doc(projectId)
+        .collection('expenses');
   }
 
   /// Create a new expense

@@ -12,14 +12,15 @@ class SettingsRepository {
   final FirebaseFirestore _firestore;
   final String userId;
 
-  SettingsRepository({
-    required this.userId,
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  SettingsRepository({required this.userId, FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Get the settings document reference for the current user
-  DocumentReference<Map<String, dynamic>> get _settingsDoc =>
-      _firestore.collection('users').doc(userId).collection('settings').doc('currentProject');
+  DocumentReference<Map<String, dynamic>> get _settingsDoc => _firestore
+      .collection('users')
+      .doc(userId)
+      .collection('settings')
+      .doc('currentProject');
 
   /// Get the currently selected project ID
   Future<String?> getCurrentProjectId() async {
@@ -64,7 +65,11 @@ class SettingsRepository {
         return snapshot.data()?['projectId'] as String?;
       });
     } catch (e, stack) {
-      log('Failed to get current project ID stream', error: e, stackTrace: stack);
+      log(
+        'Failed to get current project ID stream',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }

@@ -23,16 +23,14 @@ class ColumnVisibilityDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final columnVisibility = ref.watch(columnVisibilityProvider);
-    final columnVisibilityNotifier =
-        ref.read(columnVisibilityProvider.notifier);
+    final columnVisibilityNotifier = ref.read(
+      columnVisibilityProvider.notifier,
+    );
 
     return AlertDialog(
       title: Row(
         children: [
-          Icon(
-            Icons.visibility,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(Icons.visibility, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           const Text('Column Visibility'),
         ],
@@ -52,8 +50,9 @@ class ColumnVisibilityDialog extends ConsumerWidget {
             ..._columnGroupLabels.entries.map((entry) {
               final groupKey = entry.key;
               final groupLabel = entry.value;
-              final isVisible =
-                  columnVisibility.visibleColumnGroups.contains(groupKey);
+              final isVisible = columnVisibility.visibleColumnGroups.contains(
+                groupKey,
+              );
 
               return CheckboxListTile(
                 title: Text(groupLabel),

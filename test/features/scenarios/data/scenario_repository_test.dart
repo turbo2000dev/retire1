@@ -46,14 +46,8 @@ void main() {
           name: 'Optimistic Scenario',
           isBase: false,
           overrides: [
-            ParameterOverride.assetValue(
-              assetId: 'asset-1',
-              value: 200000,
-            ),
-            ParameterOverride.assetValue(
-              assetId: 'asset-2',
-              value: 150000,
-            ),
+            ParameterOverride.assetValue(assetId: 'asset-1', value: 200000),
+            ParameterOverride.assetValue(assetId: 'asset-2', value: 150000),
           ],
           createdAt: DateTime(2025, 1, 1),
           updatedAt: DateTime(2025, 1, 1),
@@ -194,7 +188,10 @@ void main() {
           isBase: false,
           overrides: [
             ParameterOverride.assetValue(assetId: 'asset-1', value: 250000),
-            ParameterOverride.eventTiming(eventId: 'event-1', yearsFromStart: 5),
+            ParameterOverride.eventTiming(
+              eventId: 'event-1',
+              yearsFromStart: 5,
+            ),
             ParameterOverride.expenseAmount(
               expenseId: 'expense-1',
               amountMultiplier: 1.2,
@@ -236,30 +233,36 @@ void main() {
       });
 
       test('should get all scenarios for project', () async {
-        await repository.createScenario(Scenario(
-          id: 'base',
-          name: 'Base',
-          isBase: true,
-          overrides: [],
-          createdAt: DateTime(2025, 1, 1),
-          updatedAt: DateTime(2025, 1, 1),
-        ));
-        await repository.createScenario(Scenario(
-          id: 'scenario-1',
-          name: 'Variation 1',
-          isBase: false,
-          overrides: [],
-          createdAt: DateTime(2025, 1, 2),
-          updatedAt: DateTime(2025, 1, 2),
-        ));
-        await repository.createScenario(Scenario(
-          id: 'scenario-2',
-          name: 'Variation 2',
-          isBase: false,
-          overrides: [],
-          createdAt: DateTime(2025, 1, 3),
-          updatedAt: DateTime(2025, 1, 3),
-        ));
+        await repository.createScenario(
+          Scenario(
+            id: 'base',
+            name: 'Base',
+            isBase: true,
+            overrides: [],
+            createdAt: DateTime(2025, 1, 1),
+            updatedAt: DateTime(2025, 1, 1),
+          ),
+        );
+        await repository.createScenario(
+          Scenario(
+            id: 'scenario-1',
+            name: 'Variation 1',
+            isBase: false,
+            overrides: [],
+            createdAt: DateTime(2025, 1, 2),
+            updatedAt: DateTime(2025, 1, 2),
+          ),
+        );
+        await repository.createScenario(
+          Scenario(
+            id: 'scenario-2',
+            name: 'Variation 2',
+            isBase: false,
+            overrides: [],
+            createdAt: DateTime(2025, 1, 3),
+            updatedAt: DateTime(2025, 1, 3),
+          ),
+        );
 
         final scenarios = await repository.getScenariosStream().first;
 
@@ -272,14 +275,16 @@ void main() {
         final stream = repository.getScenariosStream();
 
         // Create initial scenario
-        await repository.createScenario(Scenario(
-          id: 'base',
-          name: 'Base',
-          isBase: true,
-          overrides: [],
-          createdAt: DateTime(2025, 1, 1),
-          updatedAt: DateTime(2025, 1, 1),
-        ));
+        await repository.createScenario(
+          Scenario(
+            id: 'base',
+            name: 'Base',
+            isBase: true,
+            overrides: [],
+            createdAt: DateTime(2025, 1, 1),
+            updatedAt: DateTime(2025, 1, 1),
+          ),
+        );
 
         // Get first emission
         final firstEmission = await stream.first;
@@ -385,22 +390,26 @@ void main() {
       });
 
       test('should remove scenario from stream', () async {
-        await repository.createScenario(Scenario(
-          id: 'scenario-1',
-          name: 'Scenario 1',
-          isBase: false,
-          overrides: [],
-          createdAt: DateTime(2025, 1, 1),
-          updatedAt: DateTime(2025, 1, 1),
-        ));
-        await repository.createScenario(Scenario(
-          id: 'scenario-2',
-          name: 'Scenario 2',
-          isBase: false,
-          overrides: [],
-          createdAt: DateTime(2025, 1, 2),
-          updatedAt: DateTime(2025, 1, 2),
-        ));
+        await repository.createScenario(
+          Scenario(
+            id: 'scenario-1',
+            name: 'Scenario 1',
+            isBase: false,
+            overrides: [],
+            createdAt: DateTime(2025, 1, 1),
+            updatedAt: DateTime(2025, 1, 1),
+          ),
+        );
+        await repository.createScenario(
+          Scenario(
+            id: 'scenario-2',
+            name: 'Scenario 2',
+            isBase: false,
+            overrides: [],
+            createdAt: DateTime(2025, 1, 2),
+            updatedAt: DateTime(2025, 1, 2),
+          ),
+        );
 
         await repository.deleteScenario('scenario-1');
 
@@ -424,14 +433,16 @@ void main() {
 
       test('should not create base scenario if one already exists', () async {
         // Create a custom base scenario
-        await repository.createScenario(Scenario(
-          id: 'custom-base',
-          name: 'Custom Base',
-          isBase: true,
-          overrides: [],
-          createdAt: DateTime(2025, 1, 1),
-          updatedAt: DateTime(2025, 1, 1),
-        ));
+        await repository.createScenario(
+          Scenario(
+            id: 'custom-base',
+            name: 'Custom Base',
+            isBase: true,
+            overrides: [],
+            createdAt: DateTime(2025, 1, 1),
+            updatedAt: DateTime(2025, 1, 1),
+          ),
+        );
 
         await repository.ensureBaseScenario();
 
@@ -443,35 +454,41 @@ void main() {
     });
 
     group('Override Serialization', () {
-      test('should preserve all override types through serialization', () async {
-        final scenario = Scenario(
-          id: 'scenario-1',
-          name: 'All Override Types',
-          isBase: false,
-          overrides: [
-            ParameterOverride.assetValue(assetId: 'asset-1', value: 100000),
-            ParameterOverride.eventTiming(eventId: 'event-1', yearsFromStart: 5),
-            ParameterOverride.expenseAmount(
-              expenseId: 'expense-1',
-              overrideAmount: 25000,
-            ),
-            ParameterOverride.expenseTiming(
-              expenseId: 'expense-2',
-              overrideStartTiming: EventTiming.relative(yearsFromStart: 0),
-              overrideEndTiming: EventTiming.projectionEnd(),
-            ),
-          ],
-          createdAt: DateTime(2025, 1, 1),
-          updatedAt: DateTime(2025, 1, 1),
-        );
+      test(
+        'should preserve all override types through serialization',
+        () async {
+          final scenario = Scenario(
+            id: 'scenario-1',
+            name: 'All Override Types',
+            isBase: false,
+            overrides: [
+              ParameterOverride.assetValue(assetId: 'asset-1', value: 100000),
+              ParameterOverride.eventTiming(
+                eventId: 'event-1',
+                yearsFromStart: 5,
+              ),
+              ParameterOverride.expenseAmount(
+                expenseId: 'expense-1',
+                overrideAmount: 25000,
+              ),
+              ParameterOverride.expenseTiming(
+                expenseId: 'expense-2',
+                overrideStartTiming: EventTiming.relative(yearsFromStart: 0),
+                overrideEndTiming: EventTiming.projectionEnd(),
+              ),
+            ],
+            createdAt: DateTime(2025, 1, 1),
+            updatedAt: DateTime(2025, 1, 1),
+          );
 
-        await repository.createScenario(scenario);
-        final retrieved = await repository.getScenario('scenario-1');
+          await repository.createScenario(scenario);
+          final retrieved = await repository.getScenario('scenario-1');
 
-        expect(retrieved, isNotNull);
-        expect(retrieved!.overrides.length, 4);
-        expect(retrieved.toJson(), equals(scenario.toJson()));
-      });
+          expect(retrieved, isNotNull);
+          expect(retrieved!.overrides.length, 4);
+          expect(retrieved.toJson(), equals(scenario.toJson()));
+        },
+      );
     });
 
     group('Data Integrity', () {
@@ -482,7 +499,10 @@ void main() {
           isBase: false,
           overrides: [
             ParameterOverride.assetValue(assetId: 'asset-1', value: 200000),
-            ParameterOverride.eventTiming(eventId: 'event-1', yearsFromStart: 3),
+            ParameterOverride.eventTiming(
+              eventId: 'event-1',
+              yearsFromStart: 3,
+            ),
           ],
           createdAt: DateTime(2025, 1, 1, 10, 30),
           updatedAt: DateTime(2025, 1, 2, 15, 45),

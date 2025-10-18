@@ -21,7 +21,8 @@ class ExpenseDialogResult {
 class AddExpenseDialog extends ConsumerStatefulWidget {
   final Expense? expense; // For editing existing expense
   final List<Individual> individuals;
-  final List<Event>? events; // Optional list of events for event-relative timing
+  final List<Event>?
+  events; // Optional list of events for event-relative timing
 
   const AddExpenseDialog({
     super.key,
@@ -79,12 +80,9 @@ class _AddExpenseDialogState extends ConsumerState<AddExpenseDialog> {
   }
 
   void _handleSave(Expense expense, {bool createAnother = false}) {
-    Navigator.of(context).pop(
-      ExpenseDialogResult(
-        expense: expense,
-        createAnother: createAnother,
-      ),
-    );
+    Navigator.of(
+      context,
+    ).pop(ExpenseDialogResult(expense: expense, createAnother: createAnother));
   }
 
   void _handleCancel() {
@@ -113,10 +111,7 @@ class _AddExpenseDialogState extends ConsumerState<AddExpenseDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: theme.textTheme.headlineSmall,
-            ),
+            Text(title, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 24),
             Flexible(
               child: _showForm ? _buildForm() : _buildTypeSelector(theme),
@@ -133,10 +128,7 @@ class _AddExpenseDialogState extends ConsumerState<AddExpenseDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Select expense category',
-            style: theme.textTheme.titleMedium,
-          ),
+          Text('Select expense category', style: theme.textTheme.titleMedium),
           const SizedBox(height: 16),
           _buildTypeCard(
             theme: theme,
@@ -222,10 +214,7 @@ class _AddExpenseDialogState extends ConsumerState<AddExpenseDialog> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    Text(subtitle, style: theme.textTheme.bodySmall),
                   ],
                 ),
               ),

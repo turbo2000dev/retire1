@@ -16,7 +16,7 @@ class SettingsNotifier extends StateNotifier<AsyncValue<AppSettings>> {
   final String? _userId;
 
   SettingsNotifier(this._repository, this._userId)
-      : super(const AsyncValue.loading()) {
+    : super(const AsyncValue.loading()) {
     _loadSettings();
   }
 
@@ -84,7 +84,9 @@ class SettingsNotifier extends StateNotifier<AsyncValue<AppSettings>> {
   /// Update auto-open Excel files setting
   Future<void> updateAutoOpenExcelFiles(bool autoOpen) async {
     if (!mounted || _userId == null) {
-      log('Cannot update auto-open setting: user not logged in or notifier disposed');
+      log(
+        'Cannot update auto-open setting: user not logged in or notifier disposed',
+      );
       return;
     }
 
@@ -122,14 +124,14 @@ class SettingsNotifier extends StateNotifier<AsyncValue<AppSettings>> {
 /// Provider for settings state
 final settingsProvider =
     StateNotifierProvider<SettingsNotifier, AsyncValue<AppSettings>>((ref) {
-  final repository = ref.watch(settingsRepositoryProvider);
-  final authState = ref.watch(authNotifierProvider);
+      final repository = ref.watch(settingsRepositoryProvider);
+      final authState = ref.watch(authNotifierProvider);
 
-  // Get user ID from auth state
-  final userId = authState is Authenticated ? authState.user.id : null;
+      // Get user ID from auth state
+      final userId = authState is Authenticated ? authState.user.id : null;
 
-  return SettingsNotifier(repository, userId);
-});
+      return SettingsNotifier(repository, userId);
+    });
 
 /// Provider for current language code
 final currentLanguageProvider = Provider<String>((ref) {

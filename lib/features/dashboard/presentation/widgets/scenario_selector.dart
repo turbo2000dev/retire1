@@ -66,7 +66,8 @@ class ScenarioSelector extends StatelessWidget {
                 // Alternative scenarios - can be toggled
                 ...alternativeScenarios.map((scenario) {
                   final isSelected = selectedScenarioIds.contains(scenario.id);
-                  final canSelect = isSelected || selectedScenarioIds.length < 3;
+                  final canSelect =
+                      isSelected || selectedScenarioIds.length < 3;
 
                   return _buildScenarioChip(
                     context,
@@ -100,11 +101,7 @@ class ScenarioSelector extends StatelessWidget {
           Text(scenario.name),
           if (isBase) ...[
             const SizedBox(width: 4),
-            Icon(
-              Icons.lock,
-              size: 14,
-              color: theme.colorScheme.primary,
-            ),
+            Icon(Icons.lock, size: 14, color: theme.colorScheme.primary),
           ],
         ],
       ),
@@ -128,10 +125,10 @@ class ScenarioSelector extends StatelessWidget {
       tooltip: isBase
           ? 'Base scenario (always included)'
           : isSelected
-              ? 'Click to remove from comparison'
-              : canToggle
-                  ? 'Click to add to comparison'
-                  : 'Maximum 3 scenarios selected',
+          ? 'Click to remove from comparison'
+          : canToggle
+          ? 'Click to add to comparison'
+          : 'Maximum 3 scenarios selected',
     );
   }
 }

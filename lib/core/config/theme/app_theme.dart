@@ -76,21 +76,57 @@ class AppTheme {
 
   /// Typography configuration
   static const TextTheme _textTheme = TextTheme(
-    displayLarge: TextStyle(fontSize: 57, fontWeight: FontWeight.w400, letterSpacing: -0.25),
+    displayLarge: TextStyle(
+      fontSize: 57,
+      fontWeight: FontWeight.w400,
+      letterSpacing: -0.25,
+    ),
     displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.w400),
     displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.w400),
     headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w400),
     headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w400),
     headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
     titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-    titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, letterSpacing: 0.15),
-    titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 0.1),
-    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.5),
-    bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.25),
-    bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.4),
-    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 0.1),
-    labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, letterSpacing: 0.5),
-    labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, letterSpacing: 0.5),
+    titleMedium: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+    ),
+    titleSmall: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.1,
+    ),
+    bodyLarge: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.5,
+    ),
+    bodyMedium: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.25,
+    ),
+    bodySmall: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.4,
+    ),
+    labelLarge: TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.1,
+    ),
+    labelMedium: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+    ),
+    labelSmall: TextStyle(
+      fontSize: 11,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+    ),
   );
 
   /// Main dark theme for the application
@@ -115,9 +151,7 @@ class AppTheme {
       // Card theme
       cardTheme: CardThemeData(
         elevation: 1,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: _darkColorScheme.surfaceContainerHighest,
       ),
 
@@ -126,9 +160,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: _textTheme.labelLarge,
         ),
       ),
@@ -137,9 +169,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: _textTheme.labelLarge,
         ),
       ),
@@ -148,9 +178,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: _textTheme.labelLarge,
           side: BorderSide(color: _darkColorScheme.outline),
         ),
@@ -180,7 +208,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: _darkColorScheme.error, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: _textTheme.bodyLarge,
         hintStyle: _textTheme.bodyLarge?.copyWith(
           color: _darkColorScheme.onSurfaceVariant,
@@ -190,9 +221,7 @@ class AppTheme {
       // Dialog theme
       dialogTheme: DialogThemeData(
         elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: _darkColorScheme.surface,
         titleTextStyle: _textTheme.headlineSmall?.copyWith(
           color: _darkColorScheme.onSurface,
@@ -252,9 +281,7 @@ class AppTheme {
         elevation: 3,
         backgroundColor: _darkColorScheme.primaryContainer,
         foregroundColor: _darkColorScheme.onPrimaryContainer,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
 
       // Divider theme
@@ -272,9 +299,7 @@ class AppTheme {
           color: _darkColorScheme.onSurface,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -301,9 +326,7 @@ class AppTheme {
       // Card theme
       cardTheme: CardThemeData(
         elevation: 1,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: _lightColorScheme.surfaceContainerHighest,
       ),
 
@@ -312,9 +335,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: _textTheme.labelLarge,
         ),
       ),
@@ -323,9 +344,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: _textTheme.labelLarge,
         ),
       ),
@@ -334,9 +353,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: _textTheme.labelLarge,
           side: BorderSide(color: _lightColorScheme.outline),
         ),
@@ -366,7 +383,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: _lightColorScheme.error, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         labelStyle: _textTheme.bodyLarge,
         hintStyle: _textTheme.bodyLarge?.copyWith(
           color: _lightColorScheme.onSurfaceVariant,
@@ -376,9 +396,7 @@ class AppTheme {
       // Dialog theme
       dialogTheme: DialogThemeData(
         elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: _lightColorScheme.surface,
         titleTextStyle: _textTheme.headlineSmall?.copyWith(
           color: _lightColorScheme.onSurface,
@@ -438,9 +456,7 @@ class AppTheme {
         elevation: 3,
         backgroundColor: _lightColorScheme.primaryContainer,
         foregroundColor: _lightColorScheme.onPrimaryContainer,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
 
       // Divider theme
@@ -458,9 +474,7 @@ class AppTheme {
           color: _lightColorScheme.onSurface,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

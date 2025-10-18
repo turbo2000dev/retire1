@@ -26,8 +26,7 @@ class RealEstateTransactionForm extends StatefulWidget {
       _RealEstateTransactionFormState();
 }
 
-class _RealEstateTransactionFormState
-    extends State<RealEstateTransactionForm> {
+class _RealEstateTransactionFormState extends State<RealEstateTransactionForm> {
   EventTiming? _timing;
   String? _assetSoldId;
   String? _assetPurchasedId;
@@ -150,10 +149,7 @@ class _RealEstateTransactionFormState
               helperText: 'Leave empty if only purchasing',
             ),
             items: [
-              const DropdownMenuItem<String>(
-                value: null,
-                child: Text('None'),
-              ),
+              const DropdownMenuItem<String>(value: null, child: Text('None')),
               ..._realEstateAssets.map((asset) {
                 return asset.maybeWhen(
                   realEstate: (id, type, _, __, ___) {
@@ -162,10 +158,8 @@ class _RealEstateTransactionFormState
                       child: Text(_getRealEstateTypeName(type)),
                     );
                   },
-                  orElse: () => const DropdownMenuItem(
-                    value: '',
-                    child: Text(''),
-                  ),
+                  orElse: () =>
+                      const DropdownMenuItem(value: '', child: Text('')),
                 );
               }),
             ],
@@ -186,10 +180,7 @@ class _RealEstateTransactionFormState
               helperText: 'Leave empty if only selling',
             ),
             items: [
-              const DropdownMenuItem<String>(
-                value: null,
-                child: Text('None'),
-              ),
+              const DropdownMenuItem<String>(value: null, child: Text('None')),
               ..._realEstateAssets.map((asset) {
                 return asset.maybeWhen(
                   realEstate: (id, type, _, __, ___) {
@@ -198,10 +189,8 @@ class _RealEstateTransactionFormState
                       child: Text(_getRealEstateTypeName(type)),
                     );
                   },
-                  orElse: () => const DropdownMenuItem(
-                    value: '',
-                    child: Text(''),
-                  ),
+                  orElse: () =>
+                      const DropdownMenuItem(value: '', child: Text('')),
                 );
               }),
             ],
@@ -262,10 +251,8 @@ class _RealEstateTransactionFormState
                     child: const Text('Cash Account'),
                   );
                 },
-                orElse: () => const DropdownMenuItem(
-                  value: '',
-                  child: Text(''),
-                ),
+                orElse: () =>
+                    const DropdownMenuItem(value: '', child: Text('')),
               );
             }).toList(),
             onChanged: (value) {
@@ -297,10 +284,8 @@ class _RealEstateTransactionFormState
                     child: const Text('Cash Account'),
                   );
                 },
-                orElse: () => const DropdownMenuItem(
-                  value: '',
-                  child: Text(''),
-                ),
+                orElse: () =>
+                    const DropdownMenuItem(value: '', child: Text('')),
               );
             }).toList(),
             onChanged: (value) {

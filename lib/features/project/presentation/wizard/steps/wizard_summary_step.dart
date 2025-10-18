@@ -13,7 +13,10 @@ class WizardSummaryStep extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final wizardState = ref.watch(wizardProvider);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
     final dateFormat = DateFormat.yMMMd();
 
     if (wizardState == null) {
@@ -82,9 +85,7 @@ class WizardSummaryStep extends ConsumerWidget {
                 icon: Icons.account_balance_wallet_outlined,
                 iconColor: Colors.green,
                 onEdit: () => ref.read(wizardProvider.notifier).goToStep(1),
-                children: [
-                  _buildRevenueSourcesSummary(theme, wizardState),
-                ],
+                children: [_buildRevenueSourcesSummary(theme, wizardState)],
               ),
               const SizedBox(height: 16),
 
@@ -121,9 +122,7 @@ class WizardSummaryStep extends ConsumerWidget {
                 icon: Icons.assessment_outlined,
                 iconColor: Colors.purple,
                 onEdit: () => ref.read(wizardProvider.notifier).goToStep(4),
-                children: [
-                  _buildScenariosSummary(theme, wizardState),
-                ],
+                children: [_buildScenariosSummary(theme, wizardState)],
               ),
               const SizedBox(height: 24),
 
@@ -226,7 +225,10 @@ class WizardSummaryStep extends ConsumerWidget {
     individual,
     String label,
   ) {
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
     final age = DateTime.now().year - individual.birthdate.year;
 
     return Column(
@@ -331,13 +333,15 @@ class WizardSummaryStep extends ConsumerWidget {
 
     final totalValue = assets.fold<double>(
       0,
-      (sum, asset) => sum + asset.map(
-        realEstate: (a) => a.value,
-        rrsp: (a) => a.value,
-        celi: (a) => a.value,
-        cri: (a) => a.value,
-        cash: (a) => a.value,
-      ),
+      (sum, asset) =>
+          sum +
+          asset.map(
+            realEstate: (a) => a.value,
+            rrsp: (a) => a.value,
+            celi: (a) => a.value,
+            cri: (a) => a.value,
+            cash: (a) => a.value,
+          ),
     );
 
     return Column(
@@ -370,7 +374,8 @@ class WizardSummaryStep extends ConsumerWidget {
     wizardState,
   ) {
     final expenses = wizardState.expenses;
-    final total = expenses.housingAmount +
+    final total =
+        expenses.housingAmount +
         expenses.transportAmount +
         expenses.dailyLivingAmount +
         expenses.recreationAmount +
@@ -470,23 +475,22 @@ class WizardSummaryStep extends ConsumerWidget {
           bold: true,
         ),
         const SizedBox(height: 8),
-        ...scenariosList.map((name) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    size: 16,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    name,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            )),
+        ...scenariosList.map(
+          (name) => Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  size: 16,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(name, style: theme.textTheme.bodyMedium),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

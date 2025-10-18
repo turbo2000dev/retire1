@@ -29,9 +29,9 @@ class Event with _$Event {
     String? assetSoldId, // Real estate asset being sold
     String? assetPurchasedId, // Real estate asset being purchased
     required String
-        withdrawAccountId, // Cash account to withdraw from (for purchase) or deposit to (for sale)
+    withdrawAccountId, // Cash account to withdraw from (for purchase) or deposit to (for sale)
     required String
-        depositAccountId, // Cash account to deposit sale proceeds or withdraw purchase funds
+    depositAccountId, // Cash account to deposit sale proceeds or withdraw purchase funds
   }) = RealEstateTransactionEvent;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);

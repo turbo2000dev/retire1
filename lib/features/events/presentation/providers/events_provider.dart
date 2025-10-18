@@ -144,14 +144,16 @@ final sortedEventsProvider = Provider<AsyncValue<List<Event>>>((ref) {
           relative: (bt) => at.yearsFromStart.compareTo(bt.yearsFromStart),
           absolute: (bt) => -1, // Relative before absolute (simplified)
           age: (bt) => -1, // Relative before age (simplified)
-          eventRelative: (bt) => -1, // Relative before event-relative (simplified)
+          eventRelative: (bt) =>
+              -1, // Relative before event-relative (simplified)
           projectionEnd: (bt) => -1, // Relative before projection end
         ),
         absolute: (at) => bTiming.map(
           relative: (bt) => 1, // Absolute after relative (simplified)
           absolute: (bt) => at.calendarYear.compareTo(bt.calendarYear),
           age: (bt) => -1, // Absolute before age (simplified)
-          eventRelative: (bt) => -1, // Absolute before event-relative (simplified)
+          eventRelative: (bt) =>
+              -1, // Absolute before event-relative (simplified)
           projectionEnd: (bt) => -1, // Absolute before projection end
         ),
         age: (at) => bTiming.map(
@@ -165,7 +167,8 @@ final sortedEventsProvider = Provider<AsyncValue<List<Event>>>((ref) {
           relative: (bt) => 1, // Event-relative after relative (simplified)
           absolute: (bt) => 1, // Event-relative after absolute (simplified)
           age: (bt) => 1, // Event-relative after age (simplified)
-          eventRelative: (bt) => 0, // Event-relative equal to event-relative (simplified)
+          eventRelative: (bt) =>
+              0, // Event-relative equal to event-relative (simplified)
           projectionEnd: (bt) => -1, // Event-relative before projection end
         ),
         projectionEnd: (at) => bTiming.map(

@@ -8,10 +8,8 @@ class ScenarioRepository {
   final FirebaseFirestore _firestore;
   final String projectId;
 
-  ScenarioRepository({
-    required this.projectId,
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  ScenarioRepository({required this.projectId, FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _scenariosCollection =>
       _firestore.collection('projects').doc(projectId).collection('scenarios');
@@ -34,11 +32,11 @@ class ScenarioRepository {
           .orderBy('createdAt', descending: false)
           .snapshots()
           .map((snapshot) {
-        return snapshot.docs.map((doc) {
-          final data = doc.data();
-          return Scenario.fromJson(data);
-        }).toList();
-      });
+            return snapshot.docs.map((doc) {
+              final data = doc.data();
+              return Scenario.fromJson(data);
+            }).toList();
+          });
     } catch (e) {
       developer.log('Error getting scenarios stream: $e');
       rethrow;

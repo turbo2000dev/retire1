@@ -28,7 +28,10 @@ class ProjectionKpiCard extends StatelessWidget {
     String? subtitle,
     KpiStatus status = KpiStatus.neutral,
   }) {
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
     return ProjectionKpiCard(
       icon: icon,
       label: label,
@@ -46,7 +49,8 @@ class ProjectionKpiCard extends StatelessWidget {
     String? subtitle,
     KpiStatus status = KpiStatus.neutral,
   }) {
-    final percentFormat = NumberFormat.percentPattern()..maximumFractionDigits = 1;
+    final percentFormat = NumberFormat.percentPattern()
+      ..maximumFractionDigits = 1;
     return ProjectionKpiCard(
       icon: icon,
       label: label,
@@ -105,11 +109,7 @@ class ProjectionKpiCard extends StatelessWidget {
             // Icon and label row
             Row(
               children: [
-                Icon(
-                  icon,
-                  color: effectiveColor,
-                  size: 28,
-                ),
+                Icon(icon, color: effectiveColor, size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -148,9 +148,4 @@ class ProjectionKpiCard extends StatelessWidget {
 }
 
 /// Status of a KPI for color coding
-enum KpiStatus {
-  good,
-  neutral,
-  warning,
-  critical,
-}
+enum KpiStatus { good, neutral, warning, critical }

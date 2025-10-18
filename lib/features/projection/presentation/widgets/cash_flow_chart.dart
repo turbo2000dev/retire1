@@ -32,7 +32,10 @@ class CashFlowChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     // Filter years to show every 5 years
     final filteredYears = projection.years
@@ -48,7 +51,10 @@ class CashFlowChart extends StatelessWidget {
     double maxY = 0;
 
     for (final year in filteredYears) {
-      final convertedCashFlow = _applyDollarMode(year.netCashFlow, year.yearsFromStart);
+      final convertedCashFlow = _applyDollarMode(
+        year.netCashFlow,
+        year.yearsFromStart,
+      );
       if (convertedCashFlow < minY) minY = convertedCashFlow;
       if (convertedCashFlow > maxY) maxY = convertedCashFlow;
     }
@@ -70,10 +76,7 @@ class CashFlowChart extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.waterfall_chart,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.waterfall_chart, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   'Net Cash Flow Over Time ${useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
@@ -96,10 +99,7 @@ class CashFlowChart extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  'Surplus',
-                  style: theme.textTheme.bodySmall,
-                ),
+                Text('Surplus', style: theme.textTheme.bodySmall),
                 const SizedBox(width: 16),
                 Container(
                   width: 16,
@@ -110,21 +110,11 @@ class CashFlowChart extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  'Deficit',
-                  style: theme.textTheme.bodySmall,
-                ),
+                Text('Deficit', style: theme.textTheme.bodySmall),
                 const SizedBox(width: 16),
-                Icon(
-                  Icons.warning,
-                  size: 16,
-                  color: Colors.amber,
-                ),
+                Icon(Icons.warning, size: 16, color: Colors.amber),
                 const SizedBox(width: 6),
-                Text(
-                  'Shortfall',
-                  style: theme.textTheme.bodySmall,
-                ),
+                Text('Shortfall', style: theme.textTheme.bodySmall),
               ],
             ),
             const SizedBox(height: 24),
@@ -207,7 +197,10 @@ class CashFlowChart extends StatelessWidget {
                   barGroups: filteredYears.asMap().entries.map((entry) {
                     final index = entry.key;
                     final year = entry.value;
-                    final cashFlow = _applyDollarMode(year.netCashFlow, year.yearsFromStart);
+                    final cashFlow = _applyDollarMode(
+                      year.netCashFlow,
+                      year.yearsFromStart,
+                    );
                     final hasShortfall = year.hasShortfall;
 
                     // Determine color based on positive/negative
@@ -244,18 +237,22 @@ class CashFlowChart extends StatelessWidget {
                     enabled: true,
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        if (groupIndex < 0 || groupIndex >= filteredYears.length) {
+                        if (groupIndex < 0 ||
+                            groupIndex >= filteredYears.length) {
                           return null;
                         }
 
                         final year = filteredYears[groupIndex];
                         final buffer = StringBuffer();
                         buffer.writeln('Year ${year.year}');
-                        buffer.writeln('Cash Flow: ${currencyFormat.format(year.netCashFlow)}');
+                        buffer.writeln(
+                          'Cash Flow: ${currencyFormat.format(year.netCashFlow)}',
+                        );
 
                         if (year.hasShortfall) {
                           buffer.write(
-                              '⚠️ Shortfall: ${currencyFormat.format(year.shortfallAmount)}');
+                            '⚠️ Shortfall: ${currencyFormat.format(year.shortfallAmount)}',
+                          );
                         }
 
                         return BarTooltipItem(

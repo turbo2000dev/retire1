@@ -3,7 +3,9 @@ import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/presentation/wizard/wizard_state.dart';
 
 /// Provider for wizard state management
-final wizardProvider = StateNotifierProvider<WizardNotifier, WizardState?>((ref) {
+final wizardProvider = StateNotifierProvider<WizardNotifier, WizardState?>((
+  ref,
+) {
   return WizardNotifier();
 });
 

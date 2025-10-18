@@ -78,7 +78,9 @@ class ProjectionScreen extends ConsumerWidget {
 
         // Schedule selection after build completes
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(selectedScenarioIdProvider.notifier).selectScenario(baseScenario.id);
+          ref
+              .read(selectedScenarioIdProvider.notifier)
+              .selectScenario(baseScenario.id);
         });
       }
     });
@@ -148,14 +150,18 @@ class ProjectionScreen extends ConsumerWidget {
                       return DropdownMenuItem(
                         value: scenario.id,
                         child: Text(
-                          scenario.isBase ? '${scenario.name} ⭐' : scenario.name,
+                          scenario.isBase
+                              ? '${scenario.name} ⭐'
+                              : scenario.name,
                           overflow: TextOverflow.ellipsis,
                         ),
                       );
                     }).toList(),
                     onChanged: (value) {
                       if (value != null) {
-                        ref.read(selectedScenarioIdProvider.notifier).selectScenario(value);
+                        ref
+                            .read(selectedScenarioIdProvider.notifier)
+                            .selectScenario(value);
                       }
                     },
                   ),
@@ -318,16 +324,9 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: theme.colorScheme.error,
-            ),
+            Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text(
-              'Error loading projection',
-              style: theme.textTheme.titleLarge,
-            ),
+            Text('Error loading projection', style: theme.textTheme.titleLarge),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -339,7 +338,8 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => ref.refresh(projectionProvider(widget.scenarioId)),
+              onPressed: () =>
+                  ref.refresh(projectionProvider(widget.scenarioId)),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
             ),
@@ -389,10 +389,7 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                         icon: Icon(Icons.table_chart_outlined),
                         text: 'Simple',
                       ),
-                      Tab(
-                        icon: Icon(Icons.table_view),
-                        text: 'Detailed',
-                      ),
+                      Tab(icon: Icon(Icons.table_view), text: 'Detailed'),
                     ],
                   ),
                   // Action buttons for detailed tab
@@ -426,20 +423,27 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                 onPressed: () async {
                                   try {
                                     // Get scenario name
-                                    final scenariosAsync = ref.read(scenariosProvider);
-                                    final scenarios = scenariosAsync.value ?? [];
+                                    final scenariosAsync = ref.read(
+                                      scenariosProvider,
+                                    );
+                                    final scenarios =
+                                        scenariosAsync.value ?? [];
                                     final scenario = scenarios.firstWhere(
                                       (s) => s.id == widget.scenarioId,
                                       orElse: () => scenarios.first,
                                     );
 
                                     // Get assets for Excel export
-                                    final assetsAsync = ref.read(assetsProvider);
+                                    final assetsAsync = ref.read(
+                                      assetsProvider,
+                                    );
                                     final assets = assetsAsync.value ?? [];
 
                                     // Show loading indicator
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
                                           content: Row(
                                             children: [
@@ -448,9 +452,10 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                                 height: 16,
                                                 child: CircularProgressIndicator(
                                                   strokeWidth: 2,
-                                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                                    Colors.white,
-                                                  ),
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                        Color
+                                                      >(Colors.white),
                                                 ),
                                               ),
                                               SizedBox(width: 12),
@@ -463,7 +468,12 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                     }
 
                                     // Get auto-open preference from settings
-                                    final autoOpen = ref.read(settingsProvider).value?.autoOpenExcelFiles ?? true;
+                                    final autoOpen =
+                                        ref
+                                            .read(settingsProvider)
+                                            .value
+                                            ?.autoOpenExcelFiles ??
+                                        true;
 
                                     // Export to Excel
                                     await ProjectionExcelExport.exportToExcel(
@@ -475,10 +485,16 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
 
                                     // Show success message
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).clearSnackBars();
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).clearSnackBars();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Excel file downloaded successfully'),
+                                          content: Text(
+                                            'Excel file downloaded successfully',
+                                          ),
                                           backgroundColor: Colors.green,
                                           duration: Duration(seconds: 3),
                                         ),
@@ -486,10 +502,16 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).clearSnackBars();
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).clearSnackBars();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
-                                          content: Text('Excel export failed: $e'),
+                                          content: Text(
+                                            'Excel export failed: $e',
+                                          ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
@@ -504,7 +526,9 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                               OutlinedButton.icon(
                                 onPressed: () {
                                   // Get scenario name
-                                  final scenariosAsync = ref.read(scenariosProvider);
+                                  final scenariosAsync = ref.read(
+                                    scenariosProvider,
+                                  );
                                   final scenarios = scenariosAsync.value ?? [];
                                   final scenario = scenarios.firstWhere(
                                     (s) => s.id == widget.scenarioId,
@@ -525,7 +549,9 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                   // Show success message
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Projection exported to CSV'),
+                                      content: Text(
+                                        'Projection exported to CSV',
+                                      ),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
@@ -575,17 +601,18 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                                             'Projection: ${projection.startYear} - ${projection.endYear}',
                                             style: theme.textTheme.titleMedium
                                                 ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
                                             '${projection.years.length} years • ${projection.useConstantDollars ? 'Constant' : 'Current'} dollars',
                                             style: theme.textTheme.bodyMedium
                                                 ?.copyWith(
-                                              color: theme
-                                                  .colorScheme.onSurfaceVariant,
-                                            ),
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -682,13 +709,16 @@ class _ProjectionContentState extends ConsumerState<_ProjectionContent>
                             padding: const EdgeInsets.all(24),
                             child: Consumer(
                               builder: (context, ref, child) {
-                                final columnVisibility =
-                                    ref.watch(columnVisibilityProvider);
+                                final columnVisibility = ref.watch(
+                                  columnVisibilityProvider,
+                                );
                                 return ExpandedProjectionTableV2(
                                   projection: projection,
                                   events: events,
                                   individuals: individuals,
-                                  useConstantDollars: ref.watch(dollarModeProvider),
+                                  useConstantDollars: ref.watch(
+                                    dollarModeProvider,
+                                  ),
                                   visibleColumnGroups:
                                       columnVisibility.visibleColumnGroups,
                                 );

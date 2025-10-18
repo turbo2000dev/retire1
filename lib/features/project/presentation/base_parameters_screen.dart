@@ -38,7 +38,8 @@ class BaseParametersScreen extends ConsumerStatefulWidget {
   const BaseParametersScreen({super.key});
 
   @override
-  ConsumerState<BaseParametersScreen> createState() => _BaseParametersScreenState();
+  ConsumerState<BaseParametersScreen> createState() =>
+      _BaseParametersScreenState();
 }
 
 class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
@@ -69,10 +70,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   Future<void> _createNewProject() async {
     final result = await ProjectDialog.showCreate(context);
     if (result != null && mounted) {
-      await ref.read(projectsProvider.notifier).createProject(
-            result['name']!,
-            result['description'],
-          );
+      await ref
+          .read(projectsProvider.notifier)
+          .createProject(result['name']!, result['description']);
 
       if (mounted) {
         // Get the newly created project (should be first in list)
@@ -81,7 +81,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         projectsAsync.whenData((projects) {
           if (projects.isNotEmpty) {
             newProjectId = projects.first.id;
-            ref.read(currentProjectProvider.notifier).selectProject(newProjectId!);
+            ref
+                .read(currentProjectProvider.notifier)
+                .selectProject(newProjectId!);
           }
         });
 
@@ -91,16 +93,17 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           // Launch wizard
           await Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ProjectWizardScreen(projectId: newProjectId!),
+              builder: (context) =>
+                  ProjectWizardScreen(projectId: newProjectId!),
               fullscreenDialog: true,
             ),
           );
         } else {
           // User chose manual setup
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Project created')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Project created')));
           }
         }
       }
@@ -138,9 +141,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       await ref.read(currentProjectProvider.notifier).clearSelection();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Project deleted')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Project deleted')));
       }
     }
   }
@@ -151,23 +154,27 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     }
 
     try {
-      await ref.read(projectsProvider.notifier).updateProject(
+      await ref
+          .read(projectsProvider.notifier)
+          .updateProject(
             project.id,
             _nameController.text,
-            _descriptionController.text.isEmpty ? null : _descriptionController.text,
+            _descriptionController.text.isEmpty
+                ? null
+                : _descriptionController.text,
           );
 
       if (mounted) {
         setState(() => _isEditing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Project updated')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Project updated')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update project: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update project: $e')));
       }
     }
   }
@@ -198,7 +205,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
 
       if (!mounted) break;
 
-      final updatedIndividuals = [...currentProject.individuals, result.individual];
+      final updatedIndividuals = [
+        ...currentProject.individuals,
+        result.individual,
+      ];
       await _updateProjectIndividuals(currentProject, updatedIndividuals);
 
       // Check if user wants to create another
@@ -232,9 +242,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Individual'),
-        content: Text(
-          'Are you sure you want to delete "${individual.name}"?',
-        ),
+        content: Text('Are you sure you want to delete "${individual.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -265,12 +273,14 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   ) async {
     try {
       final updatedProject = project.copyWith(individuals: individuals);
-      await ref.read(projectsProvider.notifier).updateProjectData(updatedProject);
+      await ref
+          .read(projectsProvider.notifier)
+          .updateProjectData(updatedProject);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Individuals updated')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Individuals updated')));
       }
     } catch (e) {
       if (mounted) {
@@ -305,8 +315,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       final criReturnRate = _parsePercentage(_criReturnRateController.text);
       final cashReturnRate = _parsePercentage(_cashReturnRateController.text);
 
-      if (inflationRate == null || reerReturnRate == null ||
-          celiReturnRate == null || criReturnRate == null ||
+      if (inflationRate == null ||
+          reerReturnRate == null ||
+          celiReturnRate == null ||
+          criReturnRate == null ||
           cashReturnRate == null) {
         throw Exception('Invalid rate values');
       }
@@ -319,7 +331,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         cashReturnRate: cashReturnRate,
       );
 
-      await ref.read(projectsProvider.notifier).updateProjectData(updatedProject);
+      await ref
+          .read(projectsProvider.notifier)
+          .updateProjectData(updatedProject);
 
       if (mounted) {
         setState(() => _isEditingEconomic = false);
@@ -358,7 +372,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   }) async {
     final startTime = DateTime.now();
     const pollInterval = Duration(milliseconds: 100);
-    const minWaitTime = Duration(milliseconds: 1500); // Give stream time to emit
+    const minWaitTime = Duration(
+      milliseconds: 1500,
+    ); // Give stream time to emit
 
     T? lastData;
     bool hasSeenNonEmptyData = false;
@@ -423,37 +439,45 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       ref.invalidate(scenariosProvider);
 
       // Wait for stream-based providers to emit data (with generous timeout)
-      assets = await _waitForProviderData<List<Asset>>(
-        assetsProvider,
-        timeout: const Duration(seconds: 10),
-      ).catchError((e) {
-        warnings.add('Assets could not be loaded and will not be included');
-        return null;
-      });
+      assets =
+          await _waitForProviderData<List<Asset>>(
+            assetsProvider,
+            timeout: const Duration(seconds: 10),
+          ).catchError((e) {
+            warnings.add('Assets could not be loaded and will not be included');
+            return null;
+          });
 
-      events = await _waitForProviderData<List<Event>>(
-        eventsProvider,
-        timeout: const Duration(seconds: 10),
-      ).catchError((e) {
-        warnings.add('Events could not be loaded and will not be included');
-        return null;
-      });
+      events =
+          await _waitForProviderData<List<Event>>(
+            eventsProvider,
+            timeout: const Duration(seconds: 10),
+          ).catchError((e) {
+            warnings.add('Events could not be loaded and will not be included');
+            return null;
+          });
 
-      expenses = await _waitForProviderData<List<Expense>>(
-        expensesProvider,
-        timeout: const Duration(seconds: 10),
-      ).catchError((e) {
-        warnings.add('Expenses could not be loaded and will not be included');
-        return null;
-      });
+      expenses =
+          await _waitForProviderData<List<Expense>>(
+            expensesProvider,
+            timeout: const Duration(seconds: 10),
+          ).catchError((e) {
+            warnings.add(
+              'Expenses could not be loaded and will not be included',
+            );
+            return null;
+          });
 
-      scenarios = await _waitForProviderData<List<Scenario>>(
-        scenariosProvider,
-        timeout: const Duration(seconds: 10),
-      ).catchError((e) {
-        warnings.add('Scenarios could not be loaded and will not be included');
-        return null;
-      });
+      scenarios =
+          await _waitForProviderData<List<Scenario>>(
+            scenariosProvider,
+            timeout: const Duration(seconds: 10),
+          ).catchError((e) {
+            warnings.add(
+              'Scenarios could not be loaded and will not be included',
+            );
+            return null;
+          });
 
       // Export with available data
       final exportService = ProjectExportService();
@@ -492,9 +516,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to export project: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to export project: $e')));
       }
     }
   }
@@ -545,15 +569,17 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        ...warnings.map((warning) => Padding(
-                              padding: const EdgeInsets.only(left: 28, top: 4),
-                              child: Text(
-                                '• $warning',
-                                style: TextStyle(
-                                  color: theme.colorScheme.onErrorContainer,
-                                ),
+                        ...warnings.map(
+                          (warning) => Padding(
+                            padding: const EdgeInsets.only(left: 28, top: 4),
+                            child: Text(
+                              '• $warning',
+                              style: TextStyle(
+                                color: theme.colorScheme.onErrorContainer,
                               ),
-                            )),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -621,10 +647,18 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
 
       // Step 7: Create repositories directly with the new project ID
       // (Can't use providers because they depend on currentProjectProvider being set)
-      final assetRepository = AssetRepository(projectId: importedData.project.id);
-      final eventRepository = EventRepository(projectId: importedData.project.id);
-      final expenseRepository = ExpenseRepository(projectId: importedData.project.id);
-      final scenarioRepository = ScenarioRepository(projectId: importedData.project.id);
+      final assetRepository = AssetRepository(
+        projectId: importedData.project.id,
+      );
+      final eventRepository = EventRepository(
+        projectId: importedData.project.id,
+      );
+      final expenseRepository = ExpenseRepository(
+        projectId: importedData.project.id,
+      );
+      final scenarioRepository = ScenarioRepository(
+        projectId: importedData.project.id,
+      );
 
       // Step 8: Save assets to Firestore
       for (final asset in importedData.assets) {
@@ -647,12 +681,16 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       }
 
       // Step 12: Switch to the newly imported project
-      ref.read(currentProjectProvider.notifier).selectProject(importedData.project.id);
+      ref
+          .read(currentProjectProvider.notifier)
+          .selectProject(importedData.project.id);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Project "${importedData.project.name}" imported successfully'),
+            content: Text(
+              'Project "${importedData.project.name}" imported successfully',
+            ),
             duration: const Duration(seconds: 3),
           ),
         );
@@ -661,7 +699,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.message ?? 'File selection not supported on this platform'),
+            content: Text(
+              e.message ?? 'File selection not supported on this platform',
+            ),
             duration: const Duration(seconds: 4),
           ),
         );
@@ -693,14 +733,30 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
             }
 
             return switch (currentProjectState) {
-              NoProjectSelected() => _buildNoSelection(context, theme, projects),
-              ProjectLoading() => const Center(child: CircularProgressIndicator()),
-              ProjectError(:final message) => _buildErrorState(context, theme, message),
-              ProjectSelected(:final project) => _buildProjectEditor(context, theme, projects, project),
+              NoProjectSelected() => _buildNoSelection(
+                context,
+                theme,
+                projects,
+              ),
+              ProjectLoading() => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              ProjectError(:final message) => _buildErrorState(
+                context,
+                theme,
+                message,
+              ),
+              ProjectSelected(:final project) => _buildProjectEditor(
+                context,
+                theme,
+                projects,
+                project,
+              ),
             };
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => _buildErrorState(context, theme, error.toString()),
+          error: (error, stack) =>
+              _buildErrorState(context, theme, error.toString()),
         ),
       ),
     );
@@ -717,10 +773,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 24),
-          Text(
-            'No projects yet',
-            style: theme.textTheme.headlineMedium,
-          ),
+          Text('No projects yet', style: theme.textTheme.headlineMedium),
           const SizedBox(height: 8),
           Text(
             'Create your first retirement planning project',
@@ -739,32 +792,35 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     );
   }
 
-  Widget _buildNoSelection(BuildContext context, ThemeData theme, List<Project> projects) {
+  Widget _buildNoSelection(
+    BuildContext context,
+    ThemeData theme,
+    List<Project> projects,
+  ) {
     // Auto-select first project
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (projects.isNotEmpty) {
-        ref.read(currentProjectProvider.notifier).selectProject(projects.first.id);
+        ref
+            .read(currentProjectProvider.notifier)
+            .selectProject(projects.first.id);
       }
     });
 
     return const Center(child: CircularProgressIndicator());
   }
 
-  Widget _buildErrorState(BuildContext context, ThemeData theme, String message) {
+  Widget _buildErrorState(
+    BuildContext context,
+    ThemeData theme,
+    String message,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 48,
-            color: theme.colorScheme.error,
-          ),
+          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
           const SizedBox(height: 16),
-          Text(
-            'Error loading projects',
-            style: theme.textTheme.titleLarge,
-          ),
+          Text('Error loading projects', style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             message,
@@ -776,7 +832,12 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     );
   }
 
-  Widget _buildProjectEditor(BuildContext context, ThemeData theme, List<Project> projects, Project selectedProject) {
+  Widget _buildProjectEditor(
+    BuildContext context,
+    ThemeData theme,
+    List<Project> projects,
+    Project selectedProject,
+  ) {
     // Load project data when selected project changes
     if (!_isEditing) {
       _loadProjectData(selectedProject);
@@ -826,7 +887,9 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                       onChanged: (projectId) {
                         if (projectId != null) {
                           setState(() => _isEditing = false);
-                          ref.read(currentProjectProvider.notifier).selectProject(projectId);
+                          ref
+                              .read(currentProjectProvider.notifier)
+                              .selectProject(projectId);
                         }
                       },
                     ),
@@ -843,7 +906,8 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () => _deleteCurrentProject(selectedProject),
+                            onPressed: () =>
+                                _deleteCurrentProject(selectedProject),
                             icon: const Icon(Icons.delete),
                             label: const Text('Delete Project'),
                             style: OutlinedButton.styleFrom(
@@ -881,7 +945,8 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                           ),
                           if (!_isEditing)
                             IconButton(
-                              onPressed: () => setState(() => _isEditing = true),
+                              onPressed: () =>
+                                  setState(() => _isEditing = true),
                               icon: const Icon(Icons.edit),
                               tooltip: 'Edit project details',
                             ),
@@ -926,7 +991,8 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             ),
                             const SizedBox(width: 8),
                             FilledButton.icon(
-                              onPressed: () => _saveProjectChanges(selectedProject),
+                              onPressed: () =>
+                                  _saveProjectChanges(selectedProject),
                               icon: const Icon(Icons.save),
                               label: const Text('Save Changes'),
                             ),
@@ -957,7 +1023,8 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                     initiallyExpanded: false,
                     trailing: !_isEditingEconomic
                         ? IconButton(
-                            onPressed: () => setState(() => _isEditingEconomic = true),
+                            onPressed: () =>
+                                setState(() => _isEditingEconomic = true),
                             icon: const Icon(Icons.edit),
                             tooltip: 'Edit economic assumptions',
                           )
@@ -975,9 +1042,14 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             helperText: 'Expected annual inflation rate',
                           ),
                           enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          ),
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d*\.?\d*'),
+                            ),
                           ],
                           validator: _validatePercentage,
                         ),
@@ -988,12 +1060,18 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             labelText: 'REER Return Rate',
                             border: OutlineInputBorder(),
                             suffixText: '%',
-                            helperText: 'Expected annual return for REER accounts',
+                            helperText:
+                                'Expected annual return for REER accounts',
                           ),
                           enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          ),
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d*\.?\d*'),
+                            ),
                           ],
                           validator: _validatePercentage,
                         ),
@@ -1004,12 +1082,18 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             labelText: 'CELI Return Rate',
                             border: OutlineInputBorder(),
                             suffixText: '%',
-                            helperText: 'Expected annual return for CELI accounts',
+                            helperText:
+                                'Expected annual return for CELI accounts',
                           ),
                           enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          ),
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d*\.?\d*'),
+                            ),
                           ],
                           validator: _validatePercentage,
                         ),
@@ -1020,12 +1104,18 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             labelText: 'CRI Return Rate',
                             border: OutlineInputBorder(),
                             suffixText: '%',
-                            helperText: 'Expected annual return for CRI accounts',
+                            helperText:
+                                'Expected annual return for CRI accounts',
                           ),
                           enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          ),
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d*\.?\d*'),
+                            ),
                           ],
                           validator: _validatePercentage,
                         ),
@@ -1036,12 +1126,18 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             labelText: 'Cash Return Rate',
                             border: OutlineInputBorder(),
                             suffixText: '%',
-                            helperText: 'Expected annual return for cash accounts',
+                            helperText:
+                                'Expected annual return for cash accounts',
                           ),
                           enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          ),
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d*\.?\d*'),
+                            ),
                           ],
                           validator: _validatePercentage,
                         ),
@@ -1059,7 +1155,8 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                               ),
                               const SizedBox(width: 8),
                               FilledButton.icon(
-                                onPressed: () => _saveEconomicAssumptions(selectedProject),
+                                onPressed: () =>
+                                    _saveEconomicAssumptions(selectedProject),
                                 icon: const Icon(Icons.save),
                                 label: const Text('Save'),
                               ),
@@ -1088,10 +1185,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Individuals',
-                          style: theme.textTheme.titleMedium,
-                        ),
+                        Text('Individuals', style: theme.textTheme.titleMedium),
                         FilledButton.icon(
                           onPressed: () => _addIndividual(selectedProject),
                           icon: const Icon(Icons.person_add),
@@ -1108,7 +1202,8 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             Icon(
                               Icons.people_outline,
                               size: 48,
-                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.5),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -1121,7 +1216,8 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             Text(
                               'Add the people involved in this retirement plan',
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -1133,8 +1229,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: IndividualCard(
                             individual: individual,
-                            onEdit: () => _editIndividual(selectedProject, individual),
-                            onDelete: () => _deleteIndividual(selectedProject, individual),
+                            onEdit: () =>
+                                _editIndividual(selectedProject, individual),
+                            onDelete: () =>
+                                _deleteIndividual(selectedProject, individual),
                           ),
                         );
                       }),
@@ -1155,10 +1253,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'Import/Export',
-                      style: theme.textTheme.titleMedium,
-                    ),
+                    Text('Import/Export', style: theme.textTheme.titleMedium),
                     const SizedBox(height: 8),
                     Text(
                       'Import or export project data for backup, sharing test cases, or transferring between accounts',

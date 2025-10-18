@@ -39,41 +39,57 @@ class _AccountFormState extends ConsumerState<AccountForm> {
   void initState() {
     super.initState();
     _valueController = TextEditingController(
-      text: widget.asset?.map(
-        realEstate: (_) => '',
-        rrsp: (a) => a.value.toStringAsFixed(0),
-        celi: (a) => a.value.toStringAsFixed(0),
-        cri: (a) => a.value.toStringAsFixed(0),
-        cash: (a) => a.value.toStringAsFixed(0),
-      ) ?? '',
+      text:
+          widget.asset?.map(
+            realEstate: (_) => '',
+            rrsp: (a) => a.value.toStringAsFixed(0),
+            celi: (a) => a.value.toStringAsFixed(0),
+            cri: (a) => a.value.toStringAsFixed(0),
+            cash: (a) => a.value.toStringAsFixed(0),
+          ) ??
+          '',
     );
     _customReturnRateController = TextEditingController(
-      text: widget.asset?.map(
-        realEstate: (_) => '',
-        // Convert from decimal (0.05) to percentage (5.0) for display
-        rrsp: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
-        celi: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
-        cri: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
-        cash: (a) => a.customReturnRate != null ? (a.customReturnRate! * 100).toStringAsFixed(2) : '',
-      ) ?? '',
+      text:
+          widget.asset?.map(
+            realEstate: (_) => '',
+            // Convert from decimal (0.05) to percentage (5.0) for display
+            rrsp: (a) => a.customReturnRate != null
+                ? (a.customReturnRate! * 100).toStringAsFixed(2)
+                : '',
+            celi: (a) => a.customReturnRate != null
+                ? (a.customReturnRate! * 100).toStringAsFixed(2)
+                : '',
+            cri: (a) => a.customReturnRate != null
+                ? (a.customReturnRate! * 100).toStringAsFixed(2)
+                : '',
+            cash: (a) => a.customReturnRate != null
+                ? (a.customReturnRate! * 100).toStringAsFixed(2)
+                : '',
+          ) ??
+          '',
     );
     _annualContributionController = TextEditingController(
-      text: widget.asset?.map(
-        realEstate: (_) => '',
-        rrsp: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
-        celi: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
-        cri: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
-        cash: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
-      ) ?? '',
+      text:
+          widget.asset?.map(
+            realEstate: (_) => '',
+            rrsp: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+            celi: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+            cri: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+            cash: (a) => a.annualContribution?.toStringAsFixed(0) ?? '',
+          ) ??
+          '',
     );
     _contributionRoomController = TextEditingController(
-      text: widget.asset?.map(
-        realEstate: (_) => '',
-        rrsp: (_) => '',
-        celi: (_) => '',
-        cri: (a) => a.contributionRoom?.toStringAsFixed(0) ?? '',
-        cash: (_) => '',
-      ) ?? '',
+      text:
+          widget.asset?.map(
+            realEstate: (_) => '',
+            rrsp: (_) => '',
+            celi: (_) => '',
+            cri: (a) => a.contributionRoom?.toStringAsFixed(0) ?? '',
+            cash: (_) => '',
+          ) ??
+          '',
     );
     _selectedIndividualId = widget.asset?.map(
       realEstate: (_) => null,
@@ -103,13 +119,15 @@ class _AccountFormState extends ConsumerState<AccountForm> {
       return;
     }
 
-    final id = widget.asset?.map(
-      realEstate: (a) => a.id,
-      rrsp: (a) => a.id,
-      celi: (a) => a.id,
-      cri: (a) => a.id,
-      cash: (a) => a.id,
-    ) ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final id =
+        widget.asset?.map(
+          realEstate: (a) => a.id,
+          rrsp: (a) => a.id,
+          celi: (a) => a.id,
+          cri: (a) => a.id,
+          cash: (a) => a.id,
+        ) ??
+        DateTime.now().millisecondsSinceEpoch.toString();
 
     final value = double.parse(_valueController.text.replaceAll(',', ''));
 
@@ -120,7 +138,9 @@ class _AccountFormState extends ConsumerState<AccountForm> {
         : (double.tryParse(_customReturnRateController.text) ?? 0) / 100;
     final annualContribution = _annualContributionController.text.isEmpty
         ? null
-        : double.tryParse(_annualContributionController.text.replaceAll(',', ''));
+        : double.tryParse(
+            _annualContributionController.text.replaceAll(',', ''),
+          );
     final contributionRoom = _contributionRoomController.text.isEmpty
         ? null
         : double.tryParse(_contributionRoomController.text.replaceAll(',', ''));
@@ -241,9 +261,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
               prefixText: '\$ ',
             ),
             keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter a balance';
@@ -263,7 +281,8 @@ class _AccountFormState extends ConsumerState<AccountForm> {
               labelText: 'Custom Return Rate (optional)',
               border: OutlineInputBorder(),
               suffixText: '%',
-              helperText: 'Enter as percentage (e.g., 5 for 5%). Overrides project return rate.',
+              helperText:
+                  'Enter as percentage (e.g., 5 for 5%). Overrides project return rate.',
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
@@ -289,9 +308,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
               helperText: 'Automatic yearly contribution amount',
             ),
             keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             validator: (value) {
               if (value == null || value.isEmpty) return null;
               final numValue = double.tryParse(value.replaceAll(',', ''));
@@ -313,9 +330,7 @@ class _AccountFormState extends ConsumerState<AccountForm> {
                 helperText: 'Available contribution room for CRI account',
               ),
               keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               validator: (value) {
                 if (value == null || value.isEmpty) return null;
                 final numValue = double.tryParse(value.replaceAll(',', ''));
@@ -340,7 +355,9 @@ class _AccountFormState extends ConsumerState<AccountForm> {
               // Show "Save and create another" only when creating new asset
               if (widget.asset == null) ...[
                 FilledButton.tonal(
-                  onPressed: individuals.isEmpty ? null : () => _submit(createAnother: true),
+                  onPressed: individuals.isEmpty
+                      ? null
+                      : () => _submit(createAnother: true),
                   child: const Text('Save and create another'),
                 ),
                 const SizedBox(width: 8),

@@ -39,19 +39,11 @@ class FileDownloadHelper {
 
   /// Download JSON content as a .json file
   static void downloadJson(String jsonContent, String filename) {
-    downloadTextFile(
-      jsonContent,
-      filename,
-      mimeType: 'application/json',
-    );
+    downloadTextFile(jsonContent, filename, mimeType: 'application/json');
   }
 
   /// Download CSV content as a .csv file
   static void downloadCsv(String csvContent, String filename) {
-    downloadTextFile(
-      csvContent,
-      filename,
-      mimeType: 'text/csv',
-    );
+    downloadTextFile(csvContent, filename, mimeType: 'text/csv');
   }
 }

@@ -34,11 +34,7 @@ class KpiComparisonCard extends StatelessWidget {
             // Header with icon and label
             Row(
               children: [
-                Icon(
-                  icon,
-                  color: theme.colorScheme.primary,
-                  size: 24,
-                ),
+                Icon(icon, color: theme.colorScheme.primary, size: 24),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -52,13 +48,15 @@ class KpiComparisonCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             // Scenario values
-            ...scenariosData.map((data) => _buildScenarioRow(
-                  context,
-                  theme,
-                  data,
-                  isBase: data == scenariosData.first,
-                  baseValue: baseValue,
-                )),
+            ...scenariosData.map(
+              (data) => _buildScenarioRow(
+                context,
+                theme,
+                data,
+                isBase: data == scenariosData.first,
+                baseValue: baseValue,
+              ),
+            ),
           ],
         ),
       ),
@@ -126,8 +124,8 @@ class KpiComparisonCard extends StatelessWidget {
                         delta > 0
                             ? Icons.arrow_upward
                             : delta < 0
-                                ? Icons.arrow_downward
-                                : Icons.remove,
+                            ? Icons.arrow_downward
+                            : Icons.remove,
                         size: 14,
                         color: deltaColor,
                       ),
@@ -199,15 +197,8 @@ class ScenarioKpiData {
   final String scenarioName;
   final double? value;
 
-  const ScenarioKpiData({
-    required this.scenarioName,
-    required this.value,
-  });
+  const ScenarioKpiData({required this.scenarioName, required this.value});
 }
 
 /// Type of KPI comparison for formatting
-enum KpiComparisonType {
-  currency,
-  percentage,
-  year,
-}
+enum KpiComparisonType { currency, percentage, year }

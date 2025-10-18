@@ -36,10 +36,22 @@ class ProjectExportService {
       'exportVersion': '1.2', // Bumped version for expense support
       'exportedAt': DateTime.now().toIso8601String(),
       'project': _convertDateTimesToStrings(project.toJson()),
-      if (assets != null) 'assets': assets.map((a) => _convertDateTimesToStrings(a.toJson())).toList(),
-      if (events != null) 'events': events.map((e) => _convertDateTimesToStrings(e.toJson())).toList(),
-      if (expenses != null) 'expenses': expenses.map((e) => _convertDateTimesToStrings(e.toJson())).toList(),
-      if (scenarios != null) 'scenarios': scenarios.map((s) => _convertDateTimesToStrings(s.toJson())).toList(),
+      if (assets != null)
+        'assets': assets
+            .map((a) => _convertDateTimesToStrings(a.toJson()))
+            .toList(),
+      if (events != null)
+        'events': events
+            .map((e) => _convertDateTimesToStrings(e.toJson()))
+            .toList(),
+      if (expenses != null)
+        'expenses': expenses
+            .map((e) => _convertDateTimesToStrings(e.toJson()))
+            .toList(),
+      if (scenarios != null)
+        'scenarios': scenarios
+            .map((s) => _convertDateTimesToStrings(s.toJson()))
+            .toList(),
     };
 
     // Convert to pretty-printed JSON

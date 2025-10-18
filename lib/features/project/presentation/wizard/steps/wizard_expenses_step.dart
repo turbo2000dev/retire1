@@ -11,8 +11,7 @@ class WizardExpensesStep extends ConsumerStatefulWidget {
   const WizardExpensesStep({super.key});
 
   @override
-  ConsumerState<WizardExpensesStep> createState() =>
-      _WizardExpensesStepState();
+  ConsumerState<WizardExpensesStep> createState() => _WizardExpensesStepState();
 }
 
 class _WizardExpensesStepState extends ConsumerState<WizardExpensesStep> {
@@ -57,7 +56,8 @@ class _WizardExpensesStepState extends ConsumerState<WizardExpensesStep> {
     final expensesData = wizardState.expenses;
 
     // Check if user has already entered data
-    final hasExistingData = expensesData.housingAmount > 0 ||
+    final hasExistingData =
+        expensesData.housingAmount > 0 ||
         expensesData.transportAmount > 0 ||
         expensesData.dailyLivingAmount > 0 ||
         expensesData.recreationAmount > 0 ||
@@ -67,12 +67,13 @@ class _WizardExpensesStepState extends ConsumerState<WizardExpensesStep> {
     if (hasExistingData) {
       // Load existing data
       _housingController.text = expensesData.housingAmount.toStringAsFixed(0);
-      _transportController.text =
-          expensesData.transportAmount.toStringAsFixed(0);
-      _dailyLivingController.text =
-          expensesData.dailyLivingAmount.toStringAsFixed(0);
-      _recreationController.text =
-          expensesData.recreationAmount.toStringAsFixed(0);
+      _transportController.text = expensesData.transportAmount.toStringAsFixed(
+        0,
+      );
+      _dailyLivingController.text = expensesData.dailyLivingAmount
+          .toStringAsFixed(0);
+      _recreationController.text = expensesData.recreationAmount
+          .toStringAsFixed(0);
       _healthController.text = expensesData.healthAmount.toStringAsFixed(0);
       _familyController.text = expensesData.familyAmount.toStringAsFixed(0);
 
@@ -140,7 +141,10 @@ class _WizardExpensesStepState extends ConsumerState<WizardExpensesStep> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final wizardState = ref.watch(wizardProvider);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     if (wizardState == null) {
       return const Center(child: CircularProgressIndicator());
@@ -388,9 +392,11 @@ class _WizardExpensesStepState extends ConsumerState<WizardExpensesStep> {
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                 ],
                 onChanged: (_) {
                   setState(() {}); // Update total

@@ -5,9 +5,8 @@ import 'package:retire1/features/settings/domain/app_settings.dart';
 class SettingsRepository {
   final FirebaseFirestore _firestore;
 
-  SettingsRepository({
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  SettingsRepository({FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Get settings for a user
   /// Returns default settings if none exist
@@ -35,9 +34,7 @@ class SettingsRepository {
   /// Save settings for a user
   Future<void> saveSettings(AppSettings settings) async {
     try {
-      final updatedSettings = settings.copyWith(
-        lastUpdated: DateTime.now(),
-      );
+      final updatedSettings = settings.copyWith(lastUpdated: DateTime.now());
 
       await _firestore
           .collection('users')
@@ -59,12 +56,12 @@ class SettingsRepository {
         .doc('preferences')
         .snapshots()
         .map((doc) {
-      if (doc.exists && doc.data() != null) {
-        final data = _convertTimestampsToStrings(doc.data()!);
-        return AppSettings.fromJson(data);
-      }
-      return AppSettings.defaultSettings(userId);
-    });
+          if (doc.exists && doc.data() != null) {
+            final data = _convertTimestampsToStrings(doc.data()!);
+            return AppSettings.fromJson(data);
+          }
+          return AppSettings.defaultSettings(userId);
+        });
   }
 
   /// Convert Firestore Timestamps to ISO8601 strings for JSON deserialization
@@ -89,10 +86,10 @@ class SettingsRepository {
           .collection('settings')
           .doc('preferences')
           .set({
-        'userId': userId,
-        'languageCode': languageCode,
-        'lastUpdated': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+            'userId': userId,
+            'languageCode': languageCode,
+            'lastUpdated': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
     } catch (e) {
       throw SettingsException('Failed to update language: $e');
     }
@@ -107,10 +104,10 @@ class SettingsRepository {
           .collection('settings')
           .doc('preferences')
           .set({
-        'userId': userId,
-        'autoOpenExcelFiles': autoOpen,
-        'lastUpdated': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+            'userId': userId,
+            'autoOpenExcelFiles': autoOpen,
+            'lastUpdated': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
     } catch (e) {
       throw SettingsException('Failed to update auto-open setting: $e');
     }

@@ -15,7 +15,8 @@ class ComponentsDemoScreen extends ConsumerStatefulWidget {
   const ComponentsDemoScreen({super.key});
 
   @override
-  ConsumerState<ComponentsDemoScreen> createState() => _ComponentsDemoScreenState();
+  ConsumerState<ComponentsDemoScreen> createState() =>
+      _ComponentsDemoScreenState();
 }
 
 class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
@@ -40,8 +41,14 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
           'On phone it takes most of the width, on tablet 70%, and on desktop it has a fixed max width.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-          ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
         ],
       ),
     );
@@ -55,12 +62,19 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('This bottom sheet shows as a modal sheet on phone and as a dialog on tablet/desktop.'),
+            const Text(
+              'This bottom sheet shows as a modal sheet on phone and as a dialog on tablet/desktop.',
+            ),
             const SizedBox(height: 16),
             ResponsiveTextField(label: 'Enter something', hint: 'Type here...'),
           ],
         ),
-        actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close'))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
       ),
     );
   }
@@ -82,13 +96,19 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
         title: const Text('Components Demo'),
         actions: [
           IconButton(
-            icon: Icon(themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode),
+            icon: Icon(
+              themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode,
+            ),
             onPressed: () {
-              ref.read(themeModeProvider.notifier).state = themeMode == ThemeMode.light
+              ref
+                  .read(themeModeProvider.notifier)
+                  .state = themeMode == ThemeMode.light
                   ? ThemeMode.dark
                   : ThemeMode.light;
             },
-            tooltip: themeMode == ThemeMode.light ? 'Switch to Dark Mode' : 'Switch to Light Mode',
+            tooltip: themeMode == ThemeMode.light
+                ? 'Switch to Dark Mode'
+                : 'Switch to Light Mode',
           ),
         ],
       ),
@@ -138,9 +158,18 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        ResponsiveButton(onPressed: () {}, child: const Text('Elevated')),
-                        ResponsiveButton.outlined(onPressed: () {}, child: const Text('Outlined')),
-                        ResponsiveButton.text(onPressed: () {}, child: const Text('Text')),
+                        ResponsiveButton(
+                          onPressed: () {},
+                          child: const Text('Elevated'),
+                        ),
+                        ResponsiveButton.outlined(
+                          onPressed: () {},
+                          child: const Text('Outlined'),
+                        ),
+                        ResponsiveButton.text(
+                          onPressed: () {},
+                          child: const Text('Text'),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -163,7 +192,11 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                           child: const Text('Loading State'),
                         ),
                         const SizedBox(height: 8),
-                        ResponsiveButton(fillWidth: true, onPressed: null, child: const Text('Disabled')),
+                        ResponsiveButton(
+                          fillWidth: true,
+                          onPressed: null,
+                          child: const Text('Disabled'),
+                        ),
                       ],
                     ),
                   ],
@@ -219,7 +252,9 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                         fillWidth: true,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Form is valid!')));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Form is valid!')),
+                            );
                           }
                         },
                         child: const Text('Validate Form'),
@@ -241,9 +276,13 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                     ResponsiveCard(
                       title: 'Simple Card',
                       subtitle: 'With title and subtitle',
-                      description: 'This is a basic card with title, subtitle, and description.',
+                      description:
+                          'This is a basic card with title, subtitle, and description.',
                       leading: const CircleAvatar(child: Icon(Icons.person)),
-                      trailing: IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.more_vert),
+                        onPressed: () {},
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ResponsiveCard(
@@ -255,14 +294,22 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                           'This content is hidden until you expand the card. '
                           'It can contain any amount of text or widgets.',
                       badge: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           'New',
-                          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
+                          ),
                         ),
                       ),
                       child: Column(
@@ -282,7 +329,9 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                       description: 'This card has an onTap handler',
                       leading: const Icon(Icons.touch_app, size: 32),
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Card tapped!')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Card tapped!')),
+                        );
                       },
                     ),
                   ],
@@ -333,23 +382,40 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                     ResponsiveBuilder(
                       phone: (context, screenSize) => Container(
                         padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: Row(
                           children: [
-                            Icon(Icons.phone_android, color: Colors.blue.shade700),
+                            Icon(
+                              Icons.phone_android,
+                              color: Colors.blue.shade700,
+                            ),
                             const SizedBox(width: 12),
-                            const Expanded(child: Text('Phone Layout: Vertical stack, full width')),
+                            const Expanded(
+                              child: Text(
+                                'Phone Layout: Vertical stack, full width',
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       tablet: (context, screenSize) => Container(
                         padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(color: Colors.green.shade100, borderRadius: BorderRadius.circular(8)),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: Row(
                           children: [
                             Icon(Icons.tablet, color: Colors.green.shade700),
                             const SizedBox(width: 12),
-                            const Expanded(child: Text('Tablet Layout: Medium spacing, balanced')),
+                            const Expanded(
+                              child: Text(
+                                'Tablet Layout: Medium spacing, balanced',
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -363,7 +429,11 @@ class _ComponentsDemoScreenState extends ConsumerState<ComponentsDemoScreen> {
                           children: [
                             Icon(Icons.computer, color: Colors.purple.shade700),
                             const SizedBox(width: 12),
-                            const Expanded(child: Text('Desktop Layout: Wide, spacious, multi-column')),
+                            const Expanded(
+                              child: Text(
+                                'Desktop Layout: Wide, spacious, multi-column',
+                              ),
+                            ),
                           ],
                         ),
                       ),

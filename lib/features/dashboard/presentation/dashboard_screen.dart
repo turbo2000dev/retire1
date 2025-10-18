@@ -55,10 +55,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final result = await ProjectDialog.showCreate(context);
     if (result == null || !context.mounted) return;
 
-    await ref.read(projectsProvider.notifier).createProject(
-          result['name']!,
-          result['description'],
-        );
+    await ref
+        .read(projectsProvider.notifier)
+        .createProject(result['name']!, result['description']);
 
     if (!context.mounted) return;
 
@@ -66,7 +65,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final projectsAsync = ref.read(projectsProvider);
     projectsAsync.whenData((projects) {
       if (projects.isNotEmpty) {
-        ref.read(currentProjectProvider.notifier).selectProject(projects.first.id);
+        ref
+            .read(currentProjectProvider.notifier)
+            .selectProject(projects.first.id);
       }
     });
 
@@ -75,9 +76,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     context.go(AppRoutes.baseParameters);
 
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Project created')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Project created')));
   }
 
   @override
@@ -109,10 +110,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 24),
-          Text(
-            'No project selected',
-            style: theme.textTheme.headlineMedium,
-          ),
+          Text('No project selected', style: theme.textTheme.headlineMedium),
           const SizedBox(height: 8),
           Text(
             'Create one to get started',
@@ -137,16 +135,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 48,
-            color: theme.colorScheme.error,
-          ),
+          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
           const SizedBox(height: 16),
-          Text(
-            'Error loading project',
-            style: theme.textTheme.titleLarge,
-          ),
+          Text('Error loading project', style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             message,
@@ -244,8 +235,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                         final crossAxisCount = constraints.maxWidth > 1024
                             ? 3
                             : constraints.maxWidth > 600
-                                ? 2
-                                : 1;
+                            ? 2
+                            : 1;
 
                         return GridView.count(
                           shrinkWrap: true,
@@ -263,8 +254,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                               status: kpis.finalNetWorth > 500000
                                   ? KpiStatus.good
                                   : kpis.finalNetWorth > 100000
-                                      ? KpiStatus.neutral
-                                      : KpiStatus.warning,
+                                  ? KpiStatus.neutral
+                                  : KpiStatus.warning,
                             ),
                             ProjectionKpiCard.currency(
                               icon: Icons.trending_down,
@@ -274,8 +265,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                               status: kpis.lowestNetWorth < 0
                                   ? KpiStatus.critical
                                   : kpis.lowestNetWorth < 100000
-                                      ? KpiStatus.warning
-                                      : KpiStatus.neutral,
+                                  ? KpiStatus.warning
+                                  : KpiStatus.neutral,
                             ),
                             ProjectionKpiCard.year(
                               icon: Icons.warning_amber,
@@ -328,9 +319,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('Error loading projection: $error'),
-      ),
+      error: (error, stack) =>
+          Center(child: Text('Error loading projection: $error')),
     );
   }
 
@@ -358,7 +348,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         // Get selected scenarios in order (base first, then alternatives)
         final selectedScenarios = [
           baseScenario,
-          ...alternativeScenarios.where((s) => _selectedScenarioIds.contains(s.id)),
+          ...alternativeScenarios.where(
+            (s) => _selectedScenarioIds.contains(s.id),
+          ),
         ];
 
         // If only 1 scenario exists, show message
@@ -408,11 +400,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     const SizedBox(height: 24),
 
                     // KPI comparison cards
-                    _buildKpiComparisonGrid(
-                      context,
-                      theme,
-                      selectedScenarios,
-                    ),
+                    _buildKpiComparisonGrid(context, theme, selectedScenarios),
                   ],
                 ),
               ),
@@ -421,9 +409,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('Error loading scenarios: $error'),
-      ),
+      error: (error, stack) =>
+          Center(child: Text('Error loading scenarios: $error')),
     );
   }
 
@@ -441,7 +428,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         }).toList();
 
         // Check if all projections are loaded
-        final allLoaded = projectionAsyncValues.every((async) => async.hasValue);
+        final allLoaded = projectionAsyncValues.every(
+          (async) => async.hasValue,
+        );
         final anyError = projectionAsyncValues.any((async) => async.hasError);
 
         if (anyError) {
@@ -480,7 +469,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           return ref.watch(projectionProvider(scenario.id));
         }).toList();
 
-        final allProjectionsLoaded = projectionAsyncValues.every((async) => async.hasValue);
+        final allProjectionsLoaded = projectionAsyncValues.every(
+          (async) => async.hasValue,
+        );
 
         // Build comparison cards and chart
         return Column(
@@ -492,8 +483,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 final crossAxisCount = constraints.maxWidth > 1024
                     ? 2
                     : constraints.maxWidth > 600
-                        ? 2
-                        : 1;
+                    ? 2
+                    : 1;
 
                 return GridView.count(
                   shrinkWrap: true,
@@ -503,85 +494,85 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   crossAxisSpacing: 16,
                   childAspectRatio: 1.8,
                   children: [
-            // Final Net Worth
-            KpiComparisonCard(
-              label: 'Final Net Worth',
-              icon: Icons.account_balance_wallet,
-              type: KpiComparisonType.currency,
-              scenariosData: List.generate(
-                selectedScenarios.length,
-                (i) => ScenarioKpiData(
-                  scenarioName: selectedScenarios[i].name,
-                  value: scenarioKpis[i]?.finalNetWorth,
-                ),
-              ),
-            ),
-            // Lowest Net Worth
-            KpiComparisonCard(
-              label: 'Lowest Net Worth',
-              icon: Icons.trending_down,
-              type: KpiComparisonType.currency,
-              scenariosData: List.generate(
-                selectedScenarios.length,
-                (i) => ScenarioKpiData(
-                  scenarioName: selectedScenarios[i].name,
-                  value: scenarioKpis[i]?.lowestNetWorth,
-                ),
-              ),
-            ),
-            // Money Runs Out
-            KpiComparisonCard(
-              label: 'Money Runs Out',
-              icon: Icons.warning_amber,
-              type: KpiComparisonType.year,
-              scenariosData: List.generate(
-                selectedScenarios.length,
-                (i) => ScenarioKpiData(
-                  scenarioName: selectedScenarios[i].name,
-                  value: scenarioKpis[i]?.yearMoneyRunsOut?.toDouble(),
-                ),
-              ),
-            ),
-            // Total Taxes Paid
-            KpiComparisonCard(
-              label: 'Total Taxes Paid',
-              icon: Icons.account_balance,
-              type: KpiComparisonType.currency,
-              scenariosData: List.generate(
-                selectedScenarios.length,
-                (i) => ScenarioKpiData(
-                  scenarioName: selectedScenarios[i].name,
-                  value: scenarioKpis[i]?.totalTaxesPaid,
-                ),
-              ),
-            ),
-            // Total Withdrawals
-            KpiComparisonCard(
-              label: 'Total Withdrawals',
-              icon: Icons.attach_money,
-              type: KpiComparisonType.currency,
-              scenariosData: List.generate(
-                selectedScenarios.length,
-                (i) => ScenarioKpiData(
-                  scenarioName: selectedScenarios[i].name,
-                  value: scenarioKpis[i]?.totalWithdrawals,
-                ),
-              ),
-            ),
-            // Average Tax Rate
-            KpiComparisonCard(
-              label: 'Average Tax Rate',
-              icon: Icons.percent,
-              type: KpiComparisonType.percentage,
-              scenariosData: List.generate(
-                selectedScenarios.length,
-                (i) => ScenarioKpiData(
-                  scenarioName: selectedScenarios[i].name,
-                  value: scenarioKpis[i]?.averageTaxRate,
-                ),
-              ),
-            ),
-          ],
+                    // Final Net Worth
+                    KpiComparisonCard(
+                      label: 'Final Net Worth',
+                      icon: Icons.account_balance_wallet,
+                      type: KpiComparisonType.currency,
+                      scenariosData: List.generate(
+                        selectedScenarios.length,
+                        (i) => ScenarioKpiData(
+                          scenarioName: selectedScenarios[i].name,
+                          value: scenarioKpis[i]?.finalNetWorth,
+                        ),
+                      ),
+                    ),
+                    // Lowest Net Worth
+                    KpiComparisonCard(
+                      label: 'Lowest Net Worth',
+                      icon: Icons.trending_down,
+                      type: KpiComparisonType.currency,
+                      scenariosData: List.generate(
+                        selectedScenarios.length,
+                        (i) => ScenarioKpiData(
+                          scenarioName: selectedScenarios[i].name,
+                          value: scenarioKpis[i]?.lowestNetWorth,
+                        ),
+                      ),
+                    ),
+                    // Money Runs Out
+                    KpiComparisonCard(
+                      label: 'Money Runs Out',
+                      icon: Icons.warning_amber,
+                      type: KpiComparisonType.year,
+                      scenariosData: List.generate(
+                        selectedScenarios.length,
+                        (i) => ScenarioKpiData(
+                          scenarioName: selectedScenarios[i].name,
+                          value: scenarioKpis[i]?.yearMoneyRunsOut?.toDouble(),
+                        ),
+                      ),
+                    ),
+                    // Total Taxes Paid
+                    KpiComparisonCard(
+                      label: 'Total Taxes Paid',
+                      icon: Icons.account_balance,
+                      type: KpiComparisonType.currency,
+                      scenariosData: List.generate(
+                        selectedScenarios.length,
+                        (i) => ScenarioKpiData(
+                          scenarioName: selectedScenarios[i].name,
+                          value: scenarioKpis[i]?.totalTaxesPaid,
+                        ),
+                      ),
+                    ),
+                    // Total Withdrawals
+                    KpiComparisonCard(
+                      label: 'Total Withdrawals',
+                      icon: Icons.attach_money,
+                      type: KpiComparisonType.currency,
+                      scenariosData: List.generate(
+                        selectedScenarios.length,
+                        (i) => ScenarioKpiData(
+                          scenarioName: selectedScenarios[i].name,
+                          value: scenarioKpis[i]?.totalWithdrawals,
+                        ),
+                      ),
+                    ),
+                    // Average Tax Rate
+                    KpiComparisonCard(
+                      label: 'Average Tax Rate',
+                      icon: Icons.percent,
+                      type: KpiComparisonType.percentage,
+                      scenariosData: List.generate(
+                        selectedScenarios.length,
+                        (i) => ScenarioKpiData(
+                          scenarioName: selectedScenarios[i].name,
+                          value: scenarioKpis[i]?.averageTaxRate,
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
@@ -602,15 +593,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     scenarioProjections: projectionAsyncValues
                         .asMap()
                         .entries
-                        .where((entry) => entry.value.hasValue && entry.value.value != null)
+                        .where(
+                          (entry) =>
+                              entry.value.hasValue && entry.value.value != null,
+                        )
                         .map((entry) {
-                      final index = entry.key;
-                      final projection = entry.value.value!;
-                      return ScenarioProjectionData(
-                        scenarioName: selectedScenarios[index].name,
-                        projection: projection,
-                      );
-                    }).toList(),
+                          final index = entry.key;
+                          final projection = entry.value.value!;
+                          return ScenarioProjectionData(
+                            scenarioName: selectedScenarios[index].name,
+                            projection: projection,
+                          );
+                        })
+                        .toList(),
                   ),
                 ),
               ),
@@ -632,10 +627,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          Text(
-            'No scenarios available',
-            style: theme.textTheme.headlineMedium,
-          ),
+          Text('No scenarios available', style: theme.textTheme.headlineMedium),
           const SizedBox(height: 8),
           Text(
             'Create scenarios to compare them',

@@ -183,7 +183,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidEmail => 'Adresse courriel invalide';
 
   @override
-  String get passwordTooShort => 'Le mot de passe doit contenir au moins 6 caractères';
+  String get passwordTooShort =>
+      'Le mot de passe doit contenir au moins 6 caractères';
 
   @override
   String get passwordsDoNotMatch => 'Les mots de passe ne correspondent pas';

@@ -6,10 +6,7 @@ import 'package:retire1/core/services/project_import_service.dart';
 class ImportPreviewDialog extends StatelessWidget {
   final ImportPreview preview;
 
-  const ImportPreviewDialog({
-    super.key,
-    required this.preview,
-  });
+  const ImportPreviewDialog({super.key, required this.preview});
 
   /// Show the import preview dialog
   static Future<bool?> show(BuildContext context, ImportPreview preview) {
@@ -73,15 +70,17 @@ class ImportPreviewDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: preview.assetCountsByType.entries
                         .where((e) => e.value > 0)
-                        .map((e) => Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Text(
-                                '${e.key}: ${e.value}',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              '${e.key}: ${e.value}',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                            ))
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
                 ),
@@ -103,15 +102,17 @@ class ImportPreviewDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: preview.eventCountsByType.entries
                         .where((e) => e.value > 0)
-                        .map((e) => Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Text(
-                                '${e.key}: ${e.value}',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              '${e.key}: ${e.value}',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                            ))
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
                 ),
@@ -133,15 +134,17 @@ class ImportPreviewDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: preview.expenseCountsByCategory.entries
                         .where((e) => e.value > 0)
-                        .map((e) => Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Text(
-                                '${e.key}: ${e.value}',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              '${e.key}: ${e.value}',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                            ))
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
                 ),
@@ -262,16 +265,9 @@ class ImportPreviewDialog extends StatelessWidget {
   ) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 24,
-          color: theme.colorScheme.primary,
-        ),
+        Icon(icon, size: 24, color: theme.colorScheme.primary),
         const SizedBox(width: 12),
-        Text(
-          title,
-          style: theme.textTheme.titleSmall,
-        ),
+        Text(title, style: theme.textTheme.titleSmall),
         const Spacer(),
         Text(
           count,
@@ -296,10 +292,7 @@ class ImportPreviewDialog extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(label, style: theme.textTheme.bodyMedium),
           Text(
             formatter.format(rate),
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -312,14 +305,23 @@ class ImportPreviewDialog extends StatelessWidget {
   }
 
   int _getTotalAssetCount() {
-    return preview.assetCountsByType.values.fold(0, (sum, count) => sum + count);
+    return preview.assetCountsByType.values.fold(
+      0,
+      (sum, count) => sum + count,
+    );
   }
 
   int _getTotalEventCount() {
-    return preview.eventCountsByType.values.fold(0, (sum, count) => sum + count);
+    return preview.eventCountsByType.values.fold(
+      0,
+      (sum, count) => sum + count,
+    );
   }
 
   int _getTotalExpenseCount() {
-    return preview.expenseCountsByCategory.values.fold(0, (sum, count) => sum + count);
+    return preview.expenseCountsByCategory.values.fold(
+      0,
+      (sum, count) => sum + count,
+    );
   }
 }

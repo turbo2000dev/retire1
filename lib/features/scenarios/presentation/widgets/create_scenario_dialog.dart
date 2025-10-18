@@ -33,8 +33,8 @@ class _CreateScenarioDialogState extends State<CreateScenarioDialog> {
               Text(
                 'Create a variation to explore different assumptions and "what-if" scenarios.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -65,10 +65,7 @@ class _CreateScenarioDialogState extends State<CreateScenarioDialog> {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
-          FilledButton(
-            onPressed: _submit,
-            child: const Text('Create'),
-          ),
+          FilledButton(onPressed: _submit, child: const Text('Create')),
         ],
       ),
     );

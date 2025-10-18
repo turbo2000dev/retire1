@@ -8,7 +8,11 @@ import 'package:intl/intl.dart';
 /// Service for exporting projection data to CSV
 class ProjectionCsvExport {
   /// Export projection to CSV and trigger download
-  static void exportToCSV(Projection projection, String scenarioName, List<Asset> assets) {
+  static void exportToCSV(
+    Projection projection,
+    String scenarioName,
+    List<Asset> assets,
+  ) {
     final csv = _generateCSV(projection, assets);
     final fileName =
         'projection_${scenarioName.replaceAll(' ', '-')}_${DateFormat('yyyy-MM-dd').format(DateTime.now())}.csv';
@@ -23,22 +27,48 @@ class ProjectionCsvExport {
     for (final asset in assets) {
       final id = asset.when(
         realEstate: (id, type, value, setAtStart, customReturnRate) => id,
-        rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
-        celi: (id, individualId, value, customReturnRate, annualContribution) => id,
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
-        cash: (id, individualId, value, customReturnRate, annualContribution) => id,
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+            id,
+        celi: (id, individualId, value, customReturnRate, annualContribution) =>
+            id,
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) => id,
+        cash: (id, individualId, value, customReturnRate, annualContribution) =>
+            id,
       );
       final type = asset.when(
-        realEstate: (id, type, value, setAtStart, customReturnRate) => 'realEstate',
-        rrsp: (id, individualId, value, customReturnRate, annualContribution) => 'rrsp',
-        celi: (id, individualId, value, customReturnRate, annualContribution) => 'celi',
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => 'cri',
-        cash: (id, individualId, value, customReturnRate, annualContribution) => 'cash',
+        realEstate: (id, type, value, setAtStart, customReturnRate) =>
+            'realEstate',
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+            'rrsp',
+        celi: (id, individualId, value, customReturnRate, annualContribution) =>
+            'celi',
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) => 'cri',
+        cash: (id, individualId, value, customReturnRate, annualContribution) =>
+            'cash',
       );
       assetTypeMap[id] = type;
     }
     final buffer = StringBuffer();
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     // Check if we have couples
     final hasCouples = projection.years.any((y) => y.spouseAge != null);
@@ -99,16 +129,26 @@ class ProjectionCsvExport {
     // Data rows
     for (final year in projection.years) {
       // Calculate totals for income breakdown
-      final totalEmployment = year.incomeByIndividual.values
-          .fold(0.0, (sum, income) => sum + income.employment);
-      final totalRRQ = year.incomeByIndividual.values
-          .fold(0.0, (sum, income) => sum + income.rrq);
-      final totalPSV = year.incomeByIndividual.values
-          .fold(0.0, (sum, income) => sum + income.psv);
-      final totalRRPE = year.incomeByIndividual.values
-          .fold(0.0, (sum, income) => sum + income.rrpe);
-      final totalOther = year.incomeByIndividual.values
-          .fold(0.0, (sum, income) => sum + income.other);
+      final totalEmployment = year.incomeByIndividual.values.fold(
+        0.0,
+        (sum, income) => sum + income.employment,
+      );
+      final totalRRQ = year.incomeByIndividual.values.fold(
+        0.0,
+        (sum, income) => sum + income.rrq,
+      );
+      final totalPSV = year.incomeByIndividual.values.fold(
+        0.0,
+        (sum, income) => sum + income.psv,
+      );
+      final totalRRPE = year.incomeByIndividual.values.fold(
+        0.0,
+        (sum, income) => sum + income.rrpe,
+      );
+      final totalOther = year.incomeByIndividual.values.fold(
+        0.0,
+        (sum, income) => sum + income.other,
+      );
 
       // Calculate totals for withdrawals by account type using asset type map
       final celiWithdrawals = year.withdrawalsByAccount.entries
@@ -148,8 +188,10 @@ class ProjectionCsvExport {
       final cashBalance = year.assetsEndOfYear.entries
           .where((e) => assetTypeMap[e.key] == 'cash')
           .fold(0.0, (sum, e) => sum + e.value);
-      final totalReturns =
-          year.assetReturns.values.fold(0.0, (sum, val) => sum + val);
+      final totalReturns = year.assetReturns.values.fold(
+        0.0,
+        (sum, val) => sum + val,
+      );
 
       final row = <String>[
         year.year.toString(),
@@ -164,17 +206,29 @@ class ProjectionCsvExport {
         _formatCurrency(currencyFormat, year.totalIncome),
         // Expenses by category
         _formatCurrency(
-            currencyFormat, year.expensesByCategory['housing'] ?? 0.0),
+          currencyFormat,
+          year.expensesByCategory['housing'] ?? 0.0,
+        ),
         _formatCurrency(
-            currencyFormat, year.expensesByCategory['transport'] ?? 0.0),
+          currencyFormat,
+          year.expensesByCategory['transport'] ?? 0.0,
+        ),
         _formatCurrency(
-            currencyFormat, year.expensesByCategory['dailyLiving'] ?? 0.0),
+          currencyFormat,
+          year.expensesByCategory['dailyLiving'] ?? 0.0,
+        ),
         _formatCurrency(
-            currencyFormat, year.expensesByCategory['recreation'] ?? 0.0),
+          currencyFormat,
+          year.expensesByCategory['recreation'] ?? 0.0,
+        ),
         _formatCurrency(
-            currencyFormat, year.expensesByCategory['health'] ?? 0.0),
+          currencyFormat,
+          year.expensesByCategory['health'] ?? 0.0,
+        ),
         _formatCurrency(
-            currencyFormat, year.expensesByCategory['family'] ?? 0.0),
+          currencyFormat,
+          year.expensesByCategory['family'] ?? 0.0,
+        ),
         _formatCurrency(currencyFormat, year.totalExpenses),
         // Taxes
         _formatCurrency(currencyFormat, year.federalTax),

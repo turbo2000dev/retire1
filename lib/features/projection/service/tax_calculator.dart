@@ -30,8 +30,10 @@ class TaxCalculator {
     required int age,
     double rrspDeduction = 0.0, // Not used until Phase 28
   }) {
-    log('TaxCalculator.calculateTax: grossIncome=$grossIncome, age=$age',
-        name: 'TaxCalculator');
+    log(
+      'TaxCalculator.calculateTax: grossIncome=$grossIncome, age=$age',
+      name: 'TaxCalculator',
+    );
 
     // For now, taxable income equals gross income
     // In Phase 28, we'll subtract RRSP deductions here
@@ -53,13 +55,16 @@ class TaxCalculator {
     final totalTax = federalTax + quebecTax;
 
     // Effective tax rate (avoid division by zero)
-    final effectiveRate =
-        grossIncome > 0 ? (totalTax / grossIncome * 100) : 0.0;
+    final effectiveRate = grossIncome > 0
+        ? (totalTax / grossIncome * 100)
+        : 0.0;
 
-    log('TaxCalculator.calculateTax: federalTax=$federalTax, '
-        'quebecTax=$quebecTax, totalTax=$totalTax, '
-        'effectiveRate=${effectiveRate.toStringAsFixed(2)}%',
-        name: 'TaxCalculator');
+    log(
+      'TaxCalculator.calculateTax: federalTax=$federalTax, '
+      'quebecTax=$quebecTax, totalTax=$totalTax, '
+      'effectiveRate=${effectiveRate.toStringAsFixed(2)}%',
+      name: 'TaxCalculator',
+    );
 
     return TaxCalculation(
       grossIncome: grossIncome,
@@ -94,7 +99,10 @@ class TaxCalculator {
     final creditReduction = totalCreditAmount * kFederalTaxCreditRate;
 
     // Tax owing = tax before credits - credit reduction (cannot be negative)
-    final taxOwing = (taxBeforeCredits - creditReduction).clamp(0.0, double.infinity);
+    final taxOwing = (taxBeforeCredits - creditReduction).clamp(
+      0.0,
+      double.infinity,
+    );
 
     return taxOwing;
   }
@@ -122,7 +130,10 @@ class TaxCalculator {
     final creditReduction = totalCreditAmount * kQuebecTaxCreditRate;
 
     // Tax owing = tax before credits - credit reduction (cannot be negative)
-    final taxOwing = (taxBeforeCredits - creditReduction).clamp(0.0, double.infinity);
+    final taxOwing = (taxBeforeCredits - creditReduction).clamp(
+      0.0,
+      double.infinity,
+    );
 
     return taxOwing;
   }

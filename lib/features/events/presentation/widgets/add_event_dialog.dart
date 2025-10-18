@@ -11,10 +11,7 @@ class EventDialogResult {
   final Event event;
   final bool createAnother;
 
-  const EventDialogResult({
-    required this.event,
-    required this.createAnother,
-  });
+  const EventDialogResult({required this.event, required this.createAnother});
 }
 
 enum EventType { retirement, death, realEstateTransaction }
@@ -25,7 +22,12 @@ class AddEventDialog extends StatefulWidget {
   final List<Individual> individuals;
   final List<Asset> assets;
 
-  const AddEventDialog({super.key, this.event, required this.individuals, required this.assets});
+  const AddEventDialog({
+    super.key,
+    this.event,
+    required this.individuals,
+    required this.assets,
+  });
 
   /// Show the dialog and return the created/edited event
   static Future<EventDialogResult?> show(
@@ -36,7 +38,11 @@ class AddEventDialog extends StatefulWidget {
   }) {
     return showDialog<EventDialogResult?>(
       context: context,
-      builder: (context) => AddEventDialog(event: event, individuals: individuals, assets: assets),
+      builder: (context) => AddEventDialog(
+        event: event,
+        individuals: individuals,
+        assets: assets,
+      ),
     );
   }
 
@@ -66,15 +72,14 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
   void _submit({bool createAnother = false}) {
     if (_currentEvent == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill in all required fields')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
       return;
     }
 
     Navigator.of(context).pop(
-      EventDialogResult(
-        event: _currentEvent!,
-        createAnother: createAnother,
-      ),
+      EventDialogResult(event: _currentEvent!, createAnother: createAnother),
     );
   }
 
@@ -93,7 +98,10 @@ class _AddEventDialogState extends State<AddEventDialog> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
               ),
               child: Row(
                 children: [
@@ -106,7 +114,10 @@ class _AddEventDialogState extends State<AddEventDialog> {
                       ),
                     ),
                   ),
-                  IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
                 ],
               ),
             ),
@@ -121,7 +132,12 @@ class _AddEventDialogState extends State<AddEventDialog> {
                     children: [
                       // Event type selector (only if creating new)
                       if (widget.event == null) ...[
-                        Text('Event Type', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Event Type',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         const SizedBox(height: 12),
                         ...EventType.values.map((type) {
                           return RadioListTile<EventType>(
@@ -155,17 +171,27 @@ class _AddEventDialogState extends State<AddEventDialog> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant, width: 1)),
+                border: Border(
+                  top: BorderSide(
+                    color: theme.colorScheme.outlineVariant,
+                    width: 1,
+                  ),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
                   const SizedBox(width: 8),
                   // Show "Save and create another" only when creating new event
                   if (widget.event == null) ...[
                     FilledButton.tonal(
-                      onPressed: _currentEvent != null ? () => _submit(createAnother: true) : null,
+                      onPressed: _currentEvent != null
+                          ? () => _submit(createAnother: true)
+                          : null,
                       child: const Text('Save and create another'),
                     ),
                     const SizedBox(width: 8),
@@ -187,7 +213,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
     switch (_selectedType!) {
       case EventType.retirement:
         return RetirementEventForm(
-          initialEvent: widget.event != null ? widget.event! as RetirementEvent : null,
+          initialEvent: widget.event != null
+              ? widget.event! as RetirementEvent
+              : null,
           individuals: widget.individuals,
           onChanged: (event) {
             setState(() {
@@ -197,7 +225,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
         );
       case EventType.death:
         return DeathEventForm(
-          initialEvent: widget.event != null ? widget.event! as DeathEvent : null,
+          initialEvent: widget.event != null
+              ? widget.event! as DeathEvent
+              : null,
           individuals: widget.individuals,
           onChanged: (event) {
             setState(() {
@@ -207,7 +237,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
         );
       case EventType.realEstateTransaction:
         return RealEstateTransactionForm(
-          initialEvent: widget.event != null ? widget.event! as RealEstateTransactionEvent : null,
+          initialEvent: widget.event != null
+              ? widget.event! as RealEstateTransactionEvent
+              : null,
           individuals: widget.individuals,
           assets: widget.assets,
           onChanged: (event) {

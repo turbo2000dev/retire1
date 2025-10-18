@@ -61,10 +61,7 @@ class ProjectsNotifier extends AsyncNotifier<List<Project>> {
     }
 
     try {
-      await _repository!.createProject(
-        name: name,
-        description: description,
-      );
+      await _repository!.createProject(name: name, description: description);
       // Stream will automatically update with new project
       log('Project created successfully');
     } catch (e, stack) {
@@ -141,7 +138,8 @@ class ProjectsNotifier extends AsyncNotifier<List<Project>> {
 }
 
 /// Provider for projects list with Firestore real-time updates
-final projectsProvider =
-    AsyncNotifierProvider<ProjectsNotifier, List<Project>>(() {
-  return ProjectsNotifier();
-});
+final projectsProvider = AsyncNotifierProvider<ProjectsNotifier, List<Project>>(
+  () {
+    return ProjectsNotifier();
+  },
+);

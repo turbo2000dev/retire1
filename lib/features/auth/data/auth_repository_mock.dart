@@ -36,7 +36,11 @@ class AuthRepositoryMock {
   }
 
   /// Mock registration - stores user in memory
-  Future<User> register(String email, String password, String displayName) async {
+  Future<User> register(
+    String email,
+    String password,
+    String displayName,
+  ) async {
     await _simulateDelay();
 
     // Check if user already exists
@@ -45,10 +49,7 @@ class AuthRepositoryMock {
     }
 
     // Store user in memory
-    _users[email] = {
-      'password': password,
-      'displayName': displayName,
-    };
+    _users[email] = {'password': password, 'displayName': displayName};
 
     _currentUser = User(
       id: email.hashCode.toString(),

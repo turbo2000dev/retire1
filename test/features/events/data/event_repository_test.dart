@@ -218,22 +218,28 @@ void main() {
       });
 
       test('should get all events for project', () async {
-        await repository.createEvent(Event.retirement(
-          id: 'event-1',
-          individualId: 'ind-1',
-          timing: EventTiming.relative(yearsFromStart: 5),
-        ));
-        await repository.createEvent(Event.death(
-          id: 'event-2',
-          individualId: 'ind-1',
-          timing: EventTiming.age(individualId: 'ind-1', age: 85),
-        ));
-        await repository.createEvent(Event.realEstateTransaction(
-          id: 'event-3',
-          timing: EventTiming.absolute(calendarYear: 2035),
-          withdrawAccountId: 'account-cash',
-          depositAccountId: 'account-cash',
-        ));
+        await repository.createEvent(
+          Event.retirement(
+            id: 'event-1',
+            individualId: 'ind-1',
+            timing: EventTiming.relative(yearsFromStart: 5),
+          ),
+        );
+        await repository.createEvent(
+          Event.death(
+            id: 'event-2',
+            individualId: 'ind-1',
+            timing: EventTiming.age(individualId: 'ind-1', age: 85),
+          ),
+        );
+        await repository.createEvent(
+          Event.realEstateTransaction(
+            id: 'event-3',
+            timing: EventTiming.absolute(calendarYear: 2035),
+            withdrawAccountId: 'account-cash',
+            depositAccountId: 'account-cash',
+          ),
+        );
 
         final events = await repository.getEventsStream().first;
 
@@ -246,11 +252,13 @@ void main() {
         final stream = repository.getEventsStream();
 
         // Create initial event
-        await repository.createEvent(Event.retirement(
-          id: 'event-1',
-          individualId: 'ind-1',
-          timing: EventTiming.relative(yearsFromStart: 5),
-        ));
+        await repository.createEvent(
+          Event.retirement(
+            id: 'event-1',
+            individualId: 'ind-1',
+            timing: EventTiming.relative(yearsFromStart: 5),
+          ),
+        );
 
         // Get first emission
         final firstEmission = await stream.first;
@@ -354,16 +362,20 @@ void main() {
       });
 
       test('should remove event from stream', () async {
-        await repository.createEvent(Event.retirement(
-          id: 'event-1',
-          individualId: 'ind-1',
-          timing: EventTiming.relative(yearsFromStart: 5),
-        ));
-        await repository.createEvent(Event.death(
-          id: 'event-2',
-          individualId: 'ind-1',
-          timing: EventTiming.age(individualId: 'ind-1', age: 85),
-        ));
+        await repository.createEvent(
+          Event.retirement(
+            id: 'event-1',
+            individualId: 'ind-1',
+            timing: EventTiming.relative(yearsFromStart: 5),
+          ),
+        );
+        await repository.createEvent(
+          Event.death(
+            id: 'event-2',
+            individualId: 'ind-1',
+            timing: EventTiming.age(individualId: 'ind-1', age: 85),
+          ),
+        );
 
         await repository.deleteEvent('event-1');
 
@@ -374,36 +386,42 @@ void main() {
     });
 
     group('Nested Union Serialization', () {
-      test('should preserve all 5 timing types through serialization', () async {
-        final timings = [
-          EventTiming.relative(yearsFromStart: 5),
-          EventTiming.absolute(calendarYear: 2030),
-          EventTiming.age(individualId: 'ind-1', age: 65),
-          EventTiming.eventRelative(
-            eventId: 'event-other',
-            boundary: EventBoundary.end,
-          ),
-          EventTiming.projectionEnd(),
-        ];
+      test(
+        'should preserve all 5 timing types through serialization',
+        () async {
+          final timings = [
+            EventTiming.relative(yearsFromStart: 5),
+            EventTiming.absolute(calendarYear: 2030),
+            EventTiming.age(individualId: 'ind-1', age: 65),
+            EventTiming.eventRelative(
+              eventId: 'event-other',
+              boundary: EventBoundary.end,
+            ),
+            EventTiming.projectionEnd(),
+          ];
 
-        for (int i = 0; i < timings.length; i++) {
-          final event = Event.retirement(
-            id: 'event-$i',
-            individualId: 'ind-1',
-            timing: timings[i],
-          );
+          for (int i = 0; i < timings.length; i++) {
+            final event = Event.retirement(
+              id: 'event-$i',
+              individualId: 'ind-1',
+              timing: timings[i],
+            );
 
-          await repository.createEvent(event);
-          final retrieved = await repository.getEvent('event-$i');
+            await repository.createEvent(event);
+            final retrieved = await repository.getEvent('event-$i');
 
-          expect(retrieved, isNotNull);
-          expect(retrieved!.map(
-            retirement: (e) => e.timing.toJson(),
-            death: (e) => e.timing.toJson(),
-            realEstateTransaction: (e) => e.timing.toJson(),
-          ), equals(timings[i].toJson()));
-        }
-      });
+            expect(retrieved, isNotNull);
+            expect(
+              retrieved!.map(
+                retirement: (e) => e.timing.toJson(),
+                death: (e) => e.timing.toJson(),
+                realEstateTransaction: (e) => e.timing.toJson(),
+              ),
+              equals(timings[i].toJson()),
+            );
+          }
+        },
+      );
 
       test('should handle event boundary enum values', () async {
         final boundaries = [EventBoundary.start, EventBoundary.end];
@@ -463,53 +481,56 @@ void main() {
     });
 
     group('Data Integrity', () {
-      test('should maintain all fields through round-trip for each event type', () async {
-        final events = [
-          Event.retirement(
-            id: 'event-retirement',
-            individualId: 'ind-1',
-            timing: EventTiming.age(individualId: 'ind-1', age: 65),
-          ),
-          Event.death(
-            id: 'event-death',
-            individualId: 'ind-1',
-            timing: EventTiming.age(individualId: 'ind-1', age: 85),
-          ),
-          Event.realEstateTransaction(
-            id: 'event-transaction',
-            timing: EventTiming.absolute(calendarYear: 2030),
-            assetSoldId: 'asset-house',
-            assetPurchasedId: 'asset-condo',
-            withdrawAccountId: 'account-rrsp',
-            depositAccountId: 'account-cash',
-          ),
-        ];
+      test(
+        'should maintain all fields through round-trip for each event type',
+        () async {
+          final events = [
+            Event.retirement(
+              id: 'event-retirement',
+              individualId: 'ind-1',
+              timing: EventTiming.age(individualId: 'ind-1', age: 65),
+            ),
+            Event.death(
+              id: 'event-death',
+              individualId: 'ind-1',
+              timing: EventTiming.age(individualId: 'ind-1', age: 85),
+            ),
+            Event.realEstateTransaction(
+              id: 'event-transaction',
+              timing: EventTiming.absolute(calendarYear: 2030),
+              assetSoldId: 'asset-house',
+              assetPurchasedId: 'asset-condo',
+              withdrawAccountId: 'account-rrsp',
+              depositAccountId: 'account-cash',
+            ),
+          ];
 
-        for (final event in events) {
-          await repository.createEvent(event);
-          final retrieved = await repository.getEvent(event.id);
+          for (final event in events) {
+            await repository.createEvent(event);
+            final retrieved = await repository.getEvent(event.id);
 
-          expect(retrieved, isNotNull);
-          expect(retrieved!.toJson(), equals(event.toJson()));
-        }
-      });
+            expect(retrieved, isNotNull);
+            expect(retrieved!.toJson(), equals(event.toJson()));
+          }
+        },
+      );
 
       test('should maintain timing through event type changes', () async {
         final timing = EventTiming.relative(yearsFromStart: 10);
 
         // Create retirement with timing
-        await repository.createEvent(Event.retirement(
-          id: 'event-1',
-          individualId: 'ind-1',
-          timing: timing,
-        ));
+        await repository.createEvent(
+          Event.retirement(
+            id: 'event-1',
+            individualId: 'ind-1',
+            timing: timing,
+          ),
+        );
 
         // Update to death with same timing
-        await repository.updateEvent(Event.death(
-          id: 'event-1',
-          individualId: 'ind-1',
-          timing: timing,
-        ));
+        await repository.updateEvent(
+          Event.death(id: 'event-1', individualId: 'ind-1', timing: timing),
+        );
 
         final retrieved = await repository.getEvent('event-1');
         retrieved!.map(

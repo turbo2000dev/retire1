@@ -16,9 +16,9 @@ class UserProfileRepository {
     FirebaseFirestore? firestore,
     FirebaseStorage? storage,
     firebase_auth.FirebaseAuth? auth,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance,
-        _auth = auth ?? firebase_auth.FirebaseAuth.instance;
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _storage = storage ?? FirebaseStorage.instance,
+       _auth = auth ?? firebase_auth.FirebaseAuth.instance;
 
   /// Get user profile from Firestore
   /// Returns null if profile doesn't exist
@@ -27,10 +27,7 @@ class UserProfileRepository {
       final doc = await _firestore.collection('users').doc(userId).get();
 
       if (doc.exists && doc.data() != null) {
-        return domain.User.fromJson({
-          'id': userId,
-          ...doc.data()!,
-        });
+        return domain.User.fromJson({'id': userId, ...doc.data()!});
       }
 
       return null;
@@ -67,7 +64,8 @@ class UserProfileRepository {
       // Update Firestore and mark as manually edited
       await _firestore.collection('users').doc(userId).set({
         'displayName': displayName,
-        'displayNameManuallyEdited': true, // Prevent social sign-in from overwriting
+        'displayNameManuallyEdited':
+            true, // Prevent social sign-in from overwriting
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {
@@ -97,7 +95,8 @@ class UserProfileRepository {
       // Update Firestore and mark as manually edited
       await _firestore.collection('users').doc(userId).set({
         'photoUrl': photoUrl,
-        'photoUrlManuallyEdited': true, // Prevent social sign-in from overwriting
+        'photoUrlManuallyEdited':
+            true, // Prevent social sign-in from overwriting
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
@@ -120,7 +119,8 @@ class UserProfileRepository {
       // Update Firestore and mark as manually edited
       await _firestore.collection('users').doc(userId).set({
         'photoUrl': photoUrl,
-        'photoUrlManuallyEdited': true, // Prevent social sign-in from overwriting
+        'photoUrlManuallyEdited':
+            true, // Prevent social sign-in from overwriting
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {
@@ -160,7 +160,9 @@ class UserProfileRepository {
             firebaseUser.displayName != null &&
             firebaseUser.displayName != existingProfile.displayName) {
           updateData['displayName'] = firebaseUser.displayName;
-          log('Syncing updated display name from social sign-in for user $userId');
+          log(
+            'Syncing updated display name from social sign-in for user $userId',
+          );
         }
 
         // Sync photo URL if not manually edited AND different from social
@@ -173,10 +175,10 @@ class UserProfileRepository {
       }
 
       // Update Firestore
-      await _firestore.collection('users').doc(userId).set(
-        updateData,
-        SetOptions(merge: true),
-      );
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .set(updateData, SetOptions(merge: true));
     } catch (e) {
       log('Failed to sync auth user to Firestore', error: e);
       // Don't throw - this is a background sync operation
@@ -187,10 +189,7 @@ class UserProfileRepository {
   Stream<domain.User?> watchUserProfile(String userId) {
     return _firestore.collection('users').doc(userId).snapshots().map((doc) {
       if (doc.exists && doc.data() != null) {
-        return domain.User.fromJson({
-          'id': userId,
-          ...doc.data()!,
-        });
+        return domain.User.fromJson({'id': userId, ...doc.data()!});
       }
       return null;
     });

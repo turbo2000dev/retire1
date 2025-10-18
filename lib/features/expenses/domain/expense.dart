@@ -55,17 +55,18 @@ class Expense with _$Expense {
     required double annualAmount,
   }) = FamilyExpense;
 
-  factory Expense.fromJson(Map<String, dynamic> json) => _$ExpenseFromJson(json);
+  factory Expense.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseFromJson(json);
 }
 
 /// Extension to get expense category name
 extension ExpenseCategory on Expense {
   String get categoryName => when(
-        housing: (_, __, ___, ____) => 'Housing',
-        transport: (_, __, ___, ____) => 'Transport',
-        dailyLiving: (_, __, ___, ____) => 'Daily Living',
-        recreation: (_, __, ___, ____) => 'Recreation',
-        health: (_, __, ___, ____) => 'Health',
-        family: (_, __, ___, ____) => 'Family',
-      );
+    housing: (_, __, ___, ____) => 'Housing',
+    transport: (_, __, ___, ____) => 'Transport',
+    dailyLiving: (_, __, ___, ____) => 'Daily Living',
+    recreation: (_, __, ___, ____) => 'Recreation',
+    health: (_, __, ___, ____) => 'Health',
+    family: (_, __, ___, ____) => 'Family',
+  );
 }

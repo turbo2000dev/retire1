@@ -25,7 +25,11 @@ class ProjectionExcelExport {
       };
 
       // Use direct HTTP call to Cloud Function
-      await _downloadExcelViaHttp(requestData, scenarioName, autoOpen: autoOpen);
+      await _downloadExcelViaHttp(
+        requestData,
+        scenarioName,
+        autoOpen: autoOpen,
+      );
     } catch (e) {
       print('Error exporting to Excel: $e');
       rethrow;
@@ -46,9 +50,7 @@ class ProjectionExcelExport {
       final response = await html.HttpRequest.request(
         functionUrl,
         method: 'POST',
-        requestHeaders: {
-          'Content-Type': 'application/json',
-        },
+        requestHeaders: {'Content-Type': 'application/json'},
         sendData: jsonEncode(requestData),
         responseType: 'blob',
       );
@@ -68,10 +70,7 @@ class ProjectionExcelExport {
           try {
             final uri = Uri.parse(url);
             if (await canLaunchUrl(uri)) {
-              await launchUrl(
-                uri,
-                mode: LaunchMode.externalApplication,
-              );
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
             } else {
               // Fallback to download if can't open
               _triggerDownload(url, filename);
@@ -91,7 +90,8 @@ class ProjectionExcelExport {
         });
       } else {
         throw Exception(
-            'Failed to generate Excel: HTTP ${response.status} - ${response.statusText}');
+          'Failed to generate Excel: HTTP ${response.status} - ${response.statusText}',
+        );
       }
     } catch (e) {
       print('Error downloading Excel via HTTP: $e');

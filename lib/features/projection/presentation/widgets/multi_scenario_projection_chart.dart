@@ -165,8 +165,7 @@ class _MultiScenarioProjectionChartState
                     color: isHidden
                         ? theme.colorScheme.onSurfaceVariant.withOpacity(0.5)
                         : theme.colorScheme.onSurface,
-                    decoration:
-                        isHidden ? TextDecoration.lineThrough : null,
+                    decoration: isHidden ? TextDecoration.lineThrough : null,
                   ),
                 ),
               ],
@@ -188,10 +187,7 @@ class _MultiScenarioProjectionChartState
       final dashArray = _getScenarioLineStyle(index);
 
       final spots = scenarioData.projection.years
-          .map((year) => FlSpot(
-                year.year.toDouble(),
-                year.netWorthEndOfYear,
-              ))
+          .map((year) => FlSpot(year.year.toDouble(), year.netWorthEndOfYear))
           .toList();
 
       return LineChartBarData(
@@ -200,9 +196,7 @@ class _MultiScenarioProjectionChartState
         color: color,
         barWidth: 2,
         dotData: const FlDotData(show: false),
-        belowBarData: BarAreaData(
-          show: false,
-        ),
+        belowBarData: BarAreaData(show: false),
         dashArray: dashArray,
       );
     }).toList();
@@ -243,12 +237,8 @@ class _MultiScenarioProjectionChartState
           },
         ),
       ),
-      rightTitles: const AxisTitles(
-        sideTitles: SideTitles(showTitles: false),
-      ),
-      topTitles: const AxisTitles(
-        sideTitles: SideTitles(showTitles: false),
-      ),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
     );
   }
 
@@ -263,7 +253,10 @@ class _MultiScenarioProjectionChartState
         getTooltipItems: (touchedSpots) {
           return touchedSpots.map((spot) {
             final scenarioData = visibleScenarios[spot.barIndex];
-            final formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+            final formatter = NumberFormat.currency(
+              symbol: '\$',
+              decimalDigits: 0,
+            );
 
             return LineTooltipItem(
               '${scenarioData.scenarioName}\n',

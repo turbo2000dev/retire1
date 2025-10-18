@@ -39,9 +39,7 @@ class ProfilePicture extends ConsumerWidget {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
       try {
@@ -50,11 +48,15 @@ class ProfilePicture extends ConsumerWidget {
           // In production, you'd want to upload to Firebase Storage
           final bytes = await image.readAsBytes();
           final base64Image = 'data:image/jpeg;base64,${bytes.toString()}';
-          await ref.read(userProfileProvider.notifier).updatePhotoUrl(base64Image);
+          await ref
+              .read(userProfileProvider.notifier)
+              .updatePhotoUrl(base64Image);
         } else {
           // For mobile/desktop, upload the file
           final file = File(image.path);
-          await ref.read(userProfileProvider.notifier).uploadProfilePicture(file);
+          await ref
+              .read(userProfileProvider.notifier)
+              .uploadProfilePicture(file);
         }
 
         if (context.mounted) {
@@ -66,16 +68,16 @@ class ProfilePicture extends ConsumerWidget {
       } catch (e) {
         if (context.mounted) {
           Navigator.of(context).pop(); // Close loading dialog
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to upload image: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to upload image: $e')));
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
       }
     }
   }

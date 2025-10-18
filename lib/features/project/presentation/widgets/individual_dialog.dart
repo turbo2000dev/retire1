@@ -8,7 +8,10 @@ class IndividualDialogResult {
   final Individual individual;
   final bool createAnother;
 
-  const IndividualDialogResult({required this.individual, required this.createAnother});
+  const IndividualDialogResult({
+    required this.individual,
+    required this.createAnother,
+  });
 }
 
 /// Dialog for creating or editing an individual
@@ -19,11 +22,17 @@ class IndividualDialog extends StatefulWidget {
 
   /// Show dialog to create a new individual
   static Future<IndividualDialogResult?> showCreate(BuildContext context) {
-    return showDialog<IndividualDialogResult>(context: context, builder: (context) => const IndividualDialog());
+    return showDialog<IndividualDialogResult>(
+      context: context,
+      builder: (context) => const IndividualDialog(),
+    );
   }
 
   /// Show dialog to edit an existing individual
-  static Future<IndividualDialogResult?> showEdit(BuildContext context, Individual individual) {
+  static Future<IndividualDialogResult?> showEdit(
+    BuildContext context,
+    Individual individual,
+  ) {
     return showDialog<IndividualDialogResult>(
       context: context,
       builder: (context) => IndividualDialog(individual: individual),
@@ -49,12 +58,18 @@ class _IndividualDialogState extends State<IndividualDialog> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.individual?.name ?? '');
+    _nameController = TextEditingController(
+      text: widget.individual?.name ?? '',
+    );
     _employmentIncomeController = TextEditingController(
       text: widget.individual?.employmentIncome.toStringAsFixed(0) ?? '0',
     );
-    _rrqStartAgeController = TextEditingController(text: widget.individual?.rrqStartAge.toString() ?? '65');
-    _psvStartAgeController = TextEditingController(text: widget.individual?.psvStartAge.toString() ?? '65');
+    _rrqStartAgeController = TextEditingController(
+      text: widget.individual?.rrqStartAge.toString() ?? '65',
+    );
+    _psvStartAgeController = TextEditingController(
+      text: widget.individual?.psvStartAge.toString() ?? '65',
+    );
     _projectedRrqAt60Controller = TextEditingController(
       text: widget.individual?.projectedRrqAt60.toStringAsFixed(0) ?? '12000',
     );
@@ -121,14 +136,19 @@ class _IndividualDialogState extends State<IndividualDialog> {
       return;
     }
 
-    final employmentIncome = double.tryParse(_employmentIncomeController.text) ?? 0.0;
+    final employmentIncome =
+        double.tryParse(_employmentIncomeController.text) ?? 0.0;
     final rrqStartAge = int.tryParse(_rrqStartAgeController.text) ?? 65;
     final psvStartAge = int.tryParse(_psvStartAgeController.text) ?? 65;
-    final projectedRrqAt60 = double.tryParse(_projectedRrqAt60Controller.text) ?? 12000.0;
-    final projectedRrqAt65 = double.tryParse(_projectedRrqAt65Controller.text) ?? 16000.0;
+    final projectedRrqAt60 =
+        double.tryParse(_projectedRrqAt60Controller.text) ?? 12000.0;
+    final projectedRrqAt65 =
+        double.tryParse(_projectedRrqAt65Controller.text) ?? 16000.0;
 
     final individual = Individual(
-      id: widget.individual?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id:
+          widget.individual?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       name: _nameController.text.trim(),
       birthdate: _selectedDate,
       employmentIncome: employmentIncome,
@@ -140,7 +160,12 @@ class _IndividualDialogState extends State<IndividualDialog> {
       rrpeParticipationStartDate: _rrpeParticipationStartDate,
     );
 
-    Navigator.of(context).pop(IndividualDialogResult(individual: individual, createAnother: createAnother));
+    Navigator.of(context).pop(
+      IndividualDialogResult(
+        individual: individual,
+        createAnother: createAnother,
+      ),
+    );
   }
 
   @override
@@ -188,7 +213,10 @@ class _IndividualDialogState extends State<IndividualDialog> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(dateFormat.format(_selectedDate), style: theme.textTheme.bodyLarge),
+                        Text(
+                          dateFormat.format(_selectedDate),
+                          style: theme.textTheme.bodyLarge,
+                        ),
                         const Icon(Icons.calendar_today),
                       ],
                     ),
@@ -197,7 +225,9 @@ class _IndividualDialogState extends State<IndividualDialog> {
                 const SizedBox(height: 24),
                 Text(
                   'Pension Parameters',
-                  style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -209,8 +239,12 @@ class _IndividualDialogState extends State<IndividualDialog> {
                     prefixText: '\$ ',
                     helperText: 'Current annual salary or employment income',
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Required';
@@ -229,7 +263,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
                     labelText: 'RRQ Start Age',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.calendar_today),
-                    helperText: 'Age to start receiving Quebec Pension Plan (60-70)',
+                    helperText:
+                        'Age to start receiving Quebec Pension Plan (60-70)',
                   ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -251,7 +286,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
                     labelText: 'PSV Start Age',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.calendar_today),
-                    helperText: 'Age to start receiving Old Age Security (60-70)',
+                    helperText:
+                        'Age to start receiving Old Age Security (60-70)',
                   ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -276,8 +312,12 @@ class _IndividualDialogState extends State<IndividualDialog> {
                     prefixText: '\$ ',
                     helperText: 'Annual RRQ benefit if starting at age 60',
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Required';
@@ -299,8 +339,12 @@ class _IndividualDialogState extends State<IndividualDialog> {
                     prefixText: '\$ ',
                     helperText: 'Annual RRQ benefit if starting at age 65',
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Required';
@@ -315,7 +359,9 @@ class _IndividualDialogState extends State<IndividualDialog> {
                 const SizedBox(height: 24),
                 Text(
                   'RRPE (Régime de retraite du personnel d\'encadrement)',
-                  style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 CheckboxListTile(
@@ -343,7 +389,8 @@ class _IndividualDialogState extends State<IndividualDialog> {
                         labelText: 'RRPE Participation Start Date',
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.calendar_today),
-                        errorText: _hasRrpe && _rrpeParticipationStartDate == null
+                        errorText:
+                            _hasRrpe && _rrpeParticipationStartDate == null
                             ? 'Required when RRPE is enabled'
                             : null,
                       ),
@@ -352,11 +399,15 @@ class _IndividualDialogState extends State<IndividualDialog> {
                         children: [
                           Text(
                             _rrpeParticipationStartDate != null
-                                ? dateFormat.format(_rrpeParticipationStartDate!)
+                                ? dateFormat.format(
+                                    _rrpeParticipationStartDate!,
+                                  )
                                 : 'Select date',
                             style: _rrpeParticipationStartDate != null
                                 ? theme.textTheme.bodyLarge
-                                : theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                                : theme.textTheme.bodyLarge?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                           ),
                           const Icon(Icons.calendar_today),
                         ],
@@ -370,7 +421,10 @@ class _IndividualDialogState extends State<IndividualDialog> {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
         // Show "Save and create another" only when creating new individual
         if (!isEditing) ...[
           FilledButton.tonal(

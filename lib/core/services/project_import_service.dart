@@ -65,8 +65,10 @@ class ProjectImportService {
 
       if (errors.isNotEmpty) {
         // Log all validation errors to console
-        log('Schema validation failed with ${errors.length} error(s):',
-            level: 900);
+        log(
+          'Schema validation failed with ${errors.length} error(s):',
+          level: 900,
+        );
         for (final error in errors) {
           log(error.toString(), error: error, level: 900);
         }
@@ -104,7 +106,8 @@ class ProjectImportService {
 
         switch (runtimeType) {
           case 'realEstate':
-            assetCountsByType['Real Estate'] = assetCountsByType['Real Estate']! + 1;
+            assetCountsByType['Real Estate'] =
+                assetCountsByType['Real Estate']! + 1;
             break;
           case 'rrsp':
             assetCountsByType['RRSP'] = assetCountsByType['RRSP']! + 1;
@@ -137,13 +140,15 @@ class ProjectImportService {
 
         switch (runtimeType) {
           case 'retirement':
-            eventCountsByType['Retirement'] = eventCountsByType['Retirement']! + 1;
+            eventCountsByType['Retirement'] =
+                eventCountsByType['Retirement']! + 1;
             break;
           case 'death':
             eventCountsByType['Death'] = eventCountsByType['Death']! + 1;
             break;
           case 'realEstateTransaction':
-            eventCountsByType['Real Estate Transaction'] = eventCountsByType['Real Estate Transaction']! + 1;
+            eventCountsByType['Real Estate Transaction'] =
+                eventCountsByType['Real Estate Transaction']! + 1;
             break;
           default:
             throw Exception('Unknown event type: $runtimeType');
@@ -167,22 +172,28 @@ class ProjectImportService {
 
         switch (runtimeType) {
           case 'housing':
-            expenseCountsByCategory['Housing'] = expenseCountsByCategory['Housing']! + 1;
+            expenseCountsByCategory['Housing'] =
+                expenseCountsByCategory['Housing']! + 1;
             break;
           case 'transport':
-            expenseCountsByCategory['Transport'] = expenseCountsByCategory['Transport']! + 1;
+            expenseCountsByCategory['Transport'] =
+                expenseCountsByCategory['Transport']! + 1;
             break;
           case 'dailyLiving':
-            expenseCountsByCategory['Daily Living'] = expenseCountsByCategory['Daily Living']! + 1;
+            expenseCountsByCategory['Daily Living'] =
+                expenseCountsByCategory['Daily Living']! + 1;
             break;
           case 'recreation':
-            expenseCountsByCategory['Recreation'] = expenseCountsByCategory['Recreation']! + 1;
+            expenseCountsByCategory['Recreation'] =
+                expenseCountsByCategory['Recreation']! + 1;
             break;
           case 'health':
-            expenseCountsByCategory['Health'] = expenseCountsByCategory['Health']! + 1;
+            expenseCountsByCategory['Health'] =
+                expenseCountsByCategory['Health']! + 1;
             break;
           case 'family':
-            expenseCountsByCategory['Family'] = expenseCountsByCategory['Family']! + 1;
+            expenseCountsByCategory['Family'] =
+                expenseCountsByCategory['Family']! + 1;
             break;
           default:
             throw Exception('Unknown expense category: $runtimeType');
@@ -232,8 +243,10 @@ class ProjectImportService {
 
       if (errors.isNotEmpty) {
         // Log all validation errors to console
-        log('Schema validation failed with ${errors.length} error(s):',
-            level: 900);
+        log(
+          'Schema validation failed with ${errors.length} error(s):',
+          level: 900,
+        );
         for (final error in errors) {
           log(error.toString(), error: error, level: 900);
         }
@@ -263,7 +276,9 @@ class ProjectImportService {
       for (final individualJson in individuals) {
         final individual = individualJson as Map<String, dynamic>;
         final oldId = individual['id'] as String;
-        final newId = DateTime.now().millisecondsSinceEpoch.toString() + individuals.indexOf(individualJson).toString();
+        final newId =
+            DateTime.now().millisecondsSinceEpoch.toString() +
+            individuals.indexOf(individualJson).toString();
         individualIdMap[oldId] = newId;
       }
 
@@ -272,13 +287,17 @@ class ProjectImportService {
       for (final assetJson in assets) {
         final asset = assetJson as Map<String, dynamic>;
         final oldId = asset['id'] as String;
-        final newId = DateTime.now().millisecondsSinceEpoch.toString() + assets.indexOf(assetJson).toString();
+        final newId =
+            DateTime.now().millisecondsSinceEpoch.toString() +
+            assets.indexOf(assetJson).toString();
         assetIdMap[oldId] = newId;
       }
 
       // Create project with new ID and owner
       final remappedIndividuals = individuals.map((json) {
-        final individualData = Map<String, dynamic>.from(json as Map<String, dynamic>);
+        final individualData = Map<String, dynamic>.from(
+          json as Map<String, dynamic>,
+        );
         final oldId = individualData['id'] as String;
         individualData['id'] = individualIdMap[oldId]!;
         return Individual.fromJson(individualData);
@@ -293,11 +312,16 @@ class ProjectImportService {
         createdAt: now,
         updatedAt: now,
         individuals: remappedIndividuals,
-        inflationRate: (projectData['inflationRate'] as num?)?.toDouble() ?? 0.02,
-        reerReturnRate: (projectData['reerReturnRate'] as num?)?.toDouble() ?? 0.05,
-        celiReturnRate: (projectData['celiReturnRate'] as num?)?.toDouble() ?? 0.05,
-        criReturnRate: (projectData['criReturnRate'] as num?)?.toDouble() ?? 0.05,
-        cashReturnRate: (projectData['cashReturnRate'] as num?)?.toDouble() ?? 0.015,
+        inflationRate:
+            (projectData['inflationRate'] as num?)?.toDouble() ?? 0.02,
+        reerReturnRate:
+            (projectData['reerReturnRate'] as num?)?.toDouble() ?? 0.05,
+        celiReturnRate:
+            (projectData['celiReturnRate'] as num?)?.toDouble() ?? 0.05,
+        criReturnRate:
+            (projectData['criReturnRate'] as num?)?.toDouble() ?? 0.05,
+        cashReturnRate:
+            (projectData['cashReturnRate'] as num?)?.toDouble() ?? 0.015,
       );
 
       // Import assets with remapped IDs and individual references
@@ -306,18 +330,24 @@ class ProjectImportService {
       for (var i = 0; i < assets.length; i++) {
         try {
           final json = assets[i];
-          final assetData = Map<String, dynamic>.from(json as Map<String, dynamic>);
+          final assetData = Map<String, dynamic>.from(
+            json as Map<String, dynamic>,
+          );
           final oldId = assetData['id'] as String;
-          log('Processing asset [$i]: $oldId (type: ${assetData['runtimeType']})');
+          log(
+            'Processing asset [$i]: $oldId (type: ${assetData['runtimeType']})',
+          );
           assetData['id'] = assetIdMap[oldId]!;
 
           // Remap individual ID references for accounts
-          if (assetData.containsKey('individualId') && assetData['individualId'] != null) {
+          if (assetData.containsKey('individualId') &&
+              assetData['individualId'] != null) {
             final oldIndividualId = assetData['individualId'] as String;
             if (individualIdMap.containsKey(oldIndividualId)) {
               assetData['individualId'] = individualIdMap[oldIndividualId]!;
             } else {
-              final error = 'Asset references unknown individual ID: $oldIndividualId';
+              final error =
+                  'Asset references unknown individual ID: $oldIndividualId';
               log(error, level: 900);
               throw ImportException.schemaViolation(
                 error,
@@ -330,10 +360,20 @@ class ProjectImportService {
           importedAssets.add(Asset.fromJson(assetData));
         } catch (e, stack) {
           if (e is ImportException) {
-            log('Import error for asset [$i]: $e', error: e, stackTrace: stack, level: 900);
+            log(
+              'Import error for asset [$i]: $e',
+              error: e,
+              stackTrace: stack,
+              level: 900,
+            );
             rethrow;
           }
-          log('Error importing asset [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log(
+            'Error importing asset [$i]: $e',
+            error: e,
+            stackTrace: stack,
+            level: 900,
+          );
           log('Asset JSON: ${assets[i]}', level: 900);
           throw ImportException.parsingFailed(
             'assets[$i]',
@@ -352,9 +392,13 @@ class ProjectImportService {
       for (var i = 0; i < events.length; i++) {
         try {
           final json = events[i];
-          final eventData = Map<String, dynamic>.from(json as Map<String, dynamic>);
+          final eventData = Map<String, dynamic>.from(
+            json as Map<String, dynamic>,
+          );
           final oldId = eventData['id'] as String;
-          log('Processing event [$i]: $oldId (type: ${eventData['runtimeType']})');
+          log(
+            'Processing event [$i]: $oldId (type: ${eventData['runtimeType']})',
+          );
 
           // Generate new event ID and track mapping
           final newId = _uuid.v4();
@@ -362,12 +406,14 @@ class ProjectImportService {
           eventData['id'] = newId;
 
           // Remap individual ID references
-          if (eventData.containsKey('individualId') && eventData['individualId'] != null) {
+          if (eventData.containsKey('individualId') &&
+              eventData['individualId'] != null) {
             final oldIndividualId = eventData['individualId'] as String;
             if (individualIdMap.containsKey(oldIndividualId)) {
               eventData['individualId'] = individualIdMap[oldIndividualId]!;
             } else {
-              final error = 'Event references unknown individual ID: $oldIndividualId';
+              final error =
+                  'Event references unknown individual ID: $oldIndividualId';
               log(error, level: 900);
               throw ImportException.schemaViolation(
                 error,
@@ -379,12 +425,14 @@ class ProjectImportService {
           // Remap timing individual ID if age-based
           if (eventData.containsKey('timing')) {
             final timingData = eventData['timing'] as Map<String, dynamic>;
-            if (timingData.containsKey('individualId') && timingData['individualId'] != null) {
+            if (timingData.containsKey('individualId') &&
+                timingData['individualId'] != null) {
               final oldIndividualId = timingData['individualId'] as String;
               if (individualIdMap.containsKey(oldIndividualId)) {
                 timingData['individualId'] = individualIdMap[oldIndividualId]!;
               } else {
-                final error = 'Event timing references unknown individual ID: $oldIndividualId';
+                final error =
+                    'Event timing references unknown individual ID: $oldIndividualId';
                 log(error, level: 900);
                 throw ImportException.schemaViolation(
                   error,
@@ -395,7 +443,8 @@ class ProjectImportService {
           }
 
           // Remap asset ID references for real estate transactions
-          if (eventData.containsKey('assetSoldId') && eventData['assetSoldId'] != null) {
+          if (eventData.containsKey('assetSoldId') &&
+              eventData['assetSoldId'] != null) {
             final oldAssetId = eventData['assetSoldId'] as String;
             if (assetIdMap.containsKey(oldAssetId)) {
               eventData['assetSoldId'] = assetIdMap[oldAssetId]!;
@@ -409,7 +458,8 @@ class ProjectImportService {
             }
           }
 
-          if (eventData.containsKey('assetPurchasedId') && eventData['assetPurchasedId'] != null) {
+          if (eventData.containsKey('assetPurchasedId') &&
+              eventData['assetPurchasedId'] != null) {
             final oldAssetId = eventData['assetPurchasedId'] as String;
             if (assetIdMap.containsKey(oldAssetId)) {
               eventData['assetPurchasedId'] = assetIdMap[oldAssetId]!;
@@ -423,7 +473,8 @@ class ProjectImportService {
             }
           }
 
-          if (eventData.containsKey('withdrawAccountId') && eventData['withdrawAccountId'] != null) {
+          if (eventData.containsKey('withdrawAccountId') &&
+              eventData['withdrawAccountId'] != null) {
             final oldAssetId = eventData['withdrawAccountId'] as String;
             if (assetIdMap.containsKey(oldAssetId)) {
               eventData['withdrawAccountId'] = assetIdMap[oldAssetId]!;
@@ -437,7 +488,8 @@ class ProjectImportService {
             }
           }
 
-          if (eventData.containsKey('depositAccountId') && eventData['depositAccountId'] != null) {
+          if (eventData.containsKey('depositAccountId') &&
+              eventData['depositAccountId'] != null) {
             final oldAssetId = eventData['depositAccountId'] as String;
             if (assetIdMap.containsKey(oldAssetId)) {
               eventData['depositAccountId'] = assetIdMap[oldAssetId]!;
@@ -455,10 +507,20 @@ class ProjectImportService {
           importedEvents.add(Event.fromJson(eventData));
         } catch (e, stack) {
           if (e is ImportException) {
-            log('Import error for event [$i]: $e', error: e, stackTrace: stack, level: 900);
+            log(
+              'Import error for event [$i]: $e',
+              error: e,
+              stackTrace: stack,
+              level: 900,
+            );
             rethrow;
           }
-          log('Error importing event [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log(
+            'Error importing event [$i]: $e',
+            error: e,
+            stackTrace: stack,
+            level: 900,
+          );
           log('Event JSON: ${events[i]}', level: 900);
           throw ImportException.parsingFailed(
             'events[$i]',
@@ -477,9 +539,13 @@ class ProjectImportService {
       for (var i = 0; i < expenses.length; i++) {
         try {
           final json = expenses[i];
-          final expenseData = Map<String, dynamic>.from(json as Map<String, dynamic>);
+          final expenseData = Map<String, dynamic>.from(
+            json as Map<String, dynamic>,
+          );
           final oldId = expenseData['id'] as String;
-          log('Processing expense [$i]: $oldId (type: ${expenseData['runtimeType']})');
+          log(
+            'Processing expense [$i]: $oldId (type: ${expenseData['runtimeType']})',
+          );
 
           // Generate new expense ID
           final newId = _uuid.v4();
@@ -491,12 +557,15 @@ class ProjectImportService {
               final timingData = expenseData[timingKey] as Map<String, dynamic>;
 
               // Remap individual ID for age-based timing
-              if (timingData.containsKey('individualId') && timingData['individualId'] != null) {
+              if (timingData.containsKey('individualId') &&
+                  timingData['individualId'] != null) {
                 final oldIndividualId = timingData['individualId'] as String;
                 if (individualIdMap.containsKey(oldIndividualId)) {
-                  timingData['individualId'] = individualIdMap[oldIndividualId]!;
+                  timingData['individualId'] =
+                      individualIdMap[oldIndividualId]!;
                 } else {
-                  final error = 'Expense $timingKey references unknown individual ID: $oldIndividualId';
+                  final error =
+                      'Expense $timingKey references unknown individual ID: $oldIndividualId';
                   log(error, level: 900);
                   throw ImportException.schemaViolation(
                     error,
@@ -506,12 +575,14 @@ class ProjectImportService {
               }
 
               // Remap event ID for event-relative timing
-              if (timingData.containsKey('eventId') && timingData['eventId'] != null) {
+              if (timingData.containsKey('eventId') &&
+                  timingData['eventId'] != null) {
                 final oldEventId = timingData['eventId'] as String;
                 if (eventIdMap.containsKey(oldEventId)) {
                   timingData['eventId'] = eventIdMap[oldEventId]!;
                 } else {
-                  final error = 'Expense $timingKey references unknown event ID: $oldEventId';
+                  final error =
+                      'Expense $timingKey references unknown event ID: $oldEventId';
                   log(error, level: 900);
                   throw ImportException.schemaViolation(
                     error,
@@ -530,10 +601,20 @@ class ProjectImportService {
           importedExpenses.add(Expense.fromJson(expenseData));
         } catch (e, stack) {
           if (e is ImportException) {
-            log('Import error for expense [$i]: $e', error: e, stackTrace: stack, level: 900);
+            log(
+              'Import error for expense [$i]: $e',
+              error: e,
+              stackTrace: stack,
+              level: 900,
+            );
             rethrow;
           }
-          log('Error importing expense [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log(
+            'Error importing expense [$i]: $e',
+            error: e,
+            stackTrace: stack,
+            level: 900,
+          );
           log('Expense JSON: ${expenses[i]}', level: 900);
           throw ImportException.parsingFailed(
             'expenses[$i]',
@@ -574,7 +655,9 @@ class ProjectImportService {
       for (var i = 0; i < scenarios.length; i++) {
         try {
           final json = scenarios[i];
-          final scenarioData = Map<String, dynamic>.from(json as Map<String, dynamic>);
+          final scenarioData = Map<String, dynamic>.from(
+            json as Map<String, dynamic>,
+          );
 
           // Generate new scenario ID
           final newScenarioId = _uuid.v4();
@@ -590,15 +673,19 @@ class ProjectImportService {
 
             for (var j = 0; j < overrides.length; j++) {
               final overrideJson = overrides[j];
-              final overrideData = Map<String, dynamic>.from(overrideJson as Map<String, dynamic>);
+              final overrideData = Map<String, dynamic>.from(
+                overrideJson as Map<String, dynamic>,
+              );
 
               // Remap asset ID for AssetValueOverride
-              if (overrideData['runtimeType'] == 'assetValue' && overrideData.containsKey('assetId')) {
+              if (overrideData['runtimeType'] == 'assetValue' &&
+                  overrideData.containsKey('assetId')) {
                 final oldAssetId = overrideData['assetId'] as String;
                 if (assetIdMap.containsKey(oldAssetId)) {
                   overrideData['assetId'] = assetIdMap[oldAssetId]!;
                 } else {
-                  final error = 'Override references unknown asset ID: $oldAssetId';
+                  final error =
+                      'Override references unknown asset ID: $oldAssetId';
                   log(error, level: 900);
                   throw ImportException.schemaViolation(
                     error,
@@ -608,12 +695,14 @@ class ProjectImportService {
               }
 
               // Remap event ID for EventTimingOverride
-              if (overrideData['runtimeType'] == 'eventTiming' && overrideData.containsKey('eventId')) {
+              if (overrideData['runtimeType'] == 'eventTiming' &&
+                  overrideData.containsKey('eventId')) {
                 final oldEventId = overrideData['eventId'] as String;
                 if (eventIdMap.containsKey(oldEventId)) {
                   overrideData['eventId'] = eventIdMap[oldEventId]!;
                 } else {
-                  final error = 'Override references unknown event ID: $oldEventId';
+                  final error =
+                      'Override references unknown event ID: $oldEventId';
                   log(error, level: 900);
                   throw ImportException.schemaViolation(
                     error,
@@ -632,10 +721,20 @@ class ProjectImportService {
           importedScenarios.add(Scenario.fromJson(scenarioData));
         } catch (e, stack) {
           if (e is ImportException) {
-            log('Import error for scenario [$i]: $e', error: e, stackTrace: stack, level: 900);
+            log(
+              'Import error for scenario [$i]: $e',
+              error: e,
+              stackTrace: stack,
+              level: 900,
+            );
             rethrow;
           }
-          log('Error importing scenario [$i]: $e', error: e, stackTrace: stack, level: 900);
+          log(
+            'Error importing scenario [$i]: $e',
+            error: e,
+            stackTrace: stack,
+            level: 900,
+          );
           log('Scenario JSON: ${scenarios[i]}', level: 900);
           throw ImportException.parsingFailed(
             'scenarios[$i]',
@@ -656,7 +755,12 @@ class ProjectImportService {
         scenarios: importedScenarios,
       );
     } on FormatException catch (e, stack) {
-      log('Format exception: ${e.message}', error: e, stackTrace: stack, level: 900);
+      log(
+        'Format exception: ${e.message}',
+        error: e,
+        stackTrace: stack,
+        level: 900,
+      );
       throw ImportException(
         'Invalid JSON format: ${e.message}',
         originalException: e,

@@ -183,24 +183,30 @@ void main() {
       });
 
       test('should get all expenses for project', () async {
-        await repository.createExpense(Expense.housing(
-          id: 'expense-1',
-          startTiming: EventTiming.relative(yearsFromStart: 0),
-          endTiming: EventTiming.projectionEnd(),
-          annualAmount: 24000,
-        ));
-        await repository.createExpense(Expense.transport(
-          id: 'expense-2',
-          startTiming: EventTiming.relative(yearsFromStart: 0),
-          endTiming: EventTiming.projectionEnd(),
-          annualAmount: 12000,
-        ));
-        await repository.createExpense(Expense.health(
-          id: 'expense-3',
-          startTiming: EventTiming.relative(yearsFromStart: 0),
-          endTiming: EventTiming.projectionEnd(),
-          annualAmount: 8000,
-        ));
+        await repository.createExpense(
+          Expense.housing(
+            id: 'expense-1',
+            startTiming: EventTiming.relative(yearsFromStart: 0),
+            endTiming: EventTiming.projectionEnd(),
+            annualAmount: 24000,
+          ),
+        );
+        await repository.createExpense(
+          Expense.transport(
+            id: 'expense-2',
+            startTiming: EventTiming.relative(yearsFromStart: 0),
+            endTiming: EventTiming.projectionEnd(),
+            annualAmount: 12000,
+          ),
+        );
+        await repository.createExpense(
+          Expense.health(
+            id: 'expense-3',
+            startTiming: EventTiming.relative(yearsFromStart: 0),
+            endTiming: EventTiming.projectionEnd(),
+            annualAmount: 8000,
+          ),
+        );
 
         final expenses = await repository.getExpensesStream().first;
 
@@ -213,12 +219,14 @@ void main() {
         final stream = repository.getExpensesStream();
 
         // Create initial expense
-        await repository.createExpense(Expense.housing(
-          id: 'expense-1',
-          startTiming: EventTiming.relative(yearsFromStart: 0),
-          endTiming: EventTiming.projectionEnd(),
-          annualAmount: 24000,
-        ));
+        await repository.createExpense(
+          Expense.housing(
+            id: 'expense-1',
+            startTiming: EventTiming.relative(yearsFromStart: 0),
+            endTiming: EventTiming.projectionEnd(),
+            annualAmount: 24000,
+          ),
+        );
 
         // Get first emission
         final firstEmission = await stream.first;
@@ -345,18 +353,22 @@ void main() {
       });
 
       test('should remove expense from stream', () async {
-        await repository.createExpense(Expense.housing(
-          id: 'expense-1',
-          startTiming: EventTiming.relative(yearsFromStart: 0),
-          endTiming: EventTiming.projectionEnd(),
-          annualAmount: 24000,
-        ));
-        await repository.createExpense(Expense.transport(
-          id: 'expense-2',
-          startTiming: EventTiming.relative(yearsFromStart: 0),
-          endTiming: EventTiming.projectionEnd(),
-          annualAmount: 12000,
-        ));
+        await repository.createExpense(
+          Expense.housing(
+            id: 'expense-1',
+            startTiming: EventTiming.relative(yearsFromStart: 0),
+            endTiming: EventTiming.projectionEnd(),
+            annualAmount: 24000,
+          ),
+        );
+        await repository.createExpense(
+          Expense.transport(
+            id: 'expense-2',
+            startTiming: EventTiming.relative(yearsFromStart: 0),
+            endTiming: EventTiming.projectionEnd(),
+            annualAmount: 12000,
+          ),
+        );
 
         await repository.deleteExpense('expense-1');
 
@@ -367,48 +379,51 @@ void main() {
     });
 
     group('Nested Union Serialization', () {
-      test('should preserve both startTiming and endTiming through serialization', () async {
-        final expense = Expense.housing(
-          id: 'expense-1',
-          startTiming: EventTiming.age(individualId: 'ind-1', age: 25),
-          endTiming: EventTiming.age(individualId: 'ind-1', age: 65),
-          annualAmount: 24000,
-        );
+      test(
+        'should preserve both startTiming and endTiming through serialization',
+        () async {
+          final expense = Expense.housing(
+            id: 'expense-1',
+            startTiming: EventTiming.age(individualId: 'ind-1', age: 25),
+            endTiming: EventTiming.age(individualId: 'ind-1', age: 65),
+            annualAmount: 24000,
+          );
 
-        await repository.createExpense(expense);
-        final retrieved = await repository.getExpense('expense-1');
+          await repository.createExpense(expense);
+          final retrieved = await repository.getExpense('expense-1');
 
-        expect(retrieved, isNotNull);
-        retrieved!.when(
-          housing: (id, startTiming, endTiming, annualAmount) {
-            startTiming.map(
-              relative: (_) => fail('Expected age timing'),
-              absolute: (_) => fail('Expected age timing'),
-              age: (t) {
-                expect(t.individualId, 'ind-1');
-                expect(t.age, 25);
-              },
-              eventRelative: (_) => fail('Expected age timing'),
-              projectionEnd: (_) => fail('Expected age timing'),
-            );
-            endTiming.map(
-              relative: (_) => fail('Expected age timing'),
-              absolute: (_) => fail('Expected age timing'),
-              age: (t) {
-                expect(t.individualId, 'ind-1');
-                expect(t.age, 65);
-              },
-              eventRelative: (_) => fail('Expected age timing'),
-              projectionEnd: (_) => fail('Expected age timing'),
-            );
-          },
-          transport: (_, __, ___, ____) => fail('Expected housing'),
-          dailyLiving: (_, __, ___, ____) => fail('Expected housing'),
-          recreation: (_, __, ___, ____) => fail('Expected housing'),
-          health: (_, __, ___, ____) => fail('Expected housing'),
-          family: (_, __, ___, ____) => fail('Expected housing'),
-        );
-      });
+          expect(retrieved, isNotNull);
+          retrieved!.when(
+            housing: (id, startTiming, endTiming, annualAmount) {
+              startTiming.map(
+                relative: (_) => fail('Expected age timing'),
+                absolute: (_) => fail('Expected age timing'),
+                age: (t) {
+                  expect(t.individualId, 'ind-1');
+                  expect(t.age, 25);
+                },
+                eventRelative: (_) => fail('Expected age timing'),
+                projectionEnd: (_) => fail('Expected age timing'),
+              );
+              endTiming.map(
+                relative: (_) => fail('Expected age timing'),
+                absolute: (_) => fail('Expected age timing'),
+                age: (t) {
+                  expect(t.individualId, 'ind-1');
+                  expect(t.age, 65);
+                },
+                eventRelative: (_) => fail('Expected age timing'),
+                projectionEnd: (_) => fail('Expected age timing'),
+              );
+            },
+            transport: (_, __, ___, ____) => fail('Expected housing'),
+            dailyLiving: (_, __, ___, ____) => fail('Expected housing'),
+            recreation: (_, __, ___, ____) => fail('Expected housing'),
+            health: (_, __, ___, ____) => fail('Expected housing'),
+            family: (_, __, ___, ____) => fail('Expected housing'),
+          );
+        },
+      );
 
       test('should handle all 5 timing types for start and end', () async {
         final timingTypes = [
@@ -475,57 +490,60 @@ void main() {
     });
 
     group('Data Integrity', () {
-      test('should maintain all fields through round-trip for each category', () async {
-        final expenses = [
-          Expense.housing(
-            id: 'expense-housing',
-            startTiming: EventTiming.relative(yearsFromStart: 0),
-            endTiming: EventTiming.projectionEnd(),
-            annualAmount: 24000,
-          ),
-          Expense.transport(
-            id: 'expense-transport',
-            startTiming: EventTiming.absolute(calendarYear: 2025),
-            endTiming: EventTiming.absolute(calendarYear: 2040),
-            annualAmount: 12000,
-          ),
-          Expense.dailyLiving(
-            id: 'expense-daily',
-            startTiming: EventTiming.age(individualId: 'ind-1', age: 25),
-            endTiming: EventTiming.age(individualId: 'ind-1', age: 65),
-            annualAmount: 30000,
-          ),
-          Expense.recreation(
-            id: 'expense-recreation',
-            startTiming: EventTiming.eventRelative(
-              eventId: 'event-retirement',
-              boundary: EventBoundary.start,
+      test(
+        'should maintain all fields through round-trip for each category',
+        () async {
+          final expenses = [
+            Expense.housing(
+              id: 'expense-housing',
+              startTiming: EventTiming.relative(yearsFromStart: 0),
+              endTiming: EventTiming.projectionEnd(),
+              annualAmount: 24000,
             ),
-            endTiming: EventTiming.projectionEnd(),
-            annualAmount: 15000,
-          ),
-          Expense.health(
-            id: 'expense-health',
-            startTiming: EventTiming.relative(yearsFromStart: 0),
-            endTiming: EventTiming.projectionEnd(),
-            annualAmount: 8000,
-          ),
-          Expense.family(
-            id: 'expense-family',
-            startTiming: EventTiming.relative(yearsFromStart: 0),
-            endTiming: EventTiming.relative(yearsFromStart: 18),
-            annualAmount: 10000,
-          ),
-        ];
+            Expense.transport(
+              id: 'expense-transport',
+              startTiming: EventTiming.absolute(calendarYear: 2025),
+              endTiming: EventTiming.absolute(calendarYear: 2040),
+              annualAmount: 12000,
+            ),
+            Expense.dailyLiving(
+              id: 'expense-daily',
+              startTiming: EventTiming.age(individualId: 'ind-1', age: 25),
+              endTiming: EventTiming.age(individualId: 'ind-1', age: 65),
+              annualAmount: 30000,
+            ),
+            Expense.recreation(
+              id: 'expense-recreation',
+              startTiming: EventTiming.eventRelative(
+                eventId: 'event-retirement',
+                boundary: EventBoundary.start,
+              ),
+              endTiming: EventTiming.projectionEnd(),
+              annualAmount: 15000,
+            ),
+            Expense.health(
+              id: 'expense-health',
+              startTiming: EventTiming.relative(yearsFromStart: 0),
+              endTiming: EventTiming.projectionEnd(),
+              annualAmount: 8000,
+            ),
+            Expense.family(
+              id: 'expense-family',
+              startTiming: EventTiming.relative(yearsFromStart: 0),
+              endTiming: EventTiming.relative(yearsFromStart: 18),
+              annualAmount: 10000,
+            ),
+          ];
 
-        for (final expense in expenses) {
-          await repository.createExpense(expense);
-          final retrieved = await repository.getExpense(expense.id);
+          for (final expense in expenses) {
+            await repository.createExpense(expense);
+            final retrieved = await repository.getExpense(expense.id);
 
-          expect(retrieved, isNotNull);
-          expect(retrieved!.toJson(), equals(expense.toJson()));
-        }
-      });
+            expect(retrieved, isNotNull);
+            expect(retrieved!.toJson(), equals(expense.toJson()));
+          }
+        },
+      );
     });
 
     group('Category Name Extension', () {

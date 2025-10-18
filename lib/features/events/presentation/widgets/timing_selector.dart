@@ -11,7 +11,8 @@ enum TimingType { relative, absolute, age, eventRelative, projectionEnd }
 class TimingSelector extends StatefulWidget {
   final EventTiming? initialTiming;
   final List<Individual> individuals;
-  final List<Event>? events; // Optional list of events for event-relative timing
+  final List<Event>?
+  events; // Optional list of events for event-relative timing
   final ValueChanged<EventTiming?>? onChanged;
   final String? defaultIndividualId;
 
@@ -101,7 +102,10 @@ class _TimingSelectorState extends State<TimingSelector> {
         case TimingType.age:
           final age = int.tryParse(_ageController.text);
           if (age != null && _selectedIndividualId != null) {
-            timing = EventTiming.age(individualId: _selectedIndividualId!, age: age);
+            timing = EventTiming.age(
+              individualId: _selectedIndividualId!,
+              age: age,
+            );
           }
           break;
         case TimingType.eventRelative:
@@ -130,7 +134,12 @@ class _TimingSelectorState extends State<TimingSelector> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('When', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          'When',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 12),
         // Timing type selector
         ...TimingType.values.map((type) {
@@ -145,7 +154,9 @@ class _TimingSelectorState extends State<TimingSelector> {
                 setState(() {
                   _selectedType = value;
                   // When switching to age timing, default to the provided individual if none is selected
-                  if (value == TimingType.age && _selectedIndividualId == null && widget.defaultIndividualId != null) {
+                  if (value == TimingType.age &&
+                      _selectedIndividualId == null &&
+                      widget.defaultIndividualId != null) {
                     _selectedIndividualId = widget.defaultIndividualId;
                   }
                 });
@@ -201,12 +212,17 @@ class _TimingSelectorState extends State<TimingSelector> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Icon(Icons.warning, color: theme.colorScheme.onErrorContainer),
+                    Icon(
+                      Icons.warning,
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'No individuals found. Please add individuals in Base Parameters first.',
-                        style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                        style: TextStyle(
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
                       ),
                     ),
                   ],
@@ -216,9 +232,15 @@ class _TimingSelectorState extends State<TimingSelector> {
           else ...[
             DropdownButtonFormField<String>(
               initialValue: _selectedIndividualId,
-              decoration: const InputDecoration(labelText: 'Individual', border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                labelText: 'Individual',
+                border: OutlineInputBorder(),
+              ),
               items: widget.individuals.map((individual) {
-                return DropdownMenuItem(value: individual.id, child: Text(individual.name));
+                return DropdownMenuItem(
+                  value: individual.id,
+                  child: Text(individual.name),
+                );
               }).toList(),
               onChanged: (value) {
                 setState(() {
@@ -260,12 +282,17 @@ class _TimingSelectorState extends State<TimingSelector> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Icon(Icons.warning, color: theme.colorScheme.onErrorContainer),
+                    Icon(
+                      Icons.warning,
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'No events found. Please add events first.',
-                        style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                        style: TextStyle(
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
                       ),
                     ),
                   ],
@@ -275,7 +302,10 @@ class _TimingSelectorState extends State<TimingSelector> {
           else ...[
             DropdownButtonFormField<String>(
               value: _selectedEventId,
-              decoration: const InputDecoration(labelText: 'Event', border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                labelText: 'Event',
+                border: OutlineInputBorder(),
+              ),
               items: widget.events!.map((event) {
                 final eventLabel = event.when(
                   retirement: (_, individualId, __) {
@@ -292,7 +322,8 @@ class _TimingSelectorState extends State<TimingSelector> {
                     );
                     return 'Death - ${individual.name}';
                   },
-                  realEstateTransaction: (_, __, ___, ____, _____, ______) => 'Real Estate Transaction',
+                  realEstateTransaction: (_, __, ___, ____, _____, ______) =>
+                      'Real Estate Transaction',
                 );
 
                 final eventId = event.when(
@@ -301,7 +332,10 @@ class _TimingSelectorState extends State<TimingSelector> {
                   realEstateTransaction: (id, _, __, ___, ____, _____) => id,
                 );
 
-                return DropdownMenuItem(value: eventId, child: Text(eventLabel));
+                return DropdownMenuItem(
+                  value: eventId,
+                  child: Text(eventLabel),
+                );
               }).toList(),
               onChanged: (value) {
                 setState(() {
@@ -319,10 +353,19 @@ class _TimingSelectorState extends State<TimingSelector> {
             const SizedBox(height: 16),
             DropdownButtonFormField<EventBoundary>(
               value: _selectedBoundary,
-              decoration: const InputDecoration(labelText: 'Timing', border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                labelText: 'Timing',
+                border: OutlineInputBorder(),
+              ),
               items: const [
-                DropdownMenuItem(value: EventBoundary.start, child: Text('At start of event')),
-                DropdownMenuItem(value: EventBoundary.end, child: Text('At end of event')),
+                DropdownMenuItem(
+                  value: EventBoundary.start,
+                  child: Text('At start of event'),
+                ),
+                DropdownMenuItem(
+                  value: EventBoundary.end,
+                  child: Text('At end of event'),
+                ),
               ],
               onChanged: (value) {
                 if (value != null) {

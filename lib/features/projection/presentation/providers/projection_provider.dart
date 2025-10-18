@@ -29,7 +29,10 @@ final incomeCalculatorProvider = Provider<IncomeCalculator>((ref) {
 });
 
 /// Provider for calculating projection for a specific scenario with caching
-final projectionProvider = FutureProvider.family<Projection?, String>((ref, scenarioId) async {
+final projectionProvider = FutureProvider.family<Projection?, String>((
+  ref,
+  scenarioId,
+) async {
   // Watch all dependencies
   final projectState = ref.watch(currentProjectProvider);
   final assetsAsync = ref.watch(assetsProvider);
@@ -87,22 +90,23 @@ final projectionProvider = FutureProvider.family<Projection?, String>((ref, scen
 });
 
 /// Provider for the currently selected scenario ID for projection view
-final selectedScenarioIdProvider = StateNotifierProvider<SelectedScenarioIdNotifier, String?>((ref) {
-  final notifier = SelectedScenarioIdNotifier();
+final selectedScenarioIdProvider =
+    StateNotifierProvider<SelectedScenarioIdNotifier, String?>((ref) {
+      final notifier = SelectedScenarioIdNotifier();
 
-  // Watch scenarios and auto-select base scenario when available
-  ref.listen<AsyncValue<List<Scenario>>>(
-    scenariosProvider,
-    (previous, next) {
-      next.whenData((scenarios) {
-        // Only auto-select if nothing is selected yet
-        notifier.autoSelectBaseIfNeeded(scenarios);
+      // Watch scenarios and auto-select base scenario when available
+      ref.listen<AsyncValue<List<Scenario>>>(scenariosProvider, (
+        previous,
+        next,
+      ) {
+        next.whenData((scenarios) {
+          // Only auto-select if nothing is selected yet
+          notifier.autoSelectBaseIfNeeded(scenarios);
+        });
       });
-    },
-  );
 
-  return notifier;
-});
+      return notifier;
+    });
 
 /// Notifier for managing the selected scenario ID
 class SelectedScenarioIdNotifier extends StateNotifier<String?> {

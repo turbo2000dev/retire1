@@ -5,9 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ColumnVisibilityState {
   final Set<String> visibleColumnGroups;
 
-  const ColumnVisibilityState({
-    required this.visibleColumnGroups,
-  });
+  const ColumnVisibilityState({required this.visibleColumnGroups});
 
   /// Default state with all column groups visible
   factory ColumnVisibilityState.defaultState() {
@@ -27,9 +25,7 @@ class ColumnVisibilityState {
     );
   }
 
-  ColumnVisibilityState copyWith({
-    Set<String>? visibleColumnGroups,
-  }) {
+  ColumnVisibilityState copyWith({Set<String>? visibleColumnGroups}) {
     return ColumnVisibilityState(
       visibleColumnGroups: visibleColumnGroups ?? this.visibleColumnGroups,
     );
@@ -51,9 +47,7 @@ class ColumnVisibilityNotifier extends StateNotifier<ColumnVisibilityState> {
       final savedGroups = prefs.getStringList(_storageKey);
 
       if (savedGroups != null) {
-        state = ColumnVisibilityState(
-          visibleColumnGroups: savedGroups.toSet(),
-        );
+        state = ColumnVisibilityState(visibleColumnGroups: savedGroups.toSet());
       }
     } catch (e) {
       // If loading fails, keep default state
@@ -97,9 +91,7 @@ class ColumnVisibilityNotifier extends StateNotifier<ColumnVisibilityState> {
 
   /// Hide all column groups except basic
   void hideAll() {
-    state = const ColumnVisibilityState(
-      visibleColumnGroups: {'basic'},
-    );
+    state = const ColumnVisibilityState(visibleColumnGroups: {'basic'});
     _saveToLocalStorage();
   }
 
@@ -113,5 +105,5 @@ class ColumnVisibilityNotifier extends StateNotifier<ColumnVisibilityState> {
 /// Provider for column visibility state
 final columnVisibilityProvider =
     StateNotifierProvider<ColumnVisibilityNotifier, ColumnVisibilityState>(
-  (ref) => ColumnVisibilityNotifier(),
-);
+      (ref) => ColumnVisibilityNotifier(),
+    );

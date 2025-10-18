@@ -57,10 +57,7 @@ class _ResponsiveCollapsibleSectionState
     _iconRotation = Tween<double>(
       begin: 0.0,
       end: 0.5,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     if (_isExpanded) {
       _controller.value = 1.0;
@@ -104,10 +101,7 @@ class _ResponsiveCollapsibleSectionState
             child: Row(
               children: [
                 if (widget.icon != null) ...[
-                  Icon(
-                    widget.icon,
-                    color: theme.colorScheme.primary,
-                  ),
+                  Icon(widget.icon, color: theme.colorScheme.primary),
                   const SizedBox(width: 12),
                 ],
                 Expanded(

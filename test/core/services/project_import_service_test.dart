@@ -36,7 +36,7 @@ void main() {
             name: 'John Doe',
             birthdate: DateTime(1965, 1, 1),
             employmentIncome: 80000,
-            
+
             rrqStartAge: 65,
             psvStartAge: 65,
             initialCeliRoom: 95000,
@@ -185,10 +185,7 @@ void main() {
       test('should throw on missing project field', () {
         final json = '{"exportVersion": "1.2"}';
 
-        expect(
-          () => importService.validateAndPreview(json),
-          throwsException,
-        );
+        expect(() => importService.validateAndPreview(json), throwsException);
       });
 
       test('should throw on empty project name', () {
@@ -203,10 +200,7 @@ void main() {
         );
         final json = exportService.exportProject(project);
 
-        expect(
-          () => importService.validateAndPreview(json),
-          throwsException,
-        );
+        expect(() => importService.validateAndPreview(json), throwsException);
       });
     });
 
@@ -262,12 +256,13 @@ void main() {
 
         final asset = importedData.assets.first;
         asset.when(
-          rrsp: (id, individualId, value, customReturnRate, annualContribution) {
-            expect(id, isNot('asset-1')); // Changed
-            expect(individualId, isNot('ind-1')); // Changed
-            expect(value, 100000); // Preserved
-            expect(annualContribution, 5000); // Preserved
-          },
+          rrsp:
+              (id, individualId, value, customReturnRate, annualContribution) {
+                expect(id, isNot('asset-1')); // Changed
+                expect(individualId, isNot('ind-1')); // Changed
+                expect(value, 100000); // Preserved
+                expect(annualContribution, 5000); // Preserved
+              },
           celi: (_, __, ___, ____, _____) => fail('Wrong asset type'),
           cri: (_, __, ___, ____, _____, ______) => fail('Wrong asset type'),
           cash: (_, __, ___, ____, _____) => fail('Wrong asset type'),
@@ -340,8 +335,11 @@ void main() {
             depositAccountId: 'asset-cash',
           ),
         ];
-        final json =
-            exportService.exportProject(project, assets: assets, events: events);
+        final json = exportService.exportProject(
+          project,
+          assets: assets,
+          events: events,
+        );
 
         final importedData = importService.importProject(json, 'new-user-id');
 
@@ -349,50 +347,109 @@ void main() {
         final oldPropertyId = 'asset-property';
         final oldCashId = 'asset-cash';
         final newPropertyId = importedData.assets
-            .firstWhere((a) => a.maybeWhen(
-                  realEstate: (_, __, ___, ____, _____) => true,
-                  orElse: () => false,
-                ))
+            .firstWhere(
+              (a) => a.maybeWhen(
+                realEstate: (_, __, ___, ____, _____) => true,
+                orElse: () => false,
+              ),
+            )
             .when(
               realEstate: (id, type, value, setAtStart, customReturnRate) => id,
-              rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
-                  '',
-              celi: (id, individualId, value, customReturnRate, annualContribution) =>
-                  '',
-              cri: (id, individualId, value, contributionRoom, customReturnRate,
-                      annualContribution) =>
-                  '',
-              cash: (id, individualId, value, customReturnRate, annualContribution) =>
-                  '',
+              rrsp:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => '',
+              celi:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => '',
+              cri:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    contributionRoom,
+                    customReturnRate,
+                    annualContribution,
+                  ) => '',
+              cash:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => '',
             );
         final newCashId = importedData.assets
-            .firstWhere((a) => a.maybeWhen(
-                  cash: (_, __, ___, ____, _____) => true,
-                  orElse: () => false,
-                ))
+            .firstWhere(
+              (a) => a.maybeWhen(
+                cash: (_, __, ___, ____, _____) => true,
+                orElse: () => false,
+              ),
+            )
             .when(
               realEstate: (id, type, value, setAtStart, customReturnRate) => '',
-              rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
-                  '',
-              celi: (id, individualId, value, customReturnRate, annualContribution) =>
-                  '',
-              cri: (id, individualId, value, contributionRoom, customReturnRate,
-                      annualContribution) =>
-                  '',
-              cash: (id, individualId, value, customReturnRate, annualContribution) =>
-                  id,
+              rrsp:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => '',
+              celi:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => '',
+              cri:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    contributionRoom,
+                    customReturnRate,
+                    annualContribution,
+                  ) => '',
+              cash:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => id,
             );
 
         final event = importedData.events.first;
         event.when(
-          realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId,
-              withdrawAccountId, depositAccountId) {
-            expect(assetSoldId, newPropertyId); // Remapped
-            expect(assetSoldId, isNot(oldPropertyId));
-            expect(withdrawAccountId, newCashId); // Remapped
-            expect(withdrawAccountId, isNot(oldCashId));
-            expect(depositAccountId, newCashId); // Remapped
-          },
+          realEstateTransaction:
+              (
+                id,
+                timing,
+                assetSoldId,
+                assetPurchasedId,
+                withdrawAccountId,
+                depositAccountId,
+              ) {
+                expect(assetSoldId, newPropertyId); // Remapped
+                expect(assetSoldId, isNot(oldPropertyId));
+                expect(withdrawAccountId, newCashId); // Remapped
+                expect(withdrawAccountId, isNot(oldCashId));
+                expect(depositAccountId, newCashId); // Remapped
+              },
           retirement: (_, __, ___) => fail('Wrong event type'),
           death: (_, __, ___) => fail('Wrong event type'),
         );
@@ -544,8 +601,9 @@ void main() {
         // Should have 2 scenarios: auto-created base + imported variation
         expect(importedData.scenarios.length, 2);
 
-        final baseScenario =
-            importedData.scenarios.firstWhere((s) => s.isBase == true);
+        final baseScenario = importedData.scenarios.firstWhere(
+          (s) => s.isBase == true,
+        );
         expect(baseScenario.name, 'Base Scenario');
         expect(baseScenario.overrides, isEmpty);
       });
@@ -696,7 +754,10 @@ void main() {
         // Verify project
         expect(importedData.project.name, project.name);
         expect(importedData.project.description, project.description);
-        expect(importedData.project.individuals.length, project.individuals.length);
+        expect(
+          importedData.project.individuals.length,
+          project.individuals.length,
+        );
 
         // Verify assets
         expect(importedData.assets.length, assets.length);
@@ -725,7 +786,7 @@ void main() {
               name: 'John',
               birthdate: DateTime(1965, 1, 1),
               employmentIncome: 80000,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 95000,
@@ -735,7 +796,7 @@ void main() {
               name: 'Jane',
               birthdate: DateTime(1967, 1, 1),
               employmentIncome: 70000,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 88000,

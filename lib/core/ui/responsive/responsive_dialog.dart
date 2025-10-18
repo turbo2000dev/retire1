@@ -39,7 +39,10 @@ class ResponsiveDialog extends StatelessWidget {
 
     return Dialog(
       child: Container(
-        constraints: BoxConstraints(maxWidth: dialogWidth, maxHeight: screenSize.height * 0.9),
+        constraints: BoxConstraints(
+          maxWidth: dialogWidth,
+          maxHeight: screenSize.height * 0.9,
+        ),
         child: child,
       ),
     );
@@ -81,15 +84,23 @@ class ResponsiveDialogContent extends StatelessWidget {
           padding: const EdgeInsets.all(24.0),
           child: Row(
             children: [
-              if (icon != null) ...[Icon(icon, color: theme.colorScheme.primary, size: 28), const SizedBox(width: 16)],
-              Expanded(child: Text(title, style: theme.textTheme.headlineSmall)),
+              if (icon != null) ...[
+                Icon(icon, color: theme.colorScheme.primary, size: 28),
+                const SizedBox(width: 16),
+              ],
+              Expanded(
+                child: Text(title, style: theme.textTheme.headlineSmall),
+              ),
             ],
           ),
         ),
 
         // Content section (scrollable)
         Flexible(
-          child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24.0), child: content),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: content,
+          ),
         ),
 
         // Actions section
@@ -99,7 +110,10 @@ class ResponsiveDialogContent extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                for (int i = 0; i < actions.length; i++) ...[if (i > 0) const SizedBox(width: 8), actions[i]],
+                for (int i = 0; i < actions.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  actions[i],
+                ],
               ],
             ),
           ),

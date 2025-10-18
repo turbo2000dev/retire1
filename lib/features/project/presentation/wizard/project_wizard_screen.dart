@@ -15,13 +15,11 @@ import 'package:retire1/features/project/presentation/wizard/wizard_provider.dar
 class ProjectWizardScreen extends ConsumerStatefulWidget {
   final String projectId;
 
-  const ProjectWizardScreen({
-    super.key,
-    required this.projectId,
-  });
+  const ProjectWizardScreen({super.key, required this.projectId});
 
   @override
-  ConsumerState<ProjectWizardScreen> createState() => _ProjectWizardScreenState();
+  ConsumerState<ProjectWizardScreen> createState() =>
+      _ProjectWizardScreenState();
 }
 
 class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
@@ -38,7 +36,8 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
     final wizardState = ref.read(wizardProvider);
 
     // If no data entered, just pop
-    if (wizardState == null || !ref.read(wizardProvider.notifier).hasAnyData()) {
+    if (wizardState == null ||
+        !ref.read(wizardProvider.notifier).hasAnyData()) {
       return true;
     }
 
@@ -103,11 +102,7 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
 
     // Show loading if wizard not initialized
     if (wizardState == null) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return PopScope(
@@ -316,10 +311,7 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         border: Border(
-          top: BorderSide(
-            color: theme.colorScheme.outlineVariant,
-            width: 1,
-          ),
+          top: BorderSide(color: theme.colorScheme.outlineVariant, width: 1),
         ),
         boxShadow: [
           BoxShadow(
@@ -362,7 +354,9 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('🎉 Project setup complete! You can now refine details from the main screens.'),
+        content: Text(
+          '🎉 Project setup complete! You can now refine details from the main screens.',
+        ),
         duration: Duration(seconds: 4),
       ),
     );
@@ -430,10 +424,7 @@ class _StepIndicator extends StatelessWidget {
             color: circleColor,
             shape: BoxShape.circle,
             border: isActive && !isCompleted
-                ? Border.all(
-                    color: theme.colorScheme.primary,
-                    width: 2,
-                  )
+                ? Border.all(color: theme.colorScheme.primary, width: 2)
                 : null,
           ),
           child: Center(

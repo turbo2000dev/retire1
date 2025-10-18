@@ -72,7 +72,9 @@ class _ResponsiveCardState extends State<ResponsiveCard> {
     final theme = Theme.of(context);
 
     Widget? headerContent;
-    if (widget.title != null || widget.subtitle != null || widget.leading != null) {
+    if (widget.title != null ||
+        widget.subtitle != null ||
+        widget.leading != null) {
       headerContent = Row(
         children: [
           if (widget.leading != null) ...[
@@ -84,10 +86,7 @@ class _ResponsiveCardState extends State<ResponsiveCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.title != null)
-                  Text(
-                    widget.title!,
-                    style: theme.textTheme.titleMedium,
-                  ),
+                  Text(widget.title!, style: theme.textTheme.titleMedium),
                 if (widget.subtitle != null) ...[
                   const SizedBox(height: 4),
                   Text(
@@ -127,10 +126,7 @@ class _ResponsiveCardState extends State<ResponsiveCard> {
         if (widget.description != null &&
             (!widget.expandable || _isExpanded)) ...[
           const SizedBox(height: 8),
-          Text(
-            widget.description!,
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(widget.description!, style: theme.textTheme.bodyMedium),
         ],
         if (widget.child != null && (!widget.expandable || _isExpanded)) ...[
           if (headerContent != null || widget.description != null)
@@ -144,10 +140,7 @@ class _ResponsiveCardState extends State<ResponsiveCard> {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: widget.onTap ?? (widget.expandable ? _toggleExpanded : null),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: cardContent,
-        ),
+        child: Padding(padding: const EdgeInsets.all(16.0), child: cardContent),
       ),
     );
   }

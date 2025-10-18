@@ -43,16 +43,23 @@ class ProjectionCalculator {
     final calculationStartYear = startYear ?? DateTime.now().year;
     final endYear = calculationStartYear + projectionYears - 1;
 
-    log('Calculating projection for scenario ${scenario.name} from $calculationStartYear to $endYear');
+    log(
+      'Calculating projection for scenario ${scenario.name} from $calculationStartYear to $endYear',
+    );
 
     // Apply scenario overrides
     final effectiveAssets = _applyAssetOverrides(assets, scenario.overrides);
     final effectiveEvents = _applyEventOverrides(events, scenario.overrides);
-    final effectiveExpenses = _applyExpenseOverrides(expenses, scenario.overrides);
+    final effectiveExpenses = _applyExpenseOverrides(
+      expenses,
+      scenario.overrides,
+    );
 
     // Calculate yearly projections
     final years = <YearlyProjection>[];
-    Map<String, double> currentAssetValues = _initializeAssetValues(effectiveAssets);
+    Map<String, double> currentAssetValues = _initializeAssetValues(
+      effectiveAssets,
+    );
     final assetMap = _createAssetMap(effectiveAssets);
     double celiRoomAvailable = _calculateInitialCeliRoom(project.individuals);
     final allYearEventsSoFar = <Event>[]; // Track all events that have occurred
@@ -61,11 +68,19 @@ class ProjectionCalculator {
       final yearsFromStart = year - calculationStartYear;
 
       // Get ages for individuals
-      final primaryIndividual = project.individuals.isNotEmpty ? project.individuals[0] : null;
-      final spouseIndividual = project.individuals.length > 1 ? project.individuals[1] : null;
+      final primaryIndividual = project.individuals.isNotEmpty
+          ? project.individuals[0]
+          : null;
+      final spouseIndividual = project.individuals.length > 1
+          ? project.individuals[1]
+          : null;
 
-      final primaryAge = primaryIndividual != null ? _calculateAge(primaryIndividual.birthdate, year) : null;
-      final spouseAge = spouseIndividual != null ? _calculateAge(spouseIndividual.birthdate, year) : null;
+      final primaryAge = primaryIndividual != null
+          ? _calculateAge(primaryIndividual.birthdate, year)
+          : null;
+      final spouseAge = spouseIndividual != null
+          ? _calculateAge(spouseIndividual.birthdate, year)
+          : null;
 
       // Get events that occur this year
       final yearEvents = _getEventsForYear(
@@ -81,7 +96,10 @@ class ProjectionCalculator {
 
       // Calculate assets at start of year
       final assetsStartOfYear = Map<String, double>.from(currentAssetValues);
-      final netWorthStartOfYear = assetsStartOfYear.values.fold(0.0, (sum, value) => sum + value);
+      final netWorthStartOfYear = assetsStartOfYear.values.fold(
+        0.0,
+        (sum, value) => sum + value,
+      );
 
       // STEP 1: Calculate CRI minimum withdrawals (forced)
       final individualAges = _buildIndividualAgesMap(project.individuals, year);
@@ -94,7 +112,8 @@ class ProjectionCalculator {
 
       // Apply CRI minimums to balances (withdraw before other calculations)
       for (final entry in criMinimums.entries) {
-        currentAssetValues[entry.key] = (currentAssetValues[entry.key] ?? 0.0) - entry.value;
+        currentAssetValues[entry.key] =
+            (currentAssetValues[entry.key] ?? 0.0) - entry.value;
       }
       final criMinimumIncome = criMinimums.values.fold(0.0, (a, b) => a + b);
 
@@ -109,7 +128,8 @@ class ProjectionCalculator {
         inflationRate: inflationRate,
       );
 
-      final incomeByIndividual = incomeResults['incomeByIndividual'] as Map<String, AnnualIncome>;
+      final incomeByIndividual =
+          incomeResults['incomeByIndividual'] as Map<String, AnnualIncome>;
       final incomeFromWork = incomeResults['totalIncome'] as double;
 
       // Base income includes employment/pension plus CRI minimums
@@ -127,10 +147,15 @@ class ProjectionCalculator {
       );
 
       final expenseAmount = expenseResults['total'] as double;
-      final expensesByCategory = expenseResults['byCategory'] as Map<String, double>;
+      final expensesByCategory =
+          expenseResults['byCategory'] as Map<String, double>;
 
       // STEP 4: Apply events and calculate income/expenses from real estate transactions
-      final eventResults = _applyYearEvents(yearEvents, currentAssetValues, effectiveAssets);
+      final eventResults = _applyYearEvents(
+        yearEvents,
+        currentAssetValues,
+        effectiveAssets,
+      );
 
       final eventIncome = eventResults['income'] ?? 0.0;
       final eventExpenses = eventResults['expenses'] ?? 0.0;
@@ -149,7 +174,8 @@ class ProjectionCalculator {
 
       final cashFlowResults = _calculateCashFlowWithWithdrawals(
         baseIncome: baseIncome + eventIncome,
-        baseIncomeWithoutEvents: baseIncome, // Track base income separately for reporting
+        baseIncomeWithoutEvents:
+            baseIncome, // Track base income separately for reporting
         totalExpenses: totalExpenses,
         project: project,
         year: year,
@@ -161,14 +187,17 @@ class ProjectionCalculator {
 
       final totalIncome = cashFlowResults['totalIncome'] as double;
       if (year == 2032) {
-        log('DEBUG 2032: totalIncome returned from cashFlowResults=$totalIncome');
+        log(
+          'DEBUG 2032: totalIncome returned from cashFlowResults=$totalIncome',
+        );
       }
       final taxableIncome = cashFlowResults['taxableIncome'] as double;
       final federalTax = cashFlowResults['federalTax'] as double;
       final quebecTax = cashFlowResults['quebecTax'] as double;
       final totalTax = cashFlowResults['totalTax'] as double;
       final afterTaxIncome = cashFlowResults['afterTaxIncome'] as double;
-      final withdrawalsByAccount = cashFlowResults['withdrawalsByAccount'] as Map<String, double>;
+      final withdrawalsByAccount =
+          cashFlowResults['withdrawalsByAccount'] as Map<String, double>;
       final totalWithdrawals = cashFlowResults['totalWithdrawals'] as double;
       final hasShortfall = cashFlowResults['hasShortfall'] as bool;
       final shortfallAmount = cashFlowResults['shortfallAmount'] as double;
@@ -179,7 +208,10 @@ class ProjectionCalculator {
 
         // Check for account depletion
         if (newBalance <= 0.0 && entry.value > 0) {
-          log('Warning: Account ${entry.key} depleted in year $year (balance before withdrawal: \$${currentAssetValues[entry.key]}, withdrawal: \$${entry.value})', level: 900);
+          log(
+            'Warning: Account ${entry.key} depleted in year $year (balance before withdrawal: \$${currentAssetValues[entry.key]}, withdrawal: \$${entry.value})',
+            level: 900,
+          );
         }
 
         // Clamp balance to 0 (prevent negative balances)
@@ -193,10 +225,16 @@ class ProjectionCalculator {
 
       if (netCashFlow > 0) {
         // Check if all individuals are retired
-        final allRetired = _areAllIndividualsRetired(project.individuals, allYearEventsSoFar, year);
+        final allRetired = _areAllIndividualsRetired(
+          project.individuals,
+          allYearEventsSoFar,
+          year,
+        );
 
         if (allRetired) {
-          log('All individuals retired, surplus of \$$netCashFlow available for contributions');
+          log(
+            'All individuals retired, surplus of \$$netCashFlow available for contributions',
+          );
 
           // Determine contributions (CELI up to room, then Cash)
           contributionsByAccount = _withdrawalStrategy.determineContributions(
@@ -207,12 +245,16 @@ class ProjectionCalculator {
 
           // Apply contributions to balances
           for (final entry in contributionsByAccount.entries) {
-            currentAssetValues[entry.key] = (currentAssetValues[entry.key] ?? 0.0) + entry.value;
+            currentAssetValues[entry.key] =
+                (currentAssetValues[entry.key] ?? 0.0) + entry.value;
             totalContributions += entry.value;
           }
 
           // Update CELI room
-          final celiContributions = _sumCeliContributions(contributionsByAccount, assetMap);
+          final celiContributions = _sumCeliContributions(
+            contributionsByAccount,
+            assetMap,
+          );
           celiRoomAvailable -= celiContributions;
         }
       }
@@ -221,14 +263,21 @@ class ProjectionCalculator {
       celiRoomAvailable += 7000.0;
 
       // Calculate asset growth (after events) and track returns
-      final assetReturns = _applyAssetGrowth(currentAssetValues, effectiveAssets, project);
+      final assetReturns = _applyAssetGrowth(
+        currentAssetValues,
+        effectiveAssets,
+        project,
+      );
 
       // Apply annual contributions (end of year)
       _applyAnnualContributions(currentAssetValues, effectiveAssets);
 
       // Update asset values for end of year
       final assetsEndOfYear = Map<String, double>.from(currentAssetValues);
-      final netWorthEndOfYear = assetsEndOfYear.values.fold(0.0, (sum, value) => sum + value);
+      final netWorthEndOfYear = assetsEndOfYear.values.fold(
+        0.0,
+        (sum, value) => sum + value,
+      );
 
       // Create yearly projection with all fields including Phase 31 shortfall tracking
       years.add(
@@ -280,17 +329,49 @@ class ProjectionCalculator {
   }
 
   /// Apply asset value overrides from scenario
-  List<Asset> _applyAssetOverrides(List<Asset> assets, List<ParameterOverride> overrides) {
+  List<Asset> _applyAssetOverrides(
+    List<Asset> assets,
+    List<ParameterOverride> overrides,
+  ) {
     return assets.map((asset) {
       // Find override for this asset
       final override = overrides.whereType<AssetValueOverride>().where((o) {
         return o.assetId ==
             asset.when(
               realEstate: (id, type, value, setAtStart, customReturnRate) => id,
-              rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
-              celi: (id, individualId, value, customReturnRate, annualContribution) => id,
-              cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
-              cash: (id, individualId, value, customReturnRate, annualContribution) => id,
+              rrsp:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => id,
+              celi:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => id,
+              cri:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    contributionRoom,
+                    customReturnRate,
+                    annualContribution,
+                  ) => id,
+              cash:
+                  (
+                    id,
+                    individualId,
+                    value,
+                    customReturnRate,
+                    annualContribution,
+                  ) => id,
             );
       }).firstOrNull;
 
@@ -299,42 +380,62 @@ class ProjectionCalculator {
       // Apply override
       return asset.when(
         realEstate: (id, type, value, setAtStart, customReturnRate) =>
-            Asset.realEstate(id: id, type: type, value: override.value, setAtStart: setAtStart, customReturnRate: customReturnRate),
-        rrsp: (id, individualId, value, customReturnRate, annualContribution) => Asset.rrsp(
-          id: id,
-          individualId: individualId,
-          value: override.value,
-          customReturnRate: customReturnRate,
-          annualContribution: annualContribution,
-        ),
-        celi: (id, individualId, value, customReturnRate, annualContribution) => Asset.celi(
-          id: id,
-          individualId: individualId,
-          value: override.value,
-          customReturnRate: customReturnRate,
-          annualContribution: annualContribution,
-        ),
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => Asset.cri(
-          id: id,
-          individualId: individualId,
-          value: override.value,
-          contributionRoom: contributionRoom,
-          customReturnRate: customReturnRate,
-          annualContribution: annualContribution,
-        ),
-        cash: (id, individualId, value, customReturnRate, annualContribution) => Asset.cash(
-          id: id,
-          individualId: individualId,
-          value: override.value,
-          customReturnRate: customReturnRate,
-          annualContribution: annualContribution,
-        ),
+            Asset.realEstate(
+              id: id,
+              type: type,
+              value: override.value,
+              setAtStart: setAtStart,
+              customReturnRate: customReturnRate,
+            ),
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+            Asset.rrsp(
+              id: id,
+              individualId: individualId,
+              value: override.value,
+              customReturnRate: customReturnRate,
+              annualContribution: annualContribution,
+            ),
+        celi: (id, individualId, value, customReturnRate, annualContribution) =>
+            Asset.celi(
+              id: id,
+              individualId: individualId,
+              value: override.value,
+              customReturnRate: customReturnRate,
+              annualContribution: annualContribution,
+            ),
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) => Asset.cri(
+              id: id,
+              individualId: individualId,
+              value: override.value,
+              contributionRoom: contributionRoom,
+              customReturnRate: customReturnRate,
+              annualContribution: annualContribution,
+            ),
+        cash: (id, individualId, value, customReturnRate, annualContribution) =>
+            Asset.cash(
+              id: id,
+              individualId: individualId,
+              value: override.value,
+              customReturnRate: customReturnRate,
+              annualContribution: annualContribution,
+            ),
       );
     }).toList();
   }
 
   /// Apply event timing overrides from scenario
-  List<Event> _applyEventOverrides(List<Event> events, List<ParameterOverride> overrides) {
+  List<Event> _applyEventOverrides(
+    List<Event> events,
+    List<ParameterOverride> overrides,
+  ) {
     return events.map((event) {
       final eventId = _getEventId(event);
 
@@ -346,14 +447,27 @@ class ProjectionCalculator {
       if (override == null) return event;
 
       // Apply override - convert to relative timing
-      final newTiming = EventTiming.relative(yearsFromStart: override.yearsFromStart);
+      final newTiming = EventTiming.relative(
+        yearsFromStart: override.yearsFromStart,
+      );
 
       return event.when(
-        retirement: (id, individualId, timing) =>
-            Event.retirement(id: id, individualId: individualId, timing: newTiming),
-        death: (id, individualId, timing) => Event.death(id: id, individualId: individualId, timing: newTiming),
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId, withdrawAccountId, depositAccountId) =>
-            Event.realEstateTransaction(
+        retirement: (id, individualId, timing) => Event.retirement(
+          id: id,
+          individualId: individualId,
+          timing: newTiming,
+        ),
+        death: (id, individualId, timing) =>
+            Event.death(id: id, individualId: individualId, timing: newTiming),
+        realEstateTransaction:
+            (
+              id,
+              timing,
+              assetSoldId,
+              assetPurchasedId,
+              withdrawAccountId,
+              depositAccountId,
+            ) => Event.realEstateTransaction(
               id: id,
               timing: newTiming,
               assetSoldId: assetSoldId,
@@ -366,7 +480,10 @@ class ProjectionCalculator {
   }
 
   /// Apply expense overrides from scenario (amount and/or timing)
-  List<Expense> _applyExpenseOverrides(List<Expense> expenses, List<ParameterOverride> overrides) {
+  List<Expense> _applyExpenseOverrides(
+    List<Expense> expenses,
+    List<ParameterOverride> overrides,
+  ) {
     return expenses.map((expense) {
       // Get expense ID
       final expenseId = expense.when(
@@ -382,7 +499,8 @@ class ProjectionCalculator {
       final amountOverride = overrides
           .where(
             (o) => o.maybeWhen(
-              expenseAmount: (id, overrideAmount, amountMultiplier) => id == expenseId,
+              expenseAmount: (id, overrideAmount, amountMultiplier) =>
+                  id == expenseId,
               orElse: () => false,
             ),
           )
@@ -391,7 +509,11 @@ class ProjectionCalculator {
       // Find timing override for this expense
       final timingOverride = overrides
           .where(
-            (o) => o.maybeWhen(expenseTiming: (id, overrideStart, overrideEnd) => id == expenseId, orElse: () => false),
+            (o) => o.maybeWhen(
+              expenseTiming: (id, overrideStart, overrideEnd) =>
+                  id == expenseId,
+              orElse: () => false,
+            ),
           )
           .firstOrNull;
 
@@ -465,24 +587,27 @@ class ProjectionCalculator {
           endTiming: effectiveEndTiming,
           annualAmount: effectiveAmount,
         ),
-        transport: (id, startTiming, endTiming, annualAmount) => Expense.transport(
-          id: id,
-          startTiming: effectiveStartTiming,
-          endTiming: effectiveEndTiming,
-          annualAmount: effectiveAmount,
-        ),
-        dailyLiving: (id, startTiming, endTiming, annualAmount) => Expense.dailyLiving(
-          id: id,
-          startTiming: effectiveStartTiming,
-          endTiming: effectiveEndTiming,
-          annualAmount: effectiveAmount,
-        ),
-        recreation: (id, startTiming, endTiming, annualAmount) => Expense.recreation(
-          id: id,
-          startTiming: effectiveStartTiming,
-          endTiming: effectiveEndTiming,
-          annualAmount: effectiveAmount,
-        ),
+        transport: (id, startTiming, endTiming, annualAmount) =>
+            Expense.transport(
+              id: id,
+              startTiming: effectiveStartTiming,
+              endTiming: effectiveEndTiming,
+              annualAmount: effectiveAmount,
+            ),
+        dailyLiving: (id, startTiming, endTiming, annualAmount) =>
+            Expense.dailyLiving(
+              id: id,
+              startTiming: effectiveStartTiming,
+              endTiming: effectiveEndTiming,
+              annualAmount: effectiveAmount,
+            ),
+        recreation: (id, startTiming, endTiming, annualAmount) =>
+            Expense.recreation(
+              id: id,
+              startTiming: effectiveStartTiming,
+              endTiming: effectiveEndTiming,
+              annualAmount: effectiveAmount,
+            ),
         health: (id, startTiming, endTiming, annualAmount) => Expense.health(
           id: id,
           startTiming: effectiveStartTiming,
@@ -513,9 +638,17 @@ class ProjectionCalculator {
         celi: (id, individualId, value, customReturnRate, annualContribution) {
           values[id] = value;
         },
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
-          values[id] = value;
-        },
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) {
+              values[id] = value;
+            },
         cash: (id, individualId, value, customReturnRate, annualContribution) {
           values[id] = value;
         },
@@ -541,12 +674,38 @@ class ProjectionCalculator {
   ) {
     return events.where((event) {
       return event.when(
-        retirement: (id, individualId, timing) =>
-            _isEventInYear(timing, year, yearsFromStart, individuals, startYear, events),
-        death: (id, individualId, timing) =>
-            _isEventInYear(timing, year, yearsFromStart, individuals, startYear, events),
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId, withdrawAccountId, depositAccountId) =>
-            _isEventInYear(timing, year, yearsFromStart, individuals, startYear, events),
+        retirement: (id, individualId, timing) => _isEventInYear(
+          timing,
+          year,
+          yearsFromStart,
+          individuals,
+          startYear,
+          events,
+        ),
+        death: (id, individualId, timing) => _isEventInYear(
+          timing,
+          year,
+          yearsFromStart,
+          individuals,
+          startYear,
+          events,
+        ),
+        realEstateTransaction:
+            (
+              id,
+              timing,
+              assetSoldId,
+              assetPurchasedId,
+              withdrawAccountId,
+              depositAccountId,
+            ) => _isEventInYear(
+              timing,
+              year,
+              yearsFromStart,
+              individuals,
+              startYear,
+              events,
+            ),
       );
     }).toList();
   }
@@ -564,17 +723,27 @@ class ProjectionCalculator {
       relative: (years) => years == yearsFromStart,
       absolute: (calendarYear) => calendarYear == year,
       age: (individualId, targetAge) {
-        final individual = individuals.where((i) => i.id == individualId).firstOrNull;
+        final individual = individuals
+            .where((i) => i.id == individualId)
+            .firstOrNull;
         if (individual == null) return false;
         final currentAge = _calculateAge(individual.birthdate, year);
         return currentAge == targetAge;
       },
       eventRelative: (eventId, boundary) {
         // Resolve when the referenced event occurs
-        final resolvedYear = _resolveEventYear(eventId, events, individuals, startYear, {});
+        final resolvedYear = _resolveEventYear(
+          eventId,
+          events,
+          individuals,
+          startYear,
+          {},
+        );
 
         if (resolvedYear == null) {
-          log('Warning: Could not resolve event-relative timing for event $eventId');
+          log(
+            'Warning: Could not resolve event-relative timing for event $eventId',
+          );
           return false;
         }
 
@@ -582,7 +751,8 @@ class ProjectionCalculator {
         // In future, events could have duration
         return resolvedYear == year;
       },
-      projectionEnd: () => false, // Projection end is never "in" a specific year
+      projectionEnd: () =>
+          false, // Projection end is never "in" a specific year
     );
   }
 
@@ -614,7 +784,15 @@ class ProjectionCalculator {
     final timing = event.when(
       retirement: (id, individualId, timing) => timing,
       death: (id, individualId, timing) => timing,
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId, withdrawAccountId, depositAccountId) => timing,
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => timing,
     );
 
     // Mark this event as visited (for cycle detection)
@@ -625,9 +803,13 @@ class ProjectionCalculator {
       relative: (years) => startYear + years,
       absolute: (calendarYear) => calendarYear,
       age: (individualId, targetAge) {
-        final individual = individuals.where((i) => i.id == individualId).firstOrNull;
+        final individual = individuals
+            .where((i) => i.id == individualId)
+            .firstOrNull;
         if (individual == null) {
-          log('Warning: Individual $individualId not found for age-based timing');
+          log(
+            'Warning: Individual $individualId not found for age-based timing',
+          );
           return null;
         }
         // Calculate what year the individual reaches the target age
@@ -635,17 +817,28 @@ class ProjectionCalculator {
       },
       eventRelative: (referencedEventId, boundary) {
         // Recursively resolve the referenced event
-        final referencedYear = _resolveEventYear(referencedEventId, events, individuals, startYear, newVisitedIds);
+        final referencedYear = _resolveEventYear(
+          referencedEventId,
+          events,
+          individuals,
+          startYear,
+          newVisitedIds,
+        );
         // For now, both start and end boundaries return the same year
         // In future, events could have duration and end could be different from start
         return referencedYear;
       },
-      projectionEnd: () => null, // Projection end cannot be resolved to a specific year
+      projectionEnd: () =>
+          null, // Projection end cannot be resolved to a specific year
     );
   }
 
   /// Apply events that occur in a year and calculate income/expenses
-  Map<String, double> _applyYearEvents(List<Event> events, Map<String, double> currentAssetValues, List<Asset> assets) {
+  Map<String, double> _applyYearEvents(
+    List<Event> events,
+    Map<String, double> currentAssetValues,
+    List<Asset> assets,
+  ) {
     double totalIncome = 0.0;
     double totalExpenses = 0.0;
 
@@ -659,48 +852,92 @@ class ProjectionCalculator {
           // Death event - in future phases, this would trigger estate changes
           log('Death event occurred');
         },
-        realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId, withdrawAccountId, depositAccountId) {
-          // Real estate transaction
-          double transactionAmount = 0.0;
+        realEstateTransaction:
+            (
+              id,
+              timing,
+              assetSoldId,
+              assetPurchasedId,
+              withdrawAccountId,
+              depositAccountId,
+            ) {
+              // Real estate transaction
+              double transactionAmount = 0.0;
 
-          if (assetSoldId != null) {
-            // Selling property - add to cash
-            final saleValue = currentAssetValues[assetSoldId] ?? 0.0;
-            currentAssetValues[depositAccountId] = (currentAssetValues[depositAccountId] ?? 0.0) + saleValue;
-            currentAssetValues.remove(assetSoldId);
-            totalIncome += saleValue;
-            transactionAmount += saleValue;
-          }
+              if (assetSoldId != null) {
+                // Selling property - add to cash
+                final saleValue = currentAssetValues[assetSoldId] ?? 0.0;
+                currentAssetValues[depositAccountId] =
+                    (currentAssetValues[depositAccountId] ?? 0.0) + saleValue;
+                currentAssetValues.remove(assetSoldId);
+                totalIncome += saleValue;
+                transactionAmount += saleValue;
+              }
 
-          if (assetPurchasedId != null) {
-            // Buying property - deduct from cash
-            final asset = assets
-                .where(
-                  (a) => a.maybeWhen(
-                    realEstate: (id, type, value, setAtStart, customReturnRate) => id == assetPurchasedId,
-                    orElse: () => false,
-                  ),
-                )
-                .firstOrNull;
+              if (assetPurchasedId != null) {
+                // Buying property - deduct from cash
+                final asset = assets
+                    .where(
+                      (a) => a.maybeWhen(
+                        realEstate:
+                            (id, type, value, setAtStart, customReturnRate) =>
+                                id == assetPurchasedId,
+                        orElse: () => false,
+                      ),
+                    )
+                    .firstOrNull;
 
-            if (asset != null) {
-              final purchaseValue = asset.when(
-                realEstate: (id, type, value, setAtStart, customReturnRate) => value,
-                rrsp: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
-                celi: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
-                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => 0.0,
-                cash: (id, individualId, value, customReturnRate, annualContribution) => 0.0,
-              );
+                if (asset != null) {
+                  final purchaseValue = asset.when(
+                    realEstate:
+                        (id, type, value, setAtStart, customReturnRate) =>
+                            value,
+                    rrsp:
+                        (
+                          id,
+                          individualId,
+                          value,
+                          customReturnRate,
+                          annualContribution,
+                        ) => 0.0,
+                    celi:
+                        (
+                          id,
+                          individualId,
+                          value,
+                          customReturnRate,
+                          annualContribution,
+                        ) => 0.0,
+                    cri:
+                        (
+                          id,
+                          individualId,
+                          value,
+                          contributionRoom,
+                          customReturnRate,
+                          annualContribution,
+                        ) => 0.0,
+                    cash:
+                        (
+                          id,
+                          individualId,
+                          value,
+                          customReturnRate,
+                          annualContribution,
+                        ) => 0.0,
+                  );
 
-              currentAssetValues[withdrawAccountId] = (currentAssetValues[withdrawAccountId] ?? 0.0) - purchaseValue;
-              currentAssetValues[assetPurchasedId] = purchaseValue;
-              totalExpenses += purchaseValue;
-              transactionAmount -= purchaseValue;
-            }
-          }
+                  currentAssetValues[withdrawAccountId] =
+                      (currentAssetValues[withdrawAccountId] ?? 0.0) -
+                      purchaseValue;
+                  currentAssetValues[assetPurchasedId] = purchaseValue;
+                  totalExpenses += purchaseValue;
+                  transactionAmount -= purchaseValue;
+                }
+              }
 
-          log('Real estate transaction: amount = $transactionAmount');
-        },
+              log('Real estate transaction: amount = $transactionAmount');
+            },
       );
     }
 
@@ -712,14 +949,26 @@ class ProjectionCalculator {
     return event.when(
       retirement: (id, individualId, timing) => id,
       death: (id, individualId, timing) => id,
-      realEstateTransaction: (id, timing, assetSoldId, assetPurchasedId, withdrawAccountId, depositAccountId) => id,
+      realEstateTransaction:
+          (
+            id,
+            timing,
+            assetSoldId,
+            assetPurchasedId,
+            withdrawAccountId,
+            depositAccountId,
+          ) => id,
     );
   }
 
   /// Apply asset growth based on return rates
   ///
   /// Returns a map of asset ID to returns earned this year
-  Map<String, double> _applyAssetGrowth(Map<String, double> assetValues, List<Asset> assets, Project project) {
+  Map<String, double> _applyAssetGrowth(
+    Map<String, double> assetValues,
+    List<Asset> assets,
+    Project project,
+  ) {
     final returns = <String, double>{};
 
     for (final asset in assets) {
@@ -769,21 +1018,29 @@ class ProjectionCalculator {
           assetValues[id] = newValue;
           returns[id] = returnAmount;
         },
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
-          // CRI grows at custom rate or project CRI rate
-          final currentValue = assetValues[id] ?? 0.0;
-          if (currentValue <= 0) {
-            returns[id] = 0.0;
-            return;
-          }
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) {
+              // CRI grows at custom rate or project CRI rate
+              final currentValue = assetValues[id] ?? 0.0;
+              if (currentValue <= 0) {
+                returns[id] = 0.0;
+                return;
+              }
 
-          final rate = customReturnRate ?? project.criReturnRate;
-          final returnAmount = currentValue * rate;
-          final newValue = currentValue + returnAmount;
+              final rate = customReturnRate ?? project.criReturnRate;
+              final returnAmount = currentValue * rate;
+              final newValue = currentValue + returnAmount;
 
-          assetValues[id] = newValue;
-          returns[id] = returnAmount;
-        },
+              assetValues[id] = newValue;
+              returns[id] = returnAmount;
+            },
         cash: (id, individualId, value, customReturnRate, annualContribution) {
           // Cash grows at custom rate or project cash rate
           final currentValue = assetValues[id] ?? 0.0;
@@ -806,7 +1063,10 @@ class ProjectionCalculator {
   }
 
   /// Apply annual contributions to accounts (end of year)
-  void _applyAnnualContributions(Map<String, double> assetValues, List<Asset> assets) {
+  void _applyAnnualContributions(
+    Map<String, double> assetValues,
+    List<Asset> assets,
+  ) {
     for (final asset in assets) {
       asset.when(
         realEstate: (id, type, value, setAtStart, customReturnRate) {
@@ -824,12 +1084,20 @@ class ProjectionCalculator {
             assetValues[id] = currentValue + annualContribution;
           }
         },
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
-          if (annualContribution != null && annualContribution > 0) {
-            final currentValue = assetValues[id] ?? 0.0;
-            assetValues[id] = currentValue + annualContribution;
-          }
-        },
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) {
+              if (annualContribution != null && annualContribution > 0) {
+                final currentValue = assetValues[id] ?? 0.0;
+                assetValues[id] = currentValue + annualContribution;
+              }
+            },
         cash: (id, individualId, value, customReturnRate, annualContribution) {
           if (annualContribution != null && annualContribution > 0) {
             final currentValue = assetValues[id] ?? 0.0;
@@ -889,9 +1157,23 @@ class ProjectionCalculator {
       );
 
       // Check if expense is active this year
-      final hasStarted = _hasTimingOccurred(startTiming, year, yearsFromStart, individuals, startYear, events);
+      final hasStarted = _hasTimingOccurred(
+        startTiming,
+        year,
+        yearsFromStart,
+        individuals,
+        startYear,
+        events,
+      );
 
-      final hasEnded = _hasTimingOccurred(endTiming, year, yearsFromStart, individuals, startYear, events);
+      final hasEnded = _hasTimingOccurred(
+        endTiming,
+        year,
+        yearsFromStart,
+        individuals,
+        startYear,
+        events,
+      );
 
       // Expense is active if it has started but not yet ended
       // For projectionEnd timing, hasEnded will be false (never ends)
@@ -907,7 +1189,10 @@ class ProjectionCalculator {
 
         // Apply inflation adjustment
         // Base amount is in year 0 dollars, adjust for years from start
-        final inflationMultiplier = _calculateInflationMultiplier(inflationRate, yearsFromStart);
+        final inflationMultiplier = _calculateInflationMultiplier(
+          inflationRate,
+          yearsFromStart,
+        );
         final adjustedAmount = baseAmount * inflationMultiplier;
 
         // Add to total
@@ -916,22 +1201,28 @@ class ProjectionCalculator {
         // Add to category breakdown
         expense.when(
           housing: (_, __, ___, ____) {
-            expensesByCategory['housing'] = (expensesByCategory['housing'] ?? 0.0) + adjustedAmount;
+            expensesByCategory['housing'] =
+                (expensesByCategory['housing'] ?? 0.0) + adjustedAmount;
           },
           transport: (_, __, ___, ____) {
-            expensesByCategory['transport'] = (expensesByCategory['transport'] ?? 0.0) + adjustedAmount;
+            expensesByCategory['transport'] =
+                (expensesByCategory['transport'] ?? 0.0) + adjustedAmount;
           },
           dailyLiving: (_, __, ___, ____) {
-            expensesByCategory['dailyLiving'] = (expensesByCategory['dailyLiving'] ?? 0.0) + adjustedAmount;
+            expensesByCategory['dailyLiving'] =
+                (expensesByCategory['dailyLiving'] ?? 0.0) + adjustedAmount;
           },
           recreation: (_, __, ___, ____) {
-            expensesByCategory['recreation'] = (expensesByCategory['recreation'] ?? 0.0) + adjustedAmount;
+            expensesByCategory['recreation'] =
+                (expensesByCategory['recreation'] ?? 0.0) + adjustedAmount;
           },
           health: (_, __, ___, ____) {
-            expensesByCategory['health'] = (expensesByCategory['health'] ?? 0.0) + adjustedAmount;
+            expensesByCategory['health'] =
+                (expensesByCategory['health'] ?? 0.0) + adjustedAmount;
           },
           family: (_, __, ___, ____) {
-            expensesByCategory['family'] = (expensesByCategory['family'] ?? 0.0) + adjustedAmount;
+            expensesByCategory['family'] =
+                (expensesByCategory['family'] ?? 0.0) + adjustedAmount;
           },
         );
       }
@@ -970,24 +1261,35 @@ class ProjectionCalculator {
       relative: (years) => years <= yearsFromStart,
       absolute: (calendarYear) => calendarYear <= year,
       age: (individualId, targetAge) {
-        final individual = individuals.where((i) => i.id == individualId).firstOrNull;
+        final individual = individuals
+            .where((i) => i.id == individualId)
+            .firstOrNull;
         if (individual == null) return false;
         final currentAge = _calculateAge(individual.birthdate, year);
         return currentAge >= targetAge;
       },
       eventRelative: (eventId, boundary) {
         // Resolve when the referenced event occurs
-        final resolvedYear = _resolveEventYear(eventId, events, individuals, startYear, {});
+        final resolvedYear = _resolveEventYear(
+          eventId,
+          events,
+          individuals,
+          startYear,
+          {},
+        );
 
         if (resolvedYear == null) {
-          log('Warning: Could not resolve event-relative timing for event $eventId');
+          log(
+            'Warning: Could not resolve event-relative timing for event $eventId',
+          );
           return false;
         }
 
         // Event-relative timing has occurred if the event year has passed
         return resolvedYear <= year;
       },
-      projectionEnd: () => false, // Projection end never "occurs" - expenses continue until end
+      projectionEnd: () =>
+          false, // Projection end never "occurs" - expenses continue until end
     );
   }
 
@@ -1031,7 +1333,8 @@ class ProjectionCalculator {
         age: age,
         events: events,
         criBalance: criBalance,
-        allIndividuals: project.individuals, // Pass all individuals for survivor benefit calculation
+        allIndividuals: project
+            .individuals, // Pass all individuals for survivor benefit calculation
         inflationRate: inflationRate,
       );
 
@@ -1041,7 +1344,10 @@ class ProjectionCalculator {
 
     log('Total household income for year $year: $totalIncome');
 
-    return {'incomeByIndividual': incomeByIndividual, 'totalIncome': totalIncome};
+    return {
+      'incomeByIndividual': incomeByIndividual,
+      'totalIncome': totalIncome,
+    };
   }
 
   /// Calculate taxes for all individuals for a specific year
@@ -1078,7 +1384,10 @@ class ProjectionCalculator {
       final age = _calculateAge(individual.birthdate, year);
 
       // Calculate taxes
-      final taxCalculation = taxCalculator.calculateTax(grossIncome: taxableIncome, age: age);
+      final taxCalculation = taxCalculator.calculateTax(
+        grossIncome: taxableIncome,
+        age: age,
+      );
 
       totalTaxableIncome += taxableIncome;
       totalFederalTax += taxCalculation.federalTax;
@@ -1116,16 +1425,33 @@ class ProjectionCalculator {
   String _getAssetId(Asset asset) {
     return asset.when(
       realEstate: (id, type, value, setAtStart, customReturnRate) => id,
-      rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
-      celi: (id, individualId, value, customReturnRate, annualContribution) => id,
-      cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
-      cash: (id, individualId, value, customReturnRate, annualContribution) => id,
+      rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+          id,
+      celi: (id, individualId, value, customReturnRate, annualContribution) =>
+          id,
+      cri:
+          (
+            id,
+            individualId,
+            value,
+            contributionRoom,
+            customReturnRate,
+            annualContribution,
+          ) => id,
+      cash: (id, individualId, value, customReturnRate, annualContribution) =>
+          id,
     );
   }
 
   /// Build map of individual ID to current age
-  Map<String, int> _buildIndividualAgesMap(List<Individual> individuals, int year) {
-    return {for (final individual in individuals) individual.id: _calculateAge(individual.birthdate, year)};
+  Map<String, int> _buildIndividualAgesMap(
+    List<Individual> individuals,
+    int year,
+  ) {
+    return {
+      for (final individual in individuals)
+        individual.id: _calculateAge(individual.birthdate, year),
+    };
   }
 
   /// Calculate initial CELI contribution room from all individuals
@@ -1138,14 +1464,19 @@ class ProjectionCalculator {
   }
 
   /// Check if all individuals have retired
-  bool _areAllIndividualsRetired(List<Individual> individuals, List<Event> allYearEventsSoFar, int currentYear) {
+  bool _areAllIndividualsRetired(
+    List<Individual> individuals,
+    List<Event> allYearEventsSoFar,
+    int currentYear,
+  ) {
     // Check if retirement event has occurred for each individual
     for (final individual in individuals) {
       bool hasRetired = false;
 
       for (final event in allYearEventsSoFar) {
         final isRetirement = event.maybeWhen(
-          retirement: (id, individualId, timing) => individualId == individual.id,
+          retirement: (id, individualId, timing) =>
+              individualId == individual.id,
           orElse: () => false,
         );
 
@@ -1164,14 +1495,18 @@ class ProjectionCalculator {
   }
 
   /// Sum REER withdrawals from withdrawal map
-  double _sumReerWithdrawals(Map<String, double> withdrawals, Map<String, Asset> assetMap) {
+  double _sumReerWithdrawals(
+    Map<String, double> withdrawals,
+    Map<String, Asset> assetMap,
+  ) {
     double total = 0.0;
     for (final entry in withdrawals.entries) {
       final asset = assetMap[entry.key];
       if (asset == null) continue;
 
       final isReer = asset.maybeWhen(
-        rrsp: (id, individualId, value, customReturnRate, annualContribution) => true,
+        rrsp: (id, individualId, value, customReturnRate, annualContribution) =>
+            true,
         orElse: () => false,
       );
 
@@ -1183,14 +1518,18 @@ class ProjectionCalculator {
   }
 
   /// Sum CELI contributions from contribution map
-  double _sumCeliContributions(Map<String, double> contributions, Map<String, Asset> assetMap) {
+  double _sumCeliContributions(
+    Map<String, double> contributions,
+    Map<String, Asset> assetMap,
+  ) {
     double total = 0.0;
     for (final entry in contributions.entries) {
       final asset = assetMap[entry.key];
       if (asset == null) continue;
 
       final isCeli = asset.maybeWhen(
-        celi: (id, individualId, value, customReturnRate, annualContribution) => true,
+        celi: (id, individualId, value, customReturnRate, annualContribution) =>
+            true,
         orElse: () => false,
       );
 
@@ -1220,8 +1559,12 @@ class ProjectionCalculator {
     const convergenceThreshold = 1.0; // $1 difference is acceptable
 
     if (year == 2032) {
-      log('DEBUG 2032 _calculateCashFlowWithWithdrawals: baseIncome=$baseIncome');
-      log('DEBUG 2032 _calculateCashFlowWithWithdrawals: baseIncomeWithoutEvents=$baseIncomeWithoutEvents');
+      log(
+        'DEBUG 2032 _calculateCashFlowWithWithdrawals: baseIncome=$baseIncome',
+      );
+      log(
+        'DEBUG 2032 _calculateCashFlowWithWithdrawals: baseIncomeWithoutEvents=$baseIncomeWithoutEvents',
+      );
     }
 
     double currentIncome = baseIncome;
@@ -1251,14 +1594,19 @@ class ProjectionCalculator {
         // After-tax income = actual income sources (not withdrawals) - taxes
         final afterTaxIncome = baseIncomeWithoutEvents - totalTax;
         return {
-          'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
-          'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
+          'totalIncome':
+              baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
+          'taxableIncome':
+              currentIncome, // Taxable income includes REER withdrawals
           'federalTax': taxResults['federalTax'],
           'quebecTax': taxResults['quebecTax'],
           'totalTax': taxResults['totalTax'],
           'afterTaxIncome': afterTaxIncome,
           'withdrawalsByAccount': finalWithdrawals,
-          'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
+          'totalWithdrawals': finalWithdrawals.values.fold(
+            0.0,
+            (a, b) => a + b,
+          ),
           'hasShortfall': false,
           'shortfallAmount': 0.0,
         };
@@ -1277,7 +1625,10 @@ class ProjectionCalculator {
       finalWithdrawals = withdrawals;
 
       // Calculate total actual withdrawals
-      final totalActualWithdrawals = withdrawals.values.fold(0.0, (a, b) => a + b);
+      final totalActualWithdrawals = withdrawals.values.fold(
+        0.0,
+        (a, b) => a + b,
+      );
 
       // Check if withdrawals covered the full shortfall
       final remainingShortfall = shortfall - totalActualWithdrawals;
@@ -1287,7 +1638,8 @@ class ProjectionCalculator {
       reerWithdrawalsThisIteration = _sumReerWithdrawals(withdrawals, assetMap);
 
       // Check convergence
-      final reerDifference = (reerWithdrawalsThisIteration - previousReerWithdrawals).abs();
+      final reerDifference =
+          (reerWithdrawalsThisIteration - previousReerWithdrawals).abs();
 
       if (reerDifference < convergenceThreshold) {
         // Converged!
@@ -1305,17 +1657,23 @@ class ProjectionCalculator {
         );
 
         // After-tax income = actual income sources (not withdrawals) - taxes
-        final afterTaxIncome = baseIncomeWithoutEvents - (finalTaxResults['totalTax'] as double);
+        final afterTaxIncome =
+            baseIncomeWithoutEvents - (finalTaxResults['totalTax'] as double);
 
         return {
-          'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
-          'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
+          'totalIncome':
+              baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
+          'taxableIncome':
+              currentIncome, // Taxable income includes REER withdrawals
           'federalTax': finalTaxResults['federalTax'],
           'quebecTax': finalTaxResults['quebecTax'],
           'totalTax': finalTaxResults['totalTax'],
           'afterTaxIncome': afterTaxIncome,
           'withdrawalsByAccount': finalWithdrawals,
-          'totalWithdrawals': finalWithdrawals.values.fold(0.0, (a, b) => a + b),
+          'totalWithdrawals': finalWithdrawals.values.fold(
+            0.0,
+            (a, b) => a + b,
+          ),
           'hasShortfall': hasShortfall,
           'shortfallAmount': hasShortfall ? remainingShortfall : 0.0,
         };
@@ -1332,27 +1690,37 @@ class ProjectionCalculator {
     }
 
     // Hit max iterations without converging
-    log('Warning: Tax/withdrawal calculation did not converge after $maxIterations iterations', level: 900);
+    log(
+      'Warning: Tax/withdrawal calculation did not converge after $maxIterations iterations',
+      level: 900,
+    );
 
     // Calculate final shortfall status
-    final totalActualWithdrawals = finalWithdrawals.values.fold(0.0, (a, b) => a + b);
+    final totalActualWithdrawals = finalWithdrawals.values.fold(
+      0.0,
+      (a, b) => a + b,
+    );
     final finalTaxes = _calculateTaxesForYear(
       project: project,
       year: year,
       incomeByIndividual: incomeByIndividual,
       totalIncome: currentIncome,
     );
-    final finalShortfall = (totalExpenses + (finalTaxes['totalTax'] as double)) - currentIncome;
+    final finalShortfall =
+        (totalExpenses + (finalTaxes['totalTax'] as double)) - currentIncome;
     final remainingShortfall = finalShortfall - totalActualWithdrawals;
     final hasShortfall = remainingShortfall > 0.01;
 
     // After-tax income = actual income sources (not withdrawals) - taxes
-    final afterTaxIncome = baseIncomeWithoutEvents - (finalTaxes['totalTax'] as double);
+    final afterTaxIncome =
+        baseIncomeWithoutEvents - (finalTaxes['totalTax'] as double);
 
     // Return best approximation
     return {
-      'totalIncome': baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
-      'taxableIncome': currentIncome, // Taxable income includes REER withdrawals
+      'totalIncome':
+          baseIncomeWithoutEvents, // Actual income (employment + pensions, not including events or REER)
+      'taxableIncome':
+          currentIncome, // Taxable income includes REER withdrawals
       'federalTax': finalTaxes['federalTax'],
       'quebecTax': finalTaxes['quebecTax'],
       'totalTax': finalTaxes['totalTax'],

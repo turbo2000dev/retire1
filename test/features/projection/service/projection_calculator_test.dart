@@ -34,7 +34,8 @@ void main() {
         description: 'Test project for calculations',
         createdAt: DateTime(2024, 1, 1),
         updatedAt: DateTime(2024, 1, 1),
-        individuals: individuals ??
+        individuals:
+            individuals ??
             [
               Individual(
                 id: 'ind-1',
@@ -114,13 +115,14 @@ void main() {
 
         // Year 3+: retired (RRQ, PSV, RRPE only)
         // Income will be lower but not zero due to government benefits
-        expect(projection.years[3].totalIncome, lessThan(projection.years[0].totalIncome));
+        expect(
+          projection.years[3].totalIncome,
+          lessThan(projection.years[0].totalIncome),
+        );
       });
 
       test('should apply asset growth correctly', () async {
-        final project = createTestProject(
-          reerReturnRate: 0.05,
-        );
+        final project = createTestProject(reerReturnRate: 0.05);
         final scenario = createBaseScenario();
         final asset = Asset.rrsp(
           id: 'asset-1',
@@ -177,7 +179,10 @@ void main() {
         expect(year0.assetsStartOfYear['asset-1'], 50000);
 
         // Year 1 should start with year 0 end value
-        expect(year1.assetsStartOfYear['asset-1'], year0.assetsEndOfYear['asset-1']);
+        expect(
+          year1.assetsStartOfYear['asset-1'],
+          year0.assetsEndOfYear['asset-1'],
+        );
 
         // End value should include contribution
         final year0Start = year0.assetsStartOfYear['asset-1']!;
@@ -247,7 +252,7 @@ void main() {
               name: 'John',
               birthdate: DateTime(1960, 1, 1), // Age 64 in 2024
               employmentIncome: 80000,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 95000,
@@ -273,7 +278,10 @@ void main() {
 
         // Individual turns 65 in 2025 (index 1)
         expect(projection.years[0].eventsOccurred, isEmpty); // 2024, age 64
-        expect(projection.years[1].eventsOccurred, contains('event-1')); // 2025, age 65
+        expect(
+          projection.years[1].eventsOccurred,
+          contains('event-1'),
+        ); // 2025, age 65
       });
     });
 
@@ -350,7 +358,7 @@ void main() {
               name: 'John',
               birthdate: DateTime(1951, 1, 1), // Age 73 in 2024
               employmentIncome: 0,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 95000,
@@ -431,7 +439,10 @@ void main() {
         );
 
         // Account should be depleted by year 1
-        expect(projection.years[0].assetsEndOfYear['asset-1'], lessThanOrEqualTo(0));
+        expect(
+          projection.years[0].assetsEndOfYear['asset-1'],
+          lessThanOrEqualTo(0),
+        );
 
         // Should track shortfall
         expect(projection.years[0].hasShortfall, true);
@@ -776,11 +787,20 @@ void main() {
         );
 
         // Year 0: property exists
-        expect(projection.years[0].assetsEndOfYear.containsKey('asset-property'), true);
+        expect(
+          projection.years[0].assetsEndOfYear.containsKey('asset-property'),
+          true,
+        );
 
         // Year 1: property sold, cash increased
-        expect(projection.years[1].assetsEndOfYear.containsKey('asset-property'), false);
-        expect(projection.years[1].assetsEndOfYear['asset-cash'], greaterThan(10000));
+        expect(
+          projection.years[1].assetsEndOfYear.containsKey('asset-property'),
+          false,
+        );
+        expect(
+          projection.years[1].assetsEndOfYear['asset-cash'],
+          greaterThan(10000),
+        );
       });
 
       test('should handle property purchase', () async {
@@ -822,10 +842,19 @@ void main() {
         );
 
         // Year 1: property purchased, cash decreased
-        expect(projection.years[1].assetsEndOfYear.containsKey('asset-property'), true);
+        expect(
+          projection.years[1].assetsEndOfYear.containsKey('asset-property'),
+          true,
+        );
         // Property value may grow by return rate after purchase
-        expect(projection.years[1].assetsEndOfYear['asset-property'], greaterThanOrEqualTo(300000));
-        expect(projection.years[1].assetsEndOfYear['asset-cash'], lessThan(400000));
+        expect(
+          projection.years[1].assetsEndOfYear['asset-property'],
+          greaterThanOrEqualTo(300000),
+        );
+        expect(
+          projection.years[1].assetsEndOfYear['asset-cash'],
+          lessThan(400000),
+        );
       });
     });
 
@@ -954,7 +983,7 @@ void main() {
               name: 'John',
               birthdate: DateTime(1965, 1, 1),
               employmentIncome: 80000,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 95000,
@@ -964,7 +993,7 @@ void main() {
               name: 'Jane',
               birthdate: DateTime(1967, 1, 1),
               employmentIncome: 70000,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 88000,
@@ -1003,7 +1032,7 @@ void main() {
               name: 'John',
               birthdate: DateTime(1965, 1, 1),
               employmentIncome: 80000,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 95000,
@@ -1013,7 +1042,7 @@ void main() {
               name: 'Jane',
               birthdate: DateTime(1967, 1, 1),
               employmentIncome: 70000,
-              
+
               rrqStartAge: 65,
               psvStartAge: 65,
               initialCeliRoom: 88000,

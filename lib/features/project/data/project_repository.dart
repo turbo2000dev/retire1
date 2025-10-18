@@ -13,10 +13,8 @@ class ProjectRepository {
   final FirebaseFirestore _firestore;
   final String userId;
 
-  ProjectRepository({
-    required this.userId,
-    FirebaseFirestore? firestore,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance;
+  ProjectRepository({required this.userId, FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Get the projects collection reference for the current user
   CollectionReference<Map<String, dynamic>> get _projectsCollection =>
@@ -61,19 +59,20 @@ class ProjectRepository {
           .orderBy('updatedAt', descending: true)
           .snapshots()
           .map((snapshot) {
-        return snapshot.docs.map((doc) {
-          try {
-            final data = _convertTimestampsToDateTimes(doc.data());
-            return Project.fromJson({
-              ...data,
-              'id': doc.id,
-            });
-          } catch (e, stack) {
-            log('Failed to parse project ${doc.id}', error: e, stackTrace: stack);
-            rethrow;
-          }
-        }).toList();
-      });
+            return snapshot.docs.map((doc) {
+              try {
+                final data = _convertTimestampsToDateTimes(doc.data());
+                return Project.fromJson({...data, 'id': doc.id});
+              } catch (e, stack) {
+                log(
+                  'Failed to parse project ${doc.id}',
+                  error: e,
+                  stackTrace: stack,
+                );
+                rethrow;
+              }
+            }).toList();
+          });
     } catch (e, stack) {
       log('Failed to get projects stream', error: e, stackTrace: stack);
       rethrow;
@@ -113,13 +112,19 @@ class ProjectRepository {
 
       log('Project data updated in Firestore: ${project.id}');
     } catch (e, stack) {
-      log('Failed to update project data in Firestore', error: e, stackTrace: stack);
+      log(
+        'Failed to update project data in Firestore',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
 
   /// Convert DateTime objects to Firestore Timestamps recursively
-  Map<String, dynamic> _convertDateTimesToTimestamps(Map<String, dynamic> data) {
+  Map<String, dynamic> _convertDateTimesToTimestamps(
+    Map<String, dynamic> data,
+  ) {
     final result = <String, dynamic>{};
 
     for (final entry in data.entries) {
@@ -155,7 +160,11 @@ class ProjectRepository {
       await _projectsCollection.doc(projectId).delete();
       log('Project deleted from Firestore: $projectId');
     } catch (e, stack) {
-      log('Failed to delete project from Firestore', error: e, stackTrace: stack);
+      log(
+        'Failed to delete project from Firestore',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
@@ -170,10 +179,7 @@ class ProjectRepository {
       }
 
       final data = _convertTimestampsToDateTimes(doc.data()!);
-      return Project.fromJson({
-        ...data,
-        'id': doc.id,
-      });
+      return Project.fromJson({...data, 'id': doc.id});
     } catch (e, stack) {
       log('Failed to get project from Firestore', error: e, stackTrace: stack);
       rethrow;
@@ -190,12 +196,13 @@ class ProjectRepository {
 
         try {
           final data = _convertTimestampsToDateTimes(snapshot.data()!);
-          return Project.fromJson({
-            ...data,
-            'id': snapshot.id,
-          });
+          return Project.fromJson({...data, 'id': snapshot.id});
         } catch (e, stack) {
-          log('Failed to parse project ${snapshot.id}', error: e, stackTrace: stack);
+          log(
+            'Failed to parse project ${snapshot.id}',
+            error: e,
+            stackTrace: stack,
+          );
           rethrow;
         }
       });
@@ -206,7 +213,9 @@ class ProjectRepository {
   }
 
   /// Convert Firestore Timestamps to DateTime objects recursively
-  Map<String, dynamic> _convertTimestampsToDateTimes(Map<String, dynamic> data) {
+  Map<String, dynamic> _convertTimestampsToDateTimes(
+    Map<String, dynamic> data,
+  ) {
     final result = <String, dynamic>{};
 
     for (final entry in data.entries) {

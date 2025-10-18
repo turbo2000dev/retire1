@@ -210,10 +210,7 @@ class _WizardScenariosStepState extends ConsumerState<WizardScenariosStep> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.summarize,
-                        color: theme.colorScheme.primary,
-                      ),
+                      Icon(Icons.summarize, color: theme.colorScheme.primary),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -272,10 +269,7 @@ class _WizardScenariosStepState extends ConsumerState<WizardScenariosStep> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Checkbox
-                  Checkbox(
-                    value: value,
-                    onChanged: enabled ? onChanged : null,
-                  ),
+                  Checkbox(value: value, onChanged: enabled ? onChanged : null),
                   const SizedBox(width: 12),
 
                   // Icon
@@ -313,7 +307,8 @@ class _WizardScenariosStepState extends ConsumerState<WizardScenariosStep> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: badgeColor ?? theme.colorScheme.primary,
+                                  color:
+                                      badgeColor ?? theme.colorScheme.primary,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -349,28 +344,30 @@ class _WizardScenariosStepState extends ConsumerState<WizardScenariosStep> {
                     const SizedBox(height: 12),
 
                     // Details bullets
-                    ...details.map((detail) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '• ',
+                    ...details.map(
+                      (detail) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '• ',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                detail,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
-                              Expanded(
-                                child: Text(
-                                  detail,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -10,14 +10,12 @@ enum EventBoundary { start, end }
 @freezed
 class EventTiming with _$EventTiming {
   /// Relative timing - years from start of projection
-  const factory EventTiming.relative({
-    required int yearsFromStart,
-  }) = RelativeTiming;
+  const factory EventTiming.relative({required int yearsFromStart}) =
+      RelativeTiming;
 
   /// Absolute timing - specific calendar year
-  const factory EventTiming.absolute({
-    required int calendarYear,
-  }) = AbsoluteTiming;
+  const factory EventTiming.absolute({required int calendarYear}) =
+      AbsoluteTiming;
 
   /// Age-based timing - when an individual reaches a specific age
   const factory EventTiming.age({

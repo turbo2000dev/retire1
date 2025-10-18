@@ -11,10 +11,7 @@ import 'package:retire1/features/scenarios/presentation/providers/scenarios_prov
 class AssetOverrideSection extends ConsumerWidget {
   final Scenario scenario;
 
-  const AssetOverrideSection({
-    super.key,
-    required this.scenario,
-  });
+  const AssetOverrideSection({super.key, required this.scenario});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -104,36 +101,127 @@ class AssetOverrideSection extends ConsumerWidget {
             const SizedBox(height: 16),
             ...assets.map((asset) {
               final assetId = asset.when(
-                realEstate: (id, type, value, setAtStart, customReturnRate) => id,
-                rrsp: (id, individualId, value, customReturnRate, annualContribution) => id,
-                celi: (id, individualId, value, customReturnRate, annualContribution) => id,
-                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => id,
-                cash: (id, individualId, value, customReturnRate, annualContribution) => id,
+                realEstate: (id, type, value, setAtStart, customReturnRate) =>
+                    id,
+                rrsp:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => id,
+                celi:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => id,
+                cri:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      contributionRoom,
+                      customReturnRate,
+                      annualContribution,
+                    ) => id,
+                cash:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => id,
               );
 
               final baseValue = asset.when(
-                realEstate: (id, type, value, setAtStart, customReturnRate) => value,
-                rrsp: (id, individualId, value, customReturnRate, annualContribution) => value,
-                celi: (id, individualId, value, customReturnRate, annualContribution) => value,
-                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => value,
-                cash: (id, individualId, value, customReturnRate, annualContribution) => value,
+                realEstate: (id, type, value, setAtStart, customReturnRate) =>
+                    value,
+                rrsp:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => value,
+                celi:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => value,
+                cri:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      contributionRoom,
+                      customReturnRate,
+                      annualContribution,
+                    ) => value,
+                cash:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => value,
               );
 
               final assetTypeName = asset.when(
                 realEstate: (id, type, value, setAtStart, customReturnRate) =>
                     'Real Estate (${type.name})',
-                rrsp: (id, individualId, value, customReturnRate, annualContribution) => 'RRSP Account',
-                celi: (id, individualId, value, customReturnRate, annualContribution) => 'CELI Account',
-                cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) => 'CRI/FRV Account',
-                cash: (id, individualId, value, customReturnRate, annualContribution) => 'Cash Account',
+                rrsp:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => 'RRSP Account',
+                celi:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => 'CELI Account',
+                cri:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      contributionRoom,
+                      customReturnRate,
+                      annualContribution,
+                    ) => 'CRI/FRV Account',
+                cash:
+                    (
+                      id,
+                      individualId,
+                      value,
+                      customReturnRate,
+                      annualContribution,
+                    ) => 'Cash Account',
               );
 
               // Check if there's an override for this asset
               final override = scenario.overrides
-                  .where((o) => o.maybeWhen(
-                        assetValue: (id, value) => id == assetId,
-                        orElse: () => false,
-                      ))
+                  .where(
+                    (o) => o.maybeWhen(
+                      assetValue: (id, value) => id == assetId,
+                      orElse: () => false,
+                    ),
+                  )
                   .firstOrNull;
 
               final overrideValue = override?.maybeWhen(
@@ -189,7 +277,10 @@ class _AssetOverrideCardState extends ConsumerState<_AssetOverrideCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
     final isOverridden = widget.overrideValue != null;
 
     return Card(
@@ -264,9 +355,7 @@ class _AssetOverrideCardState extends ConsumerState<_AssetOverrideCard> {
                   ),
                 ),
                 keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 autofocus: true,
               ),
               const SizedBox(height: 12),
@@ -304,7 +393,9 @@ class _AssetOverrideCardState extends ConsumerState<_AssetOverrideCard> {
                     ),
                     IconButton(
                       onPressed: () {
-                        _controller.text = widget.overrideValue!.toInt().toString();
+                        _controller.text = widget.overrideValue!
+                            .toInt()
+                            .toString();
                         setState(() {
                           _isEditing = true;
                         });

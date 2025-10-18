@@ -48,7 +48,10 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     // Filter years to show every 5 years
     final filteredYears = widget.projection.years
@@ -62,7 +65,10 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
     // Calculate max Y for scaling (using converted values)
     double maxY = 0;
     for (final year in filteredYears) {
-      final convertedExpenses = _applyDollarMode(year.totalExpenses, year.yearsFromStart);
+      final convertedExpenses = _applyDollarMode(
+        year.totalExpenses,
+        year.yearsFromStart,
+      );
       if (convertedExpenses > maxY) maxY = convertedExpenses;
     }
 
@@ -102,10 +108,7 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.category,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.category, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   'Expense Categories Over Time ${widget.useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
@@ -242,13 +245,18 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
                       if (!_categoryVisibility[displayName]!) continue;
 
                       final amount = expenses[storageKey] ?? 0.0;
-                      final convertedAmount = _applyDollarMode(amount, year.yearsFromStart);
+                      final convertedAmount = _applyDollarMode(
+                        amount,
+                        year.yearsFromStart,
+                      );
                       if (convertedAmount > 0) {
-                        barRods.add(BarChartRodStackItem(
-                          cumulative,
-                          cumulative + convertedAmount,
-                          colors[displayName]!,
-                        ));
+                        barRods.add(
+                          BarChartRodStackItem(
+                            cumulative,
+                            cumulative + convertedAmount,
+                            colors[displayName]!,
+                          ),
+                        );
                         cumulative += convertedAmount;
                       }
                     }
@@ -272,7 +280,8 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
                     enabled: true,
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        if (groupIndex < 0 || groupIndex >= filteredYears.length) {
+                        if (groupIndex < 0 ||
+                            groupIndex >= filteredYears.length) {
                           return null;
                         }
 
@@ -290,11 +299,14 @@ class _ExpenseCategoriesChartState extends State<ExpenseCategoriesChart> {
 
                           if (amount > 0) {
                             buffer.writeln(
-                                '$displayName: ${currencyFormat.format(amount)}');
+                              '$displayName: ${currencyFormat.format(amount)}',
+                            );
                           }
                         }
 
-                        buffer.write('Total: ${currencyFormat.format(year.totalExpenses)}');
+                        buffer.write(
+                          'Total: ${currencyFormat.format(year.totalExpenses)}',
+                        );
 
                         return BarTooltipItem(
                           buffer.toString(),

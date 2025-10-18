@@ -18,11 +18,16 @@ class ResponsiveBuilder extends StatelessWidget {
   /// Optional builder specifically for desktop layouts
   final Widget Function(BuildContext, ScreenSize)? desktop;
 
-  const ResponsiveBuilder({super.key, this.builder, this.phone, this.tablet, this.desktop})
-    : assert(
-        builder != null || phone != null || tablet != null || desktop != null,
-        'At least one builder must be provided',
-      );
+  const ResponsiveBuilder({
+    super.key,
+    this.builder,
+    this.phone,
+    this.tablet,
+    this.desktop,
+  }) : assert(
+         builder != null || phone != null || tablet != null || desktop != null,
+         'At least one builder must be provided',
+       );
 
   @override
   Widget build(BuildContext context) {

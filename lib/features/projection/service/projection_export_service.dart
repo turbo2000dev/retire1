@@ -54,7 +54,8 @@ class ProjectionExportService {
     final assetTypeMap = _buildAssetTypeMap(assets);
 
     // Determine if we have individuals (for age columns)
-    final hasAges = projection.years.isNotEmpty &&
+    final hasAges =
+        projection.years.isNotEmpty &&
         (projection.years.first.primaryAge != null ||
             projection.years.first.spouseAge != null);
 
@@ -80,7 +81,10 @@ class ProjectionExportService {
     // Write data rows
     for (final year in projection.years) {
       // Calculate asset totals by type
-      final assetTotals = _calculateAssetTotalsByType(year.assetsEndOfYear, assetTypeMap);
+      final assetTotals = _calculateAssetTotalsByType(
+        year.assetsEndOfYear,
+        assetTypeMap,
+      );
 
       final row = <String>[
         year.year.toString(),
@@ -136,9 +140,17 @@ class ProjectionExportService {
         celi: (id, individualId, value, customReturnRate, annualContribution) {
           map[id] = 'celi';
         },
-        cri: (id, individualId, value, contributionRoom, customReturnRate, annualContribution) {
-          map[id] = 'cri';
-        },
+        cri:
+            (
+              id,
+              individualId,
+              value,
+              contributionRoom,
+              customReturnRate,
+              annualContribution,
+            ) {
+              map[id] = 'cri';
+            },
         cash: (id, individualId, value, customReturnRate, annualContribution) {
           map[id] = 'cash';
         },

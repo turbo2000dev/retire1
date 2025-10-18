@@ -18,7 +18,9 @@ Future<T?> showResponsiveBottomSheet<T>({
       isScrollControlled: true,
       isDismissible: isDismissible,
       enableDrag: enableDrag,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (context) => ResponsiveBottomSheet(child: builder(context)),
     );
   } else {
@@ -27,7 +29,10 @@ Future<T?> showResponsiveBottomSheet<T>({
       barrierDismissible: isDismissible,
       builder: (context) => Dialog(
         child: Container(
-          constraints: BoxConstraints(maxWidth: screenSize.isTablet ? 500 : 600, maxHeight: screenSize.height * 0.9),
+          constraints: BoxConstraints(
+            maxWidth: screenSize.isTablet ? 500 : 600,
+            maxHeight: screenSize.height * 0.9,
+          ),
           child: builder(context),
         ),
       ),
@@ -43,7 +48,11 @@ class ResponsiveBottomSheet extends StatelessWidget {
   /// Whether to show the drag handle
   final bool showDragHandle;
 
-  const ResponsiveBottomSheet({super.key, required this.child, this.showDragHandle = true});
+  const ResponsiveBottomSheet({
+    super.key,
+    required this.child,
+    this.showDragHandle = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +74,9 @@ class ResponsiveBottomSheet extends StatelessWidget {
                 width: 32,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -88,7 +99,12 @@ class ResponsiveBottomSheetContent extends StatelessWidget {
   /// Optional action buttons
   final List<Widget> actions;
 
-  const ResponsiveBottomSheetContent({super.key, required this.title, required this.content, this.actions = const []});
+  const ResponsiveBottomSheetContent({
+    super.key,
+    required this.title,
+    required this.content,
+    this.actions = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +122,10 @@ class ResponsiveBottomSheetContent extends StatelessWidget {
 
         // Scrollable content
         Flexible(
-          child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24), child: content),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: content,
+          ),
         ),
 
         // Actions
@@ -116,7 +135,10 @@ class ResponsiveBottomSheetContent extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                for (int i = 0; i < actions.length; i++) ...[if (i > 0) const SizedBox(width: 8), actions[i]],
+                for (int i = 0; i < actions.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  actions[i],
+                ],
               ],
             ),
           ),

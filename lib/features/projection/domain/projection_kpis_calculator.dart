@@ -57,7 +57,9 @@ extension ProjectionKpisCalculator on Projection {
     for (final year in years) {
       totalIncome += year.totalIncome;
     }
-    final averageTaxRate = totalIncome > 0 ? (totalTaxesPaid / totalIncome).toDouble() : 0.0;
+    final averageTaxRate = totalIncome > 0
+        ? (totalTaxesPaid / totalIncome).toDouble()
+        : 0.0;
 
     return ProjectionKpis(
       yearMoneyRunsOut: yearMoneyRunsOut,

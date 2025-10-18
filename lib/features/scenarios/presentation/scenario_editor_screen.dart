@@ -13,10 +13,7 @@ import 'package:retire1/features/scenarios/presentation/widgets/expense_timing_o
 class ScenarioEditorScreen extends ConsumerStatefulWidget {
   final String scenarioId;
 
-  const ScenarioEditorScreen({
-    super.key,
-    required this.scenarioId,
-  });
+  const ScenarioEditorScreen({super.key, required this.scenarioId});
 
   @override
   ConsumerState<ScenarioEditorScreen> createState() =>
@@ -92,7 +89,9 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
         ),
       ),
       data: (scenarios) {
-        final scenario = scenarios.where((s) => s.id == widget.scenarioId).firstOrNull;
+        final scenario = scenarios
+            .where((s) => s.id == widget.scenarioId)
+            .firstOrNull;
 
         if (scenario == null) {
           return Scaffold(
@@ -112,10 +111,7 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
                     color: theme.colorScheme.error,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Scenario not found',
-                    style: theme.textTheme.titleLarge,
-                  ),
+                  Text('Scenario not found', style: theme.textTheme.titleLarge),
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: () => context.go('/scenarios'),
@@ -136,7 +132,11 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
     );
   }
 
-  Widget _buildEditor(BuildContext context, ThemeData theme, Scenario scenario) {
+  Widget _buildEditor(
+    BuildContext context,
+    ThemeData theme,
+    Scenario scenario,
+  ) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -146,15 +146,9 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
         title: Text(scenario.isBase ? 'Base Scenario' : 'Edit Scenario'),
         actions: [
           if (_isEditing) ...[
-            TextButton(
-              onPressed: _cancelEdit,
-              child: const Text('Cancel'),
-            ),
+            TextButton(onPressed: _cancelEdit, child: const Text('Cancel')),
             const SizedBox(width: 8),
-            FilledButton(
-              onPressed: _saveScenario,
-              child: const Text('Save'),
-            ),
+            FilledButton(onPressed: _saveScenario, child: const Text('Save')),
             const SizedBox(width: 16),
           ],
         ],
@@ -258,7 +252,8 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
                                 hintText: 'Enter scenario name',
                                 border: OutlineInputBorder(),
                               ),
-                              enabled: !scenario.isBase, // Can't edit base scenario name
+                              enabled: !scenario
+                                  .isBase, // Can't edit base scenario name
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
                                   return 'Please enter a scenario name';
@@ -472,7 +467,9 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
       // Reset name to original
       final scenariosAsync = ref.read(scenariosProvider);
       scenariosAsync.whenData((scenarios) {
-        final scenario = scenarios.where((s) => s.id == widget.scenarioId).firstOrNull;
+        final scenario = scenarios
+            .where((s) => s.id == widget.scenarioId)
+            .firstOrNull;
         if (scenario != null) {
           _nameController.text = scenario.name;
         }
@@ -486,7 +483,9 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
     }
 
     final scenariosAsync = ref.read(scenariosProvider);
-    final scenario = scenariosAsync.value?.where((s) => s.id == widget.scenarioId).firstOrNull;
+    final scenario = scenariosAsync.value
+        ?.where((s) => s.id == widget.scenarioId)
+        .firstOrNull;
     if (scenario == null) return;
 
     try {
@@ -494,7 +493,9 @@ class _ScenarioEditorScreenState extends ConsumerState<ScenarioEditorScreen> {
         name: _nameController.text.trim(),
       );
 
-      await ref.read(scenariosProvider.notifier).updateScenario(updatedScenario);
+      await ref
+          .read(scenariosProvider.notifier)
+          .updateScenario(updatedScenario);
 
       setState(() {
         _isEditing = false;

@@ -79,7 +79,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (password.isEmpty) return '';
     if (password.length < 6) return 'Weak';
     if (password.length < 8) return 'Fair';
-    if (password.length >= 8 && password.contains(RegExp(r'[A-Z]')) && password.contains(RegExp(r'[0-9]'))) {
+    if (password.length >= 8 &&
+        password.contains(RegExp(r'[A-Z]')) &&
+        password.contains(RegExp(r'[0-9]'))) {
       return 'Strong';
     }
     return 'Good';
@@ -102,7 +104,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      await ref.read(authNotifierProvider.notifier).register(
+      await ref
+          .read(authNotifierProvider.notifier)
+          .register(
             _emailController.text,
             _passwordController.text,
             _displayNameController.text,
@@ -134,7 +138,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: SingleChildScrollView(
             child: ResponsiveContainer(
               maxWidth: 500, // Constrain form width for better UX
-              padding: const EdgeInsets.all(LayoutBreakpoints.spacingComfortable),
+              padding: const EdgeInsets.all(
+                LayoutBreakpoints.spacingComfortable,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -183,7 +189,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       prefixIcon: const Icon(Icons.lock_outlined),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -206,7 +214,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               _getPasswordStrength(_passwordController.text),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: _getPasswordStrengthColor(
-                                  _getPasswordStrength(_passwordController.text),
+                                  _getPasswordStrength(
+                                    _passwordController.text,
+                                  ),
                                 ),
                                 fontWeight: FontWeight.bold,
                               ),
@@ -225,7 +235,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       prefixIcon: const Icon(Icons.lock_outlined),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                          _obscureConfirmPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -251,7 +263,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     // Register button
                     Center(
                       child: ResponsiveButton(
-                        onPressed: authState is AuthLoading ? null : _handleRegister,
+                        onPressed: authState is AuthLoading
+                            ? null
+                            : _handleRegister,
                         isLoading: authState is AuthLoading,
                         size: ResponsiveButtonSize.large,
                         child: const Padding(

@@ -6,18 +6,14 @@ import 'package:retire1/features/auth/presentation/providers/user_profile_provid
 class EditDisplayNameDialog extends ConsumerStatefulWidget {
   final String currentDisplayName;
 
-  const EditDisplayNameDialog({
-    super.key,
-    required this.currentDisplayName,
-  });
+  const EditDisplayNameDialog({super.key, required this.currentDisplayName});
 
   @override
   ConsumerState<EditDisplayNameDialog> createState() =>
       _EditDisplayNameDialogState();
 }
 
-class _EditDisplayNameDialogState
-    extends ConsumerState<EditDisplayNameDialog> {
+class _EditDisplayNameDialogState extends ConsumerState<EditDisplayNameDialog> {
   late TextEditingController _controller;
   bool _isSaving = false;
 
@@ -53,13 +49,15 @@ class _EditDisplayNameDialogState
     });
 
     try {
-      await ref.read(userProfileProvider.notifier).updateDisplayName(displayName);
+      await ref
+          .read(userProfileProvider.notifier)
+          .updateDisplayName(displayName);
 
       if (mounted) {
         Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Display name updated')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Display name updated')));
       }
     } catch (e) {
       if (mounted) {

@@ -14,16 +14,17 @@ class AuthRepository {
     firebase_auth.FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
     UserProfileRepository? profileRepository,
-  })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ??
-            GoogleSignIn(
-              scopes: ['email'],
-              // serverClientId only for mobile platforms (not web)
-              serverClientId: kIsWeb
-                  ? null
-                  : '455240536437-8lntsoblomq64cf0hgl94kgdvjp26b9k.apps.googleusercontent.com',
-            ),
-        _profileRepository = profileRepository ?? UserProfileRepository();
+  }) : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
+       _googleSignIn =
+           googleSignIn ??
+           GoogleSignIn(
+             scopes: ['email'],
+             // serverClientId only for mobile platforms (not web)
+             serverClientId: kIsWeb
+                 ? null
+                 : '455240536437-8lntsoblomq64cf0hgl94kgdvjp26b9k.apps.googleusercontent.com',
+           ),
+       _profileRepository = profileRepository ?? UserProfileRepository();
 
   /// Stream of auth state changes
   Stream<User?> get authStateChanges {
@@ -156,10 +157,7 @@ class AuthRepository {
   Future<void> logout() async {
     try {
       // Sign out from both Firebase and Google
-      await Future.wait([
-        _firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
     } catch (e) {
       throw AuthException('Logout failed: $e');
     }
@@ -201,13 +199,9 @@ class AuthRepository {
           'Network error. Please check your connection and try again.',
         );
       case 'too-many-requests':
-        return AuthException(
-          'Too many attempts. Please try again later.',
-        );
+        return AuthException('Too many attempts. Please try again later.');
       default:
-        return AuthException(
-          'Authentication failed: ${e.message ?? e.code}',
-        );
+        return AuthException('Authentication failed: ${e.message ?? e.code}');
     }
   }
 }

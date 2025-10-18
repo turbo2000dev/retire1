@@ -72,9 +72,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to add asset: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to add asset: $e')));
         }
         // Break on error
         break;
@@ -82,7 +82,11 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
     }
   }
 
-  Future<void> _editAsset(BuildContext context, WidgetRef ref, Asset asset) async {
+  Future<void> _editAsset(
+    BuildContext context,
+    WidgetRef ref,
+    Asset asset,
+  ) async {
     final result = await AddAssetDialog.show(context, asset: asset);
     if (result != null && context.mounted) {
       try {
@@ -94,15 +98,19 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update asset: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to update asset: $e')));
         }
       }
     }
   }
 
-  Future<void> _deleteAsset(BuildContext context, WidgetRef ref, Asset asset) async {
+  Future<void> _deleteAsset(
+    BuildContext context,
+    WidgetRef ref,
+    Asset asset,
+  ) async {
     final assetId = asset.map(
       realEstate: (a) => a.id,
       rrsp: (a) => a.id,
@@ -150,9 +158,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete asset: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to delete asset: $e')));
         }
       }
     }
@@ -200,9 +208,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to add event: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to add event: $e')));
         }
         // Break on error
         break;
@@ -243,9 +251,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update event: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to update event: $e')));
         }
       }
     }
@@ -300,9 +308,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete event: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to delete event: $e')));
         }
       }
     }
@@ -350,9 +358,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to add expense: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to add expense: $e')));
         }
         // Break on error
         break;
@@ -533,7 +541,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                     child: ResponsiveContainer(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8),
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -560,12 +570,13 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                                     ),
                                     child: Text(
                                       '${assets.length}',
-                                      style:
-                                          theme.textTheme.labelMedium?.copyWith(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onPrimaryContainer,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -581,9 +592,10 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                                       'No ${typeName.toLowerCase()} assets yet',
                                       style: theme.textTheme.bodyMedium
                                           ?.copyWith(
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant,
-                                      ),
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                     ),
                                   ),
                                 ),
@@ -608,9 +620,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                   );
                 }),
                 // Bottom padding
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 80),
-                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
               ],
             ),
           ),
@@ -698,9 +708,12 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                                   const SizedBox(height: 16),
                                   Text(
                                     'No events yet',
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
@@ -724,7 +737,9 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                       child: ResponsiveContainer(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 4),
+                            horizontal: 24,
+                            vertical: 4,
+                          ),
                           child: EventCard(
                             event: event,
                             individuals: individuals,
@@ -736,9 +751,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                     );
                   }),
                 // Bottom padding
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 80),
-                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
               ],
             ),
           ),
@@ -823,20 +836,25 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                           child: ResponsiveContainer(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 8),
+                                horizontal: 24,
+                                vertical: 8,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Category header
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
                                     child: Row(
                                       children: [
                                         Text(
                                           categoryName,
-                                          style: theme.textTheme.titleLarge?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          style: theme.textTheme.titleLarge
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                         ),
                                         const SizedBox(width: 8),
                                         Container(
@@ -845,15 +863,22 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: theme.colorScheme.primaryContainer,
-                                            borderRadius: BorderRadius.circular(12),
+                                            color: theme
+                                                .colorScheme
+                                                .primaryContainer,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           child: Text(
                                             '${categoryExpenses.length}',
-                                            style: theme.textTheme.labelMedium?.copyWith(
-                                              color: theme.colorScheme.onPrimaryContainer,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: theme.textTheme.labelMedium
+                                                ?.copyWith(
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onPrimaryContainer,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                         ),
                                       ],
@@ -866,8 +891,13 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                                       child: ExpenseCard(
                                         expense: expense,
                                         individuals: individuals,
-                                        onEdit: () => _editExpense(context, ref, expense),
-                                        onDelete: () => _deleteExpense(context, ref, expense),
+                                        onEdit: () =>
+                                            _editExpense(context, ref, expense),
+                                        onDelete: () => _deleteExpense(
+                                          context,
+                                          ref,
+                                          expense,
+                                        ),
                                       ),
                                     );
                                   }),
@@ -878,9 +908,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
                         );
                       }),
                       // Bottom padding
-                      const SliverToBoxAdapter(
-                        child: SizedBox(height: 80),
-                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 80)),
                     ],
                   ),
           ),
@@ -901,8 +929,8 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
           _tabController.index == 0
               ? 'Add Asset'
               : _tabController.index == 1
-                  ? 'Add Event'
-                  : 'Add Expense',
+              ? 'Add Event'
+              : 'Add Expense',
         ),
       ),
     );

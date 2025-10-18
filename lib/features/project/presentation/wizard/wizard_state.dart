@@ -19,7 +19,8 @@ class WizardState with _$WizardState {
     Individual? individual2,
 
     // Step 2: Revenue Sources (tracked per individual)
-    @Default(WizardRevenueSourcesData()) WizardRevenueSourcesData revenueSources,
+    @Default(WizardRevenueSourcesData())
+    WizardRevenueSourcesData revenueSources,
 
     // Step 3: Assets
     @Default([]) List<WizardAssetData> assets,

@@ -46,7 +46,10 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     // Filter years to show every 5 years for readability
     final filteredYears = widget.projection.years
@@ -123,10 +126,7 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.attach_money,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.attach_money, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   'Income Sources Over Time ${widget.useConstantDollars ? "(Constant \$)" : "(Current \$)"}',
@@ -211,7 +211,8 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
                         interval: 5,
                         getTitlesWidget: (value, meta) {
                           final index = filteredYears.indexWhere(
-                              (y) => y.yearsFromStart.toDouble() == value);
+                            (y) => y.yearsFromStart.toDouble() == value,
+                          );
                           if (index == -1) return const Text('');
 
                           final year = filteredYears[index].year;
@@ -346,14 +347,19 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
 
                         final spot = touchedSpots.first;
                         final yearIndex = filteredYears.indexWhere(
-                            (y) => y.yearsFromStart.toDouble() == spot.x);
+                          (y) => y.yearsFromStart.toDouble() == spot.x,
+                        );
 
                         if (yearIndex == -1) return [];
 
                         final year = filteredYears[yearIndex];
 
                         // Aggregate all income
-                        double employment = 0, rrq = 0, psv = 0, rrpe = 0, other = 0;
+                        double employment = 0,
+                            rrq = 0,
+                            psv = 0,
+                            rrpe = 0,
+                            other = 0;
                         for (final income in year.incomeByIndividual.values) {
                           employment += income.employment;
                           rrq += income.rrq;
@@ -364,7 +370,8 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
 
                         final total = employment + rrq + psv + rrpe + other;
 
-                        final tooltipText = 'Year ${year.year}\n'
+                        final tooltipText =
+                            'Year ${year.year}\n'
                             '${employment > 0 ? 'Employment: ${currencyFormat.format(employment)}\n' : ''}'
                             '${rrq > 0 ? 'RRQ: ${currencyFormat.format(rrq)}\n' : ''}'
                             '${psv > 0 ? 'PSV: ${currencyFormat.format(psv)}\n' : ''}'
@@ -372,9 +379,8 @@ class _IncomeSourcesChartState extends State<IncomeSourcesChart> {
                             '${other > 0 ? 'Other: ${currencyFormat.format(other)}\n' : ''}'
                             'Total: ${currencyFormat.format(total)}';
 
-                        final tooltipStyle = theme.textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                        );
+                        final tooltipStyle = theme.textTheme.bodySmall!
+                            .copyWith(color: Colors.white);
 
                         // Return one tooltip item per touched spot
                         return touchedSpots.map((spot) {

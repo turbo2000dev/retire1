@@ -22,7 +22,10 @@ class ExpenseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 0,
+    );
 
     return Card(
       child: Padding(
@@ -48,22 +51,34 @@ class ExpenseCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   // Amount
                   expense.when(
-                    housing: (_, __, ___, annualAmount) => _buildAmount(theme, currencyFormat, annualAmount),
-                    transport: (_, __, ___, annualAmount) => _buildAmount(theme, currencyFormat, annualAmount),
-                    dailyLiving: (_, __, ___, annualAmount) => _buildAmount(theme, currencyFormat, annualAmount),
-                    recreation: (_, __, ___, annualAmount) => _buildAmount(theme, currencyFormat, annualAmount),
-                    health: (_, __, ___, annualAmount) => _buildAmount(theme, currencyFormat, annualAmount),
-                    family: (_, __, ___, annualAmount) => _buildAmount(theme, currencyFormat, annualAmount),
+                    housing: (_, __, ___, annualAmount) =>
+                        _buildAmount(theme, currencyFormat, annualAmount),
+                    transport: (_, __, ___, annualAmount) =>
+                        _buildAmount(theme, currencyFormat, annualAmount),
+                    dailyLiving: (_, __, ___, annualAmount) =>
+                        _buildAmount(theme, currencyFormat, annualAmount),
+                    recreation: (_, __, ___, annualAmount) =>
+                        _buildAmount(theme, currencyFormat, annualAmount),
+                    health: (_, __, ___, annualAmount) =>
+                        _buildAmount(theme, currencyFormat, annualAmount),
+                    family: (_, __, ___, annualAmount) =>
+                        _buildAmount(theme, currencyFormat, annualAmount),
                   ),
                   const SizedBox(height: 8),
                   // Timing
                   expense.when(
-                    housing: (_, startTiming, endTiming, __) => _buildTiming(theme, startTiming, endTiming),
-                    transport: (_, startTiming, endTiming, __) => _buildTiming(theme, startTiming, endTiming),
-                    dailyLiving: (_, startTiming, endTiming, __) => _buildTiming(theme, startTiming, endTiming),
-                    recreation: (_, startTiming, endTiming, __) => _buildTiming(theme, startTiming, endTiming),
-                    health: (_, startTiming, endTiming, __) => _buildTiming(theme, startTiming, endTiming),
-                    family: (_, startTiming, endTiming, __) => _buildTiming(theme, startTiming, endTiming),
+                    housing: (_, startTiming, endTiming, __) =>
+                        _buildTiming(theme, startTiming, endTiming),
+                    transport: (_, startTiming, endTiming, __) =>
+                        _buildTiming(theme, startTiming, endTiming),
+                    dailyLiving: (_, startTiming, endTiming, __) =>
+                        _buildTiming(theme, startTiming, endTiming),
+                    recreation: (_, startTiming, endTiming, __) =>
+                        _buildTiming(theme, startTiming, endTiming),
+                    health: (_, startTiming, endTiming, __) =>
+                        _buildTiming(theme, startTiming, endTiming),
+                    family: (_, startTiming, endTiming, __) =>
+                        _buildTiming(theme, startTiming, endTiming),
                   ),
                 ],
               ),
@@ -96,10 +111,7 @@ class ExpenseCard extends StatelessWidget {
     return expense.when(
       housing: (_, __, ___, ____) => CircleAvatar(
         backgroundColor: theme.colorScheme.primaryContainer,
-        child: Icon(
-          Icons.home,
-          color: theme.colorScheme.onPrimaryContainer,
-        ),
+        child: Icon(Icons.home, color: theme.colorScheme.onPrimaryContainer),
       ),
       transport: (_, __, ___, ____) => CircleAvatar(
         backgroundColor: theme.colorScheme.secondaryContainer,
@@ -117,36 +129,27 @@ class ExpenseCard extends StatelessWidget {
       ),
       recreation: (_, __, ___, ____) => CircleAvatar(
         backgroundColor: Colors.purple.shade100,
-        child: Icon(
-          Icons.theater_comedy,
-          color: Colors.purple.shade900,
-        ),
+        child: Icon(Icons.theater_comedy, color: Colors.purple.shade900),
       ),
       health: (_, __, ___, ____) => CircleAvatar(
         backgroundColor: Colors.red.shade100,
-        child: Icon(
-          Icons.medical_services,
-          color: Colors.red.shade900,
-        ),
+        child: Icon(Icons.medical_services, color: Colors.red.shade900),
       ),
       family: (_, __, ___, ____) => CircleAvatar(
         backgroundColor: Colors.orange.shade100,
-        child: Icon(
-          Icons.family_restroom,
-          color: Colors.orange.shade900,
-        ),
+        child: Icon(Icons.family_restroom, color: Colors.orange.shade900),
       ),
     );
   }
 
-  Widget _buildAmount(ThemeData theme, NumberFormat currencyFormat, double annualAmount) {
+  Widget _buildAmount(
+    ThemeData theme,
+    NumberFormat currencyFormat,
+    double annualAmount,
+  ) {
     return Row(
       children: [
-        Icon(
-          Icons.attach_money,
-          size: 16,
-          color: theme.colorScheme.primary,
-        ),
+        Icon(Icons.attach_money, size: 16, color: theme.colorScheme.primary),
         const SizedBox(width: 4),
         Text(
           '${currencyFormat.format(annualAmount)} per year',
@@ -159,7 +162,11 @@ class ExpenseCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTiming(ThemeData theme, EventTiming startTiming, EventTiming? endTiming) {
+  Widget _buildTiming(
+    ThemeData theme,
+    EventTiming startTiming,
+    EventTiming? endTiming,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -235,7 +242,9 @@ class ExpenseCard extends StatelessWidget {
       },
       eventRelative: (t) {
         // TODO: Format event name properly when events are available
-        final boundaryText = t.boundary == EventBoundary.start ? 'start' : 'end';
+        final boundaryText = t.boundary == EventBoundary.start
+            ? 'start'
+            : 'end';
         return 'At $boundaryText of event';
       },
       projectionEnd: (t) => 'Until end',
