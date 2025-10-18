@@ -7,6 +7,7 @@ import 'package:retire1/features/project/presentation/wizard/steps/wizard_indivi
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_revenue_sources_step.dart';
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_assets_step.dart';
 import 'package:retire1/features/project/presentation/wizard/steps/wizard_expenses_step.dart';
+import 'package:retire1/features/project/presentation/wizard/steps/wizard_scenarios_step.dart';
 import 'package:retire1/features/project/presentation/wizard/wizard_provider.dart';
 
 /// Main wizard screen with stepper navigation
@@ -292,6 +293,9 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
         return const WizardExpensesStep();
 
       case 4:
+        // Step 5: Scenarios (Phase 6 - Implemented)
+        return const WizardScenariosStep();
+
       case 5:
         // Placeholder content for remaining steps
         final stepTitles = [
