@@ -109,9 +109,10 @@ class _ProjectWizardScreenState extends ConsumerState<ProjectWizardScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
+          final navigator = Navigator.of(context);
           final shouldPop = await _onWillPop();
           if (shouldPop && mounted) {
-            Navigator.of(context).pop();
+            navigator.pop();
           }
         }
       },

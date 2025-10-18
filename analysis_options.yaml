@@ -13,6 +13,8 @@ analyzer:
   errors:
     # Freezed generates code that triggers this warning, but it's safe to ignore
     invalid_annotation_target: ignore
+    # dart:html deprecation warnings - we use conditional imports for web compatibility
+    deprecated_member_use: ignore
 
 linter:
   # The lint rules applied to this project can be customized in the

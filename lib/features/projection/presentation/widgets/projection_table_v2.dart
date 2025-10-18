@@ -80,11 +80,11 @@ class ProjectionTableV2 extends StatelessWidget {
               fixedTopRows: 1, // Header row stays fixed
               border: TableBorder(
                 horizontalInside: BorderSide(
-                  color: theme.colorScheme.outline.withOpacity(0.2),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
                   width: 1,
                 ),
                 verticalInside: BorderSide(
-                  color: theme.colorScheme.outline.withOpacity(0.1),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.1),
                   width: 1,
                 ),
               ),
@@ -261,7 +261,7 @@ class ProjectionTableV2 extends StatelessWidget {
 
                 // Row color for shortfalls
                 final rowColor = year.hasShortfall
-                    ? theme.colorScheme.errorContainer.withOpacity(0.3)
+                    ? theme.colorScheme.errorContainer.withValues(alpha: 0.3)
                     : null;
 
                 return DataRow2(

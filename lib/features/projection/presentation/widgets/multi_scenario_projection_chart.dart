@@ -97,18 +97,18 @@ class _MultiScenarioProjectionChartState
                   show: true,
                   drawVerticalLine: true,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: theme.colorScheme.outline.withOpacity(0.2),
+                    color: theme.colorScheme.outline.withValues(alpha: 0.2),
                     strokeWidth: 1,
                   ),
                   getDrawingVerticalLine: (value) => FlLine(
-                    color: theme.colorScheme.outline.withOpacity(0.2),
+                    color: theme.colorScheme.outline.withValues(alpha: 0.2),
                     strokeWidth: 1,
                   ),
                 ),
                 borderData: FlBorderData(
                   show: true,
                   border: Border.all(
-                    color: theme.colorScheme.outline.withOpacity(0.3),
+                    color: theme.colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 lineTouchData: _buildTouchData(visibleScenarios, theme),
@@ -152,7 +152,7 @@ class _MultiScenarioProjectionChartState
                   size: const Size(24, 2),
                   painter: _LinePainter(
                     color: isHidden
-                        ? theme.colorScheme.onSurfaceVariant.withOpacity(0.3)
+                        ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)
                         : color,
                     dashArray: lineStyle,
                   ),
@@ -163,7 +163,7 @@ class _MultiScenarioProjectionChartState
                   scenario.scenarioName,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isHidden
-                        ? theme.colorScheme.onSurfaceVariant.withOpacity(0.5)
+                        ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
                         : theme.colorScheme.onSurface,
                     decoration: isHidden ? TextDecoration.lineThrough : null,
                   ),

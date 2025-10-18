@@ -97,17 +97,17 @@ class ExpandedProjectionTableV2 extends StatelessWidget {
               fixedTopRows: 1, // Header row stays fixed
               border: TableBorder(
                 horizontalInside: BorderSide(
-                  color: theme.colorScheme.outline.withOpacity(0.2),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
                   width: 1,
                 ),
                 verticalInside: BorderSide(
-                  color: theme.colorScheme.outline.withOpacity(0.1),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.1),
                   width: 1,
                 ),
                 // Bold border after basic group
                 left: visibleColumnGroups.contains('basic')
                     ? BorderSide(
-                        color: theme.colorScheme.outline.withOpacity(0.3),
+                        color: theme.colorScheme.outline.withValues(alpha: 0.3),
                         width: 2,
                       )
                     : BorderSide.none,
@@ -542,7 +542,7 @@ class ExpandedProjectionTableV2 extends StatelessWidget {
               rows: projection.years.map((year) {
                 // Row color for shortfalls
                 final rowColor = year.hasShortfall
-                    ? theme.colorScheme.errorContainer.withOpacity(0.3)
+                    ? theme.colorScheme.errorContainer.withValues(alpha: 0.3)
                     : null;
 
                 // Calculate totals for income breakdown (then apply conversion)

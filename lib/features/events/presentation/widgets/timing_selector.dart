@@ -301,7 +301,7 @@ class _TimingSelectorState extends State<TimingSelector> {
             )
           else ...[
             DropdownButtonFormField<String>(
-              value: _selectedEventId,
+              initialValue: _selectedEventId,
               decoration: const InputDecoration(
                 labelText: 'Event',
                 border: OutlineInputBorder(),
@@ -352,7 +352,7 @@ class _TimingSelectorState extends State<TimingSelector> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<EventBoundary>(
-              value: _selectedBoundary,
+              initialValue: _selectedBoundary,
               decoration: const InputDecoration(
                 labelText: 'Timing',
                 border: OutlineInputBorder(),

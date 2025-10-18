@@ -719,7 +719,7 @@ class _WizardAssetsStepState extends ConsumerState<WizardAssetsStep> {
 
             // Owner dropdown
             DropdownButtonFormField<String>(
-              value: individualId,
+              initialValue: individualId,
               decoration: const InputDecoration(
                 labelText: 'Owner',
                 border: OutlineInputBorder(),
