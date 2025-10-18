@@ -12,6 +12,7 @@ import 'package:retire1/features/projection/presentation/projection_screen.dart'
 import 'package:retire1/features/scenarios/presentation/scenarios_screen.dart';
 import 'package:retire1/features/scenarios/presentation/scenario_editor_screen.dart';
 import 'package:retire1/features/settings/presentation/settings_screen.dart';
+import 'package:retire1/features/wizard/presentation/wizard_screen.dart';
 
 /// Route names as constants
 class AppRoutes {
@@ -24,6 +25,7 @@ class AppRoutes {
   static String scenarioEditor(String id) => '/scenarios/editor/$id';
   static const projection = '/projection';
   static const settings = '/settings';
+  static const wizard = '/wizard';
 }
 
 /// App router provider that includes auth state
@@ -126,6 +128,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
               child: const SettingsScreen(),
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.wizard,
+            name: 'wizard',
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: const WizardScreen(),
             ),
           ),
         ],
