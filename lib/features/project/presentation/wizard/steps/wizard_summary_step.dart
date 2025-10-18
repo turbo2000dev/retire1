@@ -377,7 +377,7 @@ class WizardSummaryStep extends ConsumerWidget {
         expenses.healthAmount +
         expenses.familyAmount;
 
-    String timingText;
+    String timingText = 'Now (projection start)'; // Default
     switch (expenses.startTiming) {
       case ExpenseStartTiming.now:
         timingText = 'Now (projection start)';
