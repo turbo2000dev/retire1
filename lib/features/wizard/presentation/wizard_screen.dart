@@ -26,10 +26,20 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   bool _isLoading = true;
   String? _error;
 
+  // Callback for current section to validate and save before navigation
+  Future<bool> Function()? _onBeforeNavigate;
+
   @override
   void initState() {
     super.initState();
     _initializeWizard();
+  }
+
+  /// Register a callback that will be called before navigation
+  void _registerNavigationCallback(Future<bool> Function()? callback) {
+    setState(() {
+      _onBeforeNavigate = callback;
+    });
   }
 
   Future<void> _initializeWizard() async {
@@ -56,9 +66,18 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     }
   }
 
-  void _navigateToSection(String sectionId) {
+  Future<void> _navigateToSection(String sectionId) async {
+    // Call section's validation/save callback before navigating
+    if (_onBeforeNavigate != null) {
+      final canNavigate = await _onBeforeNavigate!();
+      if (!canNavigate) {
+        return; // Stay on current section if validation fails
+      }
+    }
+
     setState(() {
       _currentSectionId = sectionId;
+      _onBeforeNavigate = null; // Clear callback for new section
     });
 
     // Update progress in background
@@ -78,9 +97,15 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   Widget _buildSectionContent() {
     // Route to appropriate section based on current section ID
     return switch (_currentSectionId) {
-      'welcome' => const WelcomeSectionScreen(),
-      'project-basics' => const ProjectBasicsSectionScreen(),
-      'primary-individual' => const PrimaryIndividualSectionScreen(),
+      'welcome' => WelcomeSectionScreen(
+          onRegisterCallback: _registerNavigationCallback,
+        ),
+      'project-basics' => ProjectBasicsSectionScreen(
+          onRegisterCallback: _registerNavigationCallback,
+        ),
+      'primary-individual' => PrimaryIndividualSectionScreen(
+          onRegisterCallback: _registerNavigationCallback,
+        ),
       _ => Center(
           child: Text('Section $_currentSectionId - Coming Soon'),
         ),

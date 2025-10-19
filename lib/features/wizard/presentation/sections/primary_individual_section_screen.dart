@@ -13,7 +13,12 @@ import 'package:uuid/uuid.dart';
 /// Section 3: Primary Individual
 /// Allows user to enter primary individual information
 class PrimaryIndividualSectionScreen extends ConsumerStatefulWidget {
-  const PrimaryIndividualSectionScreen({super.key});
+  final void Function(Future<bool> Function()?)? onRegisterCallback;
+
+  const PrimaryIndividualSectionScreen({
+    super.key,
+    this.onRegisterCallback,
+  });
 
   @override
   ConsumerState<PrimaryIndividualSectionScreen> createState() =>
@@ -69,6 +74,9 @@ class _PrimaryIndividualSectionScreenState
             WizardSectionStatus.inProgress(),
           );
 
+      // Register validation callback for Next button
+      widget.onRegisterCallback?.call(_validateAndSave);
+
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -103,16 +111,17 @@ class _PrimaryIndividualSectionScreenState
     }
   }
 
-  Future<void> _saveAndContinue() async {
+  /// Validate and save - called by Next button
+  Future<bool> _validateAndSave() async {
     if (!_formKey.currentState!.validate()) {
-      return;
+      return false;
     }
 
     if (_selectedBirthdate == null) {
       setState(() {
         _errorMessage = 'Please select a birthdate';
       });
-      return;
+      return false;
     }
 
     setState(() {
@@ -162,20 +171,14 @@ class _PrimaryIndividualSectionScreenState
             WizardSectionStatus.complete(),
           );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).save),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      }
+      return true; // Allow navigation
     } catch (e) {
       if (mounted) {
         setState(() {
           _errorMessage = e.toString();
         });
       }
+      return false; // Block navigation on error
     } finally {
       if (mounted) {
         setState(() {
@@ -313,22 +316,30 @@ class _PrimaryIndividualSectionScreenState
               ),
             ],
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // Save button
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _isSaving ? null : _saveAndContinue,
-                child: _isSaving
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.save),
+            // Info text
+            if (_isSaving)
+              Center(
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Saving...',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              )
+            else
+              Text(
+                'Click "Next" to save and continue',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontStyle: FontStyle.italic,
+                ),
               ),
-            ),
           ],
         ),
       ),

@@ -11,7 +11,12 @@ import 'package:retire1/features/wizard/domain/wizard_section_status.dart';
 /// Section 2: Project Basics
 /// Allows user to set project name and description
 class ProjectBasicsSectionScreen extends ConsumerStatefulWidget {
-  const ProjectBasicsSectionScreen({super.key});
+  final void Function(Future<bool> Function()?)? onRegisterCallback;
+
+  const ProjectBasicsSectionScreen({
+    super.key,
+    this.onRegisterCallback,
+  });
 
   @override
   ConsumerState<ProjectBasicsSectionScreen> createState() =>
@@ -61,6 +66,9 @@ class _ProjectBasicsSectionScreenState
             WizardSectionStatus.inProgress(),
           );
 
+      // Register validation callback for Next button
+      widget.onRegisterCallback?.call(_validateAndSave);
+
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -76,9 +84,10 @@ class _ProjectBasicsSectionScreenState
     }
   }
 
-  Future<void> _saveAndContinue() async {
+  /// Validate and save - called by Next button
+  Future<bool> _validateAndSave() async {
     if (!_formKey.currentState!.validate()) {
-      return;
+      return false; // Block navigation if validation fails
     }
 
     setState(() {
@@ -110,20 +119,14 @@ class _ProjectBasicsSectionScreenState
             WizardSectionStatus.complete(),
           );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).save),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      }
+      return true; // Allow navigation
     } catch (e) {
       if (mounted) {
         setState(() {
           _errorMessage = e.toString();
         });
       }
+      return false; // Block navigation on error
     } finally {
       if (mounted) {
         setState(() {
@@ -214,22 +217,30 @@ class _ProjectBasicsSectionScreenState
               hint: 'Optional: Add notes about this planning scenario',
               maxLines: 3,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // Save button
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _isSaving ? null : _saveAndContinue,
-                child: _isSaving
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.save),
+            // Info text
+            if (_isSaving)
+              Center(
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Saving...',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              )
+            else
+              Text(
+                'Click "Next" to save and continue',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontStyle: FontStyle.italic,
+                ),
               ),
-            ),
           ],
         ),
       ),
