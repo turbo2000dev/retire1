@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
@@ -34,7 +35,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception('No project selected');
+        throw Exception(AppLocalizations.of(context).noProjectSelected);
       }
 
       // Register validation callback for Next button
@@ -117,7 +118,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
         await ref.read(assetsProvider.notifier).addAsset(result.asset);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Asset added successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context).assetCreated)),
           );
         }
 
@@ -125,9 +126,13 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
         createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to add asset: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context).failedToCreateAsset}: $e',
+              ),
+            ),
+          );
         }
         // Break on error
         break;
@@ -146,38 +151,40 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
       await ref.read(assetsProvider.notifier).updateAsset(result.asset);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Asset updated successfully')),
+          SnackBar(content: Text(AppLocalizations.of(context).assetUpdated)),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to update asset: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context).failedToUpdateAsset}: $e',
+            ),
+          ),
+        );
       }
     }
   }
 
   Future<void> _deleteAsset(BuildContext context, Asset asset) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Asset'),
-        content: Text(
-          'Are you sure you want to delete this asset?\n\n'
-          'This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteAssetTitle),
+        content: Text(l10n.deleteAssetConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -190,14 +197,18 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
       await ref.read(assetsProvider.notifier).deleteAsset(asset.id);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Asset deleted successfully')),
+          SnackBar(content: Text(AppLocalizations.of(context).assetDeleted)),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to delete asset: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context).failedToDeleteAsset}: $e',
+            ),
+          ),
+        );
       }
     }
   }
@@ -205,6 +216,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -216,13 +228,13 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: $_errorMessage',
+              '${l10n.error}: $_errorMessage',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _loadData, child: const Text('Retry')),
+            FilledButton(onPressed: _loadData, child: Text(l10n.retry)),
           ],
         ),
       );
@@ -234,11 +246,10 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your Assets', style: theme.textTheme.headlineSmall),
+          Text(l10n.yourAssets, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
           Text(
-            'Add your retirement assets such as real estate, RRSP, CELI, and other accounts (optional). '
-            'Assets help calculate your net worth and project your financial future.',
+            l10n.assetsSectionDescription,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
@@ -249,7 +260,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
           FilledButton.icon(
             onPressed: () => _addAsset(context),
             icon: const Icon(Icons.add),
-            label: const Text('Add Asset'),
+            label: Text(l10n.addAsset),
           ),
           const SizedBox(height: 24),
 
@@ -271,7 +282,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No assets yet',
+                          l10n.noAssetsYet,
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(
                               alpha: 0.5,
@@ -280,7 +291,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Add your first asset to get started, or skip this section',
+                          l10n.addFirstAssetOrSkip,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(
                               alpha: 0.5,
@@ -311,7 +322,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(
                 child: Text(
-                  'Error loading assets: $error',
+                  '${l10n.errorLoadingAssets}: $error',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.error,
                   ),
@@ -324,7 +335,7 @@ class _AssetsSectionScreenState extends ConsumerState<AssetsSectionScreen> {
 
           // Info text
           Text(
-            'Click "Next" to continue, or "Skip" to skip asset entry',
+            l10n.clickNextOrSkipAssets,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               fontStyle: FontStyle.italic,

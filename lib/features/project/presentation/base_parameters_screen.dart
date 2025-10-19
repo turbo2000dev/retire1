@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/services/project_export_service.dart';
 import 'package:retire1/core/services/project_import_service.dart';
@@ -87,18 +88,20 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           // Navigate to wizard for guided setup
           context.go(AppRoutes.wizard);
           if (mounted) {
+            final l10n = AppLocalizations.of(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Project created. Starting wizard...'),
+              SnackBar(
+                content: Text('${l10n.createProject}. ${l10n.loadingWizard}'),
               ),
             );
           }
         } else {
           // User chose manual setup - stay on this screen
           if (mounted) {
+            final l10n = AppLocalizations.of(context);
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(const SnackBar(content: Text('Project created')));
+            ).showSnackBar(SnackBar(content: Text(l10n.createProject)));
           }
         }
       }
@@ -122,16 +125,18 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() => _isEditing = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Project updated')));
+        ).showSnackBar(SnackBar(content: Text(l10n.updateSuccess)));
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to update project: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.updateFailed}: $e')));
       }
     }
   }
@@ -195,22 +200,23 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
 
   Future<void> _deleteIndividual(Project project, Individual individual) async {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Individual'),
-        content: Text('Are you sure you want to delete "${individual.name}"?'),
+        title: Text(l10n.deleteIndividual),
+        content: Text('${l10n.confirmDeleteMessage} "${individual.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: FilledButton.styleFrom(
               backgroundColor: theme.colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -235,15 +241,17 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           .updateProjectData(updatedProject);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Individuals updated')));
+        ).showSnackBar(SnackBar(content: Text(l10n.updateSuccess)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update individuals: $e')),
-        );
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.updateFailed}: $e')));
       }
     }
   }
@@ -293,27 +301,30 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           .updateProjectData(updatedProject);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() => _isEditingEconomic = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Economic assumptions updated')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.updateSuccess)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update economic assumptions: $e')),
-        );
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.updateFailed}: $e')));
       }
     }
   }
 
   String? _validatePercentage(String? value) {
+    final l10n = AppLocalizations.of(context);
     if (value == null || value.trim().isEmpty) {
-      return 'Required';
+      return l10n.required;
     }
     final percentage = double.tryParse(value);
     if (percentage == null) {
-      return 'Must be a number';
+      return l10n.enterValidNumber;
     }
     if (percentage < -10 || percentage > 20) {
       return 'Must be between -10% and 20%';
@@ -402,6 +413,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
             timeout: const Duration(seconds: 10),
           ).catchError((e) {
             warnings.add('Assets could not be loaded and will not be included');
+
             return null;
           });
 
@@ -473,9 +485,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to export project: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.exportFailed}: $e')));
       }
     }
   }
@@ -486,11 +499,12 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     List<String> warnings,
   ) async {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Export Project Data'),
+        title: Text(l10n.exportData),
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
@@ -517,7 +531,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Warnings:',
+                              '${l10n.warning}:',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.onErrorContainer,
@@ -554,15 +568,16 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           TextButton(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: content));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Copied to clipboard')),
-              );
+              final l10n = AppLocalizations.of(context);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Copied to clipboard')));
             },
-            child: const Text('Copy to Clipboard'),
+            child: Text('Copy to Clipboard'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text(l10n.close),
           ),
         ],
       ),
@@ -643,10 +658,11 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           .selectProject(importedData.project.id);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Project "${importedData.project.name}" imported successfully',
+              '${l10n.createProject} "${importedData.project.name}" ${l10n.fileImported}',
             ),
             duration: const Duration(seconds: 3),
           ),
@@ -665,9 +681,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to import project: $e'),
+            content: Text('${l10n.importFailed}: $e'),
             duration: const Duration(seconds: 5),
           ),
         );
@@ -720,6 +737,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   }
 
   Widget _buildEmptyState(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -730,7 +748,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 24),
-          Text('No projects yet', style: theme.textTheme.headlineMedium),
+          Text(l10n.noProjects, style: theme.textTheme.headlineMedium),
           const SizedBox(height: 8),
           Text(
             'Create your first retirement planning project',
@@ -742,7 +760,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           FilledButton.icon(
             onPressed: _createNewProject,
             icon: const Icon(Icons.add),
-            label: const Text('Create Project'),
+            label: Text(l10n.createProject),
           ),
         ],
       ),
@@ -771,13 +789,14 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     ThemeData theme,
     String message,
   ) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
           const SizedBox(height: 16),
-          Text('Error loading projects', style: theme.textTheme.titleLarge),
+          Text(l10n.errorLoadingProject, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             message,
@@ -795,6 +814,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     List<Project> projects,
     Project selectedProject,
   ) {
+    final l10n = AppLocalizations.of(context);
     // Load project data when selected project changes
     if (!_isEditing) {
       _loadProjectData(selectedProject);
@@ -807,7 +827,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
             child: Text(
-              'Base Parameters',
+              l10n.baseParameters,
               style: theme.textTheme.headlineMedium,
             ),
           ),
@@ -829,7 +849,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Project Details',
+                            l10n.projectDetails,
                             style: theme.textTheme.titleMedium,
                           ),
                           if (!_isEditing)
@@ -837,21 +857,21 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                               onPressed: () =>
                                   setState(() => _isEditing = true),
                               icon: const Icon(Icons.edit),
-                              tooltip: 'Edit project details',
+                              tooltip: l10n.editProjectDetails,
                             ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Project Name',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.projectName,
+                          border: const OutlineInputBorder(),
                         ),
                         enabled: _isEditing,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Project name is required';
+                            return l10n.fieldRequired;
                           }
                           return null;
                         },
@@ -859,9 +879,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _descriptionController,
-                        decoration: const InputDecoration(
-                          labelText: 'Description (optional)',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText:
+                              '${l10n.projectDescription} (${l10n.optional})',
+                          border: const OutlineInputBorder(),
                         ),
                         enabled: _isEditing,
                         maxLines: 3,
@@ -876,14 +897,14 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                                 setState(() => _isEditing = false);
                                 _loadProjectData(selectedProject);
                               },
-                              child: const Text('Cancel'),
+                              child: Text(l10n.cancel),
                             ),
                             const SizedBox(width: 8),
                             FilledButton.icon(
                               onPressed: () =>
                                   _saveProjectChanges(selectedProject),
                               icon: const Icon(Icons.save),
-                              label: const Text('Save Changes'),
+                              label: Text(l10n.saveChanges),
                             ),
                           ],
                         ),
@@ -909,11 +930,14 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Individuals', style: theme.textTheme.titleMedium),
+                        Text(
+                          l10n.individuals,
+                          style: theme.textTheme.titleMedium,
+                        ),
                         FilledButton.icon(
                           onPressed: () => _addIndividual(selectedProject),
                           icon: const Icon(Icons.person_add),
-                          label: const Text('Add Individual'),
+                          label: Text(l10n.addIndividual),
                         ),
                       ],
                     ),
@@ -931,7 +955,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No individuals yet',
+                              l10n.noIndividuals,
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -983,7 +1007,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Economic Assumptions',
+                            l10n.economicAssumptions,
                             style: theme.textTheme.titleMedium,
                           ),
                           if (!_isEditingEconomic)
@@ -991,16 +1015,16 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                               onPressed: () =>
                                   setState(() => _isEditingEconomic = true),
                               icon: const Icon(Icons.edit),
-                              tooltip: 'Edit economic assumptions',
+                              tooltip: l10n.editEconomicAssumptions,
                             ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _inflationRateController,
-                        decoration: const InputDecoration(
-                          labelText: 'Inflation Rate',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.inflationRate,
+                          border: const OutlineInputBorder(),
                           suffixText: '%',
                           helperText: 'Expected annual inflation rate',
                         ),
@@ -1113,14 +1137,14 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                                 setState(() => _isEditingEconomic = false);
                                 _loadProjectData(selectedProject);
                               },
-                              child: const Text('Cancel'),
+                              child: Text(l10n.cancel),
                             ),
                             const SizedBox(width: 8),
                             FilledButton.icon(
                               onPressed: () =>
                                   _saveEconomicAssumptions(selectedProject),
                               icon: const Icon(Icons.save),
-                              label: const Text('Save'),
+                              label: Text(l10n.save),
                             ),
                           ],
                         ),
@@ -1143,7 +1167,10 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Import/Export', style: theme.textTheme.titleMedium),
+                    Text(
+                      '${l10n.import}/${l10n.export}',
+                      style: theme.textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       'Import or export project data for backup, sharing test cases, or transferring between accounts',
@@ -1155,13 +1182,13 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                     OutlinedButton.icon(
                       onPressed: _importProjectData,
                       icon: const Icon(Icons.upload),
-                      label: const Text('Import Project Data'),
+                      label: Text(l10n.importData),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => _exportProjectData(selectedProject),
                       icon: const Icon(Icons.download),
-                      label: const Text('Export Project Data'),
+                      label: Text(l10n.exportData),
                     ),
                   ],
                 ),

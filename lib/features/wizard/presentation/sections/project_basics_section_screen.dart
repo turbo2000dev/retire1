@@ -193,14 +193,14 @@ class _ProjectBasicsSectionScreenState
             ResponsiveTextField(
               controller: _nameController,
               label: l10n.projectName,
-              hint: 'e.g., My Retirement Plan 2025',
+              hint: l10n.projectNameHint,
               required: true,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.requiredField;
                 }
                 if (value.trim().length < 3) {
-                  return 'Project name must be at least 3 characters';
+                  return l10n.projectNameMinLength;
                 }
                 return null;
               },
@@ -211,7 +211,7 @@ class _ProjectBasicsSectionScreenState
             ResponsiveTextField(
               controller: _descriptionController,
               label: l10n.projectDescription,
-              hint: 'Optional: Add notes about this planning scenario',
+              hint: l10n.projectDescriptionHint,
               maxLines: 3,
             ),
             const SizedBox(height: 24),
@@ -223,13 +223,13 @@ class _ProjectBasicsSectionScreenState
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 8),
-                    Text('Saving...', style: theme.textTheme.bodySmall),
+                    Text(l10n.saving, style: theme.textTheme.bodySmall),
                   ],
                 ),
               )
             else
               Text(
-                'Click "Next" to save and continue',
+                l10n.clickNextToSaveAndContinue,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontStyle: FontStyle.italic,

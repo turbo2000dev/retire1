@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/project/domain/project.dart';
@@ -77,9 +78,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     }
 
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Project created')));
+    ).showSnackBar(SnackBar(content: Text(l10n.updateSuccess)));
   }
 
   void _launchWizard(BuildContext context) {
@@ -92,24 +94,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     Project project,
   ) async {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Project'),
-        content: Text(
-          'Are you sure you want to delete "${project.name}"? This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteProject),
+        content: Text('${l10n.confirmDeleteMessage} "${project.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: FilledButton.styleFrom(
               backgroundColor: theme.colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -121,9 +122,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       await ref.read(currentProjectProvider.notifier).clearSelection();
 
       if (context.mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Project deleted')));
+        ).showSnackBar(SnackBar(content: Text(l10n.deleteSuccess)));
       }
     }
   }
@@ -147,6 +149,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final projectsAsync = ref.watch(projectsProvider);
 
     // Check if there are any projects at all
@@ -167,7 +170,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           // Show welcome message if user has previously used the app
           if (hasProjects && displayName != null) ...[
             Text(
-              'Welcome back, $displayName!',
+              '${l10n.welcomeBack}, $displayName!',
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
@@ -181,14 +184,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           ),
           const SizedBox(height: 24),
           Text(
-            hasProjects
-                ? 'No project selected'
-                : 'There are no projects defined',
+            hasProjects ? l10n.selectProject : l10n.noProjects,
             style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Create one to get started',
+            l10n.getStarted,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -197,7 +198,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           FilledButton.icon(
             onPressed: () => _createNewProject(context, ref),
             icon: const Icon(Icons.add),
-            label: const Text('Create New Project'),
+            label: Text(l10n.createProject),
           ),
         ],
       ),
@@ -206,13 +207,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   Widget _buildErrorState(BuildContext context, String message) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
           const SizedBox(height: 16),
-          Text('Error loading project', style: theme.textTheme.titleLarge),
+          Text(l10n.errorLoadingProject, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             message,
@@ -278,9 +280,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         // Tab bar
         TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'KPIs'),
-            Tab(text: 'Comparison'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context).kpis),
+            Tab(text: AppLocalizations.of(context).comparison),
           ],
         ),
         // Tab views
@@ -302,6 +304,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     ThemeData theme,
     AsyncValue<Projection?> projectionAsync,
   ) {
+    final l10n = AppLocalizations.of(context);
     return projectionAsync.when(
       data: (projection) {
         if (projection == null) {
@@ -326,14 +329,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   children: [
                     // Header
                     Text(
-                      'Key Performance Indicators',
+                      l10n.keyPerformanceIndicators,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Quick summary of your projection',
+                      l10n.quickSummaryProjection,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -360,9 +363,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           children: [
                             ProjectionKpiCard.currency(
                               icon: Icons.account_balance_wallet,
-                              label: 'Final Net Worth',
+                              label: l10n.finalNetWorth,
                               amount: kpis.finalNetWorth,
-                              subtitle: 'At end of projection',
+                              subtitle: l10n.atEndOfProjection,
                               status: kpis.finalNetWorth > 500000
                                   ? KpiStatus.good
                                   : kpis.finalNetWorth > 100000
@@ -371,9 +374,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                             ),
                             ProjectionKpiCard.currency(
                               icon: Icons.trending_down,
-                              label: 'Lowest Net Worth',
+                              label: l10n.lowestNetWorth,
                               amount: kpis.lowestNetWorth,
-                              subtitle: 'Year ${kpis.yearOfLowestNetWorth}',
+                              subtitle:
+                                  '${l10n.year} ${kpis.yearOfLowestNetWorth}',
                               status: kpis.lowestNetWorth < 0
                                   ? KpiStatus.critical
                                   : kpis.lowestNetWorth < 100000
@@ -382,7 +386,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                             ),
                             ProjectionKpiCard.year(
                               icon: Icons.warning_amber,
-                              label: 'Money Runs Out',
+                              label: l10n.moneyRunsOut,
                               year: kpis.yearMoneyRunsOut,
                               status: kpis.yearMoneyRunsOut != null
                                   ? KpiStatus.critical
@@ -390,19 +394,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                             ),
                             ProjectionKpiCard.currency(
                               icon: Icons.account_balance,
-                              label: 'Total Taxes Paid',
+                              label: l10n.totalTaxesPaid,
                               amount: kpis.totalTaxesPaid,
                               status: KpiStatus.neutral,
                             ),
                             ProjectionKpiCard.currency(
                               icon: Icons.attach_money,
-                              label: 'Total Withdrawals',
+                              label: l10n.totalWithdrawals,
                               amount: kpis.totalWithdrawals,
                               status: KpiStatus.neutral,
                             ),
                             ProjectionKpiCard.percentage(
                               icon: Icons.percent,
-                              label: 'Average Tax Rate',
+                              label: l10n.averageTaxRate,
                               rate: kpis.averageTaxRate,
                               status: kpis.averageTaxRate > 0.45
                                   ? KpiStatus.warning
@@ -431,12 +435,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) =>
-          Center(child: Text('Error loading projection: $error')),
+      error: (error, stack) {
+        final l10n = AppLocalizations.of(context);
+        return Center(child: Text('${l10n.errorLoadingProjection}: $error'));
+      },
     );
   }
 
   Widget _buildComparisonTab(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context);
     final scenariosAsync = ref.watch(scenariosProvider);
 
     return scenariosAsync.when(
@@ -480,14 +487,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   children: [
                     // Header
                     Text(
-                      'Scenario Comparison',
+                      l10n.compareScenarios,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Compare KPIs across different scenarios',
+                      l10n.keyMetrics,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -521,8 +528,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) =>
-          Center(child: Text('Error loading scenarios: $error')),
+      error: (error, stack) {
+        final l10n = AppLocalizations.of(context);
+        return Center(child: Text('${l10n.errorLoadingScenarios}: $error'));
+      },
     );
   }
 
@@ -546,7 +555,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         final anyError = projectionAsyncValues.any((async) => async.hasError);
 
         if (anyError) {
-          return const Center(child: Text('Error loading projections'));
+          final l10n = AppLocalizations.of(context);
+          return Center(child: Text(l10n.errorLoadingProjections));
         }
 
         if (!allLoaded) {
@@ -574,6 +584,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     List<dynamic> selectedScenarios,
     List<dynamic> scenarioKpis,
   ) {
+    final l10n = AppLocalizations.of(context);
     return Consumer(
       builder: (context, ref, child) {
         // Get projections for chart
@@ -608,7 +619,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   children: [
                     // Final Net Worth
                     KpiComparisonCard(
-                      label: 'Final Net Worth',
+                      label: l10n.finalNetWorth,
                       icon: Icons.account_balance_wallet,
                       type: KpiComparisonType.currency,
                       scenariosData: List.generate(
@@ -621,7 +632,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     ),
                     // Lowest Net Worth
                     KpiComparisonCard(
-                      label: 'Lowest Net Worth',
+                      label: l10n.lowestNetWorth,
                       icon: Icons.trending_down,
                       type: KpiComparisonType.currency,
                       scenariosData: List.generate(
@@ -634,7 +645,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     ),
                     // Money Runs Out
                     KpiComparisonCard(
-                      label: 'Money Runs Out',
+                      label: l10n.moneyRunsOut,
                       icon: Icons.warning_amber,
                       type: KpiComparisonType.year,
                       scenariosData: List.generate(
@@ -647,7 +658,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     ),
                     // Total Taxes Paid
                     KpiComparisonCard(
-                      label: 'Total Taxes Paid',
+                      label: l10n.totalTaxesPaid,
                       icon: Icons.account_balance,
                       type: KpiComparisonType.currency,
                       scenariosData: List.generate(
@@ -660,7 +671,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     ),
                     // Total Withdrawals
                     KpiComparisonCard(
-                      label: 'Total Withdrawals',
+                      label: l10n.totalWithdrawals,
                       icon: Icons.attach_money,
                       type: KpiComparisonType.currency,
                       scenariosData: List.generate(
@@ -673,7 +684,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     ),
                     // Average Tax Rate
                     KpiComparisonCard(
-                      label: 'Average Tax Rate',
+                      label: l10n.averageTaxRate,
                       icon: Icons.percent,
                       type: KpiComparisonType.percentage,
                       scenariosData: List.generate(
@@ -692,7 +703,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             if (allProjectionsLoaded) ...[
               const SizedBox(height: 32),
               Text(
-                'Net Worth Projection',
+                l10n.netWorthProjection,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -729,6 +740,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   Widget _buildNoScenariosState(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -739,10 +751,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          Text('No scenarios available', style: theme.textTheme.headlineMedium),
+          Text(
+            l10n.noScenariosAvailable,
+            style: theme.textTheme.headlineMedium,
+          ),
           const SizedBox(height: 8),
           Text(
-            'Create scenarios to compare them',
+            l10n.createScenariosToCompare,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -753,6 +768,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   Widget _buildSingleScenarioState(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -764,12 +780,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'Only one scenario exists',
+            l10n.onlyOneScenarioExists,
             style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Create alternative scenarios to compare',
+            l10n.createAlternativeScenarios,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -781,6 +797,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   Widget _buildNoProjectionState(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -792,12 +809,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'No projection available',
+            l10n.noProjectionAvailable,
             style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Complete your project setup to view KPIs',
+            l10n.completeProjectSetup,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -807,7 +824,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           FilledButton.icon(
             onPressed: () => _navigateToBaseParameters(context),
             icon: const Icon(Icons.edit),
-            label: const Text('Setup Project'),
+            label: Text(l10n.setupProject),
           ),
         ],
       ),

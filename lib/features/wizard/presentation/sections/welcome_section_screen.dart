@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/domain/wizard_section_status.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_progress_provider.dart';
 
@@ -37,6 +38,7 @@ class _WelcomeSectionScreenState extends ConsumerState<WelcomeSectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Welcome Section - Coming Soon'));
+    final l10n = AppLocalizations.of(context);
+    return Center(child: Text('${l10n.section1Title} - ${l10n.comingSoon}'));
   }
 }

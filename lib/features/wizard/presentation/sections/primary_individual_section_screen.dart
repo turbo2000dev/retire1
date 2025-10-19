@@ -103,7 +103,7 @@ class _PrimaryIndividualSectionScreenState
       initialDate: initialDate,
       firstDate: DateTime(1900),
       lastDate: now,
-      helpText: 'Select birthdate',
+      helpText: AppLocalizations.of(context).selectBirthdate,
     );
 
     if (picked != null && mounted) {
@@ -121,7 +121,7 @@ class _PrimaryIndividualSectionScreenState
 
     if (_selectedBirthdate == null) {
       setState(() {
-        _errorMessage = 'Please select a birthdate';
+        _errorMessage = AppLocalizations.of(context).pleaseSelectBirthdate;
       });
       return false;
     }
@@ -246,14 +246,14 @@ class _PrimaryIndividualSectionScreenState
             ResponsiveTextField(
               controller: _nameController,
               label: l10n.individualName,
-              hint: 'e.g., Jean Tremblay',
+              hint: l10n.exampleName,
               required: true,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.requiredField;
                 }
                 if (value.trim().length < 2) {
-                  return 'Name must be at least 2 characters';
+                  return l10n.nameMinTwoCharacters;
                 }
                 return null;
               },
@@ -288,7 +288,7 @@ class _PrimaryIndividualSectionScreenState
                       child: Text(
                         _selectedBirthdate != null
                             ? '${_selectedBirthdate!.day}/${_selectedBirthdate!.month}/${_selectedBirthdate!.year}'
-                            : 'Select birthdate',
+                            : l10n.selectBirthdate,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: _selectedBirthdate != null
                               ? theme.colorScheme.onSurface
@@ -307,7 +307,7 @@ class _PrimaryIndividualSectionScreenState
             if (_selectedBirthdate != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Age: ${_calculateAge(_selectedBirthdate!)} years',
+                '${l10n.age}: ${_calculateAge(_selectedBirthdate!)} ${l10n.yearsLabel}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
@@ -323,13 +323,13 @@ class _PrimaryIndividualSectionScreenState
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 8),
-                    Text('Saving...', style: theme.textTheme.bodySmall),
+                    Text(l10n.saving, style: theme.textTheme.bodySmall),
                   ],
                 ),
               )
             else
               Text(
-                'Click "Next" to save and continue',
+                l10n.clickNextToSaveAndContinue,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontStyle: FontStyle.italic,

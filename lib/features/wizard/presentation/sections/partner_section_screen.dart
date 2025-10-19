@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/ui/responsive/responsive_text_field.dart';
 import 'package:retire1/features/project/domain/individual.dart';
@@ -104,7 +105,7 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
 
     if (_selectedBirthdate == null) {
       setState(() {
-        _errorMessage = 'Please select a birthdate';
+        _errorMessage = AppLocalizations.of(context).pleaseSelectBirthdate;
       });
       return false;
     }
@@ -204,6 +205,7 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -215,7 +217,7 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: $_errorMessage',
+              '${l10n.error}: $_errorMessage',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),
@@ -223,7 +225,7 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadIndividualData,
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -236,10 +238,10 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Partner Information', style: theme.textTheme.headlineSmall),
+            Text(l10n.partnerInformation, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
-              'Add your spouse or partner (optional). Leave blank if you don\'t have a partner or prefer to plan individually.',
+              l10n.partnerSectionDescription,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -249,8 +251,8 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
             // Name field
             ResponsiveTextField(
               controller: _nameController,
-              label: 'Partner Name',
-              hint: 'Enter your partner\'s name',
+              label: l10n.partnerName,
+              hint: l10n.enterPartnerName,
               validator: (value) {
                 // Only validate if user has entered something or selected a date
                 final hasData =
@@ -261,10 +263,10 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
                 }
 
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter partner\'s name';
+                  return l10n.pleaseEnterPartnerName;
                 }
                 if (value.trim().length < 2) {
-                  return 'Name must be at least 2 characters';
+                  return l10n.nameMinTwoCharacters;
                 }
                 return null;
               },
@@ -277,8 +279,8 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
               borderRadius: BorderRadius.circular(12),
               child: InputDecorator(
                 decoration: InputDecoration(
-                  labelText: 'Date of Birth',
-                  hintText: 'Select partner\'s birthdate',
+                  labelText: l10n.dateOfBirth,
+                  hintText: l10n.selectPartnerBirthdate,
                   suffixIcon: const Icon(Icons.calendar_today),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -308,13 +310,13 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 8),
-                    Text('Saving...', style: theme.textTheme.bodySmall),
+                    Text(l10n.saving, style: theme.textTheme.bodySmall),
                   ],
                 ),
               )
             else
               Text(
-                'Click "Next" to save and continue, or "Skip" to continue without adding a partner',
+                l10n.partnerSectionInstructions,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontStyle: FontStyle.italic,
