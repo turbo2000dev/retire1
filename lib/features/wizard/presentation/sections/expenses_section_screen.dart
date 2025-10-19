@@ -28,51 +28,75 @@ class _ExpensesSectionScreenState extends ConsumerState<ExpensesSectionScreen> {
   bool _isSaving = false;
   List<Expense> _existingExpenses = [];
 
-  // Expense categories with default values
+  // Expense categories with default values (names and hints will be localized)
   final Map<String, Map<String, dynamic>> _expenseCategories = {
-    'housing': {
-      'name': 'Housing',
-      'icon': Icons.home,
-      'color': Colors.blue,
-      'default': 24000,
-      'hint': 'Mortgage, rent, property tax, utilities',
-    },
+    'housing': {'icon': Icons.home, 'color': Colors.blue, 'default': 24000},
     'transport': {
-      'name': 'Transport',
       'icon': Icons.directions_car,
       'color': Colors.green,
       'default': 8000,
-      'hint': 'Car payments, gas, insurance, transit',
     },
     'dailyLiving': {
-      'name': 'Daily Living',
       'icon': Icons.shopping_cart,
       'color': Colors.orange,
       'default': 12000,
-      'hint': 'Groceries, clothing, personal care',
     },
     'recreation': {
-      'name': 'Recreation',
       'icon': Icons.theater_comedy,
       'color': Colors.purple,
       'default': 6000,
-      'hint': 'Entertainment, hobbies, dining, travel',
     },
     'health': {
-      'name': 'Health',
       'icon': Icons.health_and_safety,
       'color': Colors.red,
       'default': 4000,
-      'hint': 'Insurance, medical, prescriptions',
     },
     'family': {
-      'name': 'Family',
       'icon': Icons.family_restroom,
       'color': Colors.pink,
       'default': 3000,
-      'hint': 'Childcare, education, family support',
     },
   };
+
+  String _getCategoryName(BuildContext context, String category) {
+    final l10n = AppLocalizations.of(context);
+    switch (category) {
+      case 'housing':
+        return l10n.housing;
+      case 'transport':
+        return l10n.transportation;
+      case 'dailyLiving':
+        return l10n.food;
+      case 'recreation':
+        return l10n.entertainment;
+      case 'health':
+        return l10n.healthcare;
+      case 'family':
+        return 'Family'; // Use existing key or add new one
+      default:
+        return category;
+    }
+  }
+
+  String _getCategoryHint(BuildContext context, String category) {
+    final l10n = AppLocalizations.of(context);
+    switch (category) {
+      case 'housing':
+        return l10n.housingExpenseHint;
+      case 'transport':
+        return l10n.transportationExpenseHint;
+      case 'dailyLiving':
+        return l10n.foodExpenseHint;
+      case 'recreation':
+        return l10n.leisureExpenseHint;
+      case 'health':
+        return l10n.healthExpenseHint;
+      case 'family':
+        return l10n.familyExpenseHint;
+      default:
+        return '';
+    }
+  }
 
   @override
   void initState() {
@@ -317,6 +341,7 @@ class _ExpensesSectionScreenState extends ConsumerState<ExpensesSectionScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -328,10 +353,10 @@ class _ExpensesSectionScreenState extends ConsumerState<ExpensesSectionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Annual Expenses', style: theme.textTheme.headlineSmall),
+            Text(l10n.annualExpenses, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
-              'Estimate your annual expenses in each category. You can refine these later.',
+              l10n.expensesSectionDescription,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -378,7 +403,7 @@ class _ExpensesSectionScreenState extends ConsumerState<ExpensesSectionScreen> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                config['name'] as String,
+                                _getCategoryName(context, category),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -395,9 +420,11 @@ class _ExpensesSectionScreenState extends ConsumerState<ExpensesSectionScreen> {
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
                               decoration: InputDecoration(
-                                labelText: 'Annual Amount',
+                                labelText: AppLocalizations.of(
+                                  context,
+                                ).annualAmount,
                                 prefixText: '\$ ',
-                                hintText: config['hint'] as String,
+                                hintText: _getCategoryHint(context, category),
                                 border: const OutlineInputBorder(),
                                 isDense: true,
                               ),
