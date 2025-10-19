@@ -357,6 +357,15 @@ class _LifeEventsSectionScreenState
                                 return const SizedBox.shrink();
                               }
                               final yearsRemaining = lifespan - currentAge;
+
+                              String displayText;
+                              if (yearsRemaining > 0) {
+                                displayText =
+                                    'Planning horizon: $yearsRemaining years';
+                              } else {
+                                displayText = '-';
+                              }
+
                               return Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
@@ -374,7 +383,7 @@ class _LifeEventsSectionScreenState
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        'Planning horizon: $yearsRemaining years',
+                                        displayText,
                                         style: theme.textTheme.bodySmall
                                             ?.copyWith(
                                               color: theme

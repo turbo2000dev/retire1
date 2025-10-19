@@ -365,6 +365,17 @@ class _RetirementSectionScreenState
                               }
                               final yearsToRetirement =
                                   retirementAge - currentAge;
+
+                              String displayText;
+                              if (yearsToRetirement > 0) {
+                                displayText =
+                                    '$yearsToRetirement years until retirement';
+                              } else if (yearsToRetirement == 0) {
+                                displayText = 'Retiring this year';
+                              } else {
+                                displayText = '-';
+                              }
+
                               return Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
@@ -382,9 +393,7 @@ class _RetirementSectionScreenState
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        yearsToRetirement > 0
-                                            ? '$yearsToRetirement years until retirement'
-                                            : 'Already at retirement age',
+                                        displayText,
                                         style: theme.textTheme.bodySmall
                                             ?.copyWith(
                                               color: theme
