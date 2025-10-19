@@ -120,10 +120,12 @@ class WizardProgressRepository {
   /// Navigate to a section (updates current section)
   Future<void> navigateToSection(String projectId, String sectionId) async {
     try {
-      await _progressCollection.doc(projectId).update({
-        'currentSectionId': sectionId,
-        'lastUpdated': DateTime.now().toIso8601String(),
-      });
+      final progress = await getOrCreateProgress(projectId);
+      final updatedProgress = progress.copyWith(
+        currentSectionId: sectionId,
+        lastUpdated: DateTime.now(),
+      );
+      await _saveProgress(updatedProgress);
 
       log('Navigated to section: $sectionId');
     } catch (e, stack) {
@@ -135,12 +137,14 @@ class WizardProgressRepository {
   /// Mark wizard as complete
   Future<void> completeWizard(String projectId) async {
     try {
-      final now = DateTime.now().toIso8601String();
-      await _progressCollection.doc(projectId).update({
-        'wizardCompleted': true,
-        'completedAt': now,
-        'lastUpdated': now,
-      });
+      final progress = await getOrCreateProgress(projectId);
+      final now = DateTime.now();
+      final updatedProgress = progress.copyWith(
+        wizardCompleted: true,
+        completedAt: now,
+        lastUpdated: now,
+      );
+      await _saveProgress(updatedProgress);
 
       log('Wizard completed for project: $projectId');
     } catch (e, stack) {
