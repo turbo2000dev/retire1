@@ -12,6 +12,7 @@ import 'package:retire1/features/wizard/presentation/widgets/wizard_nav_buttons.
 import 'package:retire1/features/wizard/presentation/sections/welcome_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/project_basics_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/primary_individual_section_screen.dart';
+import 'package:retire1/features/wizard/presentation/sections/partner_section_screen.dart';
 
 /// Main wizard screen that adapts to different screen sizes
 class WizardScreen extends ConsumerStatefulWidget {
@@ -104,6 +105,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
           onRegisterCallback: _registerNavigationCallback,
         ),
       'primary-individual' => PrimaryIndividualSectionScreen(
+          onRegisterCallback: _registerNavigationCallback,
+        ),
+      'partner' => PartnerSectionScreen(
           onRegisterCallback: _registerNavigationCallback,
         ),
       _ => Center(
