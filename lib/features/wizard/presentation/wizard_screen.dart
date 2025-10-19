@@ -37,9 +37,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
 
   /// Register a callback that will be called before navigation
   void _registerNavigationCallback(Future<bool> Function()? callback) {
-    setState(() {
-      _onBeforeNavigate = callback;
-    });
+    _onBeforeNavigate = callback;
   }
 
   Future<void> _initializeWizard() async {
