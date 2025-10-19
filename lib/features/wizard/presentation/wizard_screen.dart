@@ -89,10 +89,21 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       }
     }
 
+    // Update local state immediately for responsive UI
     setState(() {
       _currentSectionId = sectionId;
       _onBeforeNavigate = null; // Clear callback for new section
     });
+
+    // Persist the navigation to Firestore so we can resume later
+    try {
+      await ref
+          .read(wizardProgressProvider.notifier)
+          .navigateToSection(sectionId);
+    } catch (e) {
+      // Log error but don't block navigation (local state already updated)
+      // The stream will sync the state if needed
+    }
   }
 
   void _handleSkip() {
