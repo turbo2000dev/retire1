@@ -28,7 +28,7 @@ class WizardProgressRepository {
 
       if (doc.exists) {
         try {
-          final data = _convertTimestampsToDateTimes(doc.data()!);
+          final data = doc.data()!;
           return WizardProgress.fromJson({...data, 'projectId': doc.id});
         } catch (parseError) {
           // If parsing fails, delete corrupted document and recreate
@@ -64,7 +64,7 @@ class WizardProgressRepository {
         }
 
         try {
-          final data = _convertTimestampsToDateTimes(snapshot.data()!);
+          final data = snapshot.data()!;
           return WizardProgress.fromJson({...data, 'projectId': snapshot.id});
         } catch (e, stack) {
           log(
@@ -120,7 +120,7 @@ class WizardProgressRepository {
     try {
       await _progressCollection.doc(projectId).update({
         'currentSectionId': sectionId,
-        'lastUpdated': Timestamp.fromDate(DateTime.now()),
+        'lastUpdated': DateTime.now().toIso8601String(),
       });
 
       log('Navigated to section: $sectionId');
@@ -133,11 +133,11 @@ class WizardProgressRepository {
   /// Mark wizard as complete
   Future<void> completeWizard(String projectId) async {
     try {
-      final now = DateTime.now();
+      final now = DateTime.now().toIso8601String();
       await _progressCollection.doc(projectId).update({
         'wizardCompleted': true,
-        'completedAt': Timestamp.fromDate(now),
-        'lastUpdated': Timestamp.fromDate(now),
+        'completedAt': now,
+        'lastUpdated': now,
       });
 
       log('Wizard completed for project: $projectId');
@@ -167,82 +167,14 @@ class WizardProgressRepository {
   Future<void> _saveProgress(WizardProgress progress) async {
     try {
       final json = progress.toJson();
-      final firestoreData = _convertDateTimesToTimestamps(json);
-
-      await _progressCollection.doc(progress.projectId).set(firestoreData);
+      // Freezed already converts DateTime to ISO8601 strings, which work with Firestore
+      await _progressCollection.doc(progress.projectId).set(json);
     } catch (e, stack) {
       log('Failed to save wizard progress', error: e, stackTrace: stack);
       rethrow;
     }
   }
 
-  /// Convert DateTime objects to Firestore Timestamps recursively
-  Map<String, dynamic> _convertDateTimesToTimestamps(
-    Map<String, dynamic> data,
-  ) {
-    final result = <String, dynamic>{};
-
-    for (final entry in data.entries) {
-      final value = entry.value;
-
-      if (value is DateTime) {
-        result[entry.key] = Timestamp.fromDate(value);
-      } else if (value is Map) {
-        // Handle both Map<String, dynamic> and Map<String, Object>
-        final map = Map<String, dynamic>.from(value);
-        result[entry.key] = _convertDateTimesToTimestamps(map);
-      } else if (value is List) {
-        result[entry.key] = value.map((item) {
-          if (item is DateTime) {
-            return Timestamp.fromDate(item);
-          } else if (item is Map) {
-            final map = Map<String, dynamic>.from(item);
-            return _convertDateTimesToTimestamps(map);
-          } else {
-            return item;
-          }
-        }).toList();
-      } else {
-        result[entry.key] = value;
-      }
-    }
-
-    return result;
-  }
-
-  /// Convert Firestore Timestamps to DateTime objects recursively
-  Map<String, dynamic> _convertTimestampsToDateTimes(
-    Map<String, dynamic> data,
-  ) {
-    final result = <String, dynamic>{};
-
-    for (final entry in data.entries) {
-      final value = entry.value;
-
-      if (value is Timestamp) {
-        result[entry.key] = value.toDate();
-      } else if (value is Map) {
-        // Handle both Map<String, dynamic> and other Map types
-        final map = Map<String, dynamic>.from(value);
-        result[entry.key] = _convertTimestampsToDateTimes(map);
-      } else if (value is List) {
-        result[entry.key] = value.map((item) {
-          if (item is Timestamp) {
-            return item.toDate();
-          } else if (item is Map) {
-            final map = Map<String, dynamic>.from(item);
-            return _convertTimestampsToDateTimes(map);
-          } else {
-            return item;
-          }
-        }).toList();
-      } else {
-        result[entry.key] = value;
-      }
-    }
-
-    return result;
-  }
 }
 
 /// Provider for WizardProgressRepository

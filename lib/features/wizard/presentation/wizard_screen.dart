@@ -80,14 +80,16 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       _onBeforeNavigate = null; // Clear callback for new section
     });
 
-    // Update progress in background
-    ref.read(wizardProgressProvider.notifier).navigateToSection(sectionId);
+    // Update progress in background (after build completes)
+    Future.microtask(() async {
+      await ref.read(wizardProgressProvider.notifier).navigateToSection(sectionId);
 
-    // Mark new section as in progress when navigating to it
-    ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-      sectionId,
-      WizardSectionStatus.inProgress(),
-    );
+      // Mark new section as in progress when navigating to it
+      await ref.read(wizardProgressProvider.notifier).updateSectionStatus(
+        sectionId,
+        WizardSectionStatus.inProgress(),
+      );
+    });
   }
 
   void _handleSkip() {
