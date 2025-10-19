@@ -7,7 +7,7 @@ import 'package:retire1/features/wizard/presentation/providers/wizard_sections_c
 import 'package:retire1/features/wizard/presentation/widgets/wizard_section_card.dart';
 
 /// List of wizard sections grouped by category
-class WizardSectionList extends ConsumerWidget {
+class WizardSectionList extends ConsumerStatefulWidget {
   final String currentSectionId;
   final List<WizardSection> sections;
   final Function(String) onSectionSelected;
@@ -18,6 +18,56 @@ class WizardSectionList extends ConsumerWidget {
     required this.sections,
     required this.onSectionSelected,
   });
+
+  @override
+  ConsumerState<WizardSectionList> createState() => _WizardSectionListState();
+}
+
+class _WizardSectionListState extends ConsumerState<WizardSectionList> {
+  final ScrollController _scrollController = ScrollController();
+  final Map<String, GlobalKey> _sectionKeys = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Create keys for each section
+    for (final section in widget.sections) {
+      _sectionKeys[section.id] = GlobalKey();
+    }
+    // Scroll to current section after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCurrentSection();
+    });
+  }
+
+  @override
+  void didUpdateWidget(WizardSectionList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Scroll when current section changes
+    if (oldWidget.currentSectionId != widget.currentSectionId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToCurrentSection();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToCurrentSection() {
+    final key = _sectionKeys[widget.currentSectionId];
+    if (key?.currentContext != null && _scrollController.hasClients) {
+      Scrollable.ensureVisible(
+        key!.currentContext!,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.3, // Position section at 30% from top (not centered)
+      );
+    }
+  }
 
   String _getCategoryTitle(AppLocalizations l10n, String? titleKey) {
     if (titleKey == null) return '';
@@ -34,7 +84,7 @@ class WizardSectionList extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final progressAsync = ref.watch(wizardProgressProvider);
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
@@ -44,7 +94,7 @@ class WizardSectionList extends ConsumerWidget {
         // Group sections by category
         final Map<WizardSectionCategory, List<WizardSection>> groupedSections =
             {};
-        for (final section in sections) {
+        for (final section in widget.sections) {
           groupedSections.putIfAbsent(section.category, () => []).add(section);
         }
 
@@ -52,7 +102,7 @@ class WizardSectionList extends ConsumerWidget {
         String? suggestedNextId;
         if (progress != null) {
           // Find first incomplete required section
-          for (final section in sections) {
+          for (final section in widget.sections) {
             if (section.isRequired) {
               final status = progress.getStatus(section.id);
               if (!status.isDone) {
@@ -64,6 +114,7 @@ class WizardSectionList extends ConsumerWidget {
         }
 
         return ListView(
+          controller: _scrollController,
           padding: const EdgeInsets.symmetric(vertical: 8),
           children: [
             // Render each category
@@ -100,11 +151,12 @@ class WizardSectionList extends ConsumerWidget {
                 // Sections in this category
                 ...groupedSections[category]!.map(
                   (section) => WizardSectionCard(
+                    key: _sectionKeys[section.id],
                     section: section,
-                    isCurrentSection: section.id == currentSectionId,
+                    isCurrentSection: section.id == widget.currentSectionId,
                     isSuggestedNext: section.id == suggestedNextId,
                     status: progress?.getStatus(section.id),
-                    onTap: () => onSectionSelected(section.id),
+                    onTap: () => widget.onSectionSelected(section.id),
                   ),
                 ),
               ],
