@@ -132,7 +132,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       'expenses' => ExpensesSectionScreen(
         onRegisterCallback: _registerNavigationCallback,
       ),
-      'retirement' => RetirementSectionScreen(
+      'retirement-timing' => RetirementSectionScreen(
         onRegisterCallback: _registerNavigationCallback,
       ),
       _ => Center(child: Text('Section $_currentSectionId - Coming Soon')),

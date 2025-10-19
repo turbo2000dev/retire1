@@ -205,7 +205,7 @@ void main() {
         await tester.pump(); // PostFrameCallback
 
         expect(mockWizardNotifier.statusUpdates.length, 1);
-        expect(mockWizardNotifier.statusUpdates.first.key, 'retirement');
+        expect(mockWizardNotifier.statusUpdates.first.key, 'retirement-timing');
         expect(
           mockWizardNotifier.statusUpdates.first.value.state,
           WizardSectionState.inProgress,
@@ -449,7 +449,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(mockWizardNotifier.statusUpdates.length, 1);
-        expect(mockWizardNotifier.statusUpdates.last.key, 'retirement');
+        expect(mockWizardNotifier.statusUpdates.last.key, 'retirement-timing');
         expect(
           mockWizardNotifier.statusUpdates.last.value.state,
           WizardSectionState.complete,

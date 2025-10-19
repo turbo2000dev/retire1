@@ -10,7 +10,14 @@
       "Read(//private/tmp/**)",
       "Bash(git checkout test/features/wizard/presentation/widgets/wizard_nav_buttons_test.dart)",
       "Bash(dart format --output=none --set-exit-if-changed .)",
-      "Bash(git push origin main)"
+      "Bash(git push origin main)",
+      "Bash(dart format lib/features/wizard/presentation/sections/assets_section_screen.dart test/features/wizard/presentation/sections/assets_section_screen_test.dart)",
+      "Bash(dart format lib/features/wizard/presentation/sections/employment_section_screen.dart)",
+      "Bash(dart format test/features/wizard/presentation/sections/welcome_section_screen_test.dart)",
+      "Bash(dart format lib/features/wizard/presentation/sections/benefits_education_section_screen.dart test/features/wizard/presentation/sections/benefits_education_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
+      "Bash(dart format lib/features/wizard/presentation/sections/government_benefits_section_screen.dart test/features/wizard/presentation/sections/government_benefits_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
+      "Bash(dart format lib/features/wizard/presentation/sections/expenses_section_screen.dart test/features/wizard/presentation/sections/expenses_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
+      "Bash(dart format lib/features/wizard/presentation/sections/retirement_section_screen.dart test/features/wizard/presentation/sections/retirement_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)"
     ],
     "deny": [],
     "ask": []

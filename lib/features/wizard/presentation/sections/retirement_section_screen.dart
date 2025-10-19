@@ -93,7 +93,7 @@ class _RetirementSectionScreenState
           ref
               .read(wizardProgressProvider.notifier)
               .updateSectionStatus(
-                'retirement',
+                'retirement-timing',
                 WizardSectionStatus.inProgress(),
               );
         });
@@ -183,7 +183,10 @@ class _RetirementSectionScreenState
       // Mark section as complete
       await ref
           .read(wizardProgressProvider.notifier)
-          .updateSectionStatus('retirement', WizardSectionStatus.complete());
+          .updateSectionStatus(
+            'retirement-timing',
+            WizardSectionStatus.complete(),
+          );
 
       if (mounted) {
         setState(() => _isSaving = false);
