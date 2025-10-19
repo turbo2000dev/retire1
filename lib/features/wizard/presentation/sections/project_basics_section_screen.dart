@@ -67,6 +67,14 @@ class _ProjectBasicsSectionScreenState
         setState(() {
           _isLoading = false;
         });
+
+        // Mark section as in progress after first frame is built
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(wizardProgressProvider.notifier).updateSectionStatus(
+            'project-basics',
+            WizardSectionStatus.inProgress(),
+          );
+        });
       }
     } catch (e) {
       if (mounted) {
