@@ -27,8 +27,14 @@ class WizardProgressRepository {
       final doc = await _progressCollection.doc(projectId).get();
 
       if (doc.exists) {
-        final data = _convertTimestampsToDateTimes(doc.data()!);
-        return WizardProgress.fromJson({...data, 'projectId': doc.id});
+        try {
+          final data = _convertTimestampsToDateTimes(doc.data()!);
+          return WizardProgress.fromJson({...data, 'projectId': doc.id});
+        } catch (parseError) {
+          // If parsing fails, delete corrupted document and recreate
+          log('Corrupted wizard progress detected, recreating: $parseError');
+          await _progressCollection.doc(projectId).delete();
+        }
       }
 
       // Create new progress
@@ -52,7 +58,7 @@ class WizardProgressRepository {
   /// Get a stream of wizard progress for a project
   Stream<WizardProgress?> getProgressStream(String projectId) {
     try {
-      return _progressCollection.doc(projectId).snapshots().map((snapshot) {
+      return _progressCollection.doc(projectId).snapshots().asyncMap((snapshot) async {
         if (!snapshot.exists) {
           return null;
         }
@@ -62,11 +68,19 @@ class WizardProgressRepository {
           return WizardProgress.fromJson({...data, 'projectId': snapshot.id});
         } catch (e, stack) {
           log(
-            'Failed to parse wizard progress ${snapshot.id}',
+            'Failed to parse wizard progress ${snapshot.id}, recreating',
             error: e,
             stackTrace: stack,
           );
-          rethrow;
+
+          // Delete corrupted document and recreate
+          await _progressCollection.doc(projectId).delete();
+          final newProgress = WizardProgress.create(
+            projectId: projectId,
+            userId: userId,
+          );
+          await _saveProgress(newProgress);
+          return newProgress;
         }
       });
     } catch (e, stack) {
