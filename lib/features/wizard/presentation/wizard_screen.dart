@@ -82,6 +82,12 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
 
     // Update progress in background
     ref.read(wizardProgressProvider.notifier).navigateToSection(sectionId);
+
+    // Mark new section as in progress when navigating to it
+    ref.read(wizardProgressProvider.notifier).updateSectionStatus(
+      sectionId,
+      WizardSectionStatus.inProgress(),
+    );
   }
 
   void _handleSkip() {

@@ -68,12 +68,6 @@ class _PrimaryIndividualSectionScreenState
         }
       }
 
-      // Mark section as in progress when user enters
-      await ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-            'primary-individual',
-            WizardSectionStatus.inProgress(),
-          );
-
       // Register validation callback for Next button
       widget.onRegisterCallback?.call(_validateAndSave);
 

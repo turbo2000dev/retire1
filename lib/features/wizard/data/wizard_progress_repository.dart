@@ -104,7 +104,6 @@ class WizardProgressRepository {
 
       final updatedProgress = progress.copyWith(
         sectionStatuses: updatedStatuses,
-        currentSectionId: sectionId,
         lastUpdated: DateTime.now(),
       );
 

@@ -60,12 +60,6 @@ class _ProjectBasicsSectionScreenState
         _descriptionController.text = project.description ?? '';
       }
 
-      // Mark section as in progress when user enters
-      await ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-            'project-basics',
-            WizardSectionStatus.inProgress(),
-          );
-
       // Register validation callback for Next button
       widget.onRegisterCallback?.call(_validateAndSave);
 
