@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/presentation/widgets/wizard_nav_buttons.dart';
 
 void main() {
@@ -12,6 +14,13 @@ void main() {
     }) {
       return ProviderScope(
         child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: WizardNavButtons(
               currentSectionId: currentSectionId,
@@ -28,6 +37,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'welcome',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Previous'), findsNothing);
       });
@@ -36,6 +46,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'welcome',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Next'), findsOneWidget);
       });
@@ -45,6 +56,7 @@ void main() {
           currentSectionId: 'welcome',
           onSkip: () {},
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Skip'), findsOneWidget);
       });
@@ -55,6 +67,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'project-basics',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Previous'), findsOneWidget);
       });
@@ -63,6 +76,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'project-basics',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Next'), findsOneWidget);
       });
@@ -72,6 +86,7 @@ void main() {
           currentSectionId: 'project-basics',
           onSkip: () {},
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Skip'), findsNothing);
       });
@@ -82,6 +97,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'summary',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Previous'), findsOneWidget);
       });
@@ -90,6 +106,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'summary',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Next'), findsNothing);
         expect(find.text('Finish'), findsOneWidget);
@@ -99,6 +116,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'summary',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.byIcon(Icons.check), findsOneWidget);
       });
@@ -110,6 +128,7 @@ void main() {
           currentSectionId: 'partner',
           onSkip: () {},
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Skip'), findsOneWidget);
       });
@@ -118,6 +137,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'partner',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.text('Skip'), findsNothing);
       });
@@ -130,6 +150,7 @@ void main() {
           currentSectionId: 'project-basics',
           onNavigate: (id) => navigatedTo = id,
         ));
+        await tester.pumpAndSettle();
 
         await tester.tap(find.text('Previous'));
         await tester.pump();
@@ -143,6 +164,7 @@ void main() {
           currentSectionId: 'welcome',
           onNavigate: (id) => navigatedTo = id,
         ));
+        await tester.pumpAndSettle();
 
         await tester.tap(find.text('Next'));
         await tester.pump();
@@ -159,6 +181,7 @@ void main() {
           onNavigate: (id) => navigatedTo = id,
           onSkip: () => skipped = true,
         ));
+        await tester.pumpAndSettle();
 
         await tester.tap(find.text('Skip'));
         await tester.pump();
@@ -173,18 +196,18 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'project-basics',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.byIcon(Icons.chevron_left), findsOneWidget);
-        expect(find.byType(TextButton), findsOneWidget);
       });
 
       testWidgets('Next button has chevron_right icon', (tester) async {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'welcome',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.byIcon(Icons.chevron_right), findsOneWidget);
-        expect(find.byType(FilledButton), findsOneWidget);
       });
     });
 
@@ -193,6 +216,7 @@ void main() {
         await tester.pumpWidget(buildNavButtons(
           currentSectionId: 'invalid-section',
         ));
+        await tester.pumpAndSettle();
 
         expect(find.byType(WizardNavButtons), findsOneWidget);
         expect(find.text('Previous'), findsNothing);

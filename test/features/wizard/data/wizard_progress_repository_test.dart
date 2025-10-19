@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:retire1/features/wizard/data/wizard_progress_repository.dart';
@@ -140,7 +139,7 @@ void main() {
         );
       });
 
-      test('should update current section', () async {
+      test('should not update current section (use navigateToSection for that)', () async {
         await repository.getOrCreateProgress(testProjectId);
 
         await repository.updateSectionStatus(
@@ -156,7 +155,9 @@ void main() {
             .doc(testProjectId)
             .get();
 
-        expect(doc.data()!['currentSectionId'], 'partner');
+        // updateSectionStatus should NOT change currentSectionId
+        // Use navigateToSection for that
+        expect(doc.data()!['currentSectionId'], 'welcome');
       });
 
       test('should update lastUpdated timestamp', () async {
@@ -235,7 +236,8 @@ void main() {
             .doc(testProjectId)
             .get();
 
-        final lastUpdated = (doc.data()!['lastUpdated'] as Timestamp).toDate();
+        final lastUpdatedString = doc.data()!['lastUpdated'] as String;
+        final lastUpdated = DateTime.parse(lastUpdatedString);
         expect(lastUpdated.isAfter(initial.lastUpdated), isTrue);
       });
     });
@@ -270,7 +272,8 @@ void main() {
             .doc(testProjectId)
             .get();
 
-        final completedAt = (doc.data()!['completedAt'] as Timestamp).toDate();
+        final completedAtString = doc.data()!['completedAt'] as String;
+        final completedAt = DateTime.parse(completedAtString);
         final after = DateTime.now();
 
         expect(completedAt.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);

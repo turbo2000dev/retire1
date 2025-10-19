@@ -5,7 +5,10 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nComplete Phase 35: KPIs, Warnings, and Scenario Comparison\n\nPhase 35B - Enhanced Warnings:\n- Add optional Projection parameter to ProjectionWarningsSection\n- Enhance existing warnings with detailed analysis and recommendations\n- Add 3 new warning types:\n  - High spending years (cash flow < -$50k)\n  - Account depletion (specific accounts running out)\n  - Low survivor income after death events\n- Include currency formatting and specific year references\n- Wire up full projection data from dashboard\n\nPhase 35C - Scenario Comparison Tab:\n- Marked as complete in PLAN.md (already implemented)\n- All 3 widgets working: ScenarioSelector, KpiComparisonCard, MultiScenarioProjectionChart\n- Supports up to 3 scenarios with side-by-side KPI comparison\n\nAll Phase 35 deliverables complete and tested.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git commit:*)",
       "Bash(git add:*)",
-      "Bash(git checkout lib/features/assets/presentation/providers/assets_provider.dart lib/features/project/presentation/providers/projects_provider.dart)"
+      "Bash(git checkout lib/features/assets/presentation/providers/assets_provider.dart lib/features/project/presentation/providers/projects_provider.dart)",
+      "Bash(tee /tmp/test_output.txt)",
+      "Read(//private/tmp/**)",
+      "Bash(git checkout test/features/wizard/presentation/widgets/wizard_nav_buttons_test.dart)"
     ],
     "deny": [],
     "ask": []
