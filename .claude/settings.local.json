@@ -17,7 +17,9 @@
       "Bash(dart format lib/features/wizard/presentation/sections/benefits_education_section_screen.dart test/features/wizard/presentation/sections/benefits_education_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
       "Bash(dart format lib/features/wizard/presentation/sections/government_benefits_section_screen.dart test/features/wizard/presentation/sections/government_benefits_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
       "Bash(dart format lib/features/wizard/presentation/sections/expenses_section_screen.dart test/features/wizard/presentation/sections/expenses_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
-      "Bash(dart format lib/features/wizard/presentation/sections/retirement_section_screen.dart test/features/wizard/presentation/sections/retirement_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)"
+      "Bash(dart format lib/features/wizard/presentation/sections/retirement_section_screen.dart test/features/wizard/presentation/sections/retirement_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
+      "Bash(dart format lib/features/wizard/presentation/sections/life_events_section_screen.dart test/features/wizard/presentation/sections/life_events_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
+      "Bash(dart format lib/features/wizard/presentation/sections/life_events_section_screen.dart lib/features/wizard/presentation/sections/retirement_section_screen.dart)"
     ],
     "deny": [],
     "ask": []

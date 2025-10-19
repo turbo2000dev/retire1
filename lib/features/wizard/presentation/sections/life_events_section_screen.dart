@@ -348,50 +348,46 @@ class _LifeEventsSectionScreenState
                           ),
 
                           // Info about planning horizon
-                          if (controller.text.isNotEmpty) ...[
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.tertiaryContainer
-                                    .withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.info_outline,
-                                    size: 20,
-                                    color: theme.colorScheme.tertiary,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Builder(
-                                      builder: (context) {
-                                        final lifespan = int.tryParse(
-                                          controller.text,
-                                        );
-                                        if (lifespan == null) {
-                                          return const SizedBox();
-                                        }
-                                        final yearsRemaining =
-                                            lifespan - currentAge;
-                                        return Text(
-                                          'Planning horizon: $yearsRemaining years',
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: theme
-                                                    .colorScheme
-                                                    .onTertiaryContainer,
-                                              ),
-                                        );
-                                      },
+                          const SizedBox(height: 12),
+                          ValueListenableBuilder<TextEditingValue>(
+                            valueListenable: controller,
+                            builder: (context, value, child) {
+                              final lifespan = int.tryParse(value.text);
+                              if (lifespan == null || value.text.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+                              final yearsRemaining = lifespan - currentAge;
+                              return Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.tertiaryContainer
+                                      .withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline,
+                                      size: 20,
+                                      color: theme.colorScheme.tertiary,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'Planning horizon: $yearsRemaining years',
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: theme
+                                                  .colorScheme
+                                                  .onTertiaryContainer,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),

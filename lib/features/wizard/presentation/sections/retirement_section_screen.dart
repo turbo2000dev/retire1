@@ -355,52 +355,49 @@ class _RetirementSectionScreenState
                           ),
 
                           // Info about years to retirement
-                          if (controller.text.isNotEmpty) ...[
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.secondaryContainer
-                                    .withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.info_outline,
-                                    size: 20,
-                                    color: theme.colorScheme.secondary,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Builder(
-                                      builder: (context) {
-                                        final retirementAge = int.tryParse(
-                                          controller.text,
-                                        );
-                                        if (retirementAge == null) {
-                                          return const SizedBox();
-                                        }
-                                        final yearsToRetirement =
-                                            retirementAge - currentAge;
-                                        return Text(
-                                          yearsToRetirement > 0
-                                              ? '$yearsToRetirement years until retirement'
-                                              : 'Already at retirement age',
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: theme
-                                                    .colorScheme
-                                                    .onSecondaryContainer,
-                                              ),
-                                        );
-                                      },
+                          const SizedBox(height: 12),
+                          ValueListenableBuilder<TextEditingValue>(
+                            valueListenable: controller,
+                            builder: (context, value, child) {
+                              final retirementAge = int.tryParse(value.text);
+                              if (retirementAge == null || value.text.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+                              final yearsToRetirement =
+                                  retirementAge - currentAge;
+                              return Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.secondaryContainer
+                                      .withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline,
+                                      size: 20,
+                                      color: theme.colorScheme.secondary,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        yearsToRetirement > 0
+                                            ? '$yearsToRetirement years until retirement'
+                                            : 'Already at retirement age',
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: theme
+                                                  .colorScheme
+                                                  .onSecondaryContainer,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
