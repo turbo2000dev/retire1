@@ -21,7 +21,8 @@
       "Bash(dart format lib/features/wizard/presentation/sections/life_events_section_screen.dart test/features/wizard/presentation/sections/life_events_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
       "Bash(dart format lib/features/wizard/presentation/sections/life_events_section_screen.dart lib/features/wizard/presentation/sections/retirement_section_screen.dart)",
       "Bash(dart format lib/features/wizard/presentation/sections/summary_section_screen.dart test/features/wizard/presentation/sections/summary_section_screen_test.dart lib/features/wizard/presentation/wizard_screen.dart)",
-      "Bash(dart format lib/features/wizard/presentation/sections/summary_section_screen.dart test/features/wizard/presentation/sections/summary_section_screen_test.dart)"
+      "Bash(dart format lib/features/wizard/presentation/sections/summary_section_screen.dart test/features/wizard/presentation/sections/summary_section_screen_test.dart)",
+      "Bash(dart format lib/features/dashboard/presentation/dashboard_screen.dart lib/features/project/presentation/widgets/project_selector_compact.dart lib/features/project/presentation/base_parameters_screen.dart)"
     ],
     "deny": [],
     "ask": []
