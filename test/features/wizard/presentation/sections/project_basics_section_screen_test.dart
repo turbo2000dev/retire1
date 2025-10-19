@@ -18,9 +18,7 @@ class FakeFirestore extends Fake implements FirebaseFirestore {}
 /// Fake repository for testing
 class FakeProjectRepository extends ProjectRepository {
   Project? _projectToUpdate;
-  String? _lastUpdatedProjectId;
   String? _lastUpdatedName;
-  String? _lastUpdatedDescription;
 
   FakeProjectRepository()
     : super(userId: 'test-user', firestore: FakeFirestore());
@@ -31,9 +29,7 @@ class FakeProjectRepository extends ProjectRepository {
     required String name,
     String? description,
   }) async {
-    _lastUpdatedProjectId = projectId;
     _lastUpdatedName = name;
-    _lastUpdatedDescription = description;
   }
 
   @override
@@ -43,7 +39,6 @@ class FakeProjectRepository extends ProjectRepository {
 
   Project? get lastUpdatedProject => _projectToUpdate;
   String? get lastUpdatedName => _lastUpdatedName;
-  String? get lastUpdatedDescription => _lastUpdatedDescription;
 }
 
 /// Mock notifier for CurrentProjectProvider
