@@ -112,7 +112,6 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     }
   }
 
-
   Future<void> _saveProjectChanges(Project project) async {
     if (!_formKey.currentState!.validate()) {
       return;

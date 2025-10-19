@@ -24,11 +24,7 @@ class ProjectSelectorCompact extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            Icon(
-              Icons.folder,
-              size: 20,
-              color: theme.colorScheme.primary,
-            ),
+            Icon(Icons.folder, size: 20, color: theme.colorScheme.primary),
             const SizedBox(width: 12),
             Expanded(
               child: DropdownButtonFormField<String>(
@@ -50,9 +46,9 @@ class ProjectSelectorCompact extends ConsumerWidget {
                 }).toList(),
                 onChanged: (projectId) {
                   if (projectId != null) {
-                    ref.read(currentProjectProvider.notifier).selectProject(
-                      projectId,
-                    );
+                    ref
+                        .read(currentProjectProvider.notifier)
+                        .selectProject(projectId);
                   }
                 },
               ),
