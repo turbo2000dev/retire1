@@ -8,7 +8,9 @@
       "Bash(git checkout lib/features/assets/presentation/providers/assets_provider.dart lib/features/project/presentation/providers/projects_provider.dart)",
       "Bash(tee /tmp/test_output.txt)",
       "Read(//private/tmp/**)",
-      "Bash(git checkout test/features/wizard/presentation/widgets/wizard_nav_buttons_test.dart)"
+      "Bash(git checkout test/features/wizard/presentation/widgets/wizard_nav_buttons_test.dart)",
+      "Bash(dart format --output=none --set-exit-if-changed .)",
+      "Bash(git push origin main)"
     ],
     "deny": [],
     "ask": []
