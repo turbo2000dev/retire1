@@ -8,6 +8,18 @@ import 'package:retire1/features/wizard/presentation/providers/wizard_progress_p
 import 'package:retire1/features/wizard/presentation/providers/wizard_sections_config.dart';
 import 'package:retire1/features/wizard/presentation/widgets/wizard_progress_bar.dart';
 
+/// Mock notifier for testing
+class MockWizardProgressNotifier extends WizardProgressNotifier {
+  final WizardProgress? mockProgress;
+
+  MockWizardProgressNotifier(this.mockProgress);
+
+  @override
+  Future<WizardProgress?> build() async {
+    return mockProgress;
+  }
+}
+
 void main() {
   group('WizardProgressBar', () {
     late WizardProgress testProgress;
@@ -29,9 +41,7 @@ void main() {
       return ProviderScope(
         overrides: [
           if (progressData != null)
-            wizardProgressProvider.overrideWith((ref) {
-              return AsyncValue.data(progressData);
-            }),
+            wizardProgressProvider.overrideWith(() => MockWizardProgressNotifier(progressData)),
           if (sectionsOverride != null)
             requiredSectionsProvider.overrideWithValue(sectionsOverride),
         ],
