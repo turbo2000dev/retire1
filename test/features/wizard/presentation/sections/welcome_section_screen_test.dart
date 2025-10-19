@@ -92,12 +92,42 @@ void main() {
         expect(result, isTrue);
       });
 
-      testWidgets('marks section as complete after first frame', (
+      testWidgets('marks section as in progress after loading', (
         tester,
       ) async {
         await tester.pumpWidget(buildWelcomeScreen());
         await tester.pump(); // Initial build
         await tester.pump(); // PostFrameCallback
+
+        expect(mockNotifier.statusUpdates.length, 1);
+        expect(mockNotifier.statusUpdates.first.key, 'welcome');
+        expect(
+          mockNotifier.statusUpdates.first.value.state,
+          WizardSectionState.inProgress,
+        );
+      });
+
+      testWidgets('marks section as complete when callback is called', (
+        tester,
+      ) async {
+        Future<bool> Function()? registeredCallback;
+
+        await tester.pumpWidget(
+          buildWelcomeScreen(
+            onRegisterCallback: (callback) {
+              registeredCallback = callback;
+            },
+          ),
+        );
+        await tester.pump(); // Initial build
+        await tester.pump(); // PostFrameCallback
+
+        // Clear the in-progress status update
+        mockNotifier.statusUpdates.clear();
+
+        // Call the validation callback (simulates clicking Next)
+        await registeredCallback!();
+        await tester.pump();
 
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.first.key, 'welcome');

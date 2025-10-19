@@ -19,14 +19,19 @@ class _WelcomeSectionScreenState extends ConsumerState<WelcomeSectionScreen> {
   void initState() {
     super.initState();
 
-    // Register a callback that always returns true (no validation needed)
-    widget.onRegisterCallback?.call(() async => true);
+    // Register a callback that marks section complete when user clicks Next
+    widget.onRegisterCallback?.call(() async {
+      await ref
+          .read(wizardProgressProvider.notifier)
+          .updateSectionStatus('welcome', WizardSectionStatus.complete());
+      return true;
+    });
 
-    // Mark as complete after first frame (educational section, just needs to be viewed)
+    // Mark as in progress after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref
           .read(wizardProgressProvider.notifier)
-          .updateSectionStatus('welcome', WizardSectionStatus.complete());
+          .updateSectionStatus('welcome', WizardSectionStatus.inProgress());
     });
   }
 
