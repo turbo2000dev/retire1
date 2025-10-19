@@ -15,6 +15,8 @@ import 'package:retire1/features/scenarios/presentation/providers/scenarios_prov
 import 'package:retire1/features/dashboard/presentation/widgets/scenario_selector.dart';
 import 'package:retire1/features/dashboard/presentation/widgets/kpi_comparison_card.dart';
 import 'package:retire1/features/projection/presentation/widgets/multi_scenario_projection_chart.dart';
+import 'package:retire1/features/project/presentation/widgets/project_selector_compact.dart';
+import 'package:retire1/features/auth/presentation/providers/user_profile_provider.dart';
 
 /// Dashboard screen - shows KPIs and scenario comparison for current project
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -104,17 +106,45 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final projectsAsync = ref.watch(projectsProvider);
+
+    // Check if there are any projects at all
+    final hasProjects = projectsAsync.when(
+      data: (projects) => projects.isNotEmpty,
+      loading: () => false,
+      error: (_, __) => false,
+    );
+
+    // Get user display name for welcome message
+    final user = ref.watch(currentUserProvider);
+    final displayName = user?.displayName;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Show welcome message if user has previously used the app
+          if (hasProjects && displayName != null) ...[
+            Text(
+              'Welcome back, $displayName!',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 32),
+          ],
           Icon(
             Icons.folder_open,
             size: 80,
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 24),
-          Text('No project selected', style: theme.textTheme.headlineMedium),
+          Text(
+            hasProjects
+                ? 'No project selected'
+                : 'There are no projects defined',
+            style: theme.textTheme.headlineMedium,
+          ),
           const SizedBox(height: 8),
           Text(
             'Create one to get started',
@@ -165,8 +195,43 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     // Get projection for base scenario
     final projectionAsync = ref.watch(projectionProvider(baseScenario.id));
 
+    // Get current project and all projects for selector
+    final currentProjectState = ref.watch(currentProjectProvider);
+    final projectsAsync = ref.watch(projectsProvider);
+
+    // Get user for welcome message
+    final user = ref.watch(currentUserProvider);
+    final displayName = user?.displayName;
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // Welcome message for returning users (shown once at top)
+        if (displayName != null) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Welcome back, $displayName!',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+
+        // Project selector (compact version)
+        if (currentProjectState is ProjectSelected &&
+            projectsAsync.hasValue &&
+            projectsAsync.value!.length > 1)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ProjectSelectorCompact(
+              projects: projectsAsync.value!,
+              selectedProject: currentProjectState.project,
+            ),
+          ),
+
         // Tab bar
         TabBar(
           controller: _tabController,
