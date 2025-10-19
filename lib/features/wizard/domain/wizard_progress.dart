@@ -45,17 +45,17 @@ class WizardProgress with _$WizardProgress {
     return sectionStatuses[sectionId] ?? WizardSectionStatus.notStarted();
   }
 
-  /// Calculate overall completion percentage based on required sections only
-  double calculateProgress(List<String> requiredSectionIds) {
-    if (requiredSectionIds.isEmpty) return 0.0;
+  /// Calculate overall completion percentage based on all sections
+  double calculateProgress(List<String> allSectionIds) {
+    if (allSectionIds.isEmpty) return 0.0;
 
-    // Count only completed REQUIRED sections
-    final completedRequiredCount = requiredSectionIds.where((sectionId) {
+    // Count all completed sections (required, optional, and educational)
+    final completedCount = allSectionIds.where((sectionId) {
       final status = getStatus(sectionId);
       return status.state == WizardSectionState.complete;
     }).length;
 
-    return (completedRequiredCount / requiredSectionIds.length) * 100;
+    return (completedCount / allSectionIds.length) * 100;
   }
 
   /// Check if all required sections are complete
