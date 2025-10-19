@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
+import 'package:retire1/features/project/domain/project.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
 import 'package:retire1/features/project/presentation/providers/projects_provider.dart';
 import 'package:retire1/features/project/presentation/widgets/project_dialog.dart';
@@ -79,6 +80,48 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Project created')));
+  }
+
+  Future<void> _deleteProject(
+    BuildContext context,
+    WidgetRef ref,
+    Project project,
+  ) async {
+    final theme = Theme.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Project'),
+        content: Text(
+          'Are you sure you want to delete "${project.name}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await ref.read(projectsProvider.notifier).deleteProject(project.id);
+      // Clear selection - will automatically select another or show empty
+      await ref.read(currentProjectProvider.notifier).clearSelection();
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Project deleted')));
+      }
+    }
   }
 
   @override
@@ -214,15 +257,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           ),
         ],
 
-        // Project selector (compact version)
-        if (currentProjectState is ProjectSelected &&
-            projectsAsync.hasValue &&
-            projectsAsync.value!.length > 1)
+        // Project selector (compact version) - always show when project is selected
+        if (currentProjectState is ProjectSelected && projectsAsync.hasValue)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ProjectSelectorCompact(
               projects: projectsAsync.value!,
               selectedProject: currentProjectState.project,
+              onCreateProject: () => _createNewProject(context, ref),
+              onDeleteProject: () =>
+                  _deleteProject(context, ref, currentProjectState.project),
             ),
           ),
 
