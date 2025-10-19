@@ -74,20 +74,27 @@ void main() {
           projectId: projectId,
           userId: userId,
         );
+        final requiredSectionIds = [
+          'section1',
+          'section2',
+          'section3',
+          'section4',
+          'section5',
+        ];
 
-        expect(progress.calculateProgress(5), 0.0);
+        expect(progress.calculateProgress(requiredSectionIds), 0.0);
       });
 
-      test('returns 0 when total sections is 0', () {
+      test('returns 0 when required sections list is empty', () {
         final progress = WizardProgress.create(
           projectId: projectId,
           userId: userId,
         );
 
-        expect(progress.calculateProgress(0), 0.0);
+        expect(progress.calculateProgress([]), 0.0);
       });
 
-      test('calculates correct percentage', () {
+      test('calculates correct percentage based on required sections only', () {
         final progress =
             WizardProgress.create(
               projectId: projectId,
@@ -101,9 +108,36 @@ void main() {
                 'section5': WizardSectionStatus.skipped(),
               },
             );
+        final requiredSectionIds = [
+          'section1',
+          'section2',
+          'section3',
+          'section4',
+          'section5',
+        ];
 
-        // 2 out of 5 complete = 40%
-        expect(progress.calculateProgress(5), 40.0);
+        // 2 out of 5 required sections complete = 40%
+        expect(progress.calculateProgress(requiredSectionIds), 40.0);
+      });
+
+      test('counts only complete required sections, ignores optional', () {
+        final progress =
+            WizardProgress.create(
+              projectId: projectId,
+              userId: userId,
+            ).copyWith(
+              sectionStatuses: {
+                'required1': WizardSectionStatus.complete(),
+                'required2': WizardSectionStatus.inProgress(),
+                'optional1': WizardSectionStatus.complete(),
+                'optional2': WizardSectionStatus.complete(),
+              },
+            );
+        final requiredSectionIds = ['required1', 'required2'];
+
+        // Only 1 out of 2 required sections complete = 50%
+        // Optional sections should not affect the calculation
+        expect(progress.calculateProgress(requiredSectionIds), 50.0);
       });
 
       test('counts only complete sections, not skipped', () {
@@ -118,9 +152,13 @@ void main() {
                 'section3': WizardSectionStatus.skipped(),
               },
             );
+        final requiredSectionIds = ['section1', 'section2', 'section3'];
 
-        // Only 1 complete out of 3 = 33.33%
-        expect(progress.calculateProgress(3), closeTo(33.33, 0.01));
+        // Only 1 complete out of 3 required = 33.33%
+        expect(
+          progress.calculateProgress(requiredSectionIds),
+          closeTo(33.33, 0.01),
+        );
       });
     });
 

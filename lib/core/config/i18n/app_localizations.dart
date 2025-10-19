@@ -101,6 +101,8 @@ abstract class AppLocalizations {
   String get wizard;
   String get loadingWizard;
   String get failedToLoadWizard;
+  String get launchWizard;
+  String get resumeWizard;
   String get retry;
   String get previous;
   String get next;

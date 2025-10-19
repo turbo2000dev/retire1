@@ -8,7 +8,6 @@ import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/services/project_export_service.dart';
 import 'package:retire1/core/services/project_import_service.dart';
 import 'package:retire1/core/ui/dialogs/import_preview_dialog.dart';
-import 'package:retire1/core/ui/responsive/responsive_collapsible_section.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/utils/file_download_helper.dart';
 import 'package:retire1/core/utils/file_picker_helper.dart';
@@ -897,171 +896,6 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           ),
         ),
 
-        // Economic Assumptions section
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _economicFormKey,
-                  child: ResponsiveCollapsibleSection(
-                    title: 'Economic Assumptions',
-                    subtitle: 'Investment returns and inflation rates',
-                    icon: Icons.analytics_outlined,
-                    initiallyExpanded: false,
-                    trailing: !_isEditingEconomic
-                        ? IconButton(
-                            onPressed: () =>
-                                setState(() => _isEditingEconomic = true),
-                            icon: const Icon(Icons.edit),
-                            tooltip: 'Edit economic assumptions',
-                          )
-                        : null,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          controller: _inflationRateController,
-                          decoration: const InputDecoration(
-                            labelText: 'Inflation Rate',
-                            border: OutlineInputBorder(),
-                            suffixText: '%',
-                            helperText: 'Expected annual inflation rate',
-                          ),
-                          enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                            signed: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d*\.?\d*'),
-                            ),
-                          ],
-                          validator: _validatePercentage,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _reerReturnRateController,
-                          decoration: const InputDecoration(
-                            labelText: 'REER Return Rate',
-                            border: OutlineInputBorder(),
-                            suffixText: '%',
-                            helperText:
-                                'Expected annual return for REER accounts',
-                          ),
-                          enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                            signed: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d*\.?\d*'),
-                            ),
-                          ],
-                          validator: _validatePercentage,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _celiReturnRateController,
-                          decoration: const InputDecoration(
-                            labelText: 'CELI Return Rate',
-                            border: OutlineInputBorder(),
-                            suffixText: '%',
-                            helperText:
-                                'Expected annual return for CELI accounts',
-                          ),
-                          enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                            signed: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d*\.?\d*'),
-                            ),
-                          ],
-                          validator: _validatePercentage,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _criReturnRateController,
-                          decoration: const InputDecoration(
-                            labelText: 'CRI Return Rate',
-                            border: OutlineInputBorder(),
-                            suffixText: '%',
-                            helperText:
-                                'Expected annual return for CRI accounts',
-                          ),
-                          enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                            signed: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d*\.?\d*'),
-                            ),
-                          ],
-                          validator: _validatePercentage,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _cashReturnRateController,
-                          decoration: const InputDecoration(
-                            labelText: 'Cash Return Rate',
-                            border: OutlineInputBorder(),
-                            suffixText: '%',
-                            helperText:
-                                'Expected annual return for cash accounts',
-                          ),
-                          enabled: _isEditingEconomic,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                            signed: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d*\.?\d*'),
-                            ),
-                          ],
-                          validator: _validatePercentage,
-                        ),
-                        if (_isEditingEconomic) ...[
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  setState(() => _isEditingEconomic = false);
-                                  _loadProjectData(selectedProject);
-                                },
-                                child: const Text('Cancel'),
-                              ),
-                              const SizedBox(width: 8),
-                              FilledButton.icon(
-                                onPressed: () =>
-                                    _saveEconomicAssumptions(selectedProject),
-                                icon: const Icon(Icons.save),
-                                label: const Text('Save'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-
         // Individuals section
         SliverToBoxAdapter(
           child: Padding(
@@ -1127,6 +961,172 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
                         );
                       }),
                   ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Economic Assumptions section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _economicFormKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Economic Assumptions',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          if (!_isEditingEconomic)
+                            IconButton(
+                              onPressed: () =>
+                                  setState(() => _isEditingEconomic = true),
+                              icon: const Icon(Icons.edit),
+                              tooltip: 'Edit economic assumptions',
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _inflationRateController,
+                        decoration: const InputDecoration(
+                          labelText: 'Inflation Rate',
+                          border: OutlineInputBorder(),
+                          suffixText: '%',
+                          helperText: 'Expected annual inflation rate',
+                        ),
+                        enabled: _isEditingEconomic,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d*'),
+                          ),
+                        ],
+                        validator: _validatePercentage,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _reerReturnRateController,
+                        decoration: const InputDecoration(
+                          labelText: 'REER Return Rate',
+                          border: OutlineInputBorder(),
+                          suffixText: '%',
+                          helperText:
+                              'Expected annual return for REER accounts',
+                        ),
+                        enabled: _isEditingEconomic,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d*'),
+                          ),
+                        ],
+                        validator: _validatePercentage,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _celiReturnRateController,
+                        decoration: const InputDecoration(
+                          labelText: 'CELI Return Rate',
+                          border: OutlineInputBorder(),
+                          suffixText: '%',
+                          helperText:
+                              'Expected annual return for CELI accounts',
+                        ),
+                        enabled: _isEditingEconomic,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d*'),
+                          ),
+                        ],
+                        validator: _validatePercentage,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _criReturnRateController,
+                        decoration: const InputDecoration(
+                          labelText: 'CRI Return Rate',
+                          border: OutlineInputBorder(),
+                          suffixText: '%',
+                          helperText: 'Expected annual return for CRI accounts',
+                        ),
+                        enabled: _isEditingEconomic,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d*'),
+                          ),
+                        ],
+                        validator: _validatePercentage,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _cashReturnRateController,
+                        decoration: const InputDecoration(
+                          labelText: 'Cash Return Rate',
+                          border: OutlineInputBorder(),
+                          suffixText: '%',
+                          helperText:
+                              'Expected annual return for cash accounts',
+                        ),
+                        enabled: _isEditingEconomic,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d*'),
+                          ),
+                        ],
+                        validator: _validatePercentage,
+                      ),
+                      if (_isEditingEconomic) ...[
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                setState(() => _isEditingEconomic = false);
+                                _loadProjectData(selectedProject);
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            const SizedBox(width: 8),
+                            FilledButton.icon(
+                              onPressed: () =>
+                                  _saveEconomicAssumptions(selectedProject),
+                              icon: const Icon(Icons.save),
+                              label: const Text('Save'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ),

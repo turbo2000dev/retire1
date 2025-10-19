@@ -216,6 +216,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get failedToLoadWizard => 'Échec du chargement de l\'assistant';
 
   @override
+  String get launchWizard => 'Lancer l\'assistant';
+
+  @override
+  String get resumeWizard => 'Reprendre l\'assistant';
+
+  @override
   String get retry => 'Réessayer';
 
   @override

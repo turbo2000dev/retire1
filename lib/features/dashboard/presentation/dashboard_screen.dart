@@ -82,6 +82,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     ).showSnackBar(const SnackBar(content: Text('Project created')));
   }
 
+  void _launchWizard(BuildContext context) {
+    context.go(AppRoutes.wizard);
+  }
+
   Future<void> _deleteProject(
     BuildContext context,
     WidgetRef ref,
@@ -267,6 +271,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               onCreateProject: () => _createNewProject(context, ref),
               onDeleteProject: () =>
                   _deleteProject(context, ref, currentProjectState.project),
+              onLaunchWizard: () => _launchWizard(context),
             ),
           ),
 

@@ -11,11 +11,12 @@ class WizardProgressBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final progressAsync = ref.watch(wizardProgressProvider);
     final requiredSections = ref.watch(requiredSectionsProvider);
+    final requiredSectionIds = requiredSections.map((s) => s.id).toList();
 
     return progressAsync.when(
       data: (progress) {
         final percentage =
-            progress?.calculateProgress(requiredSections.length) ?? 0.0;
+            progress?.calculateProgress(requiredSectionIds) ?? 0.0;
 
         return Column(
           mainAxisSize: MainAxisSize.min,

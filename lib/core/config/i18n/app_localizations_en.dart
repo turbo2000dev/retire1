@@ -215,6 +215,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToLoadWizard => 'Failed to load wizard';
 
   @override
+  String get launchWizard => 'Launch Wizard';
+
+  @override
+  String get resumeWizard => 'Resume Wizard';
+
+  @override
   String get retry => 'Retry';
 
   @override
