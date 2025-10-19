@@ -181,30 +181,8 @@ class WizardSectionCard extends StatelessWidget {
                   ),
                 ),
 
-                // Suggested next indicator
-                if (isSuggestedNext) ...[
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      l10n.next,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSecondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-
                 // Current section indicator
-                if (isCurrentSection && !isSuggestedNext) ...[
+                if (isCurrentSection) ...[
                   const SizedBox(width: 8),
                   Icon(Icons.chevron_right, color: theme.colorScheme.primary),
                 ],

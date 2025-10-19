@@ -13,6 +13,7 @@ import 'package:retire1/features/wizard/presentation/sections/welcome_section_sc
 import 'package:retire1/features/wizard/presentation/sections/project_basics_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/primary_individual_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/partner_section_screen.dart';
+import 'package:retire1/features/wizard/presentation/sections/assets_section_screen.dart';
 
 /// Main wizard screen that adapts to different screen sizes
 class WizardScreen extends ConsumerStatefulWidget {
@@ -109,6 +110,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
         onRegisterCallback: _registerNavigationCallback,
       ),
       'partner' => PartnerSectionScreen(
+        onRegisterCallback: _registerNavigationCallback,
+      ),
+      'assets' => AssetsSectionScreen(
         onRegisterCallback: _registerNavigationCallback,
       ),
       _ => Center(child: Text('Section $_currentSectionId - Coming Soon')),

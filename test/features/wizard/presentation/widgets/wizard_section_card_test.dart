@@ -169,28 +169,27 @@ void main() {
       });
     });
 
-    group('Suggested Next Indicator', () {
-      testWidgets('shows Next badge for suggested section', (tester) async {
-        await tester.pumpWidget(buildCard(isSuggestedNext: true));
+    group('Current Section Indicator', () {
+      testWidgets('shows chevron for current section', (tester) async {
+        await tester.pumpWidget(buildCard(isCurrentSection: true));
 
-        expect(find.text('Next'), findsOneWidget);
+        expect(find.byIcon(Icons.chevron_right), findsOneWidget);
       });
 
-      testWidgets('does not show Next badge for non-suggested section', (
+      testWidgets('does not show chevron for non-current section', (
         tester,
       ) async {
-        await tester.pumpWidget(buildCard(isSuggestedNext: false));
+        await tester.pumpWidget(buildCard(isCurrentSection: false));
 
-        expect(find.text('Next'), findsNothing);
+        expect(find.byIcon(Icons.chevron_right), findsNothing);
       });
 
-      testWidgets('prioritizes Next badge over chevron', (tester) async {
+      testWidgets('shows chevron even when suggested next', (tester) async {
         await tester.pumpWidget(
           buildCard(isCurrentSection: true, isSuggestedNext: true),
         );
 
-        expect(find.text('Next'), findsOneWidget);
-        expect(find.byIcon(Icons.chevron_right), findsNothing);
+        expect(find.byIcon(Icons.chevron_right), findsOneWidget);
       });
     });
 

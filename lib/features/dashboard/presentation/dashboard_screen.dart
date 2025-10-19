@@ -70,9 +70,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       }
     });
 
-    // Navigate to Base Parameters to configure the project
+    // Navigate based on user's choice
     if (!context.mounted) return;
-    context.go(AppRoutes.baseParameters);
+    final useWizard = result['useWizard'] as bool? ?? true;
+    if (useWizard) {
+      context.go(AppRoutes.wizard);
+    } else {
+      context.go(AppRoutes.baseParameters);
+    }
 
     if (!context.mounted) return;
     ScaffoldMessenger.of(

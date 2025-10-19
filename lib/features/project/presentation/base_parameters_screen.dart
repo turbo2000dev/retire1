@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/services/project_export_service.dart';
 import 'package:retire1/core/services/project_import_service.dart';
 import 'package:retire1/core/ui/dialogs/import_preview_dialog.dart';
@@ -89,17 +91,17 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
         // Check if user chose wizard setup
         final useWizard = result['useWizard'] as bool? ?? false;
         if (useWizard && mounted && newProjectId != null) {
-          // TODO: Launch new wizard when implemented
-          // For now, just show success message
+          // Navigate to wizard for guided setup
+          context.go(AppRoutes.wizard);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Project created. Wizard coming soon!'),
+                content: Text('Project created. Starting wizard...'),
               ),
             );
           }
         } else {
-          // User chose manual setup
+          // User chose manual setup - stay on this screen
           if (mounted) {
             ScaffoldMessenger.of(
               context,
