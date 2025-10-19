@@ -112,43 +112,6 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
     }
   }
 
-  Future<void> _deleteCurrentProject(Project project) async {
-    final theme = Theme.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Project'),
-        content: Text(
-          'Are you sure you want to delete "${project.name}"? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.error,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && mounted) {
-      await ref.read(projectsProvider.notifier).deleteProject(project.id);
-      // Clear selection - will automatically select another or show empty
-      await ref.read(currentProjectProvider.notifier).clearSelection();
-
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Project deleted')));
-      }
-    }
-  }
 
   Future<void> _saveProjectChanges(Project project) async {
     if (!_formKey.currentState!.validate()) {
@@ -854,74 +817,6 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
             child: Text(
               'Base Parameters',
               style: theme.textTheme.headlineMedium,
-            ),
-          ),
-        ),
-
-        // Project selector and actions
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Project Selection',
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      key: ValueKey(selectedProject.id),
-                      initialValue: selectedProject.id,
-                      decoration: const InputDecoration(
-                        labelText: 'Current Project',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: projects.map((project) {
-                        return DropdownMenuItem(
-                          value: project.id,
-                          child: Text(project.name),
-                        );
-                      }).toList(),
-                      onChanged: (projectId) {
-                        if (projectId != null) {
-                          setState(() => _isEditing = false);
-                          ref
-                              .read(currentProjectProvider.notifier)
-                              .selectProject(projectId);
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: _createNewProject,
-                            icon: const Icon(Icons.add),
-                            label: const Text('New Project'),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () =>
-                                _deleteCurrentProject(selectedProject),
-                            icon: const Icon(Icons.delete),
-                            label: const Text('Delete Project'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: theme.colorScheme.error,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
             ),
           ),
         ),
