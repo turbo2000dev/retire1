@@ -21,7 +21,7 @@ class FakeProjectRepository extends ProjectRepository {
   Project? _lastUpdatedProject;
 
   FakeProjectRepository()
-      : super(userId: 'test-user', firestore: FakeFirestore());
+    : super(userId: 'test-user', firestore: FakeFirestore());
 
   @override
   Future<void> updateProjectData(Project project) async {
@@ -35,8 +35,11 @@ class FakeProjectRepository extends ProjectRepository {
 class MockCurrentProjectNotifier extends CurrentProjectNotifier {
   final CurrentProjectState mockState;
 
-  MockCurrentProjectNotifier(this.mockState, Ref ref, FakeProjectRepository repo)
-      : super(ref, null, repo) {
+  MockCurrentProjectNotifier(
+    this.mockState,
+    Ref ref,
+    FakeProjectRepository repo,
+  ) : super(ref, null, repo) {
     state = mockState;
   }
 }
@@ -103,8 +106,13 @@ void main() {
       final project = projectOverride ?? testProject;
       return ProviderScope(
         overrides: [
-          currentProjectProvider.overrideWith((ref) =>
-              MockCurrentProjectNotifier(ProjectSelected(project), ref, fakeRepository)),
+          currentProjectProvider.overrideWith(
+            (ref) => MockCurrentProjectNotifier(
+              ProjectSelected(project),
+              ref,
+              fakeRepository,
+            ),
+          ),
           projectRepositoryProvider.overrideWithValue(fakeRepository),
           wizardProgressProvider.overrideWith(() => mockNotifier),
         ],
@@ -117,16 +125,16 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: PartnerSectionScreen(
-              onRegisterCallback: onRegisterCallback,
-            ),
+            body: PartnerSectionScreen(onRegisterCallback: onRegisterCallback),
           ),
         ),
       );
     }
 
     group('Initialization', () {
-      testWidgets('loads with empty form when no partner exists', (tester) async {
+      testWidgets('loads with empty form when no partner exists', (
+        tester,
+      ) async {
         await tester.pumpWidget(buildPartnerScreen());
         await tester.pump();
         await tester.pumpAndSettle();
@@ -147,9 +155,9 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPartnerScreen(
-          projectOverride: projectWithPartner,
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(projectOverride: projectWithPartner),
+        );
         await tester.pump();
         await tester.pumpAndSettle();
 
@@ -159,11 +167,13 @@ void main() {
       testWidgets('registers validation callback', (tester) async {
         Future<bool> Function()? registeredCallback;
 
-        await tester.pumpWidget(buildPartnerScreen(
-          onRegisterCallback: (callback) {
-            registeredCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            onRegisterCallback: (callback) {
+              registeredCallback = callback;
+            },
+          ),
+        );
         await tester.pump();
         await tester.pumpAndSettle();
 
@@ -177,7 +187,10 @@ void main() {
 
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.first.key, 'partner');
-        expect(mockNotifier.statusUpdates.first.value.state, WizardSectionState.inProgress);
+        expect(
+          mockNotifier.statusUpdates.first.value.state,
+          WizardSectionState.inProgress,
+        );
       });
     });
 
@@ -185,11 +198,13 @@ void main() {
       testWidgets('allows skipping when no data entered', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildPartnerScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Clear previous status updates
@@ -201,17 +216,24 @@ void main() {
         expect(result, isTrue); // Should allow navigation
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.last.key, 'partner');
-        expect(mockNotifier.statusUpdates.last.value.state, WizardSectionState.skipped);
+        expect(
+          mockNotifier.statusUpdates.last.value.state,
+          WizardSectionState.skipped,
+        );
       });
 
-      testWidgets('validation fails with name but no birthdate', (tester) async {
+      testWidgets('validation fails with name but no birthdate', (
+        tester,
+      ) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildPartnerScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Enter name only
@@ -237,12 +259,14 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPartnerScreen(
-          projectOverride: projectWithPartner,
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            projectOverride: projectWithPartner,
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         final result = await validationCallback!();
@@ -254,11 +278,13 @@ void main() {
       testWidgets('adds new partner as second individual', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildPartnerScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Enter partner name
@@ -277,7 +303,10 @@ void main() {
 
         expect(fakeRepository.lastUpdatedProject, isNotNull);
         expect(fakeRepository.lastUpdatedProject!.individuals.length, 2);
-        expect(fakeRepository.lastUpdatedProject!.individuals[1].name, 'New Partner');
+        expect(
+          fakeRepository.lastUpdatedProject!.individuals[1].name,
+          'New Partner',
+        );
       });
 
       testWidgets('updates existing partner', (tester) async {
@@ -294,12 +323,14 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPartnerScreen(
-          projectOverride: projectWithPartner,
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            projectOverride: projectWithPartner,
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Update partner name
@@ -311,8 +342,14 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(fakeRepository.lastUpdatedProject, isNotNull);
-        expect(fakeRepository.lastUpdatedProject!.individuals[1].name, 'Jane Smith');
-        expect(fakeRepository.lastUpdatedProject!.individuals[1].id, 'partner-id');
+        expect(
+          fakeRepository.lastUpdatedProject!.individuals[1].name,
+          'Jane Smith',
+        );
+        expect(
+          fakeRepository.lastUpdatedProject!.individuals[1].id,
+          'partner-id',
+        );
       });
 
       testWidgets('marks section as complete after save', (tester) async {
@@ -329,12 +366,14 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPartnerScreen(
-          projectOverride: projectWithPartner,
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            projectOverride: projectWithPartner,
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Clear previous status updates
@@ -345,7 +384,10 @@ void main() {
 
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.last.key, 'partner');
-        expect(mockNotifier.statusUpdates.last.value.state, WizardSectionState.complete);
+        expect(
+          mockNotifier.statusUpdates.last.value.state,
+          WizardSectionState.complete,
+        );
       });
     });
 
@@ -374,9 +416,7 @@ void main() {
 
     group('Callback Registration', () {
       testWidgets('does not crash when callback is null', (tester) async {
-        await tester.pumpWidget(buildPartnerScreen(
-          onRegisterCallback: null,
-        ));
+        await tester.pumpWidget(buildPartnerScreen(onRegisterCallback: null));
         await tester.pumpAndSettle();
 
         expect(find.byType(PartnerSectionScreen), findsOneWidget);
@@ -385,11 +425,13 @@ void main() {
       testWidgets('calls callback during initialization', (tester) async {
         bool callbackCalled = false;
 
-        await tester.pumpWidget(buildPartnerScreen(
-          onRegisterCallback: (callback) {
-            callbackCalled = true;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPartnerScreen(
+            onRegisterCallback: (callback) {
+              callbackCalled = true;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         expect(callbackCalled, isTrue);

@@ -44,14 +44,10 @@ void main() {
       void Function(Future<bool> Function()?)? onRegisterCallback,
     }) {
       return ProviderScope(
-        overrides: [
-          wizardProgressProvider.overrideWith(() => mockNotifier),
-        ],
+        overrides: [wizardProgressProvider.overrideWith(() => mockNotifier)],
         child: MaterialApp(
           home: Scaffold(
-            body: WelcomeSectionScreen(
-              onRegisterCallback: onRegisterCallback,
-            ),
+            body: WelcomeSectionScreen(onRegisterCallback: onRegisterCallback),
           ),
         ),
       );
@@ -68,11 +64,13 @@ void main() {
       testWidgets('registers validation callback', (tester) async {
         Future<bool> Function()? registeredCallback;
 
-        await tester.pumpWidget(buildWelcomeScreen(
-          onRegisterCallback: (callback) {
-            registeredCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildWelcomeScreen(
+            onRegisterCallback: (callback) {
+              registeredCallback = callback;
+            },
+          ),
+        );
         await tester.pump();
 
         expect(registeredCallback, isNotNull);
@@ -81,25 +79,32 @@ void main() {
       testWidgets('validation callback always returns true', (tester) async {
         Future<bool> Function()? registeredCallback;
 
-        await tester.pumpWidget(buildWelcomeScreen(
-          onRegisterCallback: (callback) {
-            registeredCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildWelcomeScreen(
+            onRegisterCallback: (callback) {
+              registeredCallback = callback;
+            },
+          ),
+        );
         await tester.pump();
 
         final result = await registeredCallback!();
         expect(result, isTrue);
       });
 
-      testWidgets('marks section as complete after first frame', (tester) async {
+      testWidgets('marks section as complete after first frame', (
+        tester,
+      ) async {
         await tester.pumpWidget(buildWelcomeScreen());
         await tester.pump(); // Initial build
         await tester.pump(); // PostFrameCallback
 
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.first.key, 'welcome');
-        expect(mockNotifier.statusUpdates.first.value.state, WizardSectionState.complete);
+        expect(
+          mockNotifier.statusUpdates.first.value.state,
+          WizardSectionState.complete,
+        );
       });
     });
 
@@ -124,9 +129,7 @@ void main() {
 
     group('Callback Registration', () {
       testWidgets('does not crash when callback is null', (tester) async {
-        await tester.pumpWidget(buildWelcomeScreen(
-          onRegisterCallback: null,
-        ));
+        await tester.pumpWidget(buildWelcomeScreen(onRegisterCallback: null));
         await tester.pump();
 
         expect(find.byType(WelcomeSectionScreen), findsOneWidget);
@@ -135,11 +138,13 @@ void main() {
       testWidgets('calls callback during initialization', (tester) async {
         bool callbackCalled = false;
 
-        await tester.pumpWidget(buildWelcomeScreen(
-          onRegisterCallback: (callback) {
-            callbackCalled = true;
-          },
-        ));
+        await tester.pumpWidget(
+          buildWelcomeScreen(
+            onRegisterCallback: (callback) {
+              callbackCalled = true;
+            },
+          ),
+        );
         await tester.pump();
 
         expect(callbackCalled, isTrue);

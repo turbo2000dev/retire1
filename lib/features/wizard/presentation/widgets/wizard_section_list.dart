@@ -42,7 +42,8 @@ class WizardSectionList extends ConsumerWidget {
     return progressAsync.when(
       data: (progress) {
         // Group sections by category
-        final Map<WizardSectionCategory, List<WizardSection>> groupedSections = {};
+        final Map<WizardSectionCategory, List<WizardSection>> groupedSections =
+            {};
         for (final section in sections) {
           groupedSections.putIfAbsent(section.category, () => []).add(section);
         }
@@ -85,7 +86,9 @@ class WizardSectionList extends ConsumerWidget {
                             WizardSectionsConfig.categoryTitleKeys[category],
                           ),
                           style: theme.textTheme.titleSmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -109,9 +112,8 @@ class WizardSectionList extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('${l10n.errorLoadingSections}: $error'),
-      ),
+      error: (error, stack) =>
+          Center(child: Text('${l10n.errorLoadingSections}: $error')),
     );
   }
 }

@@ -19,28 +19,27 @@ class WizardSectionStatus with _$WizardSectionStatus {
   const WizardSectionStatus._();
 
   /// Create a new "not started" status
-  factory WizardSectionStatus.notStarted() => const WizardSectionStatus(
-        state: WizardSectionState.notStarted,
-      );
+  factory WizardSectionStatus.notStarted() =>
+      const WizardSectionStatus(state: WizardSectionState.notStarted);
 
   /// Create a new "in progress" status
   factory WizardSectionStatus.inProgress() => WizardSectionStatus(
-        state: WizardSectionState.inProgress,
-        lastVisited: DateTime.now(),
-      );
+    state: WizardSectionState.inProgress,
+    lastVisited: DateTime.now(),
+  );
 
   /// Create a new "skipped" status
   factory WizardSectionStatus.skipped() => WizardSectionStatus(
-        state: WizardSectionState.skipped,
-        lastVisited: DateTime.now(),
-      );
+    state: WizardSectionState.skipped,
+    lastVisited: DateTime.now(),
+  );
 
   /// Create a new "complete" status
   factory WizardSectionStatus.complete() => WizardSectionStatus(
-        state: WizardSectionState.complete,
-        completedAt: DateTime.now(),
-        lastVisited: DateTime.now(),
-      );
+    state: WizardSectionState.complete,
+    completedAt: DateTime.now(),
+    lastVisited: DateTime.now(),
+  );
 
   /// Create a new "needs attention" status with warnings
   factory WizardSectionStatus.needsAttention(List<String> warnings) =>
@@ -52,12 +51,12 @@ class WizardSectionStatus with _$WizardSectionStatus {
 
   /// Icon for this status
   String get icon => switch (state) {
-        WizardSectionState.notStarted => '⏹️',
-        WizardSectionState.inProgress => '🔄',
-        WizardSectionState.skipped => '⏸️',
-        WizardSectionState.complete => '✅',
-        WizardSectionState.needsAttention => '⚠️',
-      };
+    WizardSectionState.notStarted => '⏹️',
+    WizardSectionState.inProgress => '🔄',
+    WizardSectionState.skipped => '⏸️',
+    WizardSectionState.complete => '✅',
+    WizardSectionState.needsAttention => '⚠️',
+  };
 
   /// Whether this section is considered done
   bool get isDone =>

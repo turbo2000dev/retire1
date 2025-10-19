@@ -113,13 +113,17 @@ void main() {
       });
 
       test('primary-individual should be required', () {
-        final section = WizardSectionsConfig.getSectionById('primary-individual');
+        final section = WizardSectionsConfig.getSectionById(
+          'primary-individual',
+        );
         expect(section, isNotNull);
         expect(section!.isRequired, isTrue);
       });
 
       test('government-benefits should be required', () {
-        final section = WizardSectionsConfig.getSectionById('government-benefits');
+        final section = WizardSectionsConfig.getSectionById(
+          'government-benefits',
+        );
         expect(section, isNotNull);
         expect(section!.isRequired, isTrue);
       });
@@ -131,7 +135,9 @@ void main() {
       });
 
       test('retirement-timing should be required', () {
-        final section = WizardSectionsConfig.getSectionById('retirement-timing');
+        final section = WizardSectionsConfig.getSectionById(
+          'retirement-timing',
+        );
         expect(section, isNotNull);
         expect(section!.isRequired, isTrue);
       });
@@ -143,12 +149,23 @@ void main() {
       });
 
       test('optional sections should not be required', () {
-        final optional = ['welcome', 'partner', 'assets', 'employment', 'benefits-education', 'life-events'];
+        final optional = [
+          'welcome',
+          'partner',
+          'assets',
+          'employment',
+          'benefits-education',
+          'life-events',
+        ];
 
         for (final id in optional) {
           final section = WizardSectionsConfig.getSectionById(id);
           expect(section, isNotNull);
-          expect(section!.isRequired, isFalse, reason: '$id should be optional');
+          expect(
+            section!.isRequired,
+            isFalse,
+            reason: '$id should be optional',
+          );
         }
       });
     });
@@ -166,27 +183,44 @@ void main() {
       });
 
       test('benefits-education should be educational', () {
-        final section = WizardSectionsConfig.getSectionById('benefits-education');
+        final section = WizardSectionsConfig.getSectionById(
+          'benefits-education',
+        );
         expect(section, isNotNull);
         expect(section!.isEducational, isTrue);
       });
 
       test('non-educational sections should be marked correctly', () {
-        final nonEducational = ['project-basics', 'primary-individual', 'partner',
-          'assets', 'employment', 'government-benefits', 'expenses',
-          'retirement-timing', 'life-events', 'summary'];
+        final nonEducational = [
+          'project-basics',
+          'primary-individual',
+          'partner',
+          'assets',
+          'employment',
+          'government-benefits',
+          'expenses',
+          'retirement-timing',
+          'life-events',
+          'summary',
+        ];
 
         for (final id in nonEducational) {
           final section = WizardSectionsConfig.getSectionById(id);
           expect(section, isNotNull);
-          expect(section!.isEducational, isFalse, reason: '$id should not be educational');
+          expect(
+            section!.isEducational,
+            isFalse,
+            reason: '$id should not be educational',
+          );
         }
       });
     });
 
     group('Section Dependencies', () {
       test('primary-individual should depend on project-basics', () {
-        final section = WizardSectionsConfig.getSectionById('primary-individual');
+        final section = WizardSectionsConfig.getSectionById(
+          'primary-individual',
+        );
         expect(section, isNotNull);
         expect(section!.dependsOnSectionId, 'project-basics');
       });
@@ -210,13 +244,17 @@ void main() {
       });
 
       test('government-benefits should depend on primary-individual', () {
-        final section = WizardSectionsConfig.getSectionById('government-benefits');
+        final section = WizardSectionsConfig.getSectionById(
+          'government-benefits',
+        );
         expect(section, isNotNull);
         expect(section!.dependsOnSectionId, 'primary-individual');
       });
 
       test('retirement-timing should depend on primary-individual', () {
-        final section = WizardSectionsConfig.getSectionById('retirement-timing');
+        final section = WizardSectionsConfig.getSectionById(
+          'retirement-timing',
+        );
         expect(section, isNotNull);
         expect(section!.dependsOnSectionId, 'primary-individual');
       });
@@ -241,9 +279,20 @@ void main() {
       });
 
       test('should work for all section IDs', () {
-        final allIds = ['welcome', 'project-basics', 'primary-individual', 'partner',
-          'assets', 'employment', 'benefits-education', 'government-benefits',
-          'expenses', 'retirement-timing', 'life-events', 'summary'];
+        final allIds = [
+          'welcome',
+          'project-basics',
+          'primary-individual',
+          'partner',
+          'assets',
+          'employment',
+          'benefits-education',
+          'government-benefits',
+          'expenses',
+          'retirement-timing',
+          'life-events',
+          'summary',
+        ];
 
         for (final id in allIds) {
           final section = WizardSectionsConfig.getSectionById(id);
@@ -281,7 +330,10 @@ void main() {
           count++;
         }
 
-        expect(count, 11); // Should navigate through 11 sections (12 total - 1 starting)
+        expect(
+          count,
+          11,
+        ); // Should navigate through 11 sections (12 total - 1 starting)
       });
     });
 

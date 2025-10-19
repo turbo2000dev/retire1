@@ -22,10 +22,26 @@ void main() {
         expect(progress.sectionStatuses, isEmpty);
         expect(progress.wizardCompleted, false);
         expect(progress.completedAt, isNull);
-        expect(progress.createdAt.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
-        expect(progress.createdAt.isBefore(after.add(const Duration(seconds: 1))), isTrue);
-        expect(progress.lastUpdated.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
-        expect(progress.lastUpdated.isBefore(after.add(const Duration(seconds: 1))), isTrue);
+        expect(
+          progress.createdAt.isAfter(
+            before.subtract(const Duration(seconds: 1)),
+          ),
+          isTrue,
+        );
+        expect(
+          progress.createdAt.isBefore(after.add(const Duration(seconds: 1))),
+          isTrue,
+        );
+        expect(
+          progress.lastUpdated.isAfter(
+            before.subtract(const Duration(seconds: 1)),
+          ),
+          isTrue,
+        );
+        expect(
+          progress.lastUpdated.isBefore(after.add(const Duration(seconds: 1))),
+          isTrue,
+        );
       });
     });
 
@@ -35,9 +51,7 @@ void main() {
         final progress = WizardProgress.create(
           projectId: projectId,
           userId: userId,
-        ).copyWith(
-          sectionStatuses: {'test-section': existingStatus},
-        );
+        ).copyWith(sectionStatuses: {'test-section': existingStatus});
 
         final status = progress.getStatus('test-section');
         expect(status, existingStatus);
@@ -74,34 +88,36 @@ void main() {
       });
 
       test('calculates correct percentage', () {
-        final progress = WizardProgress.create(
-          projectId: projectId,
-          userId: userId,
-        ).copyWith(
-          sectionStatuses: {
-            'section1': WizardSectionStatus.complete(),
-            'section2': WizardSectionStatus.complete(),
-            'section3': WizardSectionStatus.inProgress(),
-            'section4': WizardSectionStatus.notStarted(),
-            'section5': WizardSectionStatus.skipped(),
-          },
-        );
+        final progress =
+            WizardProgress.create(
+              projectId: projectId,
+              userId: userId,
+            ).copyWith(
+              sectionStatuses: {
+                'section1': WizardSectionStatus.complete(),
+                'section2': WizardSectionStatus.complete(),
+                'section3': WizardSectionStatus.inProgress(),
+                'section4': WizardSectionStatus.notStarted(),
+                'section5': WizardSectionStatus.skipped(),
+              },
+            );
 
         // 2 out of 5 complete = 40%
         expect(progress.calculateProgress(5), 40.0);
       });
 
       test('counts only complete sections, not skipped', () {
-        final progress = WizardProgress.create(
-          projectId: projectId,
-          userId: userId,
-        ).copyWith(
-          sectionStatuses: {
-            'section1': WizardSectionStatus.complete(),
-            'section2': WizardSectionStatus.skipped(),
-            'section3': WizardSectionStatus.skipped(),
-          },
-        );
+        final progress =
+            WizardProgress.create(
+              projectId: projectId,
+              userId: userId,
+            ).copyWith(
+              sectionStatuses: {
+                'section1': WizardSectionStatus.complete(),
+                'section2': WizardSectionStatus.skipped(),
+                'section3': WizardSectionStatus.skipped(),
+              },
+            );
 
         // Only 1 complete out of 3 = 33.33%
         expect(progress.calculateProgress(3), closeTo(33.33, 0.01));
@@ -110,16 +126,17 @@ void main() {
 
     group('areRequiredSectionsComplete', () {
       test('returns true when all required sections complete', () {
-        final progress = WizardProgress.create(
-          projectId: projectId,
-          userId: userId,
-        ).copyWith(
-          sectionStatuses: {
-            'required1': WizardSectionStatus.complete(),
-            'required2': WizardSectionStatus.complete(),
-            'optional': WizardSectionStatus.notStarted(),
-          },
-        );
+        final progress =
+            WizardProgress.create(
+              projectId: projectId,
+              userId: userId,
+            ).copyWith(
+              sectionStatuses: {
+                'required1': WizardSectionStatus.complete(),
+                'required2': WizardSectionStatus.complete(),
+                'optional': WizardSectionStatus.notStarted(),
+              },
+            );
 
         expect(
           progress.areRequiredSectionsComplete(['required1', 'required2']),
@@ -128,15 +145,16 @@ void main() {
       });
 
       test('returns false when any required section incomplete', () {
-        final progress = WizardProgress.create(
-          projectId: projectId,
-          userId: userId,
-        ).copyWith(
-          sectionStatuses: {
-            'required1': WizardSectionStatus.complete(),
-            'required2': WizardSectionStatus.inProgress(),
-          },
-        );
+        final progress =
+            WizardProgress.create(
+              projectId: projectId,
+              userId: userId,
+            ).copyWith(
+              sectionStatuses: {
+                'required1': WizardSectionStatus.complete(),
+                'required2': WizardSectionStatus.inProgress(),
+              },
+            );
 
         expect(
           progress.areRequiredSectionsComplete(['required1', 'required2']),
@@ -145,15 +163,16 @@ void main() {
       });
 
       test('returns false when required section is skipped', () {
-        final progress = WizardProgress.create(
-          projectId: projectId,
-          userId: userId,
-        ).copyWith(
-          sectionStatuses: {
-            'required1': WizardSectionStatus.complete(),
-            'required2': WizardSectionStatus.skipped(),
-          },
-        );
+        final progress =
+            WizardProgress.create(
+              projectId: projectId,
+              userId: userId,
+            ).copyWith(
+              sectionStatuses: {
+                'required1': WizardSectionStatus.complete(),
+                'required2': WizardSectionStatus.skipped(),
+              },
+            );
 
         expect(
           progress.areRequiredSectionsComplete(['required1', 'required2']),
@@ -162,14 +181,13 @@ void main() {
       });
 
       test('returns false when required section not started', () {
-        final progress = WizardProgress.create(
-          projectId: projectId,
-          userId: userId,
-        ).copyWith(
-          sectionStatuses: {
-            'required1': WizardSectionStatus.complete(),
-          },
-        );
+        final progress =
+            WizardProgress.create(
+              projectId: projectId,
+              userId: userId,
+            ).copyWith(
+              sectionStatuses: {'required1': WizardSectionStatus.complete()},
+            );
 
         expect(
           progress.areRequiredSectionsComplete(['required1', 'required2']),
@@ -210,7 +228,10 @@ void main() {
         expect(deserialized.projectId, original.projectId);
         expect(deserialized.userId, original.userId);
         expect(deserialized.currentSectionId, original.currentSectionId);
-        expect(deserialized.sectionStatuses.length, original.sectionStatuses.length);
+        expect(
+          deserialized.sectionStatuses.length,
+          original.sectionStatuses.length,
+        );
         expect(deserialized.wizardCompleted, original.wizardCompleted);
         expect(deserialized.lastUpdated, original.lastUpdated);
         expect(deserialized.createdAt, original.createdAt);

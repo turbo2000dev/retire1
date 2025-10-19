@@ -15,10 +15,7 @@ import 'package:uuid/uuid.dart';
 class PrimaryIndividualSectionScreen extends ConsumerStatefulWidget {
   final void Function(Future<bool> Function()?)? onRegisterCallback;
 
-  const PrimaryIndividualSectionScreen({
-    super.key,
-    this.onRegisterCallback,
-  });
+  const PrimaryIndividualSectionScreen({super.key, this.onRegisterCallback});
 
   @override
   ConsumerState<PrimaryIndividualSectionScreen> createState() =>
@@ -78,10 +75,12 @@ class _PrimaryIndividualSectionScreenState
 
         // Mark section as in progress after first frame is built
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-            'primary-individual',
-            WizardSectionStatus.inProgress(),
-          );
+          ref
+              .read(wizardProgressProvider.notifier)
+              .updateSectionStatus(
+                'primary-individual',
+                WizardSectionStatus.inProgress(),
+              );
         });
       }
     } catch (e) {
@@ -96,7 +95,8 @@ class _PrimaryIndividualSectionScreenState
 
   Future<void> _selectBirthdate() async {
     final now = DateTime.now();
-    final initialDate = _selectedBirthdate ?? DateTime(now.year - 40, now.month, now.day);
+    final initialDate =
+        _selectedBirthdate ?? DateTime(now.year - 40, now.month, now.day);
 
     final picked = await showDatePicker(
       context: context,
@@ -168,7 +168,9 @@ class _PrimaryIndividualSectionScreenState
       await repository!.updateProjectData(updatedProject);
 
       // Mark section as complete
-      await ref.read(wizardProgressProvider.notifier).updateSectionStatus(
+      await ref
+          .read(wizardProgressProvider.notifier)
+          .updateSectionStatus(
             'primary-individual',
             WizardSectionStatus.complete(),
           );
@@ -206,10 +208,7 @@ class _PrimaryIndividualSectionScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Section title and description
-            Text(
-              l10n.section3Title,
-              style: theme.textTheme.headlineMedium,
-            ),
+            Text(l10n.section3Title, style: theme.textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text(
               l10n.section3Description,
@@ -229,10 +228,7 @@ class _PrimaryIndividualSectionScreenState
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: theme.colorScheme.error,
-                    ),
+                    Icon(Icons.error_outline, color: theme.colorScheme.error),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -278,9 +274,7 @@ class _PrimaryIndividualSectionScreenState
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: theme.colorScheme.outline,
-                  ),
+                  border: Border.all(color: theme.colorScheme.outline),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -298,7 +292,9 @@ class _PrimaryIndividualSectionScreenState
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: _selectedBirthdate != null
                               ? theme.colorScheme.onSurface
-                              : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              : theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.5,
+                                ),
                         ),
                       ),
                     ),
@@ -327,10 +323,7 @@ class _PrimaryIndividualSectionScreenState
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 8),
-                    Text(
-                      'Saving...',
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    Text('Saving...', style: theme.textTheme.bodySmall),
                   ],
                 ),
               )

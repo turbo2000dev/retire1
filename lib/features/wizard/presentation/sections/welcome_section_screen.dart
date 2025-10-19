@@ -7,13 +7,11 @@ import 'package:retire1/features/wizard/presentation/providers/wizard_progress_p
 class WelcomeSectionScreen extends ConsumerStatefulWidget {
   final void Function(Future<bool> Function()?)? onRegisterCallback;
 
-  const WelcomeSectionScreen({
-    super.key,
-    this.onRegisterCallback,
-  });
+  const WelcomeSectionScreen({super.key, this.onRegisterCallback});
 
   @override
-  ConsumerState<WelcomeSectionScreen> createState() => _WelcomeSectionScreenState();
+  ConsumerState<WelcomeSectionScreen> createState() =>
+      _WelcomeSectionScreenState();
 }
 
 class _WelcomeSectionScreenState extends ConsumerState<WelcomeSectionScreen> {
@@ -26,17 +24,14 @@ class _WelcomeSectionScreenState extends ConsumerState<WelcomeSectionScreen> {
 
     // Mark as complete after first frame (educational section, just needs to be viewed)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-        'welcome',
-        WizardSectionStatus.complete(),
-      );
+      ref
+          .read(wizardProgressProvider.notifier)
+          .updateSectionStatus('welcome', WizardSectionStatus.complete());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Welcome Section - Coming Soon'),
-    );
+    return const Center(child: Text('Welcome Section - Coming Soon'));
   }
 }

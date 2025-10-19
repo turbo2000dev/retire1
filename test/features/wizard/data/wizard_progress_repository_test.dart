@@ -133,32 +133,32 @@ void main() {
         final data = doc.data()!;
         expect(data['sectionStatuses'], isNotNull);
         expect(data['sectionStatuses']['project-basics'], isNotNull);
-        expect(
-          data['sectionStatuses']['project-basics']['state'],
-          'complete',
-        );
+        expect(data['sectionStatuses']['project-basics']['state'], 'complete');
       });
 
-      test('should not update current section (use navigateToSection for that)', () async {
-        await repository.getOrCreateProgress(testProjectId);
+      test(
+        'should not update current section (use navigateToSection for that)',
+        () async {
+          await repository.getOrCreateProgress(testProjectId);
 
-        await repository.updateSectionStatus(
-          testProjectId,
-          'partner',
-          WizardSectionStatus.inProgress(),
-        );
+          await repository.updateSectionStatus(
+            testProjectId,
+            'partner',
+            WizardSectionStatus.inProgress(),
+          );
 
-        final doc = await fakeFirestore
-            .collection('users')
-            .doc(testUserId)
-            .collection('wizardProgress')
-            .doc(testProjectId)
-            .get();
+          final doc = await fakeFirestore
+              .collection('users')
+              .doc(testUserId)
+              .collection('wizardProgress')
+              .doc(testProjectId)
+              .get();
 
-        // updateSectionStatus should NOT change currentSectionId
-        // Use navigateToSection for that
-        expect(doc.data()!['currentSectionId'], 'welcome');
-      });
+          // updateSectionStatus should NOT change currentSectionId
+          // Use navigateToSection for that
+          expect(doc.data()!['currentSectionId'], 'welcome');
+        },
+      );
 
       test('should update lastUpdated timestamp', () async {
         final initial = await repository.getOrCreateProgress(testProjectId);
@@ -200,9 +200,18 @@ void main() {
         final progress = await repository.getOrCreateProgress(testProjectId);
 
         expect(progress.sectionStatuses.length, 3);
-        expect(progress.sectionStatuses['section1']!.state, WizardSectionState.complete);
-        expect(progress.sectionStatuses['section2']!.state, WizardSectionState.inProgress);
-        expect(progress.sectionStatuses['section3']!.state, WizardSectionState.skipped);
+        expect(
+          progress.sectionStatuses['section1']!.state,
+          WizardSectionState.complete,
+        );
+        expect(
+          progress.sectionStatuses['section2']!.state,
+          WizardSectionState.inProgress,
+        );
+        expect(
+          progress.sectionStatuses['section3']!.state,
+          WizardSectionState.skipped,
+        );
       });
     });
 
@@ -276,8 +285,14 @@ void main() {
         final completedAt = DateTime.parse(completedAtString);
         final after = DateTime.now();
 
-        expect(completedAt.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
-        expect(completedAt.isBefore(after.add(const Duration(seconds: 1))), isTrue);
+        expect(
+          completedAt.isAfter(before.subtract(const Duration(seconds: 1))),
+          isTrue,
+        );
+        expect(
+          completedAt.isBefore(after.add(const Duration(seconds: 1))),
+          isTrue,
+        );
       });
     });
 
@@ -328,45 +343,51 @@ void main() {
         expect(progress.lastUpdated, isA<DateTime>());
       });
 
-      test('should handle nested timestamp conversion in section statuses', () async {
-        await repository.getOrCreateProgress(testProjectId);
+      test(
+        'should handle nested timestamp conversion in section statuses',
+        () async {
+          await repository.getOrCreateProgress(testProjectId);
 
-        await repository.updateSectionStatus(
-          testProjectId,
-          'test-section',
-          WizardSectionStatus.complete(),
-        );
+          await repository.updateSectionStatus(
+            testProjectId,
+            'test-section',
+            WizardSectionStatus.complete(),
+          );
 
-        // Read back from repository
-        final progress = await repository.getOrCreateProgress(testProjectId);
+          // Read back from repository
+          final progress = await repository.getOrCreateProgress(testProjectId);
 
-        // Status timestamps should be DateTime
-        final status = progress.sectionStatuses['test-section']!;
-        expect(status.lastVisited, isA<DateTime>());
-        expect(status.completedAt, isA<DateTime>());
-      });
+          // Status timestamps should be DateTime
+          final status = progress.sectionStatuses['test-section']!;
+          expect(status.lastVisited, isA<DateTime>());
+          expect(status.completedAt, isA<DateTime>());
+        },
+      );
     });
 
     group('Data Integrity', () {
-      test('should maintain section status details through round-trip', () async {
-        await repository.getOrCreateProgress(testProjectId);
+      test(
+        'should maintain section status details through round-trip',
+        () async {
+          await repository.getOrCreateProgress(testProjectId);
 
-        final warnings = ['Warning 1', 'Warning 2'];
-        final originalStatus = WizardSectionStatus.needsAttention(warnings);
+          final warnings = ['Warning 1', 'Warning 2'];
+          final originalStatus = WizardSectionStatus.needsAttention(warnings);
 
-        await repository.updateSectionStatus(
-          testProjectId,
-          'test-section',
-          originalStatus,
-        );
+          await repository.updateSectionStatus(
+            testProjectId,
+            'test-section',
+            originalStatus,
+          );
 
-        final progress = await repository.getOrCreateProgress(testProjectId);
-        final retrievedStatus = progress.sectionStatuses['test-section']!;
+          final progress = await repository.getOrCreateProgress(testProjectId);
+          final retrievedStatus = progress.sectionStatuses['test-section']!;
 
-        expect(retrievedStatus.state, WizardSectionState.needsAttention);
-        expect(retrievedStatus.validationWarnings, warnings);
-        expect(retrievedStatus.lastVisited, isNotNull);
-      });
+          expect(retrievedStatus.state, WizardSectionState.needsAttention);
+          expect(retrievedStatus.validationWarnings, warnings);
+          expect(retrievedStatus.lastVisited, isNotNull);
+        },
+      );
 
       test('should handle empty section statuses map', () async {
         final progress = await repository.getOrCreateProgress(testProjectId);

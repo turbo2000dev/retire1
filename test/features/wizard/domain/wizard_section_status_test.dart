@@ -20,8 +20,16 @@ void main() {
 
         expect(status.state, WizardSectionState.inProgress);
         expect(status.lastVisited, isNotNull);
-        expect(status.lastVisited!.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
-        expect(status.lastVisited!.isBefore(after.add(const Duration(seconds: 1))), isTrue);
+        expect(
+          status.lastVisited!.isAfter(
+            before.subtract(const Duration(seconds: 1)),
+          ),
+          isTrue,
+        );
+        expect(
+          status.lastVisited!.isBefore(after.add(const Duration(seconds: 1))),
+          isTrue,
+        );
         expect(status.completedAt, isNull);
         expect(status.validationWarnings, isEmpty);
       });
@@ -33,8 +41,16 @@ void main() {
 
         expect(status.state, WizardSectionState.skipped);
         expect(status.lastVisited, isNotNull);
-        expect(status.lastVisited!.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
-        expect(status.lastVisited!.isBefore(after.add(const Duration(seconds: 1))), isTrue);
+        expect(
+          status.lastVisited!.isAfter(
+            before.subtract(const Duration(seconds: 1)),
+          ),
+          isTrue,
+        );
+        expect(
+          status.lastVisited!.isBefore(after.add(const Duration(seconds: 1))),
+          isTrue,
+        );
         expect(status.completedAt, isNull);
       });
 
@@ -46,10 +62,26 @@ void main() {
         expect(status.state, WizardSectionState.complete);
         expect(status.lastVisited, isNotNull);
         expect(status.completedAt, isNotNull);
-        expect(status.lastVisited!.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
-        expect(status.completedAt!.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
-        expect(status.lastVisited!.isBefore(after.add(const Duration(seconds: 1))), isTrue);
-        expect(status.completedAt!.isBefore(after.add(const Duration(seconds: 1))), isTrue);
+        expect(
+          status.lastVisited!.isAfter(
+            before.subtract(const Duration(seconds: 1)),
+          ),
+          isTrue,
+        );
+        expect(
+          status.completedAt!.isAfter(
+            before.subtract(const Duration(seconds: 1)),
+          ),
+          isTrue,
+        );
+        expect(
+          status.lastVisited!.isBefore(after.add(const Duration(seconds: 1))),
+          isTrue,
+        );
+        expect(
+          status.completedAt!.isBefore(after.add(const Duration(seconds: 1))),
+          isTrue,
+        );
       });
 
       test('needsAttention creates correct status with warnings', () {

@@ -152,7 +152,9 @@ class _MultiScenarioProjectionChartState
                   size: const Size(24, 2),
                   painter: _LinePainter(
                     color: isHidden
-                        ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)
+                        ? theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.3,
+                          )
                         : color,
                     dashArray: lineStyle,
                   ),
@@ -163,7 +165,9 @@ class _MultiScenarioProjectionChartState
                   scenario.scenarioName,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isHidden
-                        ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
+                        ? theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.5,
+                          )
                         : theme.colorScheme.onSurface,
                     decoration: isHidden ? TextDecoration.lineThrough : null,
                   ),

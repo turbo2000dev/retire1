@@ -45,26 +45,36 @@ class WizardProgressNotifier extends AsyncNotifier<WizardProgress?> {
     try {
       final completer = Completer<WizardProgress?>();
 
-      _streamSubscription = _repository!.getProgressStream(projectId).listen(
-        (progress) {
-          if (!completer.isCompleted) {
-            completer.complete(progress);
-          }
-          // Update state with new data from stream
-          state = AsyncValue.data(progress);
-        },
-        onError: (error, stackTrace) {
-          if (!completer.isCompleted) {
-            completer.completeError(error, stackTrace);
-          }
-          log('Error in wizard progress stream', error: error, stackTrace: stackTrace);
-          state = AsyncValue.error(error, stackTrace);
-        },
-      );
+      _streamSubscription = _repository!
+          .getProgressStream(projectId)
+          .listen(
+            (progress) {
+              if (!completer.isCompleted) {
+                completer.complete(progress);
+              }
+              // Update state with new data from stream
+              state = AsyncValue.data(progress);
+            },
+            onError: (error, stackTrace) {
+              if (!completer.isCompleted) {
+                completer.completeError(error, stackTrace);
+              }
+              log(
+                'Error in wizard progress stream',
+                error: error,
+                stackTrace: stackTrace,
+              );
+              state = AsyncValue.error(error, stackTrace);
+            },
+          );
 
       return await completer.future;
     } catch (e, stack) {
-      log('Failed to initialize wizard progress stream', error: e, stackTrace: stack);
+      log(
+        'Failed to initialize wizard progress stream',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
@@ -81,7 +91,9 @@ class WizardProgressNotifier extends AsyncNotifier<WizardProgress?> {
       throw Exception('Cannot access wizard progress: no project selected');
     }
 
-    return await _repository!.getOrCreateProgress(currentProjectState.project.id);
+    return await _repository!.getOrCreateProgress(
+      currentProjectState.project.id,
+    );
   }
 
   /// Update section status
@@ -191,5 +203,5 @@ class WizardProgressNotifier extends AsyncNotifier<WizardProgress?> {
 /// Provider for wizard progress (watches current project)
 final wizardProgressProvider =
     AsyncNotifierProvider<WizardProgressNotifier, WizardProgress?>(
-  () => WizardProgressNotifier(),
-);
+      () => WizardProgressNotifier(),
+    );

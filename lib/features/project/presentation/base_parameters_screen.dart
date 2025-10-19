@@ -92,9 +92,7 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           // TODO: Launch new wizard when implemented
           // For now, just show success message
           if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Project created. Wizard coming soon!'),
               ),

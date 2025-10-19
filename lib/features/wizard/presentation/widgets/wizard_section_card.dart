@@ -125,7 +125,9 @@ class WizardSectionCard extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.error.withValues(alpha: 0.1),
+                                color: theme.colorScheme.error.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -146,7 +148,9 @@ class WizardSectionCard extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
+                                color: theme.colorScheme.tertiary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -166,7 +170,9 @@ class WizardSectionCard extends StatelessWidget {
                       Text(
                         _getLocalizedDescription(l10n),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -200,10 +206,7 @@ class WizardSectionCard extends StatelessWidget {
                 // Current section indicator
                 if (isCurrentSection && !isSuggestedNext) ...[
                   const SizedBox(width: 8),
-                  Icon(
-                    Icons.chevron_right,
-                    color: theme.colorScheme.primary,
-                  ),
+                  Icon(Icons.chevron_right, color: theme.colorScheme.primary),
                 ],
               ],
             ),

@@ -133,10 +133,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.wizard,
             name: 'wizard',
-            pageBuilder: (context, state) => MaterialPage(
-              key: state.pageKey,
-              child: const WizardScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                MaterialPage(key: state.pageKey, child: const WizardScreen()),
           ),
         ],
       ),

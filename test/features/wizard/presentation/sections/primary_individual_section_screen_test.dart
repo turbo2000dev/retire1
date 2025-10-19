@@ -21,7 +21,7 @@ class FakeProjectRepository extends ProjectRepository {
   Project? _lastUpdatedProject;
 
   FakeProjectRepository()
-      : super(userId: 'test-user', firestore: FakeFirestore());
+    : super(userId: 'test-user', firestore: FakeFirestore());
 
   @override
   Future<void> updateProjectData(Project project) async {
@@ -35,8 +35,11 @@ class FakeProjectRepository extends ProjectRepository {
 class MockCurrentProjectNotifier extends CurrentProjectNotifier {
   final CurrentProjectState mockState;
 
-  MockCurrentProjectNotifier(this.mockState, Ref ref, FakeProjectRepository repo)
-      : super(ref, null, repo) {
+  MockCurrentProjectNotifier(
+    this.mockState,
+    Ref ref,
+    FakeProjectRepository repo,
+  ) : super(ref, null, repo) {
     state = mockState;
   }
 }
@@ -96,8 +99,13 @@ void main() {
       final project = projectOverride ?? testProject;
       return ProviderScope(
         overrides: [
-          currentProjectProvider.overrideWith((ref) =>
-              MockCurrentProjectNotifier(ProjectSelected(project), ref, fakeRepository)),
+          currentProjectProvider.overrideWith(
+            (ref) => MockCurrentProjectNotifier(
+              ProjectSelected(project),
+              ref,
+              fakeRepository,
+            ),
+          ),
           projectRepositoryProvider.overrideWithValue(fakeRepository),
           wizardProgressProvider.overrideWith(() => mockNotifier),
         ],
@@ -119,7 +127,9 @@ void main() {
     }
 
     group('Initialization', () {
-      testWidgets('loads with empty form when no individuals exist', (tester) async {
+      testWidgets('loads with empty form when no individuals exist', (
+        tester,
+      ) async {
         await tester.pumpWidget(buildPrimaryIndividualScreen());
         await tester.pump();
         await tester.pumpAndSettle();
@@ -140,9 +150,9 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          projectOverride: projectWithIndividual,
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(projectOverride: projectWithIndividual),
+        );
         await tester.pump();
         await tester.pumpAndSettle();
 
@@ -152,11 +162,13 @@ void main() {
       testWidgets('registers validation callback', (tester) async {
         Future<bool> Function()? registeredCallback;
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          onRegisterCallback: (callback) {
-            registeredCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            onRegisterCallback: (callback) {
+              registeredCallback = callback;
+            },
+          ),
+        );
         await tester.pump();
         await tester.pumpAndSettle();
 
@@ -170,7 +182,10 @@ void main() {
 
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.first.key, 'primary-individual');
-        expect(mockNotifier.statusUpdates.first.value.state, WizardSectionState.inProgress);
+        expect(
+          mockNotifier.statusUpdates.first.value.state,
+          WizardSectionState.inProgress,
+        );
       });
     });
 
@@ -178,11 +193,13 @@ void main() {
       testWidgets('validation fails with empty name', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         final result = await validationCallback!();
@@ -192,11 +209,13 @@ void main() {
       testWidgets('validation fails without birthdate', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Enter name only
@@ -221,12 +240,14 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          projectOverride: projectWithIndividual,
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            projectOverride: projectWithIndividual,
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         final result = await validationCallback!();
@@ -238,11 +259,13 @@ void main() {
       testWidgets('creates new individual when none exists', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Enter name
@@ -261,7 +284,10 @@ void main() {
 
         expect(fakeRepository.lastUpdatedProject, isNotNull);
         expect(fakeRepository.lastUpdatedProject!.individuals.length, 1);
-        expect(fakeRepository.lastUpdatedProject!.individuals.first.name, 'Jane Smith');
+        expect(
+          fakeRepository.lastUpdatedProject!.individuals.first.name,
+          'Jane Smith',
+        );
       });
 
       testWidgets('updates existing individual', (tester) async {
@@ -277,12 +303,14 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          projectOverride: projectWithIndividual,
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            projectOverride: projectWithIndividual,
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Update name
@@ -294,8 +322,14 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(fakeRepository.lastUpdatedProject, isNotNull);
-        expect(fakeRepository.lastUpdatedProject!.individuals.first.name, 'John Smith');
-        expect(fakeRepository.lastUpdatedProject!.individuals.first.id, 'individual-1');
+        expect(
+          fakeRepository.lastUpdatedProject!.individuals.first.name,
+          'John Smith',
+        );
+        expect(
+          fakeRepository.lastUpdatedProject!.individuals.first.id,
+          'individual-1',
+        );
       });
 
       testWidgets('marks section as complete after save', (tester) async {
@@ -311,12 +345,14 @@ void main() {
           ],
         );
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          projectOverride: projectWithIndividual,
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            projectOverride: projectWithIndividual,
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Clear previous status updates
@@ -327,7 +363,10 @@ void main() {
 
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.last.key, 'primary-individual');
-        expect(mockNotifier.statusUpdates.last.value.state, WizardSectionState.complete);
+        expect(
+          mockNotifier.statusUpdates.last.value.state,
+          WizardSectionState.complete,
+        );
       });
     });
 
@@ -356,9 +395,9 @@ void main() {
 
     group('Callback Registration', () {
       testWidgets('does not crash when callback is null', (tester) async {
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          onRegisterCallback: null,
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(onRegisterCallback: null),
+        );
         await tester.pumpAndSettle();
 
         expect(find.byType(PrimaryIndividualSectionScreen), findsOneWidget);
@@ -367,11 +406,13 @@ void main() {
       testWidgets('calls callback during initialization', (tester) async {
         bool callbackCalled = false;
 
-        await tester.pumpWidget(buildPrimaryIndividualScreen(
-          onRegisterCallback: (callback) {
-            callbackCalled = true;
-          },
-        ));
+        await tester.pumpWidget(
+          buildPrimaryIndividualScreen(
+            onRegisterCallback: (callback) {
+              callbackCalled = true;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         expect(callbackCalled, isTrue);

@@ -15,7 +15,7 @@ class WizardProgressRepository {
   final String userId;
 
   WizardProgressRepository({required this.userId, FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Get the wizard progress collection reference for the current user
   CollectionReference<Map<String, dynamic>> get _progressCollection =>
@@ -58,7 +58,9 @@ class WizardProgressRepository {
   /// Get a stream of wizard progress for a project
   Stream<WizardProgress?> getProgressStream(String projectId) {
     try {
-      return _progressCollection.doc(projectId).snapshots().asyncMap((snapshot) async {
+      return _progressCollection.doc(projectId).snapshots().asyncMap((
+        snapshot,
+      ) async {
         if (!snapshot.exists) {
           return null;
         }
@@ -174,11 +176,12 @@ class WizardProgressRepository {
       rethrow;
     }
   }
-
 }
 
 /// Provider for WizardProgressRepository
-final wizardProgressRepositoryProvider = Provider<WizardProgressRepository>((ref) {
+final wizardProgressRepositoryProvider = Provider<WizardProgressRepository>((
+  ref,
+) {
   final user = ref.watch(currentUserProvider);
 
   if (user == null) {

@@ -20,8 +20,12 @@ class WizardNavButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final currentSection = WizardSectionsConfig.getSectionById(currentSectionId);
-    final previousSection = WizardSectionsConfig.getPreviousSection(currentSectionId);
+    final currentSection = WizardSectionsConfig.getSectionById(
+      currentSectionId,
+    );
+    final previousSection = WizardSectionsConfig.getPreviousSection(
+      currentSectionId,
+    );
     final nextSection = WizardSectionsConfig.getNextSection(currentSectionId);
 
     if (currentSection == null) {

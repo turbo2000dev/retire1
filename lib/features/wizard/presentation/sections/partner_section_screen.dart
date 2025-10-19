@@ -13,13 +13,11 @@ import 'package:uuid/uuid.dart';
 class PartnerSectionScreen extends ConsumerStatefulWidget {
   final void Function(Future<bool> Function()?)? onRegisterCallback;
 
-  const PartnerSectionScreen({
-    super.key,
-    this.onRegisterCallback,
-  });
+  const PartnerSectionScreen({super.key, this.onRegisterCallback});
 
   @override
-  ConsumerState<PartnerSectionScreen> createState() => _PartnerSectionScreenState();
+  ConsumerState<PartnerSectionScreen> createState() =>
+      _PartnerSectionScreenState();
 }
 
 class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
@@ -71,10 +69,9 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
 
         // Mark section as in progress after first frame is built
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-            'partner',
-            WizardSectionStatus.inProgress(),
-          );
+          ref
+              .read(wizardProgressProvider.notifier)
+              .updateSectionStatus('partner', WizardSectionStatus.inProgress());
         });
       }
     } catch (e) {
@@ -89,14 +86,14 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
 
   Future<bool> _validateAndSave() async {
     // Since this section is optional, allow skipping if no data entered
-    final hasData = _nameController.text.trim().isNotEmpty || _selectedBirthdate != null;
+    final hasData =
+        _nameController.text.trim().isNotEmpty || _selectedBirthdate != null;
 
     if (!hasData) {
       // No data entered, mark as skipped and allow navigation
-      await ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-        'partner',
-        WizardSectionStatus.skipped(),
-      );
+      await ref
+          .read(wizardProgressProvider.notifier)
+          .updateSectionStatus('partner', WizardSectionStatus.skipped());
       return true;
     }
 
@@ -163,10 +160,9 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
       await repository.updateProjectData(updatedProject);
 
       // Mark section as complete
-      await ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-        'partner',
-        WizardSectionStatus.complete(),
-      );
+      await ref
+          .read(wizardProgressProvider.notifier)
+          .updateSectionStatus('partner', WizardSectionStatus.complete());
 
       if (mounted) {
         setState(() {
@@ -188,7 +184,8 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
 
   Future<void> _selectBirthdate() async {
     final now = DateTime.now();
-    final initialDate = _selectedBirthdate ?? DateTime(now.year - 30, now.month, now.day);
+    final initialDate =
+        _selectedBirthdate ?? DateTime(now.year - 30, now.month, now.day);
 
     final picked = await showDatePicker(
       context: context,
@@ -239,10 +236,7 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Partner Information',
-              style: theme.textTheme.headlineSmall,
-            ),
+            Text('Partner Information', style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
               'Add your spouse or partner (optional). Leave blank if you don\'t have a partner or prefer to plan individually.',
@@ -259,7 +253,9 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
               hint: 'Enter your partner\'s name',
               validator: (value) {
                 // Only validate if user has entered something or selected a date
-                final hasData = value?.trim().isNotEmpty == true || _selectedBirthdate != null;
+                final hasData =
+                    value?.trim().isNotEmpty == true ||
+                    _selectedBirthdate != null;
                 if (!hasData) {
                   return null; // Allow empty for optional section
                 }
@@ -294,7 +290,9 @@ class _PartnerSectionScreenState extends ConsumerState<PartnerSectionScreen> {
                       : '',
                   style: _selectedBirthdate == null
                       ? theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         )
                       : theme.textTheme.bodyLarge,
                 ),

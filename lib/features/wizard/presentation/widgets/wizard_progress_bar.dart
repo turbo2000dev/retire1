@@ -14,7 +14,8 @@ class WizardProgressBar extends ConsumerWidget {
 
     return progressAsync.when(
       data: (progress) {
-        final percentage = progress?.calculateProgress(requiredSections.length) ?? 0.0;
+        final percentage =
+            progress?.calculateProgress(requiredSections.length) ?? 0.0;
 
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -26,7 +27,9 @@ class WizardProgressBar extends ConsumerWidget {
                   child: LinearProgressIndicator(
                     value: percentage / 100,
                     minHeight: 6,
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                   ),
                 ),
                 const SizedBox(width: 12),

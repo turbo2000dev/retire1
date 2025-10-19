@@ -41,29 +41,27 @@ void main() {
       return ProviderScope(
         overrides: [
           if (progressData != null)
-            wizardProgressProvider.overrideWith(() => MockWizardProgressNotifier(progressData)),
+            wizardProgressProvider.overrideWith(
+              () => MockWizardProgressNotifier(progressData),
+            ),
           if (sectionsOverride != null)
             requiredSectionsProvider.overrideWithValue(sectionsOverride),
         ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: WizardProgressBar(),
-          ),
-        ),
+        child: const MaterialApp(home: Scaffold(body: WizardProgressBar())),
       );
     }
 
     group('Progress Display', () {
       testWidgets('shows 0% when no sections complete', (tester) async {
-        await tester.pumpWidget(buildProgressBar(
-          progressData: testProgress,
-        ));
+        await tester.pumpWidget(buildProgressBar(progressData: testProgress));
         await tester.pump();
 
         expect(find.text('0%'), findsOneWidget);
       });
 
-      testWidgets('shows correct percentage with partial completion', (tester) async {
+      testWidgets('shows correct percentage with partial completion', (
+        tester,
+      ) async {
         // Complete 3 out of 6 required sections = 50%
         final progressWithCompletion = testProgress.copyWith(
           sectionStatuses: {
@@ -73,15 +71,17 @@ void main() {
           },
         );
 
-        await tester.pumpWidget(buildProgressBar(
-          progressData: progressWithCompletion,
-        ));
+        await tester.pumpWidget(
+          buildProgressBar(progressData: progressWithCompletion),
+        );
         await tester.pump();
 
         expect(find.text('50%'), findsOneWidget);
       });
 
-      testWidgets('shows 100% when all required sections complete', (tester) async {
+      testWidgets('shows 100% when all required sections complete', (
+        tester,
+      ) async {
         final completedStatuses = {
           for (var section in requiredSections)
             section.id: WizardSectionStatus.complete(),
@@ -91,15 +91,17 @@ void main() {
           sectionStatuses: completedStatuses,
         );
 
-        await tester.pumpWidget(buildProgressBar(
-          progressData: progressComplete,
-        ));
+        await tester.pumpWidget(
+          buildProgressBar(progressData: progressComplete),
+        );
         await tester.pump();
 
         expect(find.text('100%'), findsOneWidget);
       });
 
-      testWidgets('does not count skipped sections in progress', (tester) async {
+      testWidgets('does not count skipped sections in progress', (
+        tester,
+      ) async {
         // 1 complete, 1 skipped out of 6 = 17% (only complete counts)
         final progressMixed = testProgress.copyWith(
           sectionStatuses: {
@@ -108,9 +110,7 @@ void main() {
           },
         );
 
-        await tester.pumpWidget(buildProgressBar(
-          progressData: progressMixed,
-        ));
+        await tester.pumpWidget(buildProgressBar(progressData: progressMixed));
         await tester.pump();
 
         // 1/6 = 16.67%, should round to 17%
@@ -120,9 +120,7 @@ void main() {
 
     group('Progress Bar Indicator', () {
       testWidgets('shows linear progress indicator', (tester) async {
-        await tester.pumpWidget(buildProgressBar(
-          progressData: testProgress,
-        ));
+        await tester.pumpWidget(buildProgressBar(progressData: testProgress));
         await tester.pump();
 
         expect(find.byType(LinearProgressIndicator), findsOneWidget);
@@ -138,9 +136,9 @@ void main() {
           },
         );
 
-        await tester.pumpWidget(buildProgressBar(
-          progressData: progressWithCompletion,
-        ));
+        await tester.pumpWidget(
+          buildProgressBar(progressData: progressWithCompletion),
+        );
         await tester.pump();
 
         final progressIndicator = tester.widget<LinearProgressIndicator>(

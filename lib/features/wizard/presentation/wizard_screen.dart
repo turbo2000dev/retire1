@@ -48,7 +48,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     });
 
     try {
-      final progress = await ref.read(wizardProgressProvider.notifier).getOrCreateProgress();
+      final progress = await ref
+          .read(wizardProgressProvider.notifier)
+          .getOrCreateProgress();
       if (mounted) {
         setState(() {
           _currentSectionId = progress.currentSectionId;
@@ -89,30 +91,27 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     if (_currentSectionId == null) return;
 
     // Mark current section as skipped
-    ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-          _currentSectionId!,
-          WizardSectionStatus.skipped(),
-        );
+    ref
+        .read(wizardProgressProvider.notifier)
+        .updateSectionStatus(_currentSectionId!, WizardSectionStatus.skipped());
   }
 
   Widget _buildSectionContent() {
     // Route to appropriate section based on current section ID
     return switch (_currentSectionId) {
       'welcome' => WelcomeSectionScreen(
-          onRegisterCallback: _registerNavigationCallback,
-        ),
+        onRegisterCallback: _registerNavigationCallback,
+      ),
       'project-basics' => ProjectBasicsSectionScreen(
-          onRegisterCallback: _registerNavigationCallback,
-        ),
+        onRegisterCallback: _registerNavigationCallback,
+      ),
       'primary-individual' => PrimaryIndividualSectionScreen(
-          onRegisterCallback: _registerNavigationCallback,
-        ),
+        onRegisterCallback: _registerNavigationCallback,
+      ),
       'partner' => PartnerSectionScreen(
-          onRegisterCallback: _registerNavigationCallback,
-        ),
-      _ => Center(
-          child: Text('Section $_currentSectionId - Coming Soon'),
-        ),
+        onRegisterCallback: _registerNavigationCallback,
+      ),
+      _ => Center(child: Text('Section $_currentSectionId - Coming Soon')),
     };
   }
 
@@ -144,21 +143,15 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     // Loading state
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.loadingWizard),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text(l10n.loadingWizard)),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     // Error state
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.wizard),
-        ),
+        appBar: AppBar(title: Text(l10n.wizard)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -196,7 +189,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
 
     // Main wizard UI
     final sections = ref.watch(wizardSectionsProvider);
-    final currentSection = WizardSectionsConfig.getSectionById(_currentSectionId!);
+    final currentSection = WizardSectionsConfig.getSectionById(
+      _currentSectionId!,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -241,4 +236,3 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     );
   }
 }
-

@@ -23,7 +23,7 @@ class FakeProjectRepository extends ProjectRepository {
   String? _lastUpdatedDescription;
 
   FakeProjectRepository()
-      : super(userId: 'test-user', firestore: FakeFirestore());
+    : super(userId: 'test-user', firestore: FakeFirestore());
 
   @override
   Future<void> updateProject({
@@ -50,8 +50,11 @@ class FakeProjectRepository extends ProjectRepository {
 class MockCurrentProjectNotifier extends CurrentProjectNotifier {
   final CurrentProjectState mockState;
 
-  MockCurrentProjectNotifier(this.mockState, Ref ref, FakeProjectRepository repo)
-      : super(ref, null, repo) {
+  MockCurrentProjectNotifier(
+    this.mockState,
+    Ref ref,
+    FakeProjectRepository repo,
+  ) : super(ref, null, repo) {
     state = mockState;
   }
 }
@@ -110,8 +113,13 @@ void main() {
     }) {
       return ProviderScope(
         overrides: [
-          currentProjectProvider.overrideWith((ref) =>
-              MockCurrentProjectNotifier(ProjectSelected(testProject), ref, fakeRepository)),
+          currentProjectProvider.overrideWith(
+            (ref) => MockCurrentProjectNotifier(
+              ProjectSelected(testProject),
+              ref,
+              fakeRepository,
+            ),
+          ),
           projectRepositoryProvider.overrideWithValue(fakeRepository),
           wizardProgressProvider.overrideWith(() => mockNotifier),
         ],
@@ -144,11 +152,13 @@ void main() {
       testWidgets('registers validation callback', (tester) async {
         Future<bool> Function()? registeredCallback;
 
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: (callback) {
-            registeredCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(
+            onRegisterCallback: (callback) {
+              registeredCallback = callback;
+            },
+          ),
+        );
         await tester.pump();
         await tester.pumpAndSettle();
 
@@ -162,7 +172,10 @@ void main() {
 
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.first.key, 'project-basics');
-        expect(mockNotifier.statusUpdates.first.value.state, WizardSectionState.inProgress);
+        expect(
+          mockNotifier.statusUpdates.first.value.state,
+          WizardSectionState.inProgress,
+        );
       });
     });
 
@@ -170,11 +183,13 @@ void main() {
       testWidgets('validation fails with empty project name', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Clear the project name field
@@ -189,11 +204,13 @@ void main() {
       testWidgets('validation fails with short project name', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Enter short name
@@ -208,11 +225,13 @@ void main() {
       testWidgets('validation succeeds with valid inputs', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         final result = await validationCallback!();
@@ -224,11 +243,13 @@ void main() {
       testWidgets('saves updated project name', (tester) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Update project name
@@ -242,14 +263,18 @@ void main() {
         expect(fakeRepository.lastUpdatedName, 'Updated Project Name');
       });
 
-      testWidgets('marks section as complete after successful save', (tester) async {
+      testWidgets('marks section as complete after successful save', (
+        tester,
+      ) async {
         Future<bool> Function()? validationCallback;
 
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: (callback) {
-            validationCallback = callback;
-          },
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(
+            onRegisterCallback: (callback) {
+              validationCallback = callback;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Clear previous status updates from initialization
@@ -261,7 +286,10 @@ void main() {
         // Should have one update marking as complete
         expect(mockNotifier.statusUpdates.length, 1);
         expect(mockNotifier.statusUpdates.last.key, 'project-basics');
-        expect(mockNotifier.statusUpdates.last.value.state, WizardSectionState.complete);
+        expect(
+          mockNotifier.statusUpdates.last.value.state,
+          WizardSectionState.complete,
+        );
       });
     });
 
@@ -284,9 +312,9 @@ void main() {
 
     group('Callback Registration', () {
       testWidgets('does not crash when callback is null', (tester) async {
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: null,
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(onRegisterCallback: null),
+        );
         await tester.pumpAndSettle();
 
         expect(find.byType(ProjectBasicsSectionScreen), findsOneWidget);
@@ -295,11 +323,13 @@ void main() {
       testWidgets('calls callback during initialization', (tester) async {
         bool callbackCalled = false;
 
-        await tester.pumpWidget(buildProjectBasicsScreen(
-          onRegisterCallback: (callback) {
-            callbackCalled = true;
-          },
-        ));
+        await tester.pumpWidget(
+          buildProjectBasicsScreen(
+            onRegisterCallback: (callback) {
+              callbackCalled = true;
+            },
+          ),
+        );
         await tester.pumpAndSettle();
 
         expect(callbackCalled, isTrue);

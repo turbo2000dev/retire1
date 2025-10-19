@@ -13,10 +13,7 @@ import 'package:retire1/features/wizard/domain/wizard_section_status.dart';
 class ProjectBasicsSectionScreen extends ConsumerStatefulWidget {
   final void Function(Future<bool> Function()?)? onRegisterCallback;
 
-  const ProjectBasicsSectionScreen({
-    super.key,
-    this.onRegisterCallback,
-  });
+  const ProjectBasicsSectionScreen({super.key, this.onRegisterCallback});
 
   @override
   ConsumerState<ProjectBasicsSectionScreen> createState() =>
@@ -70,10 +67,12 @@ class _ProjectBasicsSectionScreenState
 
         // Mark section as in progress and update current section after first frame
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(wizardProgressProvider.notifier).updateSectionStatus(
-            'project-basics',
-            WizardSectionStatus.inProgress(),
-          );
+          ref
+              .read(wizardProgressProvider.notifier)
+              .updateSectionStatus(
+                'project-basics',
+                WizardSectionStatus.inProgress(),
+              );
         });
       }
     } catch (e) {
@@ -116,7 +115,9 @@ class _ProjectBasicsSectionScreenState
       );
 
       // Mark section as complete
-      await ref.read(wizardProgressProvider.notifier).updateSectionStatus(
+      await ref
+          .read(wizardProgressProvider.notifier)
+          .updateSectionStatus(
             'project-basics',
             WizardSectionStatus.complete(),
           );
@@ -154,10 +155,7 @@ class _ProjectBasicsSectionScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Section title and description
-            Text(
-              l10n.section2Title,
-              style: theme.textTheme.headlineMedium,
-            ),
+            Text(l10n.section2Title, style: theme.textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text(
               l10n.section2Description,
@@ -177,10 +175,7 @@ class _ProjectBasicsSectionScreenState
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: theme.colorScheme.error,
-                    ),
+                    Icon(Icons.error_outline, color: theme.colorScheme.error),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -228,10 +223,7 @@ class _ProjectBasicsSectionScreenState
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 8),
-                    Text(
-                      'Saving...',
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    Text('Saving...', style: theme.textTheme.bodySmall),
                   ],
                 ),
               )
