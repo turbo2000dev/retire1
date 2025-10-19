@@ -92,9 +92,7 @@ void main() {
         expect(result, isTrue);
       });
 
-      testWidgets('marks section as in progress after loading', (
-        tester,
-      ) async {
+      testWidgets('marks section as in progress after loading', (tester) async {
         await tester.pumpWidget(buildWelcomeScreen());
         await tester.pump(); // Initial build
         await tester.pump(); // PostFrameCallback
