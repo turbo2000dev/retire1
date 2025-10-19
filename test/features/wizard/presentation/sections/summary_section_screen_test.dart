@@ -305,12 +305,20 @@ void main() {
         await tester.pumpWidget(buildSummaryScreen(expensesOverride: expenses));
         await tester.pumpAndSettle();
 
+        // Scroll down to see expenses section
+        await tester.drag(find.byType(ListView), const Offset(0, -200));
+        await tester.pumpAndSettle();
+
         expect(find.text('2 configured'), findsOneWidget);
         expect(find.text('\$36,000'), findsOneWidget);
       });
 
       testWidgets('handles empty expense list', (tester) async {
         await tester.pumpWidget(buildSummaryScreen(expensesOverride: []));
+        await tester.pumpAndSettle();
+
+        // Scroll down to see expenses section
+        await tester.drag(find.byType(ListView), const Offset(0, -200));
         await tester.pumpAndSettle();
 
         expect(find.text('0 configured'), findsAtLeastNWidgets(1));
@@ -390,14 +398,11 @@ void main() {
         );
       });
 
-      testWidgets('shows completion message', (tester) async {
+      testWidgets('shows completion message at top', (tester) async {
         await tester.pumpWidget(buildSummaryScreen());
         await tester.pumpAndSettle();
 
-        // Scroll down to see the completion message
-        await tester.drag(find.byType(ListView), const Offset(0, -400));
-        await tester.pumpAndSettle();
-
+        // Completion message should be visible at the top without scrolling
         expect(find.text('Ready to Complete'), findsOneWidget);
         expect(
           find.textContaining('configured the essential elements'),
@@ -411,9 +416,9 @@ void main() {
         await tester.pumpWidget(buildSummaryScreen());
         await tester.pumpAndSettle();
 
-        // Should have cards for: Project, Assets, Expenses, Events (when loaded)
-        // Note: When async data is loading, we see Project + loading cards
-        expect(find.byType(Card), findsAtLeastNWidgets(3));
+        // Should have cards for: Project, Assets visible at top
+        // (Expenses and Events may need scrolling)
+        expect(find.byType(Card), findsAtLeastNWidgets(2));
       });
 
       testWidgets('shows section title and description', (tester) async {
