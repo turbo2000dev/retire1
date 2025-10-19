@@ -53,17 +53,21 @@ class ProjectsNotifier extends AsyncNotifier<List<Project>> {
     }
   }
 
-  /// Create a new project
-  Future<void> createProject(String name, String? description) async {
+  /// Create a new project and return its ID
+  Future<String> createProject(String name, String? description) async {
     if (_repository == null) {
       log('Cannot create project: user not authenticated');
-      return;
+      throw Exception('User not authenticated');
     }
 
     try {
-      await _repository!.createProject(name: name, description: description);
+      final project = await _repository!.createProject(
+        name: name,
+        description: description,
+      );
       // Stream will automatically update with new project
-      log('Project created successfully');
+      log('Project created successfully: ${project.id}');
+      return project.id;
     } catch (e, stack) {
       log('Failed to create project', error: e, stackTrace: stack);
       rethrow;

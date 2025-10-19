@@ -56,21 +56,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final result = await ProjectDialog.showCreate(context);
     if (result == null || !context.mounted) return;
 
-    await ref
+    // Create the project and wait for it to be created
+    final newProjectId = await ref
         .read(projectsProvider.notifier)
         .createProject(result['name']!, result['description']);
 
     if (!context.mounted) return;
 
-    // Get the newly created project and select it
-    final projectsAsync = ref.read(projectsProvider);
-    projectsAsync.whenData((projects) {
-      if (projects.isNotEmpty) {
-        ref
-            .read(currentProjectProvider.notifier)
-            .selectProject(projects.first.id);
-      }
-    });
+    // Select the newly created project and wait for selection to complete
+    await ref.read(currentProjectProvider.notifier).selectProject(newProjectId);
 
     // Navigate based on user's choice
     if (!context.mounted) return;

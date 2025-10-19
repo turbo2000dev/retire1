@@ -71,26 +71,20 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
   Future<void> _createNewProject() async {
     final result = await ProjectDialog.showCreate(context);
     if (result != null && mounted) {
-      await ref
+      // Create the project and get its ID
+      final newProjectId = await ref
           .read(projectsProvider.notifier)
           .createProject(result['name']!, result['description']);
 
       if (mounted) {
-        // Get the newly created project (should be first in list)
-        final projectsAsync = ref.read(projectsProvider);
-        String? newProjectId;
-        projectsAsync.whenData((projects) {
-          if (projects.isNotEmpty) {
-            newProjectId = projects.first.id;
-            ref
-                .read(currentProjectProvider.notifier)
-                .selectProject(newProjectId!);
-          }
-        });
+        // Select the newly created project and wait for selection to complete
+        await ref
+            .read(currentProjectProvider.notifier)
+            .selectProject(newProjectId);
 
         // Check if user chose wizard setup
         final useWizard = result['useWizard'] as bool? ?? false;
-        if (useWizard && mounted && newProjectId != null) {
+        if (useWizard && mounted) {
           // Navigate to wizard for guided setup
           context.go(AppRoutes.wizard);
           if (mounted) {
