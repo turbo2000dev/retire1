@@ -18,6 +18,7 @@ import 'package:retire1/features/wizard/presentation/sections/employment_section
 import 'package:retire1/features/wizard/presentation/sections/benefits_education_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/government_benefits_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/expenses_section_screen.dart';
+import 'package:retire1/features/wizard/presentation/sections/retirement_section_screen.dart';
 
 /// Main wizard screen that adapts to different screen sizes
 class WizardScreen extends ConsumerStatefulWidget {
@@ -129,6 +130,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
         onRegisterCallback: _registerNavigationCallback,
       ),
       'expenses' => ExpensesSectionScreen(
+        onRegisterCallback: _registerNavigationCallback,
+      ),
+      'retirement' => RetirementSectionScreen(
         onRegisterCallback: _registerNavigationCallback,
       ),
       _ => Center(child: Text('Section $_currentSectionId - Coming Soon')),
