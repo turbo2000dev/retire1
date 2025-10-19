@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/project/domain/individual.dart';
 import 'package:retire1/features/project/presentation/providers/current_project_provider.dart';
@@ -46,7 +47,7 @@ class _EmploymentSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception('No project selected');
+        throw Exception(AppLocalizations.of(context).noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -116,7 +117,7 @@ class _EmploymentSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception('No project selected');
+        throw Exception(AppLocalizations.of(context).noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -152,9 +153,11 @@ class _EmploymentSectionScreenState
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).failedToSave}: $e'),
+          ),
+        );
       }
       return false;
     }
@@ -163,6 +166,7 @@ class _EmploymentSectionScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -174,13 +178,13 @@ class _EmploymentSectionScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: $_errorMessage',
+              '${l10n.error}: $_errorMessage',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _loadData, child: const Text('Retry')),
+            FilledButton(onPressed: _loadData, child: Text(l10n.retry)),
           ],
         ),
       );
@@ -197,10 +201,10 @@ class _EmploymentSectionScreenState
               color: theme.colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            Text('No individuals found', style: theme.textTheme.titleLarge),
+            Text(l10n.noIndividualsFound, style: theme.textTheme.titleLarge),
             const SizedBox(height: 8),
             Text(
-              'Please add individuals in the previous sections',
+              l10n.pleaseAddIndividuals,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -216,11 +220,10 @@ class _EmploymentSectionScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Employment Income', style: theme.textTheme.headlineSmall),
+            Text(l10n.employmentIncome, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
-              'Enter the annual employment income for each individual (optional). '
-              'This helps project your pre-retirement financial situation.',
+              l10n.employmentSectionDescription,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -269,12 +272,12 @@ class _EmploymentSectionScreenState
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration: InputDecoration(
-                              labelText: 'Annual Employment Income',
-                              hintText: 'Enter annual salary',
+                              labelText: l10n.annualEmploymentIncome,
+                              hintText: l10n.enterAnnualSalary,
                               prefixIcon: const Icon(Icons.attach_money),
-                              suffixText: 'CAD / year',
+                              suffixText: l10n.cadPerYear,
                               border: const OutlineInputBorder(),
-                              helperText: 'Leave empty if not employed',
+                              helperText: l10n.leaveEmptyIfNotEmployed,
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
@@ -282,13 +285,13 @@ class _EmploymentSectionScreenState
                               }
                               final income = double.tryParse(value);
                               if (income == null) {
-                                return 'Please enter a valid number';
+                                return l10n.pleaseEnterValidNumber;
                               }
                               if (income < 0) {
-                                return 'Income cannot be negative';
+                                return l10n.incomeCannotBeNegative;
                               }
                               if (income > 1000000) {
-                                return 'Please enter a realistic income';
+                                return l10n.pleaseEnterRealisticIncome;
                               }
                               return null;
                             },
@@ -312,7 +315,7 @@ class _EmploymentSectionScreenState
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'This income will be used in projections until retirement',
+                                      l10n.incomeUsedUntilRetirement,
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(
                                             color: theme
@@ -337,7 +340,7 @@ class _EmploymentSectionScreenState
 
             // Info text
             Text(
-              'Click "Next" to continue, or "Skip" to skip employment income',
+              l10n.clickNextOrSkipEmployment,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 fontStyle: FontStyle.italic,
