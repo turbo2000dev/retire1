@@ -68,7 +68,7 @@ class _ProjectBasicsSectionScreenState
           _isLoading = false;
         });
 
-        // Mark section as in progress after first frame is built
+        // Mark section as in progress and update current section after first frame
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ref.read(wizardProgressProvider.notifier).updateSectionStatus(
             'project-basics',

@@ -84,11 +84,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       _currentSectionId = sectionId;
       _onBeforeNavigate = null; // Clear callback for new section
     });
-
-    // Update current section in Firestore (after build completes)
-    Future.microtask(() {
-      ref.read(wizardProgressProvider.notifier).navigateToSection(sectionId);
-    });
   }
 
   void _handleSkip() {
