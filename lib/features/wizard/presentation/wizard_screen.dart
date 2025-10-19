@@ -67,6 +67,11 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   }
 
   Future<void> _navigateToSection(String sectionId) async {
+    // Don't navigate if already on this section
+    if (_currentSectionId == sectionId) {
+      return;
+    }
+
     // Call section's validation/save callback before navigating
     if (_onBeforeNavigate != null) {
       final canNavigate = await _onBeforeNavigate!();
