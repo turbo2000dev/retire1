@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_progress_provider.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_sections_config.dart';
@@ -81,9 +82,9 @@ class WizardNavButtons extends ConsumerWidget {
     // Mark wizard as complete
     await ref.read(wizardProgressProvider.notifier).completeWizard();
 
-    // Navigate back or show completion message
+    // Navigate to dashboard
     if (context.mounted) {
-      Navigator.of(context).pop();
+      context.go('/');
     }
   }
 }
