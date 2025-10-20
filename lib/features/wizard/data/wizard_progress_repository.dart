@@ -173,9 +173,17 @@ class WizardProgressRepository {
   Future<void> _saveProgress(WizardProgress progress) async {
     try {
       final json = progress.toJson();
+      log('Progress JSON before conversion: $json');
+
       // Convert DateTime objects to Firestore Timestamps
       final converted = _convertDateTimesToTimestamps(json);
-      await _progressCollection.doc(progress.projectId).set(converted);
+      log('Progress JSON after conversion: $converted');
+
+      // Use SetOptions.merge to be more forgiving
+      await _progressCollection
+          .doc(progress.projectId)
+          .set(converted, SetOptions(merge: true));
+      log('Progress saved successfully for project: ${progress.projectId}');
     } catch (e, stack) {
       log('Failed to save wizard progress', error: e, stackTrace: stack);
       rethrow;
