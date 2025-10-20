@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/auth/presentation/providers/user_profile_provider.dart';
 
 /// Dialog for editing user's display name
@@ -77,8 +78,8 @@ class _EditDisplayNameDialogState extends ConsumerState<EditDisplayNameDialog> {
       title: const Text('Edit Display Name'),
       content: TextField(
         controller: _controller,
-        decoration: const InputDecoration(
-          labelText: 'Display Name',
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).displayName,
           hintText: 'Enter your name',
         ),
         autofocus: true,

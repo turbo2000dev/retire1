@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_dialog.dart';
 
 /// Dialog for creating a new variation scenario
@@ -21,6 +22,7 @@ class _CreateScenarioDialogState extends State<CreateScenarioDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ResponsiveDialog(
       child: ResponsiveDialogContent(
         title: 'Create Variation Scenario',
@@ -39,10 +41,10 @@ class _CreateScenarioDialogState extends State<CreateScenarioDialog> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Scenario Name',
+                decoration: InputDecoration(
+                  labelText: l10n.scenarioName,
                   hintText: 'e.g., Optimistic, Conservative, Early Retirement',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 autofocus: true,
                 textInputAction: TextInputAction.done,

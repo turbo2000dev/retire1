@@ -23,7 +23,7 @@ class MockWizardProgressNotifier extends WizardProgressNotifier {
 void main() {
   group('WizardProgressBar', () {
     late WizardProgress testProgress;
-    late List<WizardSection> requiredSections;
+    late List<WizardSection> allSections;
 
     setUp(() {
       testProgress = WizardProgress.create(
@@ -31,7 +31,7 @@ void main() {
         userId: 'test-user',
       );
 
-      requiredSections = WizardSectionsConfig.getRequiredSections();
+      allSections = WizardSectionsConfig.sections;
     });
 
     Widget buildProgressBar({
@@ -45,7 +45,7 @@ void main() {
               () => MockWizardProgressNotifier(progressData),
             ),
           if (sectionsOverride != null)
-            requiredSectionsProvider.overrideWithValue(sectionsOverride),
+            wizardSectionsProvider.overrideWithValue(sectionsOverride),
         ],
         child: const MaterialApp(home: Scaffold(body: WizardProgressBar())),
       );
@@ -62,12 +62,15 @@ void main() {
       testWidgets('shows correct percentage with partial completion', (
         tester,
       ) async {
-        // Complete 3 out of 6 required sections = 50%
+        // Complete 6 out of 12 sections = 50%
         final progressWithCompletion = testProgress.copyWith(
           sectionStatuses: {
-            requiredSections[0].id: WizardSectionStatus.complete(),
-            requiredSections[1].id: WizardSectionStatus.complete(),
-            requiredSections[2].id: WizardSectionStatus.complete(),
+            allSections[0].id: WizardSectionStatus.complete(),
+            allSections[1].id: WizardSectionStatus.complete(),
+            allSections[2].id: WizardSectionStatus.complete(),
+            allSections[3].id: WizardSectionStatus.complete(),
+            allSections[4].id: WizardSectionStatus.complete(),
+            allSections[5].id: WizardSectionStatus.complete(),
           },
         );
 
@@ -79,11 +82,9 @@ void main() {
         expect(find.text('50%'), findsOneWidget);
       });
 
-      testWidgets('shows 100% when all required sections complete', (
-        tester,
-      ) async {
+      testWidgets('shows 100% when all sections complete', (tester) async {
         final completedStatuses = {
-          for (var section in requiredSections)
+          for (var section in allSections)
             section.id: WizardSectionStatus.complete(),
         };
 
@@ -102,18 +103,19 @@ void main() {
       testWidgets('does not count skipped sections in progress', (
         tester,
       ) async {
-        // 1 complete, 1 skipped out of 6 = 17% (only complete counts)
+        // 2 complete, 1 skipped out of 12 = 17% (only complete counts)
         final progressMixed = testProgress.copyWith(
           sectionStatuses: {
-            requiredSections[0].id: WizardSectionStatus.complete(),
-            requiredSections[1].id: WizardSectionStatus.skipped(),
+            allSections[0].id: WizardSectionStatus.complete(),
+            allSections[1].id: WizardSectionStatus.complete(),
+            allSections[2].id: WizardSectionStatus.skipped(),
           },
         );
 
         await tester.pumpWidget(buildProgressBar(progressData: progressMixed));
         await tester.pump();
 
-        // 1/6 = 16.67%, should round to 17%
+        // 2/12 = 16.67%, should round to 17%
         expect(find.text('17%'), findsOneWidget);
       });
     });
@@ -127,12 +129,15 @@ void main() {
       });
 
       testWidgets('progress bar value matches percentage', (tester) async {
-        // 3 out of 6 = 50%
+        // 6 out of 12 = 50%
         final progressWithCompletion = testProgress.copyWith(
           sectionStatuses: {
-            requiredSections[0].id: WizardSectionStatus.complete(),
-            requiredSections[1].id: WizardSectionStatus.complete(),
-            requiredSections[2].id: WizardSectionStatus.complete(),
+            allSections[0].id: WizardSectionStatus.complete(),
+            allSections[1].id: WizardSectionStatus.complete(),
+            allSections[2].id: WizardSectionStatus.complete(),
+            allSections[3].id: WizardSectionStatus.complete(),
+            allSections[4].id: WizardSectionStatus.complete(),
+            allSections[5].id: WizardSectionStatus.complete(),
           },
         );
 

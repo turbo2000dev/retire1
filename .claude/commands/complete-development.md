@@ -1,4 +1,4 @@
-Follow these steps:
+Use the dart-qa-deploy agent to follow these steps:
 
     - Make sure that internationlization is completed for the development we did
     - Make sure that we have done unit tests for the development we did

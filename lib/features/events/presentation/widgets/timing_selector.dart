@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_text_field.dart';
 import 'package:retire1/features/events/domain/event.dart';
 import 'package:retire1/features/events/domain/event_timing.dart';
@@ -130,6 +131,7 @@ class _TimingSelectorState extends State<TimingSelector> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,9 +234,9 @@ class _TimingSelectorState extends State<TimingSelector> {
           else ...[
             DropdownButtonFormField<String>(
               initialValue: _selectedIndividualId,
-              decoration: const InputDecoration(
-                labelText: 'Individual',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.individual,
+                border: const OutlineInputBorder(),
               ),
               items: widget.individuals.map((individual) {
                 return DropdownMenuItem(
@@ -302,9 +304,9 @@ class _TimingSelectorState extends State<TimingSelector> {
           else ...[
             DropdownButtonFormField<String>(
               initialValue: _selectedEventId,
-              decoration: const InputDecoration(
-                labelText: 'Event',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.events,
+                border: const OutlineInputBorder(),
               ),
               items: widget.events!.map((event) {
                 final eventLabel = event.when(
@@ -353,9 +355,9 @@ class _TimingSelectorState extends State<TimingSelector> {
             const SizedBox(height: 16),
             DropdownButtonFormField<EventBoundary>(
               initialValue: _selectedBoundary,
-              decoration: const InputDecoration(
-                labelText: 'Timing',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.timing,
+                border: const OutlineInputBorder(),
               ),
               items: const [
                 DropdownMenuItem(

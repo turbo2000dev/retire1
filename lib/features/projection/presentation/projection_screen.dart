@@ -139,10 +139,10 @@ class ProjectionScreen extends ConsumerWidget {
                   width: 250,
                   child: DropdownButtonFormField<String>(
                     initialValue: selectedScenarioId,
-                    decoration: const InputDecoration(
-                      labelText: 'Scenario',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context).scenarios,
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
                       ),
