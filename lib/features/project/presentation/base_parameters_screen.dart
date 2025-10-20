@@ -568,12 +568,13 @@ class _BaseParametersScreenState extends ConsumerState<BaseParametersScreen> {
           TextButton(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: content));
-              final l10n = AppLocalizations.of(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Copied to clipboard')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(AppLocalizations.of(context).copiedToClipboard),
+                ),
+              );
             },
-            child: Text('Copy to Clipboard'),
+            child: Text(AppLocalizations.of(context).copyToClipboard),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(),

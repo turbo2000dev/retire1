@@ -55,7 +55,8 @@
       "Bash(echo \"✗ $file (needs i18n)\")",
       "Bash(fi)",
       "Bash(dart analyze)",
-      "Bash(dart format lib/features/wizard/presentation/sections/government_benefits_section_screen.dart lib/features/wizard/presentation/sections/life_events_section_screen.dart lib/features/wizard/presentation/sections/retirement_section_screen.dart lib/features/wizard/presentation/sections/summary_section_screen.dart lib/features/assets/presentation/assets_events_screen.dart lib/features/settings/presentation/settings_screen.dart lib/features/projection/presentation/projection_screen.dart)"
+      "Bash(dart format lib/features/wizard/presentation/sections/government_benefits_section_screen.dart lib/features/wizard/presentation/sections/life_events_section_screen.dart lib/features/wizard/presentation/sections/retirement_section_screen.dart lib/features/wizard/presentation/sections/summary_section_screen.dart lib/features/assets/presentation/assets_events_screen.dart lib/features/settings/presentation/settings_screen.dart lib/features/projection/presentation/projection_screen.dart)",
+      "Bash(dart format lib/features/project/presentation/base_parameters_screen.dart lib/core/config/i18n/app_localizations.dart)"
     ],
     "deny": [],
     "ask": []
