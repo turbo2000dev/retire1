@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_button.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
@@ -108,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Email field
                     ResponsiveTextField(
                       controller: _emailController,
-                      label: 'Email',
+                      label: AppLocalizations.of(context).email,
                       keyboardType: TextInputType.emailAddress,
                       validator: _validateEmail,
                       prefixIcon: const Icon(Icons.email_outlined),
@@ -118,7 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Password field
                     ResponsiveTextField(
                       controller: _passwordController,
-                      label: 'Password',
+                      label: AppLocalizations.of(context).password,
                       obscureText: _obscurePassword,
                       validator: _validatePassword,
                       prefixIcon: const Icon(Icons.lock_outlined),

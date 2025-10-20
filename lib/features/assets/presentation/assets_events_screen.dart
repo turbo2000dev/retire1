@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/assets/domain/asset.dart';
 import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
@@ -64,7 +65,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         await ref.read(assetsProvider.notifier).addAsset(result.asset);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Asset added successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context).assetCreated)),
           );
         }
 
@@ -72,9 +73,13 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to add asset: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context).failedToCreateAsset}: $e',
+              ),
+            ),
+          );
         }
         // Break on error
         break;
@@ -93,14 +98,18 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         await ref.read(assetsProvider.notifier).updateAsset(result.asset);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Asset updated successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context).assetUpdated)),
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to update asset: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context).failedToUpdateAsset}: $e',
+              ),
+            ),
+          );
         }
       }
     }
@@ -153,14 +162,18 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         await ref.read(assetsProvider.notifier).deleteAsset(assetId);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Asset deleted successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context).assetDeleted)),
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to delete asset: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context).failedToDeleteAsset}: $e',
+              ),
+            ),
+          );
         }
       }
     }
@@ -200,7 +213,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         await ref.read(eventsProvider.notifier).addEvent(result.event);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Event added successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context).eventCreated)),
           );
         }
 
@@ -208,9 +221,13 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         createAnother = result.createAnother;
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to add event: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context).failedToCreateEvent}: $e',
+              ),
+            ),
+          );
         }
         // Break on error
         break;
@@ -246,14 +263,18 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         await ref.read(eventsProvider.notifier).updateEvent(result.event);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Event updated successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context).eventUpdated)),
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to update event: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context).failedToUpdateEvent}: $e',
+              ),
+            ),
+          );
         }
       }
     }
@@ -303,14 +324,18 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         await ref.read(eventsProvider.notifier).deleteEvent(eventId);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Event deleted successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context).eventDeleted)),
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to delete event: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context).failedToDeleteEvent}: $e',
+              ),
+            ),
+          );
         }
       }
     }
@@ -927,10 +952,10 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
         icon: const Icon(Icons.add),
         label: Text(
           _tabController.index == 0
-              ? 'Add Asset'
+              ? AppLocalizations.of(context).addAsset
               : _tabController.index == 1
-              ? 'Add Event'
-              : 'Add Expense',
+              ? AppLocalizations.of(context).addEvent
+              : l10n.add,
         ),
       ),
     );

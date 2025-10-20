@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/router/app_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
@@ -21,16 +22,16 @@ class SettingsScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
+        title: Text(AppLocalizations.of(context).logout),
         content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Logout'),
+            child: Text(AppLocalizations.of(context).logout),
           ),
         ],
       ),
@@ -78,7 +79,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Settings',
+                  AppLocalizations.of(context).settings,
                   style: theme.textTheme.headlineMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -98,7 +99,10 @@ class SettingsScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Profile', style: theme.textTheme.titleMedium),
+                          Text(
+                            AppLocalizations.of(context).profile,
+                            style: theme.textTheme.titleMedium,
+                          ),
                           const SizedBox(height: 24),
                           // Profile picture
                           Center(
@@ -145,13 +149,16 @@ class SettingsScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Language', style: theme.textTheme.titleMedium),
+                        Text(
+                          AppLocalizations.of(context).language,
+                          style: theme.textTheme.titleMedium,
+                        ),
                         const SizedBox(height: 16),
                         SegmentedButton<AppLanguage>(
                           segments: const [
                             ButtonSegment<AppLanguage>(
                               value: AppLanguage.english,
-                              label: Text('English'),
+                              label: Text(AppLocalizations.of(context).english),
                               icon: Icon(Icons.language),
                             ),
                             ButtonSegment<AppLanguage>(
@@ -215,7 +222,7 @@ class SettingsScreen extends ConsumerWidget {
                 FilledButton.icon(
                   onPressed: () => _showLogoutConfirmation(context, ref),
                   icon: const Icon(Icons.logout),
-                  label: const Text('Logout'),
+                  label: Text(AppLocalizations.of(context).logout),
                   style: FilledButton.styleFrom(
                     backgroundColor: theme.colorScheme.error,
                     foregroundColor: theme.colorScheme.onError,

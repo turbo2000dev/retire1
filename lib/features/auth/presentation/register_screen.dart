@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_button.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
@@ -164,7 +165,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     // Display name field
                     ResponsiveTextField(
                       controller: _displayNameController,
-                      label: 'Display Name',
+                      label: AppLocalizations.of(context).displayName,
                       validator: _validateDisplayName,
                       prefixIcon: const Icon(Icons.person_outlined),
                     ),

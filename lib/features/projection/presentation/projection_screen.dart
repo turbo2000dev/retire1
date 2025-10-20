@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/core/utils/file_download_helper.dart';
 import 'package:retire1/features/assets/presentation/providers/assets_provider.dart';
@@ -87,7 +88,7 @@ class ProjectionScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Projection'),
+        title: const Text(AppLocalizations.of(context).projection),
         actions: [
           // Dollar mode toggle with explanation
           Row(
