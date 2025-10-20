@@ -155,13 +155,13 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 16),
                         SegmentedButton<AppLanguage>(
-                          segments: const [
+                          segments: [
                             ButtonSegment<AppLanguage>(
                               value: AppLanguage.english,
                               label: Text(AppLocalizations.of(context).english),
-                              icon: Icon(Icons.language),
+                              icon: const Icon(Icons.language),
                             ),
-                            ButtonSegment<AppLanguage>(
+                            const ButtonSegment<AppLanguage>(
                               value: AppLanguage.french,
                               label: Text('Français'),
                               icon: Icon(Icons.language),

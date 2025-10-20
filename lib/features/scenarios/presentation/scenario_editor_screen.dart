@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:retire1/core/ui/responsive/responsive_container.dart';
 import 'package:retire1/features/scenarios/domain/scenario.dart';

@@ -76,9 +76,13 @@ class _SummarySectionScreenState extends ConsumerState<SummarySectionScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isCompleting = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.failedToComplete}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context).failedToComplete}: $e',
+            ),
+          ),
+        );
       }
       return false;
     }

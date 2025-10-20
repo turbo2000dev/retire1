@@ -955,7 +955,7 @@ class _AssetsEventsScreenState extends ConsumerState<AssetsEventsScreen>
               ? AppLocalizations.of(context).addAsset
               : _tabController.index == 1
               ? AppLocalizations.of(context).addEvent
-              : l10n.add,
+              : AppLocalizations.of(context).add,
         ),
       ),
     );

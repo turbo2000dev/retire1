@@ -49,7 +49,7 @@ class _GovernmentBenefitsSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception(l10n.noProjectSelected);
+        throw Exception(AppLocalizations.of(context).noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -111,7 +111,7 @@ class _GovernmentBenefitsSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception(l10n.noProjectSelected);
+        throw Exception(AppLocalizations.of(context).noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -132,7 +132,7 @@ class _GovernmentBenefitsSectionScreenState
 
       final repository = ref.read(projectRepositoryProvider);
       if (repository == null) {
-        throw Exception('Repository not available');
+        throw Exception(AppLocalizations.of(context).repositoryNotAvailable);
       }
       await repository.updateProjectData(updatedProject);
 
@@ -152,9 +152,11 @@ class _GovernmentBenefitsSectionScreenState
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.failedToSave}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).failedToSave}: $e'),
+          ),
+        );
       }
       return false;
     }
@@ -272,11 +274,11 @@ class _GovernmentBenefitsSectionScreenState
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: l10n.ageLabel,
                               hintText: l10n.rrqAgeHint,
                               helperText: 'Age 60 (reduced) to 70 (increased)',
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -309,11 +311,11 @@ class _GovernmentBenefitsSectionScreenState
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: l10n.ageLabel,
                               hintText: l10n.psvAgeHint,
                               helperText: 'Age 65 (standard) to 70 (increased)',
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {

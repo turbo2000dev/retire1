@@ -88,7 +88,7 @@ class ProjectionScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppLocalizations.of(context).projection),
+        title: Text(AppLocalizations.of(context).projection),
         actions: [
           // Dollar mode toggle with explanation
           Row(

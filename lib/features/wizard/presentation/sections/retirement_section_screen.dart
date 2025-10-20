@@ -51,7 +51,7 @@ class _RetirementSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception(l10n.noProjectSelected);
+        throw Exception(AppLocalizations.of(context).noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -197,9 +197,11 @@ class _RetirementSectionScreenState
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.failedToSave}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).failedToSave}: $e'),
+          ),
+        );
       }
       return false;
     }
