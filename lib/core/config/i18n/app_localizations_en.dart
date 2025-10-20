@@ -209,6 +209,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wizard => 'Setup Wizard';
 
   @override
+  String get leaveWizard => 'Leave Wizard';
+
+  @override
   String get loadingWizard => 'Loading Wizard...';
 
   @override

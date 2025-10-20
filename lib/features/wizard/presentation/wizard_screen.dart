@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/core/ui/responsive/responsive_builder.dart';
 import 'package:retire1/features/wizard/domain/wizard_section_status.dart';
@@ -279,29 +280,62 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
               top: false,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Section title
-                    Text(
-                      _getSectionTitle(l10n, currentSection?.titleKey),
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                    // Left side: Leave button and section title
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Leave Wizard button
+                          TextButton.icon(
+                            onPressed: () {
+                              // TODO: Show confirmation dialog then navigate away
+                              context.go('/');
+                            },
+                            icon: const Icon(Icons.exit_to_app),
+                            label: Text(l10n.leaveWizard),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 36),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Section title
+                          Text(
+                            _getSectionTitle(l10n, currentSection?.titleKey),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(width: 16),
 
-                    // Progress bar
-                    const WizardProgressBar(),
-                    const SizedBox(height: 16),
+                    // Right side: Progress bar and navigation buttons
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Progress bar
+                          const WizardProgressBar(),
+                          const SizedBox(height: 16),
 
-                    // Navigation buttons
-                    WizardNavButtons(
-                      currentSectionId: _currentSectionId!,
-                      onNavigate: _navigateToSection,
-                      onSkip: _handleSkip,
+                          // Navigation buttons
+                          WizardNavButtons(
+                            currentSectionId: _currentSectionId!,
+                            onNavigate: _navigateToSection,
+                            onSkip: _handleSkip,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

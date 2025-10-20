@@ -210,6 +210,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get wizard => 'Assistant de configuration';
 
   @override
+  String get leaveWizard => 'Quitter l\'assistant';
+
+  @override
   String get loadingWizard => 'Chargement de l\'assistant...';
 
   @override

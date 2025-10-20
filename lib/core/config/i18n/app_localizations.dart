@@ -99,6 +99,7 @@ abstract class AppLocalizations {
 
   // Wizard - UI strings
   String get wizard;
+  String get leaveWizard;
   String get loadingWizard;
   String get failedToLoadWizard;
   String get launchWizard;
