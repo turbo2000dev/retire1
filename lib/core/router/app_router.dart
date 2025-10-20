@@ -67,6 +67,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             MaterialPage(key: state.pageKey, child: const RegisterScreen()),
       ),
 
+      // Wizard route (no shell - full screen experience)
+      GoRoute(
+        path: AppRoutes.wizard,
+        name: 'wizard',
+        pageBuilder: (context, state) =>
+            MaterialPage(key: state.pageKey, child: const WizardScreen()),
+      ),
+
       // Protected routes (with shell)
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
@@ -129,12 +137,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               key: state.pageKey,
               child: const SettingsScreen(),
             ),
-          ),
-          GoRoute(
-            path: AppRoutes.wizard,
-            name: 'wizard',
-            pageBuilder: (context, state) =>
-                MaterialPage(key: state.pageKey, child: const WizardScreen()),
           ),
         ],
       ),
