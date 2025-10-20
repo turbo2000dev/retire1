@@ -237,44 +237,78 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(_getSectionTitle(l10n, currentSection?.titleKey)),
-            const SizedBox(height: 4),
-            const WizardProgressBar(),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: WizardNavButtons(
-              currentSectionId: _currentSectionId!,
-              onNavigate: _navigateToSection,
-              onSkip: _handleSkip,
+      appBar: AppBar(title: Text(l10n.wizard)),
+      body: Column(
+        children: [
+          // Section content takes most of the space
+          Expanded(
+            child: ResponsiveBuilder(
+              builder: (context, screenSize) {
+                if (screenSize.isPhone) {
+                  return WizardMobileLayout(
+                    currentSectionId: _currentSectionId!,
+                    sections: sections,
+                    onSectionSelected: _navigateToSection,
+                    sectionContent: _buildSectionContent(),
+                  );
+                } else {
+                  return WizardDesktopLayout(
+                    currentSectionId: _currentSectionId!,
+                    sections: sections,
+                    onSectionSelected: _navigateToSection,
+                    sectionContent: _buildSectionContent(),
+                  );
+                }
+              },
+            ),
+          ),
+
+          // Bottom section with title, progress bar, and navigation buttons
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+                  offset: const Offset(0, -2),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Section title
+                    Text(
+                      _getSectionTitle(l10n, currentSection?.titleKey),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Progress bar
+                    const WizardProgressBar(),
+                    const SizedBox(height: 16),
+
+                    // Navigation buttons
+                    WizardNavButtons(
+                      currentSectionId: _currentSectionId!,
+                      onNavigate: _navigateToSection,
+                      onSkip: _handleSkip,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
-      ),
-      body: ResponsiveBuilder(
-        builder: (context, screenSize) {
-          if (screenSize.isPhone) {
-            return WizardMobileLayout(
-              currentSectionId: _currentSectionId!,
-              sections: sections,
-              onSectionSelected: _navigateToSection,
-              sectionContent: _buildSectionContent(),
-            );
-          } else {
-            return WizardDesktopLayout(
-              currentSectionId: _currentSectionId!,
-              sections: sections,
-              onSectionSelected: _navigateToSection,
-              sectionContent: _buildSectionContent(),
-            );
-          }
-        },
       ),
     );
   }
