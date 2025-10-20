@@ -362,17 +362,16 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
             ),
             child: SafeArea(
               top: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: ResponsiveContainer(
-                  child: ResponsiveBuilder(
-                    builder: (context, screenSize) {
-                      final isPhone = screenSize.isPhone;
+              child: ResponsiveBuilder(
+                builder: (context, screenSize) {
+                  final isPhone = screenSize.isPhone;
 
-                      if (isPhone) {
-                        // Mobile layout: Title on top
-                        // Then progress bar and buttons below
-                        return Column(
+                  if (isPhone) {
+                    // Mobile layout: Title on top, then progress bar and buttons
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: ResponsiveContainer(
+                        child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -420,14 +419,20 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                               ],
                             ),
                           ],
-                        );
-                      } else {
-                        // Desktop/Tablet layout: Title on left, progress + buttons on right
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Left side: Section title (280px to match sidebar width)
-                            SizedBox(
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Desktop/Tablet layout: Title on left, progress + buttons on right
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Left side: Section title (280px to match sidebar)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: SizedBox(
                               width: 280,
                               child: Text(
                                 _getSectionTitle(
@@ -439,10 +444,11 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                          ),
 
-                            // Right side: Progress bar and buttons
-                            Expanded(
+                          // Right side: Progress bar and buttons in ResponsiveContainer
+                          Expanded(
+                            child: ResponsiveContainer(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -477,12 +483,12 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                                 ],
                               ),
                             ),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
               ),
             ),
           ),
