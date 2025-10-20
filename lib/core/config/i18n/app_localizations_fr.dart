@@ -353,6 +353,53 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get categoryScenariosReview => 'Révision et sommaire';
 
+  // Wizard - Welcome screen
+  @override
+  String get welcomeWizardTitle =>
+      'Voici comment nous allons procéder ensemble';
+
+  @override
+  String get welcomeWizardIntro =>
+      'Dans les prochaines minutes, nous allons construire votre plan de retraite personnalisé. Pensez-y comme une conversation amicale où je vous guide à travers 5 grandes étapes:';
+
+  @override
+  String get welcomeWizardStep1Title => 'Qui êtes-vous?';
+
+  @override
+  String get welcomeWizardStep1Description => 'Votre situation actuelle';
+
+  @override
+  String get welcomeWizardStep2Title => 'Vos revenus';
+
+  @override
+  String get welcomeWizardStep2Description => 'Ce que vous gagnez';
+
+  @override
+  String get welcomeWizardStep3Title => 'Vos épargnes';
+
+  @override
+  String get welcomeWizardStep3Description => 'Ce que vous avez mis de côté';
+
+  @override
+  String get welcomeWizardStep4Title => 'Vos objectifs';
+
+  @override
+  String get welcomeWizardStep4Description => 'Vos rêves de retraite';
+
+  @override
+  String get welcomeWizardStep5Title => 'Votre plan';
+
+  @override
+  String get welcomeWizardStep5Description =>
+      'Notre recommandation personnalisée';
+
+  @override
+  String get welcomeWizardTimeEstimate =>
+      'Ça vous prendra environ 20-30 minutes.';
+
+  @override
+  String get welcomeWizardReady => 'Prêt?';
+
   // Dashboard
   @override
   String get welcomeBack => 'Bon retour';

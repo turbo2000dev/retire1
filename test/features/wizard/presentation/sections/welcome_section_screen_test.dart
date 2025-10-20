@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:retire1/core/config/i18n/app_localizations.dart';
 import 'package:retire1/features/wizard/domain/wizard_progress.dart';
 import 'package:retire1/features/wizard/domain/wizard_section_status.dart';
 import 'package:retire1/features/wizard/presentation/providers/wizard_progress_provider.dart';
@@ -46,6 +48,13 @@ void main() {
       return ProviderScope(
         overrides: [wizardProgressProvider.overrideWith(() => mockNotifier)],
         child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en'), Locale('fr')],
           home: Scaffold(
             body: WelcomeSectionScreen(onRegisterCallback: onRegisterCallback),
           ),
@@ -54,11 +63,34 @@ void main() {
     }
 
     group('Initialization', () {
-      testWidgets('displays welcome text', (tester) async {
+      testWidgets('displays welcome title', (tester) async {
         await tester.pumpWidget(buildWelcomeScreen());
         await tester.pump();
 
-        expect(find.text('Welcome - Coming Soon'), findsOneWidget);
+        // Check for the title
+        expect(
+          find.text('Here\'s how we\'ll proceed together'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('displays all 5 step cards', (tester) async {
+        await tester.pumpWidget(buildWelcomeScreen());
+        await tester.pump();
+
+        // Should have 5 step cards
+        expect(find.byType(Card), findsNWidgets(5));
+      });
+
+      testWidgets('displays time estimate and ready question', (tester) async {
+        await tester.pumpWidget(buildWelcomeScreen());
+        await tester.pump();
+
+        expect(
+          find.text('This will take about 20-30 minutes.'),
+          findsOneWidget,
+        );
+        expect(find.text('Ready?'), findsOneWidget);
       });
 
       testWidgets('registers validation callback', (tester) async {
@@ -137,21 +169,19 @@ void main() {
     });
 
     group('Widget Structure', () {
-      testWidgets('is a StatefulWidget', (tester) async {
-        await tester.pumpWidget(buildWelcomeScreen());
-
-        final widget = tester.widget<WelcomeSectionScreen>(
-          find.byType(WelcomeSectionScreen),
-        );
-
-        expect(widget, isA<StatefulWidget>());
-      });
-
-      testWidgets('contains Center widget', (tester) async {
+      testWidgets('contains SingleChildScrollView', (tester) async {
         await tester.pumpWidget(buildWelcomeScreen());
         await tester.pump();
 
-        expect(find.byType(Center), findsOneWidget);
+        expect(find.byType(SingleChildScrollView), findsOneWidget);
+      });
+
+      testWidgets('contains expected number of Cards', (tester) async {
+        await tester.pumpWidget(buildWelcomeScreen());
+        await tester.pump();
+
+        // Should have 5 cards for the 5 steps
+        expect(find.byType(Card), findsNWidgets(5));
       });
     });
 

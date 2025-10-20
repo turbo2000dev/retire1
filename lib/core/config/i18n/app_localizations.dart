@@ -149,6 +149,22 @@ abstract class AppLocalizations {
   String get categoryKeyEvents;
   String get categoryScenariosReview;
 
+  // Wizard - Welcome screen
+  String get welcomeWizardTitle;
+  String get welcomeWizardIntro;
+  String get welcomeWizardStep1Title;
+  String get welcomeWizardStep1Description;
+  String get welcomeWizardStep2Title;
+  String get welcomeWizardStep2Description;
+  String get welcomeWizardStep3Title;
+  String get welcomeWizardStep3Description;
+  String get welcomeWizardStep4Title;
+  String get welcomeWizardStep4Description;
+  String get welcomeWizardStep5Title;
+  String get welcomeWizardStep5Description;
+  String get welcomeWizardTimeEstimate;
+  String get welcomeWizardReady;
+
   // Dashboard
   String get welcomeBack;
   String get selectProject;
