@@ -51,7 +51,7 @@ class _LifeEventsSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception('No project selected');
+        throw Exception(l10n.noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -192,7 +192,7 @@ class _LifeEventsSectionScreenState
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.failedToSave}: $e')));
       }
       return false;
     }
@@ -201,6 +201,7 @@ class _LifeEventsSectionScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -212,13 +213,13 @@ class _LifeEventsSectionScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: $_errorMessage',
+              '${l10n.error}: $_errorMessage',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _loadData, child: const Text('Retry')),
+            FilledButton(onPressed: _loadData, child: Text(l10n.retry)),
           ],
         ),
       );
@@ -239,7 +240,7 @@ class _LifeEventsSectionScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Life Planning', style: theme.textTheme.headlineSmall),
+            Text(l10n.lifePlanning, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
               'Set expected lifespan for financial planning. This helps project when resources will be needed.',
@@ -324,7 +325,7 @@ class _LifeEventsSectionScreenState
                             ],
                             decoration: InputDecoration(
                               labelText: 'Age',
-                              hintText: '75-100',
+                              hintText: l10n.lifeExpectancyHint,
                               helperText: 'Average life expectancy: 80-85',
                               border: const OutlineInputBorder(),
                               prefixIcon: const Icon(Icons.timeline),

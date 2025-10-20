@@ -78,7 +78,7 @@ class _SummarySectionScreenState extends ConsumerState<SummarySectionScreen> {
         setState(() => _isCompleting = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to complete: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.failedToComplete}: $e')));
       }
       return false;
     }
@@ -87,6 +87,7 @@ class _SummarySectionScreenState extends ConsumerState<SummarySectionScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final currencyFormat = NumberFormat.currency(
       symbol: '\$',
       decimalDigits: 0,
@@ -102,13 +103,13 @@ class _SummarySectionScreenState extends ConsumerState<SummarySectionScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: $_errorMessage',
+              '${l10n.error}: $_errorMessage',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _loadData, child: const Text('Retry')),
+            FilledButton(onPressed: _loadData, child: Text(l10n.retry)),
           ],
         ),
       );
@@ -131,7 +132,7 @@ class _SummarySectionScreenState extends ConsumerState<SummarySectionScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Summary & Review', style: theme.textTheme.headlineSmall),
+          Text(l10n.summaryAndReview, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
           Text(
             'Review your retirement planning configuration. You can modify any section later from the main dashboard.',

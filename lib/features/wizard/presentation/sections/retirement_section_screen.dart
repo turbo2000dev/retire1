@@ -51,7 +51,7 @@ class _RetirementSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception('No project selected');
+        throw Exception(l10n.noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -199,7 +199,7 @@ class _RetirementSectionScreenState
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.failedToSave}: $e')));
       }
       return false;
     }
@@ -208,6 +208,7 @@ class _RetirementSectionScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -219,13 +220,13 @@ class _RetirementSectionScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: $_errorMessage',
+              '${l10n.error}: $_errorMessage',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _loadData, child: const Text('Retry')),
+            FilledButton(onPressed: _loadData, child: Text(l10n.retry)),
           ],
         ),
       );
@@ -246,7 +247,7 @@ class _RetirementSectionScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Retirement Planning', style: theme.textTheme.headlineSmall),
+            Text(l10n.retirementPlanning, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
               'Set the retirement age for each individual. This will affect income calculations and tax planning.',
@@ -330,8 +331,8 @@ class _RetirementSectionScreenState
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration: InputDecoration(
-                              labelText: 'Age',
-                              hintText: '55-75',
+                              labelText: l10n.ageLabel,
+                              hintText: l10n.retirementAgeHint,
                               helperText: 'Typical retirement age is 60-67',
                               border: const OutlineInputBorder(),
                               prefixIcon: const Icon(Icons.cake),

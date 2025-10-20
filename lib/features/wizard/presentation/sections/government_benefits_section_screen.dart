@@ -49,7 +49,7 @@ class _GovernmentBenefitsSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception('No project selected');
+        throw Exception(l10n.noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -111,7 +111,7 @@ class _GovernmentBenefitsSectionScreenState
     try {
       final currentProjectState = ref.read(currentProjectProvider);
       if (currentProjectState is! ProjectSelected) {
-        throw Exception('No project selected');
+        throw Exception(l10n.noProjectSelected);
       }
 
       final project = currentProjectState.project;
@@ -154,7 +154,7 @@ class _GovernmentBenefitsSectionScreenState
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.failedToSave}: $e')));
       }
       return false;
     }
@@ -163,6 +163,7 @@ class _GovernmentBenefitsSectionScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -174,13 +175,13 @@ class _GovernmentBenefitsSectionScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: $_errorMessage',
+              '${l10n.error}: $_errorMessage',
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _loadData, child: const Text('Retry')),
+            FilledButton(onPressed: _loadData, child: Text(l10n.retry)),
           ],
         ),
       );
@@ -201,7 +202,10 @@ class _GovernmentBenefitsSectionScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Government Benefits', style: theme.textTheme.headlineSmall),
+            Text(
+              l10n.governmentBenefitsTitle,
+              style: theme.textTheme.headlineSmall,
+            ),
             const SizedBox(height: 8),
             Text(
               'Configure when each individual will start receiving QPP/RRQ and OAS/PSV benefits.',
@@ -269,8 +273,8 @@ class _GovernmentBenefitsSectionScreenState
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration: const InputDecoration(
-                              labelText: 'Age',
-                              hintText: '60-70',
+                              labelText: l10n.ageLabel,
+                              hintText: l10n.rrqAgeHint,
                               helperText: 'Age 60 (reduced) to 70 (increased)',
                               border: OutlineInputBorder(),
                             ),
@@ -306,8 +310,8 @@ class _GovernmentBenefitsSectionScreenState
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration: const InputDecoration(
-                              labelText: 'Age',
-                              hintText: '65-70',
+                              labelText: l10n.ageLabel,
+                              hintText: l10n.psvAgeHint,
                               helperText: 'Age 65 (standard) to 70 (increased)',
                               border: OutlineInputBorder(),
                             ),
