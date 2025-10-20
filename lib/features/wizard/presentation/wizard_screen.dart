@@ -426,9 +426,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            // Left side: Section title
-                            Expanded(
-                              flex: 2,
+                            // Left side: Section title (280px to match sidebar width)
+                            SizedBox(
+                              width: 280,
                               child: Text(
                                 _getSectionTitle(
                                   l10n,
@@ -443,7 +443,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
 
                             // Right side: Progress bar and buttons
                             Expanded(
-                              flex: 3,
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
