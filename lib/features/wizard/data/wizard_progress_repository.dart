@@ -173,12 +173,39 @@ class WizardProgressRepository {
   Future<void> _saveProgress(WizardProgress progress) async {
     try {
       final json = progress.toJson();
-      // Freezed already converts DateTime to ISO8601 strings, which work with Firestore
-      await _progressCollection.doc(progress.projectId).set(json);
+      // Convert DateTime objects to Firestore Timestamps
+      final converted = _convertDateTimesToTimestamps(json);
+      await _progressCollection.doc(progress.projectId).set(converted);
     } catch (e, stack) {
       log('Failed to save wizard progress', error: e, stackTrace: stack);
       rethrow;
     }
+  }
+
+  /// Recursively convert DateTime objects to Firestore Timestamps
+  Map<String, dynamic> _convertDateTimesToTimestamps(
+    Map<String, dynamic> data,
+  ) {
+    return data.map((key, value) {
+      if (value is DateTime) {
+        return MapEntry(key, Timestamp.fromDate(value));
+      } else if (value is Map<String, dynamic>) {
+        return MapEntry(key, _convertDateTimesToTimestamps(value));
+      } else if (value is List) {
+        return MapEntry(
+          key,
+          value.map((item) {
+            if (item is DateTime) {
+              return Timestamp.fromDate(item);
+            } else if (item is Map<String, dynamic>) {
+              return _convertDateTimesToTimestamps(item);
+            }
+            return item;
+          }).toList(),
+        );
+      }
+      return MapEntry(key, value);
+    });
   }
 }
 
