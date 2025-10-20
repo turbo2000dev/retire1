@@ -368,29 +368,28 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                     final isPhone = screenSize.isPhone;
 
                     if (isPhone) {
-                      // Mobile layout: Title on left, Leave button on right
-                      // Then progress bar and nav buttons below
+                      // Mobile layout: Title on top
+                      // Then progress bar and buttons below
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Top row: Section title and Leave button
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Section title
-                              Expanded(
-                                child: Text(
-                                  _getSectionTitle(
-                                    l10n,
-                                    currentSection?.titleKey,
-                                  ),
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
+                          // Section title
+                          Text(
+                            _getSectionTitle(l10n, currentSection?.titleKey),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
 
+                          // Progress bar
+                          const WizardProgressBar(),
+                          const SizedBox(height: 16),
+
+                          // Buttons row: Leave on left, nav buttons on right
+                          Row(
+                            children: [
                               // Leave Wizard button
                               TextButton.icon(
                                 onPressed: () {
@@ -407,19 +406,16 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                                   minimumSize: const Size(0, 32),
                                 ),
                               ),
+
+                              const Spacer(),
+
+                              // Navigation buttons (Previous, Skip, Next/Finish)
+                              WizardNavButtons(
+                                currentSectionId: _currentSectionId!,
+                                onNavigate: _navigateToSection,
+                                onSkip: _handleSkip,
+                              ),
                             ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Progress bar
-                          const WizardProgressBar(),
-                          const SizedBox(height: 16),
-
-                          // Navigation buttons
-                          WizardNavButtons(
-                            currentSectionId: _currentSectionId!,
-                            onNavigate: _navigateToSection,
-                            onSkip: _handleSkip,
                           ),
                         ],
                       );
@@ -451,20 +447,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                                 const WizardProgressBar(),
                                 const SizedBox(height: 16),
 
-                                // Navigation buttons row with Leave button
+                                // Buttons row: Leave on left, nav buttons on right
                                 Row(
                                   children: [
-                                    // Navigation buttons
-                                    Expanded(
-                                      child: WizardNavButtons(
-                                        currentSectionId: _currentSectionId!,
-                                        onNavigate: _navigateToSection,
-                                        onSkip: _handleSkip,
-                                      ),
-                                    ),
-
-                                    const SizedBox(width: 12),
-
                                     // Leave Wizard button
                                     TextButton.icon(
                                       onPressed: () {
@@ -473,6 +458,15 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                                       },
                                       icon: const Icon(Icons.exit_to_app),
                                       label: Text(l10n.leaveWizard),
+                                    ),
+
+                                    const Spacer(),
+
+                                    // Navigation buttons (Previous, Skip, Next/Finish)
+                                    WizardNavButtons(
+                                      currentSectionId: _currentSectionId!,
+                                      onNavigate: _navigateToSection,
+                                      onSkip: _handleSkip,
                                     ),
                                   ],
                                 ),
