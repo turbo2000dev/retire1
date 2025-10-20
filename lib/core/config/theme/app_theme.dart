@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Provider to manage theme mode state (default to light)
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
@@ -75,64 +74,95 @@ class AppTheme {
     inversePrimary: Color(0xFF0062A1),
   );
 
-  /// Typography configuration with Google Fonts
-  /// Uses Roboto font family for excellent character coverage including
+  /// Typography configuration using Noto Sans font
+  /// Noto Sans provides excellent character coverage including
   /// French accents, currency symbols, and mathematical characters
-  static TextTheme get _textTheme => GoogleFonts.robotoTextTheme(
-        const TextTheme(
-          displayLarge: TextStyle(
-            fontSize: 57,
-            fontWeight: FontWeight.w400,
-            letterSpacing: -0.25,
-          ),
-          displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.w400),
-          displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.w400),
-          headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w400),
-          headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w400),
-          headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-          titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-          titleMedium: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.15,
-          ),
-          titleSmall: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.1,
-          ),
-          bodyLarge: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.5,
-          ),
-          bodyMedium: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.25,
-          ),
-          bodySmall: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.4,
-          ),
-          labelLarge: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.1,
-          ),
-          labelMedium: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.5,
-          ),
-          labelSmall: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.5,
-          ),
-        ),
-      );
+  static const TextTheme _textTheme = TextTheme(
+    displayLarge: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 57,
+      fontWeight: FontWeight.w400,
+      letterSpacing: -0.25,
+    ),
+    displayMedium: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 45,
+      fontWeight: FontWeight.w400,
+    ),
+    displaySmall: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 36,
+      fontWeight: FontWeight.w400,
+    ),
+    headlineLarge: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 32,
+      fontWeight: FontWeight.w400,
+    ),
+    headlineMedium: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 28,
+      fontWeight: FontWeight.w400,
+    ),
+    headlineSmall: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 24,
+      fontWeight: FontWeight.w400,
+    ),
+    titleLarge: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 22,
+      fontWeight: FontWeight.w500,
+    ),
+    titleMedium: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+    ),
+    titleSmall: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.1,
+    ),
+    bodyLarge: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.5,
+    ),
+    bodyMedium: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.25,
+    ),
+    bodySmall: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.4,
+    ),
+    labelLarge: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.1,
+    ),
+    labelMedium: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+    ),
+    labelSmall: TextStyle(
+      fontFamily: 'NotoSans',
+      fontSize: 11,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+    ),
+  );
 
   /// Main dark theme for the application
   static ThemeData get darkTheme {
