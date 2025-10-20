@@ -58,7 +58,7 @@ void main() {
         await tester.pumpWidget(buildWelcomeScreen());
         await tester.pump();
 
-        expect(find.text('Welcome Section - Coming Soon'), findsOneWidget);
+        expect(find.text('Welcome - Coming Soon'), findsOneWidget);
       });
 
       testWidgets('registers validation callback', (tester) async {

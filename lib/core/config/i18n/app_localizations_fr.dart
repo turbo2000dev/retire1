@@ -677,6 +677,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get entertainment => 'Divertissement';
 
   @override
+  String get family => 'Famille';
+
+  @override
   String get other => 'Autre';
 
   @override

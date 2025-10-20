@@ -90,12 +90,12 @@ void main() {
         await tester.pump();
         await tester.pumpAndSettle();
 
-        // Should have 6 expense categories
+        // Should have 6 expense categories (using i18n values)
         expect(find.text('Housing'), findsOneWidget);
-        expect(find.text('Transport'), findsOneWidget);
-        expect(find.text('Daily Living'), findsOneWidget);
-        expect(find.text('Recreation'), findsOneWidget);
-        expect(find.text('Health'), findsOneWidget);
+        expect(find.text('Transportation'), findsOneWidget);
+        expect(find.text('Food'), findsOneWidget);
+        expect(find.text('Entertainment'), findsOneWidget);
+        expect(find.text('Healthcare'), findsOneWidget);
         expect(find.text('Family'), findsOneWidget);
       });
 

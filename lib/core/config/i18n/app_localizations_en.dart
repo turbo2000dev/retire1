@@ -675,6 +675,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entertainment => 'Entertainment';
 
   @override
+  String get family => 'Family';
+
+  @override
   String get other => 'Other';
 
   @override

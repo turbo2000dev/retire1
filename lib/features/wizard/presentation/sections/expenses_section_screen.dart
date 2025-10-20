@@ -72,7 +72,7 @@ class _ExpensesSectionScreenState extends ConsumerState<ExpensesSectionScreen> {
       case 'health':
         return l10n.healthcare;
       case 'family':
-        return 'Family'; // Use existing key or add new one
+        return l10n.family;
       default:
         return category;
     }

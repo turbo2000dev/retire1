@@ -263,6 +263,7 @@ abstract class AppLocalizations {
   String get food;
   String get healthcare;
   String get entertainment;
+  String get family;
   String get other;
   String get totalExpenses;
   String get preRetirement;
