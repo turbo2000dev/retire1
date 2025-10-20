@@ -10,6 +10,7 @@ import 'package:retire1/features/wizard/presentation/widgets/wizard_desktop_layo
 import 'package:retire1/features/wizard/presentation/widgets/wizard_mobile_layout.dart';
 import 'package:retire1/features/wizard/presentation/widgets/wizard_progress_bar.dart';
 import 'package:retire1/features/wizard/presentation/widgets/wizard_nav_buttons.dart';
+import 'package:retire1/features/wizard/presentation/widgets/wizard_section_list.dart';
 import 'package:retire1/features/wizard/presentation/sections/welcome_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/project_basics_section_screen.dart';
 import 'package:retire1/features/wizard/presentation/sections/primary_individual_section_screen.dart';
@@ -238,7 +239,89 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.wizard)),
+      appBar: AppBar(
+        title: Text(l10n.wizard),
+        actions: [
+          // Show section list button on mobile
+          ResponsiveBuilder(
+            builder: (context, screenSize) {
+              if (screenSize.isPhone) {
+                return IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    // Show section list in bottom sheet
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => DraggableScrollableSheet(
+                        initialChildSize: 0.7,
+                        minChildSize: 0.5,
+                        maxChildSize: 0.95,
+                        expand: false,
+                        builder: (context, scrollController) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(16),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                // Handle bar
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                    top: 12,
+                                    bottom: 8,
+                                  ),
+                                  width: 40,
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.outline
+                                        .withValues(alpha: 0.4),
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+
+                                // Title
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    l10n.sections,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleLarge,
+                                  ),
+                                ),
+
+                                const Divider(height: 1),
+
+                                // Section list
+                                Expanded(
+                                  child: WizardSectionList(
+                                    currentSectionId: _currentSectionId!,
+                                    sections: sections,
+                                    onSectionSelected: (sectionId) {
+                                      Navigator.of(context).pop();
+                                      _navigateToSection(sectionId);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  tooltip: l10n.sections,
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           // Section content takes most of the space
@@ -280,50 +363,54 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
               top: false,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Left side: Leave button and section title
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Leave Wizard button
-                          TextButton.icon(
-                            onPressed: () {
-                              // TODO: Show confirmation dialog then navigate away
-                              context.go('/');
-                            },
-                            icon: const Icon(Icons.exit_to_app),
-                            label: Text(l10n.leaveWizard),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: const Size(0, 36),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
+                child: ResponsiveBuilder(
+                  builder: (context, screenSize) {
+                    final isPhone = screenSize.isPhone;
 
-                          // Section title
-                          Text(
-                            _getSectionTitle(l10n, currentSection?.titleKey),
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-
-                    // Right side: Progress bar and navigation buttons
-                    Expanded(
-                      flex: 3,
-                      child: Column(
+                    if (isPhone) {
+                      // Mobile layout: Title on left, Leave button on right
+                      // Then progress bar and nav buttons below
+                      return Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          // Top row: Section title and Leave button
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Section title
+                              Expanded(
+                                child: Text(
+                                  _getSectionTitle(
+                                    l10n,
+                                    currentSection?.titleKey,
+                                  ),
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+
+                              // Leave Wizard button
+                              TextButton.icon(
+                                onPressed: () {
+                                  // TODO: Show confirmation dialog then navigate away
+                                  context.go('/');
+                                },
+                                icon: const Icon(Icons.exit_to_app, size: 18),
+                                label: Text(l10n.leaveWizard),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  minimumSize: const Size(0, 32),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+
                           // Progress bar
                           const WizardProgressBar(),
                           const SizedBox(height: 16),
@@ -335,9 +422,67 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                             onSkip: _handleSkip,
                           ),
                         ],
-                      ),
-                    ),
-                  ],
+                      );
+                    } else {
+                      // Desktop/Tablet layout: Title on left, progress + buttons on right
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Left side: Section title
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              _getSectionTitle(l10n, currentSection?.titleKey),
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+
+                          // Right side: Progress bar and buttons
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Progress bar
+                                const WizardProgressBar(),
+                                const SizedBox(height: 16),
+
+                                // Navigation buttons row with Leave button
+                                Row(
+                                  children: [
+                                    // Navigation buttons
+                                    Expanded(
+                                      child: WizardNavButtons(
+                                        currentSectionId: _currentSectionId!,
+                                        onNavigate: _navigateToSection,
+                                        onSkip: _handleSkip,
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 12),
+
+                                    // Leave Wizard button
+                                    TextButton.icon(
+                                      onPressed: () {
+                                        // TODO: Show confirmation dialog then navigate away
+                                        context.go('/');
+                                      },
+                                      icon: const Icon(Icons.exit_to_app),
+                                      label: Text(l10n.leaveWizard),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
               ),
             ),
