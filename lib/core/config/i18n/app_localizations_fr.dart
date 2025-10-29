@@ -183,8 +183,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidEmail => 'Adresse courriel invalide';
 
   @override
-  String get passwordTooShort =>
-      'Le mot de passe doit contenir au moins 6 caractères';
+  String get passwordTooShort => 'Le mot de passe doit contenir au moins 6 caractères';
 
   @override
   String get passwordsDoNotMatch => 'Les mots de passe ne correspondent pas';
@@ -290,52 +289,42 @@ class AppLocalizationsFr extends AppLocalizations {
 
   // Wizard - Section descriptions
   @override
-  String get section1Description =>
-      'Découvrez le processus de planification de la retraite et à quoi vous attendre';
+  String get section1Description => 'Découvrez le processus de planification de la retraite et à quoi vous attendre';
 
   @override
-  String get section2Description =>
-      'Configurez le nom de votre projet et les informations de base';
+  String get section2Description => 'Configurez le nom de votre projet et les informations de base';
 
   @override
-  String get section3Description =>
-      'Entrez vos informations personnelles, y compris votre date de naissance';
+  String get section3Description => 'Entrez vos informations personnelles, y compris votre date de naissance';
 
   @override
-  String get section4Description =>
-      'Ajoutez les informations de votre conjoint si vous planifiez ensemble';
+  String get section4Description => 'Ajoutez les informations de votre conjoint si vous planifiez ensemble';
 
   @override
-  String get section5Description =>
-      'Ajoutez vos biens immobiliers, comptes REER, CELI et autres actifs';
+  String get section5Description => 'Ajoutez vos biens immobiliers, comptes REER, CELI et autres actifs';
 
   @override
-  String get section6Description =>
-      'Entrez vos revenus d\'emploi actuels et les détails';
+  String get section6Description => 'Entrez vos revenus d\'emploi actuels et les détails';
 
   @override
-  String get section7Description =>
-      'Découvrez le Régime de rentes du Québec et autres prestations provinciales';
+  String get section7Description => 'Découvrez le Régime de rentes du Québec et autres prestations provinciales';
 
   @override
   String get section8Description =>
       'Configurez le Régime de pensions du Canada, la Sécurité de la vieillesse et autres prestations';
 
   @override
-  String get section9Description =>
-      'Estimez vos dépenses de vie avant et après la retraite';
+  String get section9Description => 'Estimez vos dépenses de vie avant et après la retraite';
 
   @override
-  String get section10Description =>
-      'Planifiez quand vous et votre conjoint prendrez votre retraite';
+  String get section10Description => 'Planifiez quand vous et votre conjoint prendrez votre retraite';
 
   @override
   String get section11Description =>
       'Ajoutez des événements majeurs comme la vente d\'une maison ou de grandes dépenses';
 
   @override
-  String get section12Description =>
-      'Révisez vos informations et complétez la configuration';
+  String get section12Description => 'Révisez vos informations et complétez la configuration';
 
   // Wizard - Category titles
   @override
@@ -358,12 +347,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   // Wizard - Welcome screen
   @override
-  String get welcomeWizardTitle =>
-      'Voici comment nous allons procéder ensemble';
+  String get welcomeWizardTitle => 'Voici comment nous allons procéder ensemble';
 
   @override
   String get welcomeWizardIntro =>
-      'Dans les prochaines minutes, nous allons construire votre plan de retraite personnalisé. Pensez-y comme une conversation amicale où je vous guide à travers 5 grandes étapes:';
+      'Dans les prochaines minutes, nous allons construire votre plan de retraite personnalisé.\nPensez-y comme une conversation amicale où je vous guide à travers 5 grandes étapes:';
 
   @override
   String get welcomeWizardStep1Title => 'Qui êtes-vous?';
@@ -393,12 +381,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get welcomeWizardStep5Title => 'Votre plan';
 
   @override
-  String get welcomeWizardStep5Description =>
-      'Notre recommandation personnalisée';
+  String get welcomeWizardStep5Description => 'Notre recommandation personnalisée';
 
   @override
-  String get welcomeWizardTimeEstimate =>
-      'Ça vous prendra environ 20-30 minutes.';
+  String get welcomeWizardTimeEstimate => 'Ça vous prendra environ 20-30 minutes.';
 
   @override
   String get welcomeWizardReady => 'Prêt?';
@@ -457,8 +443,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editProjectDetails => 'Modifier les détails du projet';
 
   @override
-  String get editIndividualDetails =>
-      'Modifier les informations de l\'individu';
+  String get editIndividualDetails => 'Modifier les informations de l\'individu';
 
   @override
   String get editEconomicAssumptions => 'Modifier les hypothèses économiques';
@@ -515,8 +500,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirmDelete => 'Confirmer la suppression';
 
   @override
-  String get confirmDeleteMessage =>
-      'Êtes-vous sûr de vouloir supprimer cet élément?';
+  String get confirmDeleteMessage => 'Êtes-vous sûr de vouloir supprimer cet élément?';
 
   @override
   String get deleteSuccess => 'Supprimé avec succès';
@@ -552,8 +536,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dateCannotBeInFuture => 'La date ne peut pas être dans le futur';
 
   @override
-  String get startDateMustBeBeforeEndDate =>
-      'La date de début doit être avant la date de fin';
+  String get startDateMustBeBeforeEndDate => 'La date de début doit être avant la date de fin';
 
   @override
   String get pleaseSelectOption => 'Veuillez sélectionner une option';
@@ -934,8 +917,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get passwordChanged => 'Mot de passe modifié avec succès';
 
   @override
-  String get failedToChangePassword =>
-      'Échec de la modification du mot de passe';
+  String get failedToChangePassword => 'Échec de la modification du mot de passe';
 
   @override
   String get profileUpdated => 'Profil mis à jour avec succès';
@@ -978,8 +960,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sendResetLink => 'Envoyer le lien de réinitialisation';
 
   @override
-  String get resetLinkSent =>
-      'Lien de réinitialisation envoyé à votre courriel';
+  String get resetLinkSent => 'Lien de réinitialisation envoyé à votre courriel';
 
   @override
   String get backToLogin => 'Retour à la connexion';
@@ -1006,8 +987,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get wrongPassword => 'Mot de passe incorrect';
 
   @override
-  String get tooManyRequests =>
-      'Trop de demandes. Veuillez réessayer plus tard';
+  String get tooManyRequests => 'Trop de demandes. Veuillez réessayer plus tard';
 
   @override
   String get networkError => 'Erreur réseau. Veuillez vérifier votre connexion';
@@ -1026,8 +1006,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get welcomeToWizard => 'Bienvenue dans l\'assistant de configuration';
 
   @override
-  String get wizardIntro =>
-      'Cet assistant vous aidera à configurer votre projet de planification de retraite';
+  String get wizardIntro => 'Cet assistant vous aidera à configurer votre projet de planification de retraite';
 
   @override
   String get continueButton => 'Continuer';
@@ -1048,8 +1027,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sectionSkipped => 'Section passée';
 
   @override
-  String get allRequiredComplete =>
-      'Toutes les sections requises sont complètes';
+  String get allRequiredComplete => 'Toutes les sections requises sont complètes';
 
   @override
   String get wizardComplete => 'Assistant terminé';
@@ -1116,8 +1094,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get amountMustBePositive => 'Le montant doit être positif';
 
   @override
-  String get percentageMustBeBetween =>
-      'Le pourcentage doit être entre 0 et 100';
+  String get percentageMustBeBetween => 'Le pourcentage doit être entre 0 et 100';
 
   @override
   String get invalidPercentage => 'Pourcentage invalide';
@@ -1286,8 +1263,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noScenariosAvailable => 'Aucun scénario disponible';
 
   @override
-  String get createScenariosToCompare =>
-      'Créez des scénarios pour les comparer';
+  String get createScenariosToCompare => 'Créez des scénarios pour les comparer';
 
   @override
   String get setupProject => 'Configurer le projet';
@@ -1333,15 +1309,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onlyOneScenarioExists => 'Un seul scénario existe';
 
   @override
-  String get createAlternativeScenarios =>
-      'Créez des scénarios alternatifs pour les comparer';
+  String get createAlternativeScenarios => 'Créez des scénarios alternatifs pour les comparer';
 
   @override
   String get noProjectionAvailable => 'Aucune projection disponible';
 
   @override
-  String get completeProjectSetup =>
-      'Complétez la configuration de votre projet pour voir les ICP';
+  String get completeProjectSetup => 'Complétez la configuration de votre projet pour voir les ICP';
 
   // Account type labels
   @override
@@ -1361,19 +1335,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get expectedAnnualInflation => 'Taux d\'inflation annuel prévu';
 
   @override
-  String get expectedReerReturn =>
-      'Rendement annuel prévu pour les comptes REER';
+  String get expectedReerReturn => 'Rendement annuel prévu pour les comptes REER';
 
   @override
-  String get expectedCeliReturn =>
-      'Rendement annuel prévu pour les comptes CELI';
+  String get expectedCeliReturn => 'Rendement annuel prévu pour les comptes CELI';
 
   @override
   String get expectedCriReturn => 'Rendement annuel prévu pour les comptes CRI';
 
   @override
-  String get expectedCashReturn =>
-      'Rendement annuel prévu pour les comptes de liquidités';
+  String get expectedCashReturn => 'Rendement annuel prévu pour les comptes de liquidités';
 
   // Validation messages
   @override
@@ -1392,31 +1363,25 @@ class AppLocalizationsFr extends AppLocalizations {
       'Importez ou exportez les données du projet pour la sauvegarde, le partage de cas de test ou le transfert entre comptes';
 
   @override
-  String get fileSelectionNotSupported =>
-      'La sélection de fichiers n\'est pas prise en charge sur cette plateforme';
+  String get fileSelectionNotSupported => 'La sélection de fichiers n\'est pas prise en charge sur cette plateforme';
 
   @override
-  String get assetsNotLoaded =>
-      'Les actifs n\'ont pas pu être chargés et ne seront pas inclus';
+  String get assetsNotLoaded => 'Les actifs n\'ont pas pu être chargés et ne seront pas inclus';
 
   @override
-  String get eventsNotLoaded =>
-      'Les événements n\'ont pas pu être chargés et ne seront pas inclus';
+  String get eventsNotLoaded => 'Les événements n\'ont pas pu être chargés et ne seront pas inclus';
 
   @override
-  String get expensesNotLoaded =>
-      'Les dépenses n\'ont pas pu être chargées et ne seront pas incluses';
+  String get expensesNotLoaded => 'Les dépenses n\'ont pas pu être chargées et ne seront pas incluses';
 
   @override
-  String get scenariosNotLoaded =>
-      'Les scénarios n\'ont pas pu être chargés et ne seront pas inclus';
+  String get scenariosNotLoaded => 'Les scénarios n\'ont pas pu être chargés et ne seront pas inclus';
 
   @override
   String get dataExportedTo => 'Données du projet exportées vers';
 
   @override
-  String get dataExportedWithWarnings =>
-      'Données du projet exportées avec des avertissements';
+  String get dataExportedWithWarnings => 'Données du projet exportées avec des avertissements';
 
   @override
   String get warnings => 'Avertissements';
@@ -1433,12 +1398,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   // Empty state descriptions
   @override
-  String get createFirstProject =>
-      'Créez votre premier projet de planification de retraite';
+  String get createFirstProject => 'Créez votre premier projet de planification de retraite';
 
   @override
-  String get addPeopleToRetirementPlan =>
-      'Ajoutez les personnes impliquées dans ce plan de retraite';
+  String get addPeopleToRetirementPlan => 'Ajoutez les personnes impliquées dans ce plan de retraite';
 
   // Wizard - Common
   @override
@@ -1451,24 +1414,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get selectBirthdate => 'Sélectionner la date de naissance';
 
   @override
-  String get pleaseSelectBirthdate =>
-      'Veuillez sélectionner une date de naissance';
+  String get pleaseSelectBirthdate => 'Veuillez sélectionner une date de naissance';
 
   @override
-  String get clickNextToSaveAndContinue =>
-      'Cliquez sur "Suivant" pour enregistrer et continuer';
+  String get clickNextToSaveAndContinue => 'Cliquez sur "Suivant" pour enregistrer et continuer';
 
   @override
-  String get clickNextOrSkip =>
-      'Cliquez sur "Suivant" pour continuer, ou "Passer" pour ignorer';
+  String get clickNextOrSkip => 'Cliquez sur "Suivant" pour continuer, ou "Passer" pour ignorer';
 
   @override
-  String get nameMinTwoCharacters =>
-      'Le nom doit contenir au moins 2 caractères';
+  String get nameMinTwoCharacters => 'Le nom doit contenir au moins 2 caractères';
 
   @override
-  String get projectNameMinLength =>
-      'Le nom du projet doit contenir au moins 3 caractères';
+  String get projectNameMinLength => 'Le nom du projet doit contenir au moins 3 caractères';
 
   @override
   String get pleaseEnterValidNumber => 'Veuillez entrer un nombre valide';
@@ -1503,8 +1461,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dateOfBirth => 'Date de naissance';
 
   @override
-  String get selectPartnerBirthdate =>
-      'Sélectionner la date de naissance du conjoint';
+  String get selectPartnerBirthdate => 'Sélectionner la date de naissance du conjoint';
 
   @override
   String get partnerSectionInstructions =>
@@ -1522,8 +1479,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get projectNameHint => 'ex. Mon plan de retraite 2025';
 
   @override
-  String get projectDescriptionHint =>
-      'Optionnel : Ajoutez des notes sur ce scénario de planification';
+  String get projectDescriptionHint => 'Optionnel : Ajoutez des notes sur ce scénario de planification';
 
   // Wizard - Assets Section
   @override
@@ -1544,8 +1500,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noAssetsYet => 'Aucun actif pour l\'instant';
 
   @override
-  String get addFirstAssetOrSkip =>
-      'Ajoutez votre premier actif pour commencer, ou passez cette section';
+  String get addFirstAssetOrSkip => 'Ajoutez votre premier actif pour commencer, ou passez cette section';
 
   @override
   String get errorLoadingAssets => 'Erreur lors du chargement des actifs';
@@ -1563,8 +1518,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noIndividualsFound => 'Aucune personne trouvée';
 
   @override
-  String get pleaseAddIndividuals =>
-      'Veuillez ajouter des personnes dans les sections précédentes';
+  String get pleaseAddIndividuals => 'Veuillez ajouter des personnes dans les sections précédentes';
 
   @override
   String get annualEmploymentIncome => 'Revenu d\'emploi annuel';
@@ -1576,12 +1530,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cadPerYear => 'CAD / an';
 
   @override
-  String get leaveEmptyIfNotEmployed =>
-      'Laissez vide si la personne n\'est pas employée';
+  String get leaveEmptyIfNotEmployed => 'Laissez vide si la personne n\'est pas employée';
 
   @override
-  String get incomeUsedUntilRetirement =>
-      'Ce revenu sera utilisé dans les projections jusqu\'à la retraite';
+  String get incomeUsedUntilRetirement => 'Ce revenu sera utilisé dans les projections jusqu\'à la retraite';
 
   @override
   String get clickNextOrSkipEmployment =>
@@ -1599,26 +1551,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get annualAmount => 'Montant annuel';
 
   @override
-  String get housingExpenseHint =>
-      'Hypothèque, loyer, taxe foncière, services publics';
+  String get housingExpenseHint => 'Hypothèque, loyer, taxe foncière, services publics';
 
   @override
-  String get transportationExpenseHint =>
-      'Paiements auto, essence, assurance, transport en commun';
+  String get transportationExpenseHint => 'Paiements auto, essence, assurance, transport en commun';
 
   @override
   String get foodExpenseHint => 'Épicerie, vêtements, soins personnels';
 
   @override
-  String get leisureExpenseHint =>
-      'Divertissement, loisirs, restaurants, voyages';
+  String get leisureExpenseHint => 'Divertissement, loisirs, restaurants, voyages';
 
   @override
   String get healthExpenseHint => 'Assurance, médical, médicaments';
 
   @override
-  String get familyExpenseHint =>
-      'Garde d\'enfants, éducation, soutien familial';
+  String get familyExpenseHint => 'Garde d\'enfants, éducation, soutien familial';
 
   @override
   String get errorLoadingExpenses => 'Erreur lors du chargement des dépenses';
@@ -1670,8 +1618,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retirementAgeHint => '55-75';
 
   @override
-  String get typicalRetirementAge =>
-      'L\'âge typique de la retraite est de 60 à 67 ans';
+  String get typicalRetirementAge => 'L\'âge typique de la retraite est de 60 à 67 ans';
 
   @override
   String get yearsLabel => 'ans';

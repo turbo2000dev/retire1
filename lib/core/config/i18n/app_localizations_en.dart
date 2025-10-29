@@ -289,52 +289,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   // Wizard - Section descriptions
   @override
-  String get section1Description =>
-      'Learn about the retirement planning process and what to expect';
+  String get section1Description => 'Learn about the retirement planning process and what to expect';
 
   @override
-  String get section2Description =>
-      'Set up your project name and basic information';
+  String get section2Description => 'Set up your project name and basic information';
 
   @override
-  String get section3Description =>
-      'Enter your personal information including birth date';
+  String get section3Description => 'Enter your personal information including birth date';
 
   @override
-  String get section4Description =>
-      'Add your partner\'s information if planning together';
+  String get section4Description => 'Add your partner\'s information if planning together';
 
   @override
-  String get section5Description =>
-      'Add your real estate, RRSP, CELI, and other assets';
+  String get section5Description => 'Add your real estate, RRSP, CELI, and other assets';
 
   @override
-  String get section6Description =>
-      'Enter your current employment income and details';
+  String get section6Description => 'Enter your current employment income and details';
 
   @override
-  String get section7Description =>
-      'Learn about Quebec Pension Plan and other provincial benefits';
+  String get section7Description => 'Learn about Quebec Pension Plan and other provincial benefits';
 
   @override
-  String get section8Description =>
-      'Configure Canada Pension Plan, Old Age Security, and other benefits';
+  String get section8Description => 'Configure Canada Pension Plan, Old Age Security, and other benefits';
 
   @override
-  String get section9Description =>
-      'Estimate your living expenses before and after retirement';
+  String get section9Description => 'Estimate your living expenses before and after retirement';
 
   @override
-  String get section10Description =>
-      'Plan when you and your partner will retire';
+  String get section10Description => 'Plan when you and your partner will retire';
 
   @override
-  String get section11Description =>
-      'Add major life events like selling a home or large expenses';
+  String get section11Description => 'Add major life events like selling a home or large expenses';
 
   @override
-  String get section12Description =>
-      'Review your information and complete the setup';
+  String get section12Description => 'Review your information and complete the setup';
 
   // Wizard - Category titles
   @override
@@ -361,7 +349,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeWizardIntro =>
-      'In the next few minutes, we\'ll build your personalized retirement plan. Think of it as a friendly conversation where I guide you through 5 major steps:';
+      'In the next few minutes, we\'ll build your personalized retirement plan.\nThink of it as a friendly conversation where I guide you through 5 major steps:';
 
   @override
   String get welcomeWizardStep1Title => 'Who are you?';
@@ -510,8 +498,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDelete => 'Confirm Delete';
 
   @override
-  String get confirmDeleteMessage =>
-      'Are you sure you want to delete this item?';
+  String get confirmDeleteMessage => 'Are you sure you want to delete this item?';
 
   @override
   String get deleteSuccess => 'Deleted successfully';
@@ -547,8 +534,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateCannotBeInFuture => 'Date cannot be in the future';
 
   @override
-  String get startDateMustBeBeforeEndDate =>
-      'Start date must be before end date';
+  String get startDateMustBeBeforeEndDate => 'Start date must be before end date';
 
   @override
   String get pleaseSelectOption => 'Please select an option';
@@ -1018,8 +1004,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeToWizard => 'Welcome to the Setup Wizard';
 
   @override
-  String get wizardIntro =>
-      'This wizard will help you set up your retirement planning project';
+  String get wizardIntro => 'This wizard will help you set up your retirement planning project';
 
   @override
   String get continueButton => 'Continue';
@@ -1322,8 +1307,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlyOneScenarioExists => 'Only one scenario exists';
 
   @override
-  String get createAlternativeScenarios =>
-      'Create alternative scenarios to compare';
+  String get createAlternativeScenarios => 'Create alternative scenarios to compare';
 
   @override
   String get noProjectionAvailable => 'No projection available';
@@ -1377,24 +1361,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Import or export project data for backup, sharing test cases, or transferring between accounts';
 
   @override
-  String get fileSelectionNotSupported =>
-      'File selection not supported on this platform';
+  String get fileSelectionNotSupported => 'File selection not supported on this platform';
 
   @override
-  String get assetsNotLoaded =>
-      'Assets could not be loaded and will not be included';
+  String get assetsNotLoaded => 'Assets could not be loaded and will not be included';
 
   @override
-  String get eventsNotLoaded =>
-      'Events could not be loaded and will not be included';
+  String get eventsNotLoaded => 'Events could not be loaded and will not be included';
 
   @override
-  String get expensesNotLoaded =>
-      'Expenses could not be loaded and will not be included';
+  String get expensesNotLoaded => 'Expenses could not be loaded and will not be included';
 
   @override
-  String get scenariosNotLoaded =>
-      'Scenarios could not be loaded and will not be included';
+  String get scenariosNotLoaded => 'Scenarios could not be loaded and will not be included';
 
   @override
   String get dataExportedTo => 'Project data exported to';
@@ -1417,12 +1396,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   // Empty state descriptions
   @override
-  String get createFirstProject =>
-      'Create your first retirement planning project';
+  String get createFirstProject => 'Create your first retirement planning project';
 
   @override
-  String get addPeopleToRetirementPlan =>
-      'Add the people involved in this retirement plan';
+  String get addPeopleToRetirementPlan => 'Add the people involved in this retirement plan';
 
   // Wizard - Common
   @override
@@ -1447,8 +1424,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nameMinTwoCharacters => 'Name must be at least 2 characters';
 
   @override
-  String get projectNameMinLength =>
-      'Project name must be at least 3 characters';
+  String get projectNameMinLength => 'Project name must be at least 3 characters';
 
   @override
   String get pleaseEnterValidNumber => 'Please enter a valid number';
@@ -1501,8 +1477,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectNameHint => 'e.g., My Retirement Plan 2025';
 
   @override
-  String get projectDescriptionHint =>
-      'Optional: Add notes about this planning scenario';
+  String get projectDescriptionHint => 'Optional: Add notes about this planning scenario';
 
   // Wizard - Assets Section
   @override
@@ -1516,22 +1491,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAssetTitle => 'Delete Asset';
 
   @override
-  String get deleteAssetConfirmation =>
-      'Are you sure you want to delete this asset?\n\nThis action cannot be undone.';
+  String get deleteAssetConfirmation => 'Are you sure you want to delete this asset?\n\nThis action cannot be undone.';
 
   @override
   String get noAssetsYet => 'No assets yet';
 
   @override
-  String get addFirstAssetOrSkip =>
-      'Add your first asset to get started, or skip this section';
+  String get addFirstAssetOrSkip => 'Add your first asset to get started, or skip this section';
 
   @override
   String get errorLoadingAssets => 'Error loading assets';
 
   @override
-  String get clickNextOrSkipAssets =>
-      'Click "Next" to continue, or "Skip" to skip asset entry';
+  String get clickNextOrSkipAssets => 'Click "Next" to continue, or "Skip" to skip asset entry';
 
   // Wizard - Employment Section
   @override
@@ -1542,8 +1514,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noIndividualsFound => 'No individuals found';
 
   @override
-  String get pleaseAddIndividuals =>
-      'Please add individuals in the previous sections';
+  String get pleaseAddIndividuals => 'Please add individuals in the previous sections';
 
   @override
   String get annualEmploymentIncome => 'Annual Employment Income';
@@ -1558,12 +1529,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leaveEmptyIfNotEmployed => 'Leave empty if not employed';
 
   @override
-  String get incomeUsedUntilRetirement =>
-      'This income will be used in projections until retirement';
+  String get incomeUsedUntilRetirement => 'This income will be used in projections until retirement';
 
   @override
-  String get clickNextOrSkipEmployment =>
-      'Click "Next" to continue, or "Skip" to skip employment income';
+  String get clickNextOrSkipEmployment => 'Click "Next" to continue, or "Skip" to skip employment income';
 
   // Wizard - Expenses Section
   @override
@@ -1580,8 +1549,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get housingExpenseHint => 'Mortgage, rent, property tax, utilities';
 
   @override
-  String get transportationExpenseHint =>
-      'Car payments, gas, insurance, transit';
+  String get transportationExpenseHint => 'Car payments, gas, insurance, transit';
 
   @override
   String get foodExpenseHint => 'Groceries, clothing, personal care';
